@@ -1,4 +1,215 @@
-# Introduction to working with Rust
+# さまざまなプログラミング言語を用いた開発
+
+このドキュメントに掲載されている Dapps の例のほとんどは、Motoko という IC で動作するように特別に設計されたプログラミング言語を使用しています。 しかし、IC 上に Dapps をデプロイするために、WebAssembly にコンパイル可能な任意のプログラミング言語で Dapps を書くことも可能です。 この章では、様々なプログラミング言語で Dapps を書き、IC 上にデプロイするためのハイレベルなガイダンスを用意しています。
+
+## Rust を使用する
+
+Cargo を使用し、Dapp を WebAssembly にコンパイルすることで、IC 上で動作する Rust プロジェクトを作成することができます。
+
+この章では、Rust プログラムを Canister スマートコントラクトとして IC 上にデプロイする際の主要な手順をまとめています。 ただし、ここで説明している手順は、1 つのアプローチを示しているに過ぎないことに注意してください。 他のアプローチも可能です。
+
+なお、[Rust canister development kit (Rust CDK)](https://github.com/dfinity/cdk-rs) では、クエリコールやアップデートコールの関数を書きやすくするためのショートカットが用意されており、Rust ベースのプロジェクトを作り始めるためのいくつかの [例](https://github.com/dfinity/cdk-rs/tree/next/examples) が含まれていますが、Rust CDK を使わなくても IC 用の Dapps を開発することができます。
+
+### プロジェクトの作成
+
+ほとんどの Rust プログラマーは、Cargo を使って Dapp が依存しているライブラリのダウンロードやコンパイルなどのビルドやパッケージ管理のタスクを処理しています。そのため、最初のステップは Cargo のコマンドラインインターフェイスを使って新しい Rust プロジェクトを作成することです。
+
+Cargo の代わりに {sdk-long-name} を使って新しいプロジェクトを作成することもできますが、Cargo を使ってプロジェクトを作成するのが Rust プロジェクト作成の典型的なワークフローです。
+
+新しい Rust プロジェクトを作成するには、以下のようにします：
+
+1.  ローカル PC でターミナルを開きます。
+
+2.  以下のコマンドで Cargo がインストールされているかどうかを確認します：
+
+        cargo --version
+
+3.  IC か Rust サンプルプロジェクトのために使用しているディレクトリに移動してください。
+
+4.  以下のコマンドを実行して、新しいプロジェクトを作成します：
+
+        cargo new my_rust_dapp
+
+    このコマンドは、`Cargo.toml` ファイルが入った `my_rust_dapp` ディレクトリと、`main.rs` ファイルが入った `src` ディレクトリを新たに作成します。
+
+5.  以下のコマンドを実行してプロジェクトディレクトリに移動します：
+
+        cd my_rust_dapp
+
+    このディレクトリの中身を表示すると、`Cargo.toml` ファイルと `src` ディレクトリだけが含まれていることがわかります。 このプロジェクトを IC 上で動作するようにコンパイルするには、いくつかの追加ファイルが必要になります。
+
+### Cargo 設定ファイルの修正
+
+`Cargo.toml` ファイルでは、それぞれの Rust パッケージごとに **マニフェスト** を用意しています。 マニフェストには、パッケージの設定の詳細を指定するセクションが含まれています。 Rust プロジェクトを IC 上で実行できるようにするために、デフォルトの `Cargo.toml` ファイルをコピーして、プロジェクトの設定の詳細をいくつか変更します。
+
+`Cargo.toml` ファイルを修正するには、以下のようにします：
+
+1.  必要に応じて `pwd` コマンドを使い、自分がプロジェクトのルートディレクトリにいることを確認します。
+
+2.  デフォルトの `Cargo.toml` ファイルを `src` ディレクトリに以下のコマンドでコピーします：
+
+        cp Cargo.toml src/Cargo.toml
+
+    IC 上で実行されるプロジェクトでは通常、プロジェクトのルートディレクトリにある `Cargo.toml` ファイルを使用してプロジェクトの Canister 群のワークスペースを設定し、ソースコードのディレクトリにある 2 つ目の `Cargo.toml` ファイルを使用して、各 Canister の設定を行います。
+
+3.  プロジェクトのルートディレクトリにある `Cargo.toml` ファイルをテキストエディタで開きます。
+
+    デフォルトでは、`[package]` と `[dependencies]` のセクションが含まれています。
+
+4.  `[package]` セクションを、以下のように `[workspace]` セクションに置き換えます：
+
+        [workspace]
+        members = [
+            "src/my_rust_dapp",
+        ]
+
+    `[workspace]` のセクションで使用するキーについては、[Workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html) を参照してください。 `Cargo.toml` ファイルで設定できるその他のセクションやキーについては、[The Manifest Format](https://doc.rust-lang.org/cargo/reference/manifest.html) を参照してください。
+
+5.  `[dependencies]` セクションを削除します。
+
+6.  変更を保存しファイルを閉じて次に進んでください。
+
+7.  `src/Cargo.toml` ファイルをテキストエディタで開きます。
+
+8.  以下のように、main のソースコードへのパスを指定する `[lib]` セクションを追加します：
+
+        [lib]
+        path = "main.rs"
+
+9.  パッケージの依存関係については適宜 `[dependencies]` セクションに追加してください。
+
+10. 変更を保存しファイルを閉じて次に進んでください。
+
+### Canister 設定ファイルの追加
+
+SDK を使用して新しいプロジェクトを作成すると、`dfx new` コマンドが自動的にデフォルトの設定ファイルである `dfx.json` をプロジェクトディレクトリに追加します。 ここでは Cargo を使って Rust プロジェクトを作成したので、`dfx.json` をプロジェクトディレクトリに手動で作成する必要があります。
+
+`dfx.json` を追加するには、以下のようにします：
+
+1.  必要に応じて `pwd` コマンドを使い、自分がプロジェクトのルートディレクトリにいることを確認します。
+
+2.  `dfx.json` 設定ファイルをプロジェクトのルートディレクトリに新しく作成します。
+
+3.  `dfx.json` ファイルをテキストエディタで開きます。
+
+4.  `version` と　`canisters` キーを以下のように追加します：
+
+        {
+          "version": 1,
+          "canisters": {
+            "my_rust_dapp": {
+              "type": "custom",
+              "candid": "src/my_rust_dapp.did",
+              "wasm": "target/wasm32-unknown-unknown/debug/my_rust_dapp.wasm",
+              "build": "cargo build --target wasm32-unknown-unknown --package my_rust_dapp"
+            }
+          }
+        }
+
+    この設定について詳しく見てみましょう。
+
+    - `version` の設定は、プロジェクトの作成に使用したソフトウェアのバージョンを確認するために使用されます。
+
+    - `canisters` セクションでは、プロジェクトの Canister の名前を指定します。 この例では、`my_rust_dapp` という名前の Canister が 1 つ指定されています。
+
+    - `type` キーが `custom` なのは、この Canister が現在認識されている Canister タイプ (`motoko` か `assets`) ではないからです。
+
+    - `candid` キーは、このプロジェクトで使用する Candid インターフェース記述ファイルの名前と場所を指定します。
+
+    - `wasm` キーは、`cargo build` コマンドで生成される WebAssembly ファイルのパスを指定します。
+
+    - `build` キーは、コンパイルに使用する `cargo` コマンドを指定します。
+
+    これらは必要最小限の設定です。 より複雑なプログラムを作成する際には、`Cargo.toml` ファイル、`dfx.json` ファイル、あるいはその両方に、追加の設定情報を含める必要が出る可能性があります。
+
+5.  変更を保存し、ファイルを閉じて次に進んでください。
+
+### Candid インターフェース記述ファイルの作成
+
+設定ファイルである `dfx.json` に加えて、Candid インターフェース記述ファイル（例えば、`my_rust_dapp.did`）を用意する必要があります。このファイルは、Dapp の引数や返り値のフォーマットを、Candid での言語にとらわれない表現にマッピングするために必要です。
+
+Candid インターフェース記述ファイルを追加するには、以下のようにします：
+
+1.  必要に応じて `pwd` コマンドを使い、自分がプロジェクトのルートディレクトリにいることを確認します。
+
+2.  プロジェクトの `src` ディレクトリに、Candid インターフェース記述ファイル（例えば、`my_rust_dapp.did`）を新たに作成します。
+
+3.  Candid インターフェース記述ファイルをテキストエディタで開き、Dapp が定義する各関数に対する記述を追加します。
+
+    例えば、`my_rust_dapp` が `increment`、`read`、`write` 関数を使ってカウンタをインクリメントするシンプルな dapp である場合、`my_rust_dapp.did` ファイルは以下のようになります：
+
+        service : {
+          "increment": () -> ();
+          "read": () -> (nat) query;
+          "write": (nat) -> ();
+        }
+
+4.  変更を保存しファイルを閉じて次に進んでください。
+
+### デフォルトの Dapp の修正
+
+新しいプロジェクトを作成すると、"Hello, World!" プログラムのテンプレートファイルである `main.rs` ファイルが `src` ディレクトリに作られます。
+
+このテンプレートのソースコードを修正するには以下のようにします：
+
+1.  `src/main.rs` ファイルをテキストエディタで開き、中身を削除します。
+
+2.  IC にデプロイしたいプログラムを書きます。
+
+    プログラムを書く際には、呼び出しには「アップデートコール」と「クエリコール」の 2 種類があることと、アップデート関数は非同期メッセージングを行うことに注意してください。
+
+3.  変更を保存して、`main.rs` ファイルを閉じます。
+
+### Dapp のデプロイ
+
+Dapp をデプロイしてテストする前に、以下を行う必要があります。
+
+- ローカルの Canister 実行環境、または IC ブロックチェーンのメインネットのいずれかに接続します。
+
+- アプリケーションにネットワーク固有の識別子を登録します。
+
+- WebAssembly をターゲット出力として Dapp をコンパイルします。
+
+WebAssembly にコンパイルする `cargo build` コマンドを `dfx.json` ファイルに設定したので、`dfx` コマンドラインインターフェイスと標準的なワークフローによって残りのすべてのステップを実行することができます。
+
+Dapp をローカルでビルドとデプロイするには以下のようにします：
+
+1.  必要に応じて `pwd` コマンドを使い、自分がプロジェクトのルートディレクトリにいることを確認します。
+
+2.  新しいターミナルの窓あるいはタブを開き、プロジェクトディレクトリへ移動します。
+
+    例えば、macOS で Terminal を使用している場合は、以下のどちらかを行います：
+
+    - **Shell** をクリックし、**New Tab** を選択して、現在の作業ディレクトリに新しいターミナルを開きます。
+
+    - **Shell** をクリックし、 **New Window** を選択して、`cd ~/ic-projects/location_hello` を新しいターミナルで実行してください（`ic-projects` フォルダの中に `location_hello` プロジェクトがある場合）。
+
+    今手元では、プロジェクトディレクトリを作業ディレクトリとした、2 つのターミナルが開かれているはずです。
+
+3.  以下のコマンドを実行して、ローカルの Canister 実行環境を起動します：
+
+        dfx start
+
+    使用しているプラットフォームやローカルのセキュリティ設定によっては、警告が表示される場合があります。 受信するネットワーク接続を許可するか拒否するかを選択する操作画面が表示された場合は、**Allow** をクリックしてください。
+
+4.  ネットワーク操作を表示している端末を開いたまま、プロジェクトを作成した元の端末にフォーカスを切り替えます。
+
+5.  以下のコマンドを実行して、アプリケーションに固有の Canister ID を登録します：
+
+        dfx canister create --all
+
+6.  以下のコマンドを実行して Dapp をビルドします：
+
+        dfx build
+
+7.  以下のコマンドを実行して Dapp をローカルの Canister 実行環境にデプロイします：
+
+        dfx canister install --all
+
+8.  コマンドライン、あるいはブラウザから、Dapp の関数をテストしてください。
+
+<!--
+# Develop using different languages
 
 Rust is a powerful and type sound modern programming language with an active developer community. Because Rust compiles to WebAssembly, it offers a rich development environment for writing dapps to run on the Internet Computer blockchain. To help pave the way for writing dapps in Rust that can be deployed on the Internet Computer blockchain, DFINITY provides some tools to simplify the process.
 
