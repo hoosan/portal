@@ -60,13 +60,13 @@ Dapp デザインのよくあるアプローチは、ある Canister スマー�
 
 このチュートリアルを完了するためには、以下の手順を踏む必要があります。
 
-- [Canister の初期設定の変更](#_edit_the_default_canister_settings)
+- [Canister の初期設定の変更](#canister-の初期設定の変更)
 
-- [Motoko Canister スマートコントラクトの実装](#_implement_motoko_canister_smart_contract)
+- [Motoko Canister スマートコントラクトの実装](#motoko-canister-スマートコントラクトの実装)
 
-- [デフォルトの Rust Canister スマートコントラクトの置き換え](#_replace_the_default_rust_canister_smart_contract)
+- [デフォルトの Rust Canister スマートコントラクトの置き換え](#デフォルトの-rust-canister-スマートコントラクトの置き換え)
 
-- [インターフェース記述ファイルの更新](#_update_interface_description_file)
+- [インターフェース記述ファイルの更新](#インターフェース記述ファイルの更新)
 
 ### Canister の初期設定の変更
 
