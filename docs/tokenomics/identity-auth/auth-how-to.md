@@ -1,3 +1,179 @@
+# Internet Identity の使い方
+
+Internet Identity とは何か、ということから学びたい方は [Internet Identity とは？](what-is-ic-identity)をご覧ください。
+
+Internet Identity アンカーの作成やデバイスの管理を行いたい方は、[Internet Identity Page](https://identity.ic0.app) をご覧ください。
+
+現在サポートされているすべての認証方法は、*WebAuthn* 規格に準拠しています。ただし、以下のような制限があります:
+
+-   OS Xでは、Safari を使った認証は、ブラウザのプロファイルとリンクしています。別のブラウザで Dapp を認証したい場合や、複数の Safari ブラウザのプロファイルを使用している場合は、認証方法と新しいブラウザの組み合わせを、新しいデバイスとして追加する必要があります。詳しくは [`デバイスの追加`](#デバイスの追加) をご覧ください。 なお、OS Xとは異なり、iOSでは、認証はブラウザ間で横断的に機能します。
+
+-   OS Xおよび iOS では、Safari のブラウザ履歴を消去すると、ユーザーが登録した WebAuthn キーが Secure Enclave から削除され、これらのキーを使った認証ができなくなります。
+
+    <div class="warning">
+
+    Identity を必要とする Dapps からロックアウトされないように、リカバリー手段を設定することを強くお勧めします。リカバリー手段の設定方法はこのページの下の方でご説明します。
+
+    </div>
+
+-   Firefox は現在、セキュリティキー以外のデバイス認証方法が OS X ではサポートされていません。
+
+-   Windows Hello 認証は、Chrome、Edge、Firefox でサポートされています。
+
+## Identity Anchor の作成
+
+Identity Anchor を作成し、そこに 1 つ以上のデバイスを追加していれば、ユーザーの認証方法として Internet Identity を使用している Internet Computer の Dapps に安全にアクセスすることができます。認証のために Internet Identity に提供した Identity Anchor に基づいて、Internet Identity はアクセスする各 Dapp に対して異なる偽名を作成します。新しい Identity Anchor を作成することで、必要な数の偽名を作成することができます。
+
+Dapp にアクセスすると、Internet Identity に誘導され、Identity Anchor を入力して認証するよう求められます。Identity Anchor を持っていない場合は、以下の手順で Identity Anchor を作成する必要があります:
+
+1.  "**Create a new Internet Identity Anchor**" をクリックします.
+
+2.  Identity Anchor の作成に使用する認証方法の名前を入力します。例：iPhone、YubiKey など。
+
+3.  認証方法としてデバイスを使用して Identity Anchor を作成します。
+
+    専用のセキュリティキーを使用するか、使用しているデバイスの認証方法を使用するかのどちらの方法で Identity Anchor を作成するかを選択します（画面上に選択肢が出た場合）。
+
+    例えば、デバイスのロック解除に生体認証が有効になっている場合、認証方法としてそれらを使用するオプションが表示されることがあります。また、お使いのデバイスによっては、コンピュータのロックを解除するパスワードや、携帯電話のロックを解除する PIN 番号を使用することもできます。
+
+    <div class="note">
+
+    ベストプラクティスとして、Identity Anchor ごとに少なくとも1つの専用のセキュリティキーを使用してください。 その後、電話やコンピュータなどの他の認証方法や、自分がよく使う第 2 のセキュリティキーを追加することができます。 第 1 のセキュリティキーは、使用するデバイスを使用できない場合に備えて、安全な場所に保管してください。 専用のセキュリティキーを使用すると、Internet Computer 上で動作している任意の Dapp に対して、任意のブラウザを使用して、それを認識する任意のデバイスで認証を行うことができます。  
+    セキュリティキーをお持ちでない場合は、シードフレーズからキーを生成し、そのキーをリカバリーメカニズムとして追加することもできます（下記の最後のステップを参照してください）。
+
+    </div>
+
+4.  デバイスを認証してください。
+
+    画面が表示されたら、選択した方法で認証してください。
+
+5.  "**Confirm**" をクリックしてください。
+
+    この手順を実行するまでは、Identity Anchor は作成されません。
+
+    ここで、お使いの機器によっては、「端末認証」または「セキュリティキー」のいずれかを選択する画面が表示されます。初めて登録する場合は、「端末認証」を選択してください。
+
+6.  Identity Anchor を記録してください。
+
+    デバイスの追加が完了すると、Identity Anchor が表示されます。
+
+    Identity Anchor は、固有の番号で表されます。これは秘匿すべき番号ではありませんので、紛失しないように複数の場所に保管してください。 ブラウザは Identity Anchor を記憶していますが、別のコンピュータで認証を行う場合や、ブラウザのプロファイルを変更する場合、またはブラウザの状態をクリアする場合に必要になります。
+
+    <div class="warning">
+
+    Identity Anchor を忘れ、すべてのデバイスからログアウトした場合、シードフレーズを使用してアカウントのリカバリーを設定していない限り、Internet Identity での認証ができなくなります。 Identity Anchor を紛失しないようにしてください。
+
+    </div>
+
+7.  "**Continue**" をクリックしてください。
+
+8.  Identity Anchor へのリカバリ設定を行います。
+
+    複数のデバイスの追加やセキュリティキーの使用に加えて、"**Add a recovery mechanism to an Identity Anchor**" をクリックすると、画面上でアカウントのリカバリーを設定することができます。
+
+    次の画面では、以下のいずれかのオプションを選択できます:
+
+    -   **シードフレーズ**
+
+        このオプションを選択すると、Identity Anchor を復元するために使用できる、暗号的に安全なシードフレーズを生成することができます。 このフレーズは安全な場所に保管し、自分だけが知っているようにしてください。 シードフレーズを知っている人は、この Identity Anchor を完全に制御することができます。 **シードフレーズの最初の文字列が Identity Anchor** であることに注意してください。 復旧作業を開始するには、この番号が必要です。
+
+        <div class="note">
+
+        "**Copy**" ボタンをクリックしてから "**Continue**" ボタンをクリックしないと、シードフレーズが登録されません。
+
+        </div>
+
+    -   **セキュリティキー**
+
+        認可されたデバイスへのアクセスができなくなった場合、Identity Anchor をリカバリするために専用のセキュリティキーを使用します。このキーは、指定された Identity Anchor を使用して Internet Identity を認証する際に頻繁に使用するキーとは異なるものでなければなりません。 このキーは安全な場所に保管し、自分だけが利用できるようにしてください。 上記のとおり、このセキュリティキーを持っている人は、自分の Identity Anchor を完全に制御することができます。 リカバリーを開始するには、Identity Anchor を知っている必要があります。
+
+    -   **リカバリーを後で設定する**
+
+        アカウントのリカバリーメカニズムの設定を省略し、Internet Identity のトップページから後で設定することを選択できます。
+
+        <div class="warning">
+
+        アカウントへのアクセスを失わないように、リカバリーメカニズムを設定することを強くお勧めします。
+
+        </div>
+
+9.  "**Continue**" をクリックしてください。
+
+    次の画面では、Identity Anchor と登録されている認証方法が表示されます。 認証方法の追加や削除、アカウントのリカバリー方法の追加設定を行うことができます。
+
+## デバイスの追加
+
+デバイスを追加するためのワークフローは、Identity Anchor に既に追加したデバイスに依存します。例えば、もしあなたが Identity Anchor を作成するためにコンピュータを最初に認証し、その後携帯電話を新たな認証方法として追加したい場合、認証済みのコンピュータ上で携帯電話を認証する必要があります。 すでに認証されているデバイスを使用し、追加したいデバイスを常に認証できるようにする必要があります。
+
+<div class="note">
+
+Windows Hello 認証をサポートしている Windows デバイス上でデバイスの追加を開始すると、ブラウザは最初に新しい認証方法として Windows Hello を追加するように求めます。Windows Hello 認証をサポートしている Windows デバイス上で新たなデバイスの追加を開始すると、ブラウザは最初に新しい認証方法として Windows Hello を追加するように求めます。すでに Windows Hello でデバイスを登録していて、代わりにセキュリティキーなどを追加したい場合は、Windows Hello の操作画面をキャンセルする必要があります。その後、セキュリティキーなどの別の認証方法をブラウザで選択することができます。
+
+</div>
+
+セキュリティキーなどの新しいデバイスを追加する場合や、すでに認証方法となっているコンピュータや携帯電話を使って新しいブラウザのプロファイルを追加する場合は、Internet Identity Management から直接、簡単に行うことができます。
+
+その他のワークフローはより複雑になります。例えば、認証済みのコンピューターを使って携帯電話のアンロック方法を認証方法として追加するには、以下のような手順となります:
+
+1.  PC　から : Internet Identity のページを開き、ログインします。
+
+2.  PC　から : **add new device** をクリックします。
+
+3.  PC　から : **remote device** を選択します。
+
+    - これにより、この Identity Anchor に対してデバイス登録モードが有効になります。以降の手順は15分以内に完了させる必要があります。
+
+4.  携帯電話から : **Already have an anchor but using a new device?** をクリックします。
+
+5.  携帯電話から : Identity Anchor を入力します。
+
+6.  携帯電話から : デバイスのエイリアスを入力します。
+
+    - このステップを完了すると認証コードが表示されます。
+
+7. 携帯電話から : デバイスの認証コードを入力します。
+
+7.  携帯電話と Identity をリンクさせます。
+
+<div class="warning">
+
+この方法で追加されたデバイスは、あなたの Identity を**完全にコントロールすることができます**。*個人的に所有している*デバイスのみを追加してください。
+
+</div>
+
+<div class="warning">
+
+デバイスを紛失して Dapps へのアクセスができなくなるのを防止するために、できるだけ多くのデバイスを追加しておくべきです。繰り返しになりますが、過ってデバイスを紛失した場合に備え、リカバリー方法を設定することが最善の方法です。また、追加した複数の認証方法のうちの１つの方法で Identity Anchor へのアクセスが可能になるため、追加した認証方法はすべて保管し、紛失しないようにしてください。
+
+</div>
+
+<div class="warning">
+
+デバイスを紛失した場合は、攻撃者が認証方法を追加した可能性を考え、すぐにそのデバイスを認証方法から削除し、すべての認証方法が自分の管理下にあることを確認してください。また、デバイスを紛失してからそのデバイスを認証方法から外すまでの間、Identity Anchor が危険な状態であるということを認識してください。
+
+</div>
+
+## 紛失した Identity の復旧方法
+
+Identity Anchor を作成する際には、シードフレーズをコピーするか、リカバリー方法として専用のセキュリティキーを追加するように画面上で促されます。
+
+これらの作業はいつ行っても良いですが、Identity Anchor を紛失した場合や、認証済みのデバイスにアクセスできなくなった場合には、Identity Anchor を復元するためのシードフレーズかセキュリティキーが必要になりますのでご注意ください。これらがないと、関連する Identity を必要とするすべての Dapps からロックアウトされてしまいます。
+
+Identity Anchor にリカバリーフレーズやセキュリティキーを設定していれば、以下のステップによってアクセスを復旧することができます。
+
+**1. Internet Identity のランディングページから、 **Lost access and want to recover?** をクリックします。**
+
+![welcome to internet identity](../_attachments/welcome-to-internet-identity.png)
+
+**2. Identity Anchor を入力します。**
+
+![recover identity anchor](../_attachments/recover-identity-anchor.png)
+
+**3. シードフレーズを入力します。**
+
+![your seed phrase](../_attachments/your-seed-phrase.png)
+
+<!--
 # How to use Internet Identity
 
 If you would like to learn what Internet Identity is, see [What is Internet Identity?](https://smartcontracts.org/docs/ic-identity-guide/what-is-ic-identity.html)
@@ -170,3 +346,5 @@ If you have set up a recovery phrase or recovery security key for an Identity An
 **3. Input your seed phrase**
 
 ![your seed phrase](../_attachments/your-seed-phrase.png)
+
+-->
