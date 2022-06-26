@@ -1,3 +1,188 @@
+# Candid の使い方
+
+[Candid とは？](candid-concepts)で説明したように、Candid は 言語によらず Canister スマートコントラクトと対話するための方法を提供します。
+
+Candid を使用することで、`dfx` コマンドラインインターフェースを使用してターミナルから IC を扱う場合や、Web ブラウザや、JavaScript、Motoko、Rust などの言語で書かれたプログラムから扱う場合など、いかなる場面であっても、インプットとなる引数の値を指定したり、Canister のメソッドからの返り値を表示したりすることができます。 Candid とは何か、どのように動くのかを理解していただいた上で、このセクションではいくつかのよくあるシナリオでの使い方を説明します。
+
+具体的な例として、以下のような Candid インターフェースを持つ `counter` Canister がネットワーク上にデプロイされているとします：
+
+```candid
+service Counter : {
+  inc : (step: nat) -> (nat);
+}
+```
+
+それでは、さまざまな場面での Canister の扱い方を探ってみましょう。
+
+## ターミナルで Service と対話する
+
+Canister スマートコントラクトや IC と対話する最も一般的な方法の 1 つは、{company-id} Canister SDK `dfx` コマンドラインインターフェースを使用することです。
+
+`dfx` ツールは、特定のデプロイされた Canister（IC 上で動作するスマートコントラクト）と、スマートコントラクトが提供する Service のメソッド（利用可能な場合）を呼び出すための `dfx canister call` コマンドを有しています。
+
+`dfx canister call` コマンドを実行すると、[Candid のテキスト値](candid-concepts#candid-のテキスト値)で見たように、メソッドに引数を渡すことができます。
+
+Candid のテキスト値をコマンドラインで渡す場合、複数の引数値をカンマ（`,`）で区切り、括弧でくくって指定することができます。 例えば、`(42, true)` と指定すると、2 つの引数値を表し、第 1 引数は数字の `42`、第 2 引数は真偽値の `true` となります。
+
+以下では、`dfx canister call` コマンドを使用して、`counter` Canister の Service を呼び出し、`inc` メソッドに引数を渡す例を示しています：
+
+```bash
+$ dfx canister call counter inc '(42)'
+(43)
+```
+
+また、引数を省略して `dfx` にメソッドの型に一致したランダムな値を生成させることもできます。例えば、以下のようになります：
+
+```bash
+$ dfx canister call counter inc
+Unspecified argument, sending the following random argument:
+(1_543_454_453)
+
+(1_543_454_454)
+```
+
+`dfx` と `dfx canister call` コマンドの使い方については、[コマンドラインのリファレンス](../../../../references/cli-reference)と[dfx canister](../../../../references/cli-reference/dfx-canister) のドキュメントを参照してください。
+
+## ブラウザで Service と対話する
+
+Candid のインターフェース記述言語は、Canister スマートコントラクトの署名を指定するための共通言語となります。 スマートコントラクトから与えられる Service の型シグネチャに基づき、Candid は Web インターフェース（Candid UI）を提供しています。 これにより、フロントエンドのコードを一切書かずに、Web ブラウザからテストやデバッグのために Canister の関数を呼び出すことができます。
+
+Candid の Web インターフェースを使って、`counter` Canister をテストするには、以下のようにします：
+
+1.  `dfx canister id __Candid_UI` コマンドを使用して、`counter` Canister に関連づけられた Candid UI Canister の ID を見つけます。
+
+    ```bash
+    dfx canister id __Candid_UI
+    ```
+
+    このコマンドは、Candid UI の Canister ID を以下のように出力します：
+
+        r7inp-6aaaa-aaaaa-aaabq-cai
+
+2.  以下のコマンドを実行し、Canister のローカル実行環境を起動します。
+
+    ```bash
+    dfx start --background
+    ```
+
+3.  ブラウザを開き、設定ファイルである `dfx.json` で指定されたアドレスとポート番号に移動します。
+
+    デフォルトでは、`local` Canister の実行環境は、`127.0.0.1:8000` のアドレスとポート番号に固定されます。
+
+4.  `canisterId` の URL パラメータと、`dfx canister id` コマンドで返される Candid UI の Canister ID を追加しましょう。
+
+    全体の URL は以下のようになります。ただし、`CANDID-UI-CANISTER-IDENTIFIER` を、`dfx canister id` コマンドで返された Canister ID に置き換えてください：
+
+        http://127.0.0.1:8000/?canisterId=<CANDID-UI-CANISTER-IDENTIFIER>
+
+    ブラウザには、Canister ID や Candid のファイル（`.did`）を選択するためのフォームが表示されます。
+
+    ![candid ui select id](../../_attachments/candid-ui-select-id.png)
+
+    どの Canister ID を使うべきかわからない場合は、`dfx canister id` コマンドを実行して、特定の Canister 名の ID を調べることができます。
+
+    例えば、`counter` Service の関数を見たい場合、次のコマンドを実行して、Canister ID を調べることができます：
+
+        dfx canister id counter
+
+5.  Canister ID または記述ファイルを指定して **Go** をクリックすると、Service の記述が表示されます。
+
+6.  プログラムで定義されている関数の呼び出しと型のリストを確認します。
+
+7.  関数に適した型の値を入力するか、**Random** をクリックして値を生成し、**Call** または **Query** をクリックして結果を確認します。
+
+任意の Canister の Candid インターフェースから Web インターフェースを作成するツールについてさらに知りたい方は、[Candid UI](https://github.com/dfinity/candid/tree/master/tools/ui)のリポジトリを参照してください。
+
+## Motoko Canister で Service と対話する
+
+Canister のスマートコントラクトを Motoko で書いている場合、Motoko のコンパイラは Canister のトップレベルの `Actor` または `Actor クラス` のシグネチャを自動的に Candid 記述に変換し、`dfx build` コマンドは Service 記述が必要な場所で適切に参照されることを保証します。
+
+例えば、Motoko で `counter` Canister を呼び出す `hello` Canister を書きたい場合は、以下のようにします：
+
+```motoko
+import Counter "canister:Counter";
+import Nat "mo:base/Nat";
+actor {
+  public func greet() : async Text {
+    let result = await Counter.inc(1);
+    "The current counter is " # Nat.toText(result)
+  };
+}
+```
+
+この例では、`counter` Canister のインポート依存関係（`import Counter "canister:Counter"` 宣言）が `dfx build` コマンドによって処理されるとき、`dfx build` コマンドは、`counter` の Canister ID と Candid の記述が Motoko のコンパイラに正しく渡されることが保証されています。 Motoko のコンパイラは Candid の型を適切な Motoko のネイティブ型に翻訳します。この翻訳により、`counter` Canister が別の言語で実装されていても、インポートされた Canister のソースコードを持っていなくても、`inc` メソッドをまるで Motoko の関数のように呼び出すことができます。 Candid と Motoko の型の対応関係についての詳細は、リファレンスの [サポートされている型](../../../../references/candid-ref.md) を参照してください。
+
+Motoko のコンパイラと `dfx build` コマンドでは、他の Canister やツールがシームレスに `hello` Canister とやりとりできるようにするため、`hello` Canister の Candid 記述も自動生成されます。 生成された Candid 記述は、プロジェクトのビルドディレクトリの `.dfx/local/canisters/hello/hello.did` に置かれます。
+
+## Rust Canister で Service と対話する
+
+Rust で Canister を書いた場合、`dfx build` コマンドにより、Service の記述が必要な場所で適切に参照されるようになります。ただし、Candid の Service 記述は、[Candid 仕様](https://github.com/dfinity/candid/blob/master/spec/Candid.md#core-grammar)で説明されている規約に従い、自分で書く必要があります。
+
+例えば、Rust で `counter` Canister を呼び出す `hello` Canister を書きたいとします：
+
+```rust
+use ic_cdk_macros::*;
+
+#[import(canister = "counter")]
+struct Counter;
+
+#[update]
+async fn greet() -> String {
+    let result = Counter::inc(1.into()).await;
+    format!("The current counter is {}", result)
+}
+```
+
+`counter` Canister の import マクロである `#[import(canister = "counter")]` 宣言が `dfx build` コマンドによって処理されるとき、`dfx build` コマンドは `counter` の Canister ID と Candid 記述が Rust CDK に正しく渡されることを保証します。 Rust CDK は次に Candid の型を適切な Rust のネイティブ型に翻訳します。 この翻訳により、`counter` Canister が異なる言語で実装されていても、インポートされた Canister のソースコードがなくても、`inc` メソッドをまるで Rust の関数のように呼び出すことができます。
+
+Candid と Rust の型の対応関係についてさらに知りたい方は、リファレンスの [サポートされている型](../../../../references/candid-ref.md) を参照してください。
+
+他の Canister のスマートコントラクトやツールが `hello` Canister と対話するためには、`.did` ファイルを手動で作成する必要があります：
+
+```candid
+service : {
+    greet : () -> (text);
+}
+```
+
+Candid の Service 記述ファイルを自動生成する実験的な機能もあります。例として、こちらの [テストケース](https://github.com/dfinity/candid/blob/master/rust/candid/tests/types.rs#L99)をご覧ください。
+
+Rust で Candid Serivce や Canister を作成するための追加情報やライブラリについては、 [Candid クレート](https://docs.rs/candid/)のドキュメントや、[Rust CDK のサンプル](https://github.com/dfinity/cdk-rs/tree/next/examples)や、[Rust のチュートリアル](../rust/rust-intro)を参照してください。
+
+## JavaScript で Service と対話する
+
+[dfinity/agent npm パッケージ](https://www.npmjs.com/package/@dfinity/agent)は、Candid を使った Canister のインポート機能をサポートしています。
+
+例えば、`counter` Canister を呼び出したい場合は、以下のような JavaScript のプログラムを書きます：
+
+```javascript
+import counter from "ic:canisters/counter";
+import BigNumber from "bignumber.js";
+(async () => {
+  const result = await counter.inc(new BigNumber(42));
+  console.log("The current counter is " + result.toString());
+})();
+```
+
+カウンター Canister のインポート依存性が `dfx build` コマンドと `webpack` 設定によって処理されるとき、この処理は Canister ID と Candid 記述が正しく JavaScript プログラムに渡されることを保証します。裏では、Candid Serivice 記述が `dfx build` によって JavaScript モジュールに変換され、`.dfx/local/canister/counter/counter.did.js` に置かれます。`dfinity/agent` パッケージは、Candid 型を JavaScript のネイティブな値に変換します。 `counter` Canister が別の言語で実装されていても、また、Candid 型でなくても、まるで JavaScript の関数であるかのように、`inc` メソッドをネイティブに呼び出すことができます。Candid と JavaScript の型の対応関係について詳しく知りたい方は、リファレンスの [サポートされている型](../../../../references/candid-ref.md)を参照してください。
+
+## 新しい Candid 実装の作成
+
+Motoko、Rust、JavaScript 用の Candid 実装に加えて、以下のホスト言語用の Candid ライブラリがコミュニティによってサポートされています。
+
+- [Haskell](https://hackage.haskell.org/package/candid)
+
+- [Elm](https://github.com/chenyan2002/ic-elm/)
+
+- [Kotlin](https://github.com/seniorjoinu/candid-kt)
+
+- [AssemblyScript](https://github.com/rckprtr/cdk-as/tree/master/packages/cdk/assembly/candid)
+
+Candid が現在利用できない言語やツールをサポートするために 新たな Candid の実装を作成したい場合は、 [Candid の仕様](https://github.com/dfinity/candid/blob/master/spec/Candid.md)を参照してください。
+
+新しい言語やツールのために Candid の実装を追加した場合、公式の [Candid テストデータ](https://github.com/dfinity/candid/tree/master/test)を使って、その実装が Candid と互換性があるかどうかを、多少曖昧なコーナーケースであってもテストして検証することができます。
+
+<!--
 # How to
 
 As discussed in [What is Candid?](./candid-concepts.md), Candid provides a language-agnostic way to interact with canisters. By using Candid, you can specify input argument values and display return values from canister methods regardless of whether you interact with the IC from a terminal using the `dfx` command-line interface, through a web browser, or from a program written in JavaScript, Motoko, Rust, or any other language. Now that you are familiar with what Candid is and how it works, this section provides instructions for how to use it in some common scenarios.
@@ -187,3 +372,5 @@ In addition to the Candid implementations for Motoko, Rust, and JavaScript, ther
 If you want to create a Candid implementation to support a language or tool for which an implementation is not currently available, you should consult the [Candid specification](https://github.com/dfinity/candid/blob/master/spec/Candid.md).
 
 If you add a Candid implementation for a new language or tool, you can use the official [Candid test data](https://github.com/dfinity/candid/tree/master/test) to test and verify that your implementation is compatible with Candid, even in slightly more obscure corner cases.
+
+-->
