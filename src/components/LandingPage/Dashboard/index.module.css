@@ -1,6 +1,6 @@
 .main {
     position: relative;
-    padding: 32px 0 50px 0;
+    padding: 32px 0 102px 0;
     width: Min(1340px, 90%);
     margin: auto;
 }
@@ -138,8 +138,14 @@
     }
 
     .actionButton {
-        height: 48px;
-    }
+        padding: 12px 24px;
+        gap: 12px;
+      }
+      .actionButton svg {
+        width: 21px;
+        flex-shrink: 0;
+        margin: 0;
+      }
     .anchor {
         margin-top: -100px;
         padding-bottom: 100px;

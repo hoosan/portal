@@ -1,219 +1,50 @@
 import React, { useEffect } from "react";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
-import styles from "@site/src/pages/samples.module.css";
 import Header from "@site/src/components/SamplesPage/Header";
 import Card from "@site/src/components/SamplesPage/Card";
 import FilterBar from "@site/src/components/SamplesPage/FilterBar";
 import BGCircle from "@site/static/img/purpleBlurredCircle.png";
+import BGCircleCommunity from "@site/static/img/samples/purplePinkBlur.png";
 import PlusIcon from "@site/static/img/svgIcons/plus.svg";
-import nftMinting from "@site/static/img/samples/nftMinting.png";
-import helloWorld from "@site/static/img/samples/helloWorld.png";
-import staticWebsite from "@site/static/img/samples/staticWebsite.png";
-import basicDex from "@site/static/img/samples/basicDex.png";
-import basicDAO from "@site/static/img/samples/basicDAO.png";
-import encryptedNoteTaking from "@site/static/img/samples/encryptedNoteTaking.png";
-import tokenTransfer from "@site/static/img/samples/tokenTransfer.png";
-import actorReference from "@site/static/img/samples/actorReference.png";
-import webgl from "@site/static/img/samples/webgl.png";
-import { motion, useAnimation } from "framer-motion";
-import { useInView } from "react-intersection-observer";
+import { sampleItems } from "@site/src/components/Common/sampleItems";
+import { motion } from "framer-motion";
 import transitions from "@site/static/transitions.json";
+import communityProjects from "@site/static/supernovaProjects.json";
 import { resetNavBarStyle } from "@site/src/utils/reset-navbar-style";
+import AnimateSpawn from "@site/src/components/Common/AnimateSpawn";
+import clsx from "clsx";
+import Head from "@docusaurus/Head";
 
-const sampleItems = [
-  {
-    index: 0,
-    title: "Hello World",
-    image: helloWorld,
-    domains: ["Website"],
-    languages: ["Motoko", "Rust", "Javascript"],
-    level: ["Beginner"],
-    contentType: ["Code Samples", "Documentation", "Live Demos"],
-    body: "Deploy a dead simple dapp using two canisters serving a web page.",
-    links: {
-      action: {
-        text: "Get code",
-        to: "https://github.com/dfinity/examples/tree/master/motoko/hello",
-      },
-      motoko: "https://github.com/dfinity/examples/tree/master/motoko/hello",
-      rust: "https://github.com/dfinity/examples/tree/master/rust/hello",
-      livePreview: "https://6lqbm-ryaaa-aaaai-qibsa-cai.ic0.app/",
-      docs: "docs/current/samples/hello",
-    },
-  },
-  {
-    index: 1,
-    title: "Static Website",
-    image: staticWebsite,
-    domains: ["Website", "Global"],
-    languages: ["Motoko", "Rust", "Javascript"],
-    level: ["Beginner"],
-    contentType: ["Documentation", "Videos"],
-    body: "Quickly set up a static website structure, add content and basic styling, and deploy on the IC.",
-    links: {
-      action: { text: "Docs", to: "/samples/host-a-website" },
-      docs: "docs/current/samples/host-a-website",
-      youtube: "https://www.youtube.com/watch?v=JAQ1dkFvfPI",
-    },
-  },
-  {
-    index: 2,
-    title: "Basic Dex",
-    image: basicDex,
-    domains: ["DeFi", "Website"],
-    languages: ["Motoko", "Rust", "Javascript"],
-    level: ["Intermediate"],
-    contentType: ["Code Samples", "Documentation", "Videos", "Live Demos"],
-    body: "Build dapp to enable DeFi applications on the IC.",
-    links: {
-      action: {
-        text: "Get Code",
-        to: "https://github.com/dfinity/examples/tree/master/motoko/defi",
-      },
-      motoko: "https://github.com/dfinity/examples/tree/master/motoko/defi",
-      rust: "https://github.com/dfinity/examples/tree/master/rust/defi",
-      livePreview: "https://gzz56-daaaa-aaaal-qai2a-cai.ic0.app/",
-      docs: "docs/current/samples/dex",
-      youtube: "https://youtu.be/fLbaOmH24Gs",
-    },
-  },
-  {
-    index: 3,
-    title: "NFT Minting",
-    image: nftMinting,
-    domains: ["NFT", "Gaming"],
-    languages: ["Rust"],
-    level: ["Intermediate"],
-    contentType: ["Code Samples", "Documentation", "Videos"],
-    body: "Create a user generated NFT and share it. This dapp uses the DIP721 NFT standard.",
-    links: {
-      action: {
-        text: "Get code",
-        to: "https://github.com/dfinity/examples/tree/master/rust/dip721-nft-container",
-      },
-      rust: "https://github.com/dfinity/examples/tree/master/rust/dip721-nft-container",
-      docs: "docs/current/samples/nft",
-      youtube: "https://youtu.be/1po3udDADp4",
-    },
-  },
-  {
-    index: 4,
-    title: "Basic DAO",
-    image: basicDAO,
-    domains: ["Global", "DeFi"],
-    languages: ["Motoko", "Rust"],
-    level: ["Intermediate"],
-    contentType: ["Code Samples", "Documentation", "Videos"],
-    body: "Dapp initializes a set of accounts and corresponding tokens as well as enables  proposals for communal votes.",
-    links: {
-      action: {
-        text: "Get Code",
-        to: "https://github.com/dfinity/examples/tree/master/motoko/basic_dao",
-      },
-      motoko:
-        "https://github.com/dfinity/examples/tree/master/motoko/basic_dao",
-      rust: "https://github.com/dfinity/examples/tree/master/rust/basic_dao",
-      docs: "docs/current/samples/dao",
-      youtube: "https://youtu.be/3IcYlieA-EE",
-    },
-  },
-  {
-    index: 5,
-    title: "Encrypted note-taking",
-    image: encryptedNoteTaking,
-    domains: ["Website"],
-    languages: ["Motoko", "Rust", "Javascript"],
-    level: ["Advanced"],
-    contentType: ["Code Samples", "Documentation", "Videos", "Live Demos"],
-    body: "Create, access and modify confidential notes from multiple devices using Internet Identity and end-to-end encryption.",
-    links: {
-      action: {
-        text: "Get Code",
-        to: "https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp/src/encrypted_notes_motoko",
-      },
-      motoko:
-        "https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp/src/encrypted_notes_motoko",
-      rust: "https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp/src/encrypted_notes_rust",
-      livePreview: "https://cvhrw-2yaaa-aaaaj-aaiqa-cai.ic0.app/",
-      docs: "docs/current/samples/encrypted-notes",
-      youtube: "https://youtu.be/DZQmtPSxvbs",
-    },
-  },
-  {
-    index: 6,
-    title: "Token transfer",
-    image: tokenTransfer,
-    domains: ["Global", "DeFi"],
-    languages: ["Motoko", "Rust"],
-    level: ["Advanced"],
-    contentType: ["Code Samples", "Documentation"],
-    body: "Create a dapp that can transfer tokens to its most active users.",
-    links: {
-      action: {
-        text: "Get Code",
-        to: "https://github.com/dfinity/examples/tree/master/motoko/ledger-transfer",
-      },
-      motoko:
-        "https://github.com/dfinity/examples/tree/master/motoko/ledger-transfer",
-      rust: "https://github.com/dfinity/examples/tree/master/rust/tokens_transfer",
-      docs: "docs/current/samples/token-transfer",
-    },
-  },
-  {
-    index: 7,
-    title: "Actor reference",
-    image: actorReference,
-    domains: ["Website"],
-    languages: ["Motoko"],
-    level: ["Advanced"],
-    contentType: ["Code Samples", "Documentation"],
-    body: "Learn how the IC management canister functions as an actor (reference).",
-    links: {
-      action: {
-        text: "Get Code",
-        to: "https://github.com/dfinity/examples/tree/master/motoko/actor_reference",
-      },
-      motoko:
-        "https://github.com/dfinity/examples/tree/master/motoko/actor_reference",
-    },
-  },
-  {
-    index: 8,
-    title: "WebGL",
-    image: webgl,
-    domains: ["Gaming", "Website", "Global"],
-    languages: ["Motoko", "Rust", "Javascript"],
-    level: ["Beginner"],
-    contentType: ["Documentation"],
-    highlights: ["Gaming", "Website", "Global", "Beginner"],
-    body: "Demonstrates how to deploy a Unity WebGL game on the IC.",
-    links: {
-      action: {
-        text: "Get Code",
-        to: "https://github.com/dfinity/examples/tree/master/hosting/unity-webgl-template",
-      },
-      docs: "docs/current/samples/host-unity-webgl",
-    },
-  },
-];
+const CommunityProject = ({ project }) => {
+  return (
+    <Card
+      key={project.id}
+      image={
+        !project.image
+          ? require(`../../static/img/samples/default.gif`).default
+          : require(`../../static/img/samples/supernovaSubmissions/${project.image}`)
+              .default
+      }
+      title={project.name}
+      domain={project.domains[0]}
+      body={project.description}
+      links={project.links}
+    />
+  );
+};
 
 function Samples(): JSX.Element {
-  const { siteConfig } = useDocusaurusContext();
   const [selectedLanguages, setSelectedLanguages] = React.useState([]);
   const [selectedDomains, setSelectedDomains] = React.useState([]);
   const [selectedLevels, setSelectedLevels] = React.useState([]);
   const [selectedContentTypes, setSelectedContentTypes] = React.useState([]);
   const [selectedSortBy, setSelectedSortBy] = React.useState("Relevance");
   const [filteredSamples, setFilteredSamples] = React.useState(sampleItems);
+  const [filteredCommunitySamples, setFilteredCommunitySamples] =
+    React.useState(communityProjects);
   const [numberOfItems, setNumberOfItems] = React.useState(16);
-  const controls = useAnimation();
-  const { ref, inView } = useInView({ threshold: 0 });
-  useEffect(() => {
-    if (inView) {
-      controls.start("show");
-    }
-  }, [controls, inView]);
+  const [numberOfCommunityItems, setNumberOfCommunityItems] =
+    React.useState(40);
   resetNavBarStyle();
 
   const sortSamples = (samples) => {
@@ -226,28 +57,39 @@ function Samples(): JSX.Element {
     }
   };
 
-  useEffect(() => {
-    let tempFilteredSamples = sampleItems;
+  const filterSamples = (samples) => {
     if (selectedLanguages.length > 0) {
-      tempFilteredSamples = tempFilteredSamples.filter(({ languages }) =>
-        languages.some((item) => selectedLanguages.includes(item))
+      samples = samples.filter(({ languages }) =>
+        languages?.some((item) => selectedLanguages.includes(item))
       );
     }
     if (selectedDomains.length > 0) {
-      tempFilteredSamples = tempFilteredSamples.filter(({ domains }) =>
-        domains.some((item) => selectedDomains.includes(item))
+      samples = samples.filter(({ domains }) =>
+        domains?.some((item) => selectedDomains.includes(item))
       );
     }
     if (selectedLevels.length > 0) {
-      tempFilteredSamples = tempFilteredSamples.filter(({ level }) =>
-        level.some((item) => selectedLevels.includes(item))
-      );
+      samples = samples.filter(({ level }) => selectedLevels.includes(level));
     }
     if (selectedContentTypes.length > 0) {
-      tempFilteredSamples = tempFilteredSamples.filter(({ contentType }) =>
-        contentType.some((item) => selectedContentTypes.includes(item))
+      samples = samples.filter(({ contentType }) =>
+        contentType?.some((item) => selectedContentTypes.includes(item))
       );
     }
+    return samples;
+  };
+  useEffect(() => {
+    let tempFilteredSamples = filterSamples(communityProjects);
+    sortSamples(tempFilteredSamples);
+    setFilteredCommunitySamples([...tempFilteredSamples]);
+  }, [
+    selectedLanguages,
+    selectedDomains,
+    selectedLevels,
+    selectedContentTypes,
+  ]);
+  useEffect(() => {
+    let tempFilteredSamples = filterSamples(sampleItems);
     sortSamples(tempFilteredSamples);
     setFilteredSamples([...tempFilteredSamples]);
   }, [
@@ -259,56 +101,148 @@ function Samples(): JSX.Element {
   ]);
 
   return (
-    <Layout title={siteConfig.title} description={siteConfig.tagline}>
-      <main className={styles.main}>
-        <motion.div
-          ref={ref}
-          animate={controls}
-          initial="hidden"
-          variants={transitions.container}
-          className={styles.container}
-        >
-          <img className={styles.BGShape} src={BGCircle} alt="" />
-          <Header />
-          <motion.div variants={transitions.item}>
-            <FilterBar
-              numberOfItems={filteredSamples.length}
-              selectedLanguages={selectedLanguages}
-              setSelectedLanguages={setSelectedLanguages}
-              selectedDomains={selectedDomains}
-              setSelectedDomains={setSelectedDomains}
-              selectedLevels={selectedLevels}
-              setSelectedLevels={setSelectedLevels}
-              selectedContentTypes={selectedContentTypes}
-              setSelectedContentTypes={setSelectedContentTypes}
-              selectedSortBy={selectedSortBy}
-              setSelectedSortBy={setSelectedSortBy}
+    <Layout
+      title={"Sample Code"}
+      description={
+        "Learn how projects are built on the Internet Computer to be secure and efficient. Dive into official examples or into open source community projects to figure out how things work under the hood."
+      }
+    >
+      <Head>
+        <meta
+          property="og:image"
+          content={
+            "https://internetcomputer.org/img/shareImages/share-samples.jpeg"
+          }
+        />
+        <meta
+          name="twitter:image"
+          content={
+            "https://internetcomputer.org/img/shareImages/share-samples.jpeg"
+          }
+        />
+        <title>Sample Code</title>
+      </Head>
+      <main className="w-full overflow-hidden">
+        <AnimateSpawn variants={transitions.container}>
+          <section className="max-w-page w-9/10 mx-auto relative mt-20 md:mt-40 lg:mb-30">
+            <img
+              className="absolute pointer-events-none max-w-none w-[800px] -right-[320px] top-[-100px] md:w-[1500px]  md:right-[-700px] 2xl:left-1/2 translate-x-[200px] md:top-[-350px] z-[-1000]"
+              src={BGCircle}
+              alt=""
             />
-          </motion.div>
-          <motion.div variants={transitions.item} className={styles.cards}>
-            {filteredSamples.slice(0, numberOfItems).map((sample) => (
-              <Card
-                key={sample.index}
-                image={sample.image}
-                title={sample.title}
-                domain={sample.domains[0]}
-                body={sample.body}
-                links={sample.links}
+            <Header />
+            <motion.div variants={transitions.item} className="md:ml-1/12">
+              <FilterBar
+                numberOfItems={
+                  filteredSamples.length + filteredCommunitySamples.length
+                }
+                selectedLanguages={selectedLanguages}
+                setSelectedLanguages={setSelectedLanguages}
+                selectedDomains={selectedDomains}
+                setSelectedDomains={setSelectedDomains}
+                selectedLevels={selectedLevels}
+                setSelectedLevels={setSelectedLevels}
+                selectedContentTypes={selectedContentTypes}
+                setSelectedContentTypes={setSelectedContentTypes}
+                selectedSortBy={selectedSortBy}
+                setSelectedSortBy={setSelectedSortBy}
               />
-            ))}
-          </motion.div>
-          {filteredSamples.length > numberOfItems && (
-            <div
-              className={styles.loadMore}
-              onClick={() => setNumberOfItems(numberOfItems + 16)}
+            </motion.div>
+            <motion.div
+              variants={transitions.item}
+              className="mt-12 md:ml-1/12"
             >
-              <div className={styles.plusIcon}>
-                <PlusIcon />
+              <p className="tw-heading-6 md:tw-heading-5">Featured samples</p>
+
+              {filteredSamples.length === 0 && (
+                <p className="tw-paragraph text-black-60">
+                  No featured samples available
+                </p>
+              )}
+            </motion.div>
+            <motion.div
+              variants={transitions.item}
+              className={clsx(
+                "relative mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 lg:grid-cols-4 transition-opacity",
+                filteredSamples.length === 0 ? "" : "mt-11 mb-20"
+              )}
+            >
+              {filteredSamples.slice(0, numberOfItems).map((sample) => (
+                <Card
+                  key={sample.index}
+                  image={sample.image}
+                  title={sample.title}
+                  domain={sample.domains[0]}
+                  body={sample.body}
+                  links={sample.links}
+                />
+              ))}
+            </motion.div>
+            {filteredSamples.length > numberOfItems && (
+              <div
+                className="flex mt-20 items-center justify-center tw-heading-6 text-infinite hover:text-black-60"
+                onClick={() => setNumberOfItems(numberOfItems + 16)}
+              >
+                <div className="inline-block mr-2 h-6">
+                  <PlusIcon />
+                </div>
+                <p className="mb-0">Load more</p>
               </div>
-              <p className={styles.selectTitle}>Load more</p>
-            </div>
-          )}
-        </motion.div>
+            )}
+
+            <motion.div
+              variants={transitions.item}
+              className="mt-10 flex flex-col md:flex-row items-center relative"
+            >
+              <img
+                className="absolute pointer-events-none max-w-none w-[800px] -right-[320px] top-[-100px] md:w-[1500px]  md:right-[-700px] 2xl:left-1/2 translate-x-[200px] md:top-[-350px] z-[-1000]"
+                src={BGCircleCommunity}
+                alt=""
+              />
+              <div className="md:w-2/3 md:ml-1/12">
+                <p className="md:w-6/10 tw-heading-6 md:tw-heading-5">
+                  Community samples
+                </p>
+                <p className="md:w-6/10 tw-paragraph">
+                  The Internet Computer is home to many dapps built by the
+                  community. Check out the repos and get building!
+                </p>
+                {/*<p className="inline-flex tw-title-navigation-on-page border-black-60 border-2 border-solid py-2 px-3 rounded-xl hover:text-white hover:bg-infinite transition-colors">
+                  Submit your Repo
+                </p>*/}
+              </div>
+              <div className="w-full md:w-4/10 md:mr-1/12">
+                <p className="mt-6 md:mt-0 tw-paragraph-sm text-black-60">
+                  Disclamer: Please use the following sample code at your own
+                  risk and always do your own research.
+                </p>
+              </div>
+            </motion.div>
+            <motion.div
+              variants={transitions.item}
+              className="relative my-14 mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 lg:grid-cols-4 transition-opacity"
+            >
+              {filteredCommunitySamples
+                .slice(0, numberOfCommunityItems)
+                .map((sample) => (
+                  <CommunityProject project={sample} />
+                ))}
+            </motion.div>
+            {filteredCommunitySamples.length > numberOfCommunityItems && (
+              <div
+                className="flex mt-20 items-center justify-center tw-heading-6 text-infinite hover:text-black-60"
+                onClick={() =>
+                  setNumberOfCommunityItems(numberOfCommunityItems + 40)
+                }
+              >
+                <div className="inline-block mr-2 h-6">
+                  <PlusIcon />
+                </div>
+                <p className="mb-0">Load more</p>
+              </div>
+            )}
+          </section>
+        </AnimateSpawn>
       </main>
     </Layout>
   );

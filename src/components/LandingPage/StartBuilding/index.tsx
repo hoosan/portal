@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import styles from "@site/src/components/LandingPage/StartBuilding/index.module.css";
-import eventBG from "@site/static/img/startBuilding/event_background_image.png";
 import motokoBG from "@site/static/img/motokoPlayground.png";
 import RightArrowSVG from "@site/static/img/svgIcons/rightArrowIcon.svg";
 import BackgroundGradient from "@site/static/img/startBuilding/bgGradient.png";
@@ -17,12 +16,19 @@ import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import transitions from "@site/static/transitions.json";
 
-function Information({ title, body, link }) {
+function Information({
+  title,
+  body,
+  link,
+  classNames = [
+    styles.card,
+    styles.cardContainer,
+    styles.cardHover,
+    styles.darkHover,
+  ],
+}) {
   return (
-    <Link
-      to={link}
-      className={clsx(styles.card, styles.cardContainer, styles.cardHover)}
-    >
+    <Link to={link} className={clsx(...classNames)}>
       <div className={styles.bodyContainer}>
         <p className={styles.informationTitle}>{title}</p>
         <p className={styles.informationBody}>{body}</p>
@@ -34,7 +40,10 @@ function Information({ title, body, link }) {
 
 function Event({ title, dateRange, link }) {
   return (
-    <Link to={link} className={clsx(styles.card, styles.eventContainer)}>
+    <Link
+      to={link}
+      className={clsx(styles.card, styles.eventContainer, styles.cardHover)}
+    >
       <div className={styles.bodyContainer}>
         <p className={styles.eventDate}>{dateRange}</p>
         {title.map((titleLine, index) => (
@@ -42,12 +51,7 @@ function Event({ title, dateRange, link }) {
             {titleLine}
           </p>
         ))}
-        <p className={styles.eventDescription}>
-          Voting is now OPEN!<br />
-          Deadline: July 10 @ 11:59pm PT
-        </p>
       </div>
-      <img className={styles.eventBackground} src={eventBG} alt="" />
     </Link>
   );
 }
@@ -56,7 +60,12 @@ function MotokoPlayground({ title, body, link }) {
   return (
     <Link
       to={link}
-      className={clsx(styles.card, styles.motokoContainer, styles.cardHover)}
+      className={clsx(
+        styles.card,
+        styles.motokoContainer,
+        styles.cardHover,
+        styles.darkHover
+      )}
     >
       <div className={styles.bodyContainer}>
         <p className={styles.informationTitle}>{title}</p>
@@ -137,12 +146,16 @@ function StartBuilding() {
           body="Learn how to build on the IC by exploring samples ranging from a simple DEX, to on-chain encrypted storage, NFT minting, and a basic DAO."
           link={"/samples"}
         />
-        <Event
-          title={["Community", "Choice Award"]}
-          dateRange="Supernova Hackathon"
-          link={
-            "https://dfinity.org/supernova"
-          }
+        <Information
+          title="Bitcoin Integration"
+          body="The Internet Computer can now securely receive, hold, and send bitcoins through direct integration with the Bitcoin network. Find out how."
+          link={"/bitcoin-integration"}
+          classNames={[
+            styles.card,
+            styles.eventContainer,
+            styles.cardHover,
+            styles.cardWhite,
+          ]}
         />
         <MotokoPlayground
           title="Motoko Playground"

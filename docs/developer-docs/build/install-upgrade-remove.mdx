@@ -1,19 +1,18 @@
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import CodeBlock from '@theme/CodeBlock';
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import CodeBlock from "@theme/CodeBlock";
 
-# Installing the SDK
+# SDK のインストール
 
-You can download and install the latest version of the DFINITY Canister smart contract SDK, called `dfx`, by running the command below. The topics here provide additional information about installing, upgrading, and removing the SDK.
-
-`dfx` is natively supported on Linux or macOS 12.\* Monterey or later.
+`dfx` と呼ばれる DFINITY Canister スマートコントラクト SDK の最新バージョンを、以下のようにダウンロードしてインストールすることができます。
+`dfx` Linux か macOS 12.\* Monterey 以降をネイティブサポートしています。
 
 <Tabs>
 <TabItem value="apple" label="Install on Mac/Linux" default> 
-To install <code>dfx</code>, run
+<code>dfx</code>をインストールするには以下を実行してください。
 
 ```bash
-    sh -ci "$(curl -fsSL https://smartcontracts.org/install.sh)"
+    sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 ```
 
 </TabItem>
@@ -45,7 +44,7 @@ To install <code>dfx</code>, run
 <p>Once you have WSL installed, you can install <code>dfx</code> by running
 
 ```bash
-    sh -ci "$(curl -fsSL https://smartcontracts.org/install.sh)"
+    sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 ```
 
 </p>
@@ -55,6 +54,146 @@ To install <code>dfx</code>, run
 <h3 id="permission-denied-when-running-dfx-start-">Permission Denied when running <code>dfx start</code></h3>
 <p>Projects created from <code>dfx</code> need to be on the Linux filesystem instead of the Windows filesystem. Usually <code>cd ~</code> or <code>cd $HOME</code> in the WSL terminal will bring you to the home directory, and creating projects in there should work.</p>
 
+</TabItem>
+</Tabs>
+
+---
+
+## インストールされるもの
+
+SDK のインストールスクリプトは、ローカルコンピュータのデフォルトの場所にいくつかのコンポーネントをインストールします。 次の表では、スクリプトがインストールする開発環境のコンポーネントについて説明します:
+
+| コンポーネント | 概要                                                             | デフォルトの場所                              |
+| -------------- | ---------------------------------------------------------------- | --------------------------------------------- |
+| dfx            | DFINITY 実行コマンドラインインターフェース (CLI)                 | `/usr/local/bin/dfx`                          |
+| moc            | Motoko ランタイムコンパイラ                                      | `~/.cache/dfinity/versions/<VERSION>/moc`     |
+| replica        | Internet Computer ローカルネットワークバイナリ                   | `~/.cache/dfinity/versions/<VERSION>/replica` |
+| uninstall.sh   | SDK と全てのコンポーネントの削除スクリプト                       | `~/.cache/dfinity/uninstall.sh`               |
+| versions       | SDK の各バージョンのサブディレクトリを含むキャッシュディレクトリ | `~/.cache/dfinity/versions`                   |
+
+### versions ディレクトリに含まれる主要コンポーネント
+
+`~/.cache/dfinity/versions` ディレクトリには、SDK の各バージョンのサブディレクトリが格納されています。 各バージョンのサブディレクトリには、SDK の特定のバージョンに必要な全てのディレクトリとファイルが含まれています。 例えば、`~/.cache/dfinity/versions/0.9.3` ディレクトリの内容をリストアップすると、以下のような主要コンポーネントが表示されます。
+
+    total 349192
+    drwxr-xr-x  17 pubs  staff       544 Mar 15 11:55 .
+    drwxr-xr-x   4 pubs  staff       128 Mar 25 14:36 ..
+    drwxr-xr-x  49 pubs  staff      1568 Mar 15 11:55 base
+    drwxr-xr-x  20 pubs  staff       640 Mar 15 11:55 bootstrap
+    -r-x------   1 pubs  staff  66253292 Mar 15 11:55 dfx
+    -r-x------   1 pubs  staff  10496256 Dec 31  1969 ic-ref
+    -r-x------   1 pubs  staff   5663644 Dec 31  1969 ic-starter
+    -r-x------   1 pubs  staff      9604 Dec 31  1969 libcharset.1.0.0.dylib
+    -r-x------   1 pubs  staff     38220 Dec 31  1969 libffi.7.dylib
+    -r-x------   1 pubs  staff    668300 Dec 31  1969 libgmp.10.dylib
+    -r-x------   1 pubs  staff    958248 Dec 31  1969 libiconv.2.4.0.dylib
+    -r-x------   1 pubs  staff      4200 Dec 31  1969 libiconv.dylib
+    -r-x------   1 pubs  staff     96900 Dec 31  1969 libz.1.2.11.dylib
+    -r-x------   1 pubs  staff  15417684 Dec 31  1969 mo-doc
+    -r-x------   1 pubs  staff  14634020 Dec 31  1969 mo-ide
+    -r-x------   1 pubs  staff  15111508 Dec 31  1969 moc
+    -r-x------   1 pubs  staff  49404128 Dec 31  1969 replica
+
+### Motoko base ディレクトリ
+
+SDK の各バージョンのサブディレクトリ内にある `base` ディレクトリには、そのバージョンの SDK と互換性のある Motoko のベースライブラリモジュールが含まれています。 Motoko ベースライブラリは急速に進化しているため、インストールした SDK のバージョンにパッケージされているベースモジュールのみを使用する必要があります。
+
+### Bootstrap ディレクトリ
+
+`bootstrap` ディレクトリにはすでに非推奨となった Web サーバのコードが含まれています。 バージョン 0.7.0 以降、agent は `bootstrap` コードの代わりに HTTP ミドルウェアサーバを呼び出すことができるようになりました。 この変更により、canister は HTTP リクエストに直接応答できるようになり、従来のウェブベースのアプリケーションのように操作できるようになりました。
+
+## 最新バージョンへのアップグレード
+
+最初のインストール後に SDK の新しいバージョンがダウンロードできるようになった場合、最新の修正や拡張機能をいち早く手にするために、更新されたバージョンをできるだけ早くインストールすることを推奨します。 現在インストールされているバージョンと、ダウンロード可能な最新バージョンを比較するには、`dfx upgrade` コマンドを使用します。 より新しいバージョンの `dfx` が利用可能な場合、`dfx upgrade` コマンドによって自動的に最新バージョンをダウンロードしてインストールすることができます。
+
+なお，新しいバージョンをインストールする前に，既存のソフトウェアをアンインストールする必要はありません。 ただし，アップグレードではなくクリーンインストールを行いたい場合は，[ソフトウェアのアンインストール](#remove) で説明しているように，まず既存のソフトウェアをアンインストールしてから，ダウンロードおよびインストールコマンドを実行してください。
+
+最新リリースの機能や修正については、[リリースノート](../updates/release-notes/sdk-release-notes.md)をご覧ください。
+
+## ソフトウェアのアンインストール
+
+SDK をインストールすると、インストールスクリプトが必要なバイナリファイルをローカルディレクトリに置き、キャッシュを作成します。 `.cache` フォルダにある `uninstall` スクリプトを実行することで、ローカルコンピュータから SDK のバイナリとキャッシュを削除することができます。
+
+例えば、以下のようにします:
+
+```
+~/.cache/dfinity/uninstall.sh
+```
+
+まっさらな状態の `dfx` をすぐに再インストールしたい場合は、以下のコマンドを実行してください:
+
+```bash
+~/.cache/dfinity/uninstall.sh && sh -ci "$(curl -sSL https://internetcomputer.org/install.sh)"
+```
+
+<!--
+# Installing the SDK
+
+You can download and install the latest version of the DFINITY Canister smart contract SDK, called `dfx`, by running the command below. The topics here provide additional information about installing, upgrading, and removing the SDK.
+
+`dfx` is natively supported on Linux or macOS 12.\* Monterey or later.
+
+<Tabs>
+<TabItem value="apple" label="Install on Mac/Linux" default> 
+To install <code>dfx</code>, run
+
+```bash
+    sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
+```
+
+</TabItem>
+    <TabItem value="windows" label="Install on Windows">
+<p>There is no native support for <code>dfx</code> on Windows. However, by installing the Windows Subsystem for Linux (WSL), you can run <code>dfx</code> also on a Windows system as described below.</p>
+<h2 id="installing-wsl">Installing WSL 2</h2>
+<p>Follow Microsoft&#39;s instructions for installing the <a href="https://docs.microsoft.com/en-us/windows/wsl/install">Windows Subsystem for Linux</a>. Make sure you are running Windows 10 (version 2004 or higher) or Windows 11.</p>
+<h3 id="supported-wsl-versions">Supported WSL Versions</h3>
+<p>Theoretically, WSL 1 and WSL 2 should both allow you to run <code>dfx</code>. However, we recommend WSL 2. <a href="https://docs.microsoft.com/en-us/windows/wsl/compare-versions">WSL Comparison</a> explains the differences between WSL1 and WSL 2.</p>
+<h3 id="check-your-wsl-version">Check your WSL version</h3>
+<p>Run the command <code>wsl –list –verbose (wsl -l -v)</code> to check the Linux distributions installed on your Windows machine. Below is an example output.</p>
+
+```
+    NAME        STATE      VERSION
+    * Ubuntu    Running     2
+```
+
+<p>To learn more about the <code>wsl</code> command, check the <a href="https://docs.microsoft.com/en-us/windows/wsl/basic-commands">command reference for WSL</a>.</p>
+<h3 id="upgrade-to-wsl-2">Upgrade from WSL 1</h3>
+<p>If you have WSL 1 installed, follow the <a href="https://docs.microsoft.com/en-us/windows/wsl/install#upgrade-version-from-wsl-1-to-wsl-2">upgrade instructions</a> to upgrade to WSL 2. Basically you need to: </p>
+<ul>
+<li>Install the <a href="https://docs.microsoft.com/en-us/windows/wsl/install-manual#step-4---download-the-linux-kernel-update-package">WSL 2 Linux kernel update package</a>.</li>
+<li>Run the following command to set your Linux distributions to version 2. <code>wsl --set-version &lt;distribution name&gt; 2</code></li>
+</ul>
+<h2 id="running-linux">Running Linux</h2>
+<p>After you have WSL installed, you can launch the Linux distributions by name.</p>
+<p>For example <code>Ubuntu.exe</code> is the command to start the <code>Ubuntu</code> distribution from the command line.</p>
+<h2 id="installing-dfx">Installing DFX</h2>
+<p>Once you have WSL installed, you can install <code>dfx</code> by running
+
+```bash
+    sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
+```
+
+</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="node-js-is-not-properly-installed">Node.js is not properly installed</h3>
+<p>WSL 2 has node.js <code>10.x.x</code> installed by default. But the latest <code>dfx</code> requires node.js <code>16.0.0</code> or higher.</p>
+<h3 id="permission-denied-when-running-dfx-start-">Permission Denied when running <code>dfx start</code></h3>
+<p>Projects created from <code>dfx</code> need to be on the Linux filesystem instead of the Windows filesystem. Usually <code>cd ~</code> or <code>cd $HOME</code> in the WSL terminal will bring you to the home directory, and creating projects in there should work.</p>
+<h3 id="no-internet-access-on-wsl">No internet access on WSL</h3>
+<p>If you don’t have internet access on WSL, for instance you cannot ping any server successfully, most likely the nameserver on WSL is set to an internal WSL proxy. You can check the <code>/etc/resolv.conf</code> file to see if it’s the case. If it’s true, please follow the below steps to set to a valid nameserver: <br/ >
+<ul>
+<li>Create the <code>/etc/wsl.conf</code> file and add the below content to it, this will prevent WSL from regenerating the <code>/etc/resolv.conf</code> file after restarting. </li>
+
+```
+[network]
+generateResolvConf = false
+```
+
+<li>Modify the nameserver in the <code>/etc/resolv.conf</code> file to a valid one, for example the Google nameserver <code>8.8.8.8</code>. </li>
+<li>On Windows, restart WSL to let this fix take effect. </li>
+<code>wsl.exe --shutdown</code>
+</ul>
+</p>
 </TabItem>
 </Tabs>
 
@@ -107,9 +246,26 @@ The `bootstrap` directory contains web server code that is deprecated. Beginning
 
 If a new version of the SDK is available for download after your initial installation, you should install the updated version at your earliest convenience to get the latest fixes and enhancements as soon as possible. You can use the `dfx upgrade` command to compare the version you have currently installed against the latest version available for download. If a newer version of `dfx` is available, the `dfx upgrade` command automatically downloads and installs the latest version.
 
-Note that you don’t need to uninstall the software before installing the new version. However, if you want to perform a clean installation rather than an upgrade, you can first uninstall the software as described in [Removing the software](#remove), then re-run the download and installation command.
+Note that you don't need to uninstall the software before installing the new version. However, if you want to perform a clean installation rather than an upgrade, you can first uninstall the software as described in [Removing the software](#remove), then re-run the download and installation command.
 
 For information about the features and fixes in the latest release, see the [Release notes](../updates/release-notes/sdk-release-notes.md).
+
+## Installing a specific version
+
+The install script looks for the environment variable `DFX_VERSION` to check if it is supposed to install a specific version of the SDK or to simply install the latest version.
+If you want to install e.g. version `0.11.1` specifically, you would run this:
+
+``` bash
+DFX_VERSION=0.11.1 sh -ci "$(curl -sSL https://internetcomputer.org/install.sh)"
+```
+
+### Setting a default version
+
+If defined, `dfx` will always run the version specified in the project's `dfx.json` in the key `"dfx"`.
+For example, if your `dfx.json` contains `"dfx": "0.11.1"`, any `dfx` command you run within this project's directory will be executed by `dfx` of version `0.11.1`.
+Should the defined version not be installed (e.g. because you cloned a repo that was created for a different version than you have installed locally), `dfx` will report an error.
+
+To set a _global_ default (that gets overwritten by project-specific settings from the project's `dfx.json`), run the install script with the desired version, even if it is already installed.
 
 ## Removing the software
 
@@ -124,5 +280,6 @@ For example:
 If you are uninstalling because you want to immediately reinstall a clean version of `dfx`, you can run the following command:
 
 ``` bash
-~/.cache/dfinity/uninstall.sh && sh -ci "$(curl -sSL https://smartcontracts.org/install.sh)"
+~/.cache/dfinity/uninstall.sh && sh -ci "$(curl -sSL https://internetcomputer.org/install.sh)"
 ```
+-->

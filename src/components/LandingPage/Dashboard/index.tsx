@@ -7,10 +7,7 @@ import { animate, motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import {
   getBlockCount,
-  getBlockRate,
-  getCanisterCount,
-  getCpuCoreCount,
-  getNodeCount,
+  getTransactionRate,
 } from "@site/src/utils/network-stats";
 
 const container = {
@@ -89,17 +86,11 @@ function Statistic({ title, currentValue, tooltip }) {
 function Dashboard() {
   const [stats, setStats] = useState<{
     blockCount: number;
-    blockRate: number;
-    canisterCount: number;
-    cpuCores: number;
-    operational: boolean;
+    transactionRate: number;
     cost: number;
   }>({
     blockCount: 847458088,
-    blockRate: 35.1,
-    canisterCount: 73577,
-    cpuCores: 29650,
-    operational: true,
+    transactionRate: 0,
     cost: 0.46,
   });
   const controls = useAnimation();
@@ -111,22 +102,13 @@ function Dashboard() {
   }, [controls, inView]);
 
   const fetchData = useCallback(async () => {
-    const [blockCount, blockRate, canisterCount, cpuCores, nodeMachines] =
-      await Promise.all([
-        getBlockCount(),
-        getBlockRate(),
-        getCanisterCount(),
-        getCpuCoreCount(),
-        getNodeCount(),
-      ]);
-    const m = Number(Math.abs(blockRate * 100).toPrecision(15));
-    const roundedBlockRate = (Math.round(m) / 100) * Math.sign(blockRate);
+    const [blockCount, transactionRate] = await Promise.all([
+      getBlockCount(),
+      getTransactionRate(),
+    ]);
     setStats({
       blockCount,
-      blockRate: roundedBlockRate,
-      canisterCount,
-      cpuCores,
-      operational: nodeMachines >= 100,
+      transactionRate,
       cost: 0.46,
     });
   }, []);
@@ -151,40 +133,23 @@ function Dashboard() {
       <a className={styles.anchor} id="dashboard" />
       <div className={styles.grid}>
         <AnimatedStatistic
-          title="Block Count"
+          title="Block count"
           currentValue={stats.blockCount}
-          tooltip={"The count of blocks created since genesis."}
+          tooltip={"The total number of blocks finalized since genesis."}
           precision={0}
         />
         <Statistic
-          title="Network Status"
-          currentValue={stats.operational ? "Operational" : "Maintenance"}
-          tooltip={"The current network status of the Internet Computer."}
-        />
-        <AnimatedStatistic
-          title="Blocks/s"
-          currentValue={stats.blockRate}
-          tooltip={"The count of blocks finalized per second."}
-          precision={2}
-        />
-        <AnimatedStatistic
-          title="Chain CPUs"
-          currentValue={stats.cpuCores}
-          tooltip={"The current count of CPUs powering the Internet Computer."}
-          precision={0}
-        />
-        <AnimatedStatistic
-          title="Canisters"
-          currentValue={stats.canisterCount}
-          tooltip={"The count of live canisters on the Internet Computer."}
-          precision={0}
-        />
-        <Statistic
-          title="Data storage cost"
+          title="Smart contract memory"
           currentValue={`$${stats.cost} GB/month`}
           tooltip={
-            "The current estimated cost of storage on the Internet Computer."
+            "The cost of storing 1GB of data in a canister smart contract."
           }
+        />
+        <AnimatedStatistic
+          title="Transactions/s"
+          currentValue={stats.transactionRate}
+          tooltip={"The number of transactions being processed each second."}
+          precision={0}
         />
       </div>
       <motion.div variants={item}>
@@ -193,7 +158,9 @@ function Dashboard() {
           className={styles.actionButton}
         >
           <DashboardIcon className={styles.dashboardIcon} />
-          <span>Go to Dashboard</span>
+          <span>
+            See Internet Computer stats on dashboard.internetcomputer.org
+          </span>
         </Link>
       </motion.div>
     </motion.div>

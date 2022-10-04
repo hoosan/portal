@@ -9,9 +9,7 @@ import DfinityLogo from "../../static/img/dfinity_logo.svg";
 import CustodyGraphic from "../../static/img/token-holders/custody.svg";
 import BlobBlue from "@site/static/img/purpleBlurredCircle.png";
 import BlobWhite from "@site/static/img/whiteBlurredCircle.png";
-
 import transitions from "@site/static/transitions.json";
-
 import YoutubeIcon from "../../static/img/token-holders/social/youtube.svg";
 import ForumIcon from "../../static/img/token-holders/social/forum.svg";
 import MediumIcon from "../../static/img/token-holders/social/medium.svg";
@@ -21,6 +19,7 @@ import RedditIcon from "../../static/img/token-holders/social/reddit.svg";
 import GithubIcon from "../../static/img/token-holders/social/github.svg";
 import AnimateSpawn from "../components/Common/AnimateSpawn";
 import { resetNavBarStyle } from "@site/src/utils/reset-navbar-style";
+import Head from "@docusaurus/Head";
 
 const images = [
   {
@@ -149,6 +148,21 @@ function TokenHolders(): JSX.Element {
       title="ICP Tokens"
       description="Learn about the ICP tokens, how to stake and get involved in the governance of the Internet Computer and see how ICP can be converted to the cycles which are used for computation."
     >
+      <Head>
+        <meta
+          property="og:image"
+          content={
+            "https://internetcomputer.org/img/shareImages/share-icp-tokens.jpeg"
+          }
+        />
+        <meta
+          name="twitter:image"
+          content={
+            "https://internetcomputer.org/img/shareImages/share-icp-tokens.jpeg"
+          }
+        />
+        <title>ICP Tokens</title>
+      </Head>
       <main className="text-black relative overflow-hidden">
         <AnimateSpawn
           el={motion.img}
@@ -157,7 +171,7 @@ function TokenHolders(): JSX.Element {
           className="absolute pointer-events-none max-w-none w-[800px] -right-[370px] top-[-100px] md:w-[1500px]  md:right-[-700px] 2xl:left-1/2 translate-x-[200px] md:top-[-200px] z-[1000]"
           variants={transitions.item}
         />
-        <section className="max-w-page relative px-6 pt-12 mb-12 md:mb-36 md:px-12.5 md:mx-auto  md:pt-48 overflow-hidden">
+        <section className="max-w-page relative px-6 pt-20 mb-12 md:mb-36 md:px-12.5 md:mx-auto  md:pt-40 overflow-hidden">
           <AnimateSpawn
             className="md:w-7/10 lg:w-6/10 md:ml-1/12"
             variants={transitions.container}
@@ -479,7 +493,7 @@ function TokenHolders(): JSX.Element {
               </motion.h2>
               <motion.p className="tw-heading-6" variants={transitions.item}>
                 <a
-                  href="https://internetcomputer.org/docs/current/developer-docs/functionality/ledger/"
+                  href="https://wiki.internetcomputer.org/wiki/ICP_custody_with_Ledger_Nano"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white hover:text-white-50 hover:no-underline"
@@ -571,7 +585,7 @@ function TokenHolders(): JSX.Element {
                 </p>
                 <p className="mb-3">
                   <a
-                    href="https://dfinity.org/foundation/#team"
+                    href="https://dfinity.org"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="tw-heading-6 text-infinite hover:text-black hover:no-underline"
