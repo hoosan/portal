@@ -20,7 +20,7 @@ SDK をダウンロードしてインストールする前に、以下のこと�
 
   このチュートリアルを完了するには、**Cycle** が必要です。Cycle を入手するには ICP トークンを Cycle に変換するか、別の開発者が管理する Canister や第三者の Cycle プロバイダなど、他のソースから Cycle を入手する必要があります。このチュートリアルでは、ICP トークンを持つ台帳アカウントがあることを前提に、ICP トークンを Cycle に変換し、その Cycle を自分の **Cycle ウォレット**に転送する方法を説明します。
 
-  ICP トークンの入手については、[ICP トークンの入手方法](../../concepts/tokens-cycles#get-cycles) を参照してください。 ICP トークンを管理する Network Nervous System アプリケーションの使用方法については、[Network nervous system アプリケーション クイックスタート](../../tokenomics/token-holders/nns-app-quickstart)を参照してください。 作成したデフォルトの Cycle ウォレットの使用方法については、[デフォルトの Cycle ウォレットを使う](../build/project-setup/default-wallet) を参照してください。
+  ICP トークンの入手については、[ICP トークンの入手方法](../../concepts/tokens-cycles#get-cycles) を参照してください。 ICP トークンを管理する Network Nervous System アプリケーションの使用方法については、[Network nervous system アプリケーション クイックスタート](../../tokenomics/token-holders/nns-app-quickstart)を参照してください。 作成したデフォルトの Cycle ウォレットの使用方法については、[デフォルトの Cycle ウォレットを使う](../build/project-setup/cycles-wallet) を参照してください。
 
 ## ダウンロードとインストール
 
@@ -244,7 +244,7 @@ Cycle ウォレットを検証するには:
 
     ![cycles wallet](_attachments/cycles-wallet.png)
 
-    デフォルトの Cycle ウォレットで使用できるコマンドやメソッドの詳細については、[デフォルトの Cycle ウォレットを使う](../build/project-setup/default-wallet) を参照してください。
+    デフォルトの Cycle ウォレットで使用できるコマンドやメソッドの詳細については、[デフォルトの Cycle ウォレットを使う](../build/project-setup/cycles-wallet) を参照してください。
 
 ## アプリケーションの登録、ビルド、およびデプロイ
 
@@ -364,7 +364,7 @@ Motoko の使い方や Internet Computer ブロックチェーン向けの Dapps
 
 - [Build on the IC](../build/) ローカルの Canister 実行環境を使用して、シンプルな Dapps を構築するためのチュートリアルです。
 
-- [What is Candid?](../build/languages/candid/candid-concepts) インターフェース記述言語がどのようにサービスの相互運用性とコンポーザビリティを可能にするかを学びます。
+- [What is Candid?](../build/candid/candid-concepts.md) インターフェース記述言語がどのようにサービスの相互運用性とコンポーザビリティを可能にするかを学びます。
 
 - [Motoko Overview](../build/cdks/motoko-dfinity/overview.md) Motoko についての機能と構文について学ぶことができます。
 

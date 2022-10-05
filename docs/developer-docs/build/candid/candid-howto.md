@@ -147,7 +147,7 @@ service : {
 
 Candid の Service 記述ファイルを自動生成する実験的な機能もあります。例として、こちらの [テストケース](https://github.com/dfinity/candid/blob/master/rust/candid/tests/types.rs#L99)をご覧ください。
 
-Rust で Candid Serivce や Canister を作成するための追加情報やライブラリについては、 [Candid クレート](https://docs.rs/candid/)のドキュメントや、[Rust CDK のサンプル](https://github.com/dfinity/cdk-rs/tree/next/examples)や、[Rust のチュートリアル](../rust/rust-intro)を参照してください。
+Rust で Candid Serivce や Canister を作成するための追加情報やライブラリについては、 [Candid クレート](https://docs.rs/candid/)のドキュメントや、[Rust CDK のサンプル](https://github.com/dfinity/cdk-rs/tree/next/examples)や、[Rust のチュートリアル](../cdks/cdk-rs-dfinity/index.md)を参照してください。
 
 ## JavaScript で Service と対話する
 

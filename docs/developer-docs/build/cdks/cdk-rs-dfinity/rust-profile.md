@@ -109,7 +109,7 @@ Candid は、Internet Computer ブロックチェーン で動作する Canister
 
 Candid ファイルをプロジェクトに追加することで、Rust で定義されたデータが Internet Computer ブロックチェーン 上で安全に実行されるために適切に変換されることを保証します。
 
-Candid インターフェース記述言語の構文の詳細は [_Candid ガイド_](../candid/candid-intro))か [Candid クレートのドキュメント](https://docs.rs/candid/)をご覧ください。
+Candid インターフェース記述言語の構文の詳細は [_Candid ガイド_](../../candid/candid-intro.md))か [Candid クレートのドキュメント](https://docs.rs/candid/)をご覧ください。
 
 Candid ファイルを更新するには、以下のようにします:
 
@@ -353,9 +353,9 @@ This program supports the following functions:
 
 This tutorial provides a simple example of how you can use the Rust CDK interfaces and macros to simplify writing dapps in Rust for the Internet Computer blockchain.
 
-This tutorial demonstrates: 
--   How to represent slightly more complex data—in the form of a profile as a `record` and an `array` of keywords—using the Candid interface description language. 
--   How to write a simple search function with partial string matching. 
+This tutorial demonstrates:
+-   How to represent slightly more complex data—in the form of a profile as a `record` and an `array` of keywords—using the Candid interface description language.
+-   How to write a simple search function with partial string matching.
 -   How profiles are associated with a specific principal.
 
 ## Before you begin

@@ -561,7 +561,7 @@ Candid は、上位のユースケースをサポートするように設計さ�
 
 - `oneway` は、この関数が何のレスポンスも返さないことを示します。これは、Fire and Forget シナリオ（訳註：イベントハンドラなど、非同期呼び出しで関数を投げ放す場合）を想定しています。
 
-引数の命名について詳しく知りたい方は、[引数と返り値の命名](../developer-docs/build/languages/candid/candid-concepts#引数と返り値の命名)を参照してください。
+引数の命名について詳しく知りたい方は、[引数と返り値の命名](../developer-docs/build/candid/candid-concepts.md#引数と返り値の命名)を参照してください。
 
 型の構文  
 ``` candid
@@ -582,7 +582,7 @@ func "aaaaa-aa".create_canister
 ```
 
 サブタイプ  
-[Service のアップグレード](../developer-docs/build/languages/candid/candid-concepts#service-のアップグレード)のルールで説明されているように、以下の修正は、ある func 型をそのサブタイプに変更します：
+[Service のアップグレード](../developer-docs/build/candid/candid-concepts.md#service-のアップグレード)のルールで説明されているように、以下の修正は、ある func 型をそのサブタイプに変更します：
 
 - 返り値の型のリストを拡張することができます。
 
@@ -638,7 +638,7 @@ type F4 = shared query () -> async Text;
 
 サービスは、それぞれの関数（[`func` 型](#func----型)を使用）だけでなく、サービス全体への参照を渡したい場合があります。このような場合には、Candid の型はサービスの（完全な）インターフェースを宣言するために使うことができます。
 
-service 型の構文に関する詳細は、[Candid Service の記述](../developer-docs/build/languages/candid/candid-concepts#service-記述ファイルの生成)を参照してください。
+service 型の構文に関する詳細は、[Candid Service の記述](../developer-docs/build/candid/candid-concepts.md#service-記述ファイルの生成)を参照してください。
 
 型の構文  
 ``` candid
@@ -660,7 +660,7 @@ service "aaaaa-aa"
 サブタイプ  
 service 型のサブタイプとは、追加のメソッドが付与されたり、既存のメソッドの型がサブタイプに変更されている service 型です。
 
-これは、[Service のアップグレード](../developer-docs/build/languages/candid/candid-concepts#service-のアップグレード)内のルールにて説明されているのと同じ原理に基づくものです。
+これは、[Service のアップグレード](../developer-docs/build/candid/candid-concepts.md#service-のアップグレード)内のルールにて説明されているのと同じ原理に基づくものです。
 
 スーパータイプ  
 service 型のスーパータイプとは、一部のメソッドが削除されたり、既存のメソッドの型がスーパータイプに変更されている service 型です。

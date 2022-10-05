@@ -221,7 +221,7 @@ Internet Computer の Dapps 開発は**プロジェクト**として始めます
 
 - [On-chain deployment](network-quickstart) Cycle を所持し、Internet Computer ブロックチェーンのメインネットにアプリケーションをデプロイします。
 
-- [What is Candid?](../build/languages/candid/candid-concepts) Candid インターフェース記述言語がどのようにサービスの相互運用性とコンポーザビリティを可能にするかを学びます。
+- [What is Candid?](../build/candid/candid-concepts.md) Candid インターフェース記述言語がどのようにサービスの相互運用性とコンポーザビリティを可能にするかを学びます。
 
 - [Motoko at-a-glance](../build/cdks/motoko-dfinity/overview.md) Motoko についての機能と構文について学ぶことができます。
 
