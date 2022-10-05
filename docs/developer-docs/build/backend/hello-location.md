@@ -180,7 +180,7 @@ Dapp をローカルでデプロイするには以下のようにします。
 
         dfx canister call favorite_cities location '(vec {"San Francisco";"Paris";"Rome"})'
 
-    このコマンドは、Candid インターフェース記述の構文にある `(vec { val1; val2; val3; })` を用いて、値のベクトルを返します。 インターフェイス記述言語 Candid の詳細については、[Candid](../languages/candid/candid-intro.md) 言語ガイドをご覧ください。
+    このコマンドは、Candid インターフェース記述の構文にある `(vec { val1; val2; val3; })` を用いて、値のベクトルを返します。 インターフェイス記述言語 Candid の詳細については、[Candid](../candid/candid-intro.md) 言語ガイドをご覧ください。
 
     このコマンドは、以下のような出力を表示します。
 

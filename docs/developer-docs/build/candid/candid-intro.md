@@ -22,3 +22,5 @@ This *Candid Guide* explains what Candid is and how you can use it when developi
 -   The [How to](candid-howto.md) section explains how to perform typical tasks.
 
 -   The [Reference](../../../references/candid-ref.md) section provides links to Candid tools and libraries and detailed reference information about Candid supported types.
+
+-->

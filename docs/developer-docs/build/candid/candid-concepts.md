@@ -150,7 +150,7 @@ service address_book : {
 
 このアノテーションは、`get_address` メソッドが Internet Computer の **クエリコール** として呼び出されることを示しています。
 
-[クエリメソッドとアップデートメソッド](../../../../concepts/canisters-code.md#query-and-update-methods) で説明したように、クエリはコンセンサスを介さずに Canister スマートコントラクトから情報を取得するための効率的な方法ですので、メソッドをクエリとして識別できることは、Internet Computer とやり取りする際に Candid を用いる重要なメリットの１つです。
+[クエリメソッドとアップデートメソッド](../../../concepts/canisters-code.md#query-and-update-methods) で説明したように、クエリはコンセンサスを介さずに Canister スマートコントラクトから情報を取得するための効率的な方法ですので、メソッドをクエリとして識別できることは、Internet Computer とやり取りする際に Candid を用いる重要なメリットの１つです。
 
 ## エンコードとデコード
 
@@ -542,3 +542,5 @@ In other languages, like Rust or C, you can still develop your service using the
 For examples of how to write Candid service descriptions for Rust programs, see the [Rust CDK examples](https://github.com/dfinity/cdk-rs/tree/next/examples) and the [Rust tutorials](../cdks/cdk-rs-dfinity/index.md).
 
 Regardless of the host language you use, it is important to know the mapping between host language types and Candid types. In the [Supported types](../../../references/candid-ref.md) reference section, you’ll find Candid type mapping described for Motoko, Rust, and JavaScript.
+
+-->
