@@ -1,6 +1,6 @@
 [submodule "submodules/sdk"]
 	path = submodules/sdk
-	url = https://github.com/dfinity/sdk.git
+	url = https://github.com/Japan-DfinityInfoHub/sdk.git
 [submodule "submodules/motoko"]
 	path = submodules/motoko
 	url = https://github.com/dfinity/motoko.git

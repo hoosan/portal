@@ -433,3 +433,5 @@ To build and deploy the dapp locally:
         dfx canister install --all
 
 8.  Test functions in the dapp from the command-line or in a browser.
+
+-->

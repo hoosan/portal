@@ -33,6 +33,7 @@ jobs:
         run: netlify deploy --dir=build --prod
 
   deploy-ic:
+    if: ${{ false }} # Disabled by Japan-DfinityInfoHub
     name: "Deploy to IC"
     runs-on: ubuntu-latest
 
