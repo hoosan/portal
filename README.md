@@ -1,3 +1,103 @@
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
+[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors)
+
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+# （非公式） Dfinity ドキュメント翻訳プロジェクト
+
+https://dfinityjp.netlify.app
+
+## 翻訳手順
+
+翻訳の状況は、[翻訳の概要と進捗状況](https://github.com/Japan-DfinityInfoHub/portal/issues/1)の issues を確認してください。
+
+### 必要な環境
+
+- Node v16
+
+### 手順 1: 翻訳を始める準備
+
+まずは、このリポジトリを右上から Fork してください。
+
+そして、リポジトリをクローンします。`your` には、あなたの GitHub のユーザーネームを入れてください。
+
+```
+$ git clone https://github.com/your/portal
+$ cd docs
+```
+
+翻訳作業を行うためのブランチを作成します。
+どのファイルを翻訳するかは、[翻訳の概要と進捗状況](https://github.com/Japan-DfinityInfoHub/portal/issues/1)の翻訳ページ一覧を確認して、翻訳したい箇所をコメントしてください。
+
+ここでは、例として `introduction/pages/welcome.md` を翻訳するためのブランチを作成します。
+
+```
+$ git checkout -b introduction/pages/welcome.md
+```
+
+これで、翻訳を始める準備は完了です。エディタを使って、翻訳箇所のファイルを編集します。
+
+### 手順 2: 翻訳
+
+[スタイルガイド](https://github.com/Japan-DfinityInfoHub/docs/blob/main/styleguide.md)に目を通してください。
+わからないことがあれば [Discord](https://discord.gg/ewAxzfTURX) の#ドキュメント翻訳チャネルで質問してください。
+
+エディタとしては [VSCode](https://azure.microsoft.com/ja-jp/products/visual-studio-code/) を推奨します。
+
+### 手順 3: 翻訳内容の確認
+
+翻訳した文章を確認するために、手順 1 で導入した Antora を用いてローカルビルドします。
+
+```
+git submodule update --init
+npm install
+npm start
+```
+
+のコマンドを叩くと、http://localhost:3000 でドキュメントを確認することができます。
+
+### 手順 4: 翻訳内容のプルリクを出す
+
+翻訳が終わったら、ローカルリポジトリにコミットしたあと、自分のリモートリポジトリにプッシュします。
+コミットが複数になった場合、なるべく[１つのコミットにまとめて](https://dev.classmethod.jp/articles/git-rebase-fixup/)いただければありがたいですが、難しければそのままでも OK です。
+
+```
+$ git add modules/introduction/pages/welcome.md
+$ git commit -m "translated: introduction/pages/welcome.md"
+$ git push origin introduction/pages/welcome.md
+```
+
+最後に、Github から[プルリクを出します](https://qiita.com/samurai_runner/items/7442521bce2d6ac9330b)。
+このとき、出し先が Japan-DfinityInfoHub/portal になるようにします。
+
+間違えて本家の dfinity/docs に出してしまわないように気をつけてください。
+
+以上です！メンテナーがレビューをして問題なければマージされます。
+
+## Contributors ✨
+
+Special thanks to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/hoosan"><img src="https://avatars.githubusercontent.com/u/40290137?v=4" width="100px;" alt=""/><br /><sub><b>hoosan</b></sub></a></td>
+    <td align="center"><a href="https://github.com/tokuryoo"><img src="https://avatars.githubusercontent.com/u/92770268?v=4" width="100px;" alt=""/><br /><sub><b>tokuryoo</b></sub></a></td>
+    <td align="center"><a href="https://github.com/gelgoog999"><img src="https://avatars.githubusercontent.com/u/84751541?v=4" width="100px;" alt=""/><br /><sub><b>gelgoog999</b></sub></a></td>
+    <td align="center"><a href="https://github.com/pontagon333"><img src="https://avatars.githubusercontent.com/u/87188356?v=4" width="100px;" alt=""/><br /><sub><b>pontagon333</b></sub></a></td>
+    <td align="center"><a href="https://github.com/numtet"><img src="https://avatars.githubusercontent.com/u/11040952?v=4" width="100px;" alt=""/><br /><sub><b>numtet</b></sub></a></td>
+    <td align="center"><a href="https://github.com/hokosugi"><img src="https://avatars.githubusercontent.com/u/38212038?v=4" width="100px;" alt=""/><br /><sub><b>hokosugi</b></sub></a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
 <img src="https://user-images.githubusercontent.com/15371828/158857061-8fa8d079-d33f-4ed2-88aa-56d452d238d8.svg" align="right" alt="DFINITY logo" width="270">
 
 # Internet Computer Developer Portal
