@@ -39,7 +39,7 @@ IC 上で Defi アプリケーションを実現するために、Canister は�
 ## トークンの送金
 
 このサンプルコードは、Dapp が最もアクティブなユーザーにトークンを転送する方法を示しています。  
-[Motoko](https://github.com/dfinity/examples/tree/master/motoko/ledger-transfer) • [Rust](https://github.com/dfinity/examples/tree/master/rust/tokens_transfer) • [Technical docs](tokentransfer)
+[Motoko](https://github.com/dfinity/examples/tree/master/motoko/ledger-transfer) • [Rust](https://github.com/dfinity/examples/tree/master/rust/tokens_transfer) • [Technical docs](token-transfer)
 
 ## Unity WebGL
 

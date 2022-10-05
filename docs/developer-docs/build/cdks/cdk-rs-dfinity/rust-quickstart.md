@@ -129,7 +129,7 @@ Candid は、Internet Computer ブロックチェーンで動作する Canister 
 
 Candid ファイルをプロジェクトに追加することで、Rust で定義されたデータが Internet Computer ブロックチェーン上で安全に実行されるために適切に変換されることを保証します。
 
-Candid インターフェース記述言語の構文の詳細は [_Candid ガイド_](../candid-guide/candid-intro)か [Candid クレートのドキュメント](https://docs.rs/candid/)をご覧ください。
+Candid インターフェース記述言語の構文の詳細は [_Candid ガイド_](../../candid/candid-intro.md)か [Candid クレートのドキュメント](https://docs.rs/candid/)をご覧ください。
 
 ```did
 service : {
@@ -406,13 +406,13 @@ To register, build, and deploy:
     The wallet canister on the "local" network for user "default" is "rwlgt-iiaaa-aaaaa-aaaaa-cai"
     Deploying all canisters.
     Creating canisters...
-    
+
     Creating canister rust_hello_backend...
     rust_hello_backend canister created with canister id: rrkah-fqaaa-aaaaa-aaaaq-cai
-    
+
     Creating canister rust_hello_frontend...
     rust_hello_frontend canister created with canister id: ryjl3-tyaaa-aaaaa-aaaba-cai
-    
+
     Building canisters...
 
     ...

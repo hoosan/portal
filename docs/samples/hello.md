@@ -8,7 +8,7 @@
 
 これは、よくある _hello world_ に相当する Dapp で、 [IC 上のここで](https://6lqbm-ryaaa-aaaai-qibsa-cai.ic0.app/) 動作しているのを見ることができます。
 
-このサンプルは、以下の説明に従って `dfx new` を実行して作成されたデフォルトのプロジェクトに基づいています。 [Motoko](../quickstart/local-quickstart.xml) と [Rust](../rust-guide/rust-quickstart.xml) のクイックスタートドキュメント。
+このサンプルは、クイックスタートドキュメントで説明した、`dfx new` を実行して作成されるデフォルトのプロジェクトに基づいています。
 
 サンプルコードはこちらの github の [samples](https://github.com/dfinity/examples) リポジトリの、 [Motoko](https://github.com/dfinity/examples/tree/master/motoko/hello) と [Rust](https://github.com/dfinity/examples/tree/master/rust/hello) のどちらでも見ることができます。
 
