@@ -40,14 +40,14 @@ $ git checkout -b introduction/pages/welcome.md
 
 ### 手順 2: 翻訳
 
-[スタイルガイド](https://github.com/Japan-DfinityInfoHub/docs/blob/main/styleguide.md)に目を通してください。
+[スタイルガイド](https://github.com/Japan-DfinityInfoHub/portal/blob/master/styleguide.md)に目を通してください。
 わからないことがあれば [Discord](https://discord.gg/ewAxzfTURX) の#ドキュメント翻訳チャネルで質問してください。
 
 エディタとしては [VSCode](https://azure.microsoft.com/ja-jp/products/visual-studio-code/) を推奨します。
 
 ### 手順 3: 翻訳内容の確認
 
-翻訳した文章を確認するために、手順 1 で導入した Antora を用いてローカルビルドします。
+翻訳した文章を確認します。
 
 ```
 git submodule update --init
@@ -74,6 +74,48 @@ $ git push origin introduction/pages/welcome.md
 間違えて本家の dfinity/docs に出してしまわないように気をつけてください。
 
 以上です！メンテナーがレビューをして問題なければマージされます。
+
+## adoc ファイルから md ファイルへの変換
+
+以前のドキュメントは adoc ファイルで作成されており、すでに翻訳した内容を新しいドキュメントに移行するために markdown 形式への変換が必要な場合は以下の手順に従います。
+
+1. ローカルの docs リポジトリを最新にする
+
+以前のドキュメント(adoc ファイル)は
+
+https://github.com/Japan-DfinityInfoHub/docs
+
+で管理されています。
+`git clone` するか、すでにしてある場合は `git pull` コマンド等を用いて、ローカルリポジトリを最新にします。
+
+```
+git pull
+```
+
+2. 変換スクリプトを実行する
+
+`convert.sh` という変換スクリプトがリポジトリのルートディレクトリに含まれていますので、以下のようにファイルを変換します。
+ここでは例として、`modules/quickstart/pages/1-quickstart.adoc` を md ファイルに変換します。
+
+```
+bash convert.sh modules/quickstart/pages/1-quickstart.adoc
+```
+
+変換前のファイルと同じディレクトリに `modules/quickstart/pages/1-quickstart.md` が作成されます。
+ここまでが docs リポジトリ側での準備です。
+
+3. 翻訳したいドキュメントを修正する。
+
+次に、portal リポジトリ側で、対応する md ファイルを開きます。
+変換スクリプトではコメントアウトされた文章は削除されてしまうので、[スタイルガイド](https://github.com/Japan-DfinityInfoHub/portal/blob/master/styleguide.md) に従って原文を `<!--` と `-->` で囲んでコメントアウトしてください（原文に更新があった場合に変更箇所を参照できるように、原文のコメントアウトがされていることは重要です）。
+
+原文をコメントアウトしたら、先ほど変換した md ファイルの中身をコピーして貼り付けてください。
+
+原文を確認し、翻訳後の日本語が原文と対応していることをご確認ください。
+
+### 注意点
+
+変換スクリプトは、テーブルの変換先が html になってしまいますので、原文に合わせて md のテーブル書式に直してください。
 
 ## Contributors ✨
 
