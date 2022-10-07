@@ -67,7 +67,7 @@ Canister の Candid UI で、`get_p2pkh_address` の下にある "Call" ボタ�
 ## ビットコインの受け取り
 
 Canister がデプロイされ、ビットコインアドレスが得られたので、いよいよテストネットのビットコインを受け取ります。
-[こちら]((https://bitcoinfaucet.uo1.net/) などのビットコインフォーセット（蛇口）からビットコインを受け取ることができます。
+[こちら](https://bitcoinfaucet.uo1.net/) などのビットコインフォーセット（蛇口）からビットコインを受け取ることができます。
 
 アドレスを入力し、"Send testnet bitcoins" をクリックしてください。
 以下の例では、Canister は 0.0001 テスト BTC を受け取ることになります。
