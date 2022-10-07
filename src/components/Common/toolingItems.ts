@@ -76,6 +76,20 @@ export const dfinityToolingItems = [
       "A simple package manager for the Motoko programming language.",
     links: { github: "https://github.com/dfinity/vessel" },
   },
+  {
+    title: "Stable Structures",
+    tags: ["database", "development", "library"],
+    description:
+      "A collection of scalable and upgrade-safe data structures for Rust.",
+    links: { github: "https://github.com/dfinity/stable-structures" },
+  },
+  {
+    title: "Hardware Wallet CLI",
+    tags: ["CLI"],
+    description:
+      "A CLI to interact with the Internet Computer App on Ledger Nano S/X devices.",
+    links: { github: "https://github.com/dfinity/hardware-wallet-cli" },
+  },
 ];
 export const communityToolingItems = [
   {
@@ -190,5 +204,19 @@ export const communityToolingItems = [
     description:
       "Communicate with IC directly using NodeJs. Automatic service discovery.",
     links: {github:"https://github.com/infu/icblast"},
+  },
+  {
+    title: "ic-py",
+    tags: ["library"],
+    description:
+      "A Python agent library for interfacing with the Internet Computer.",
+    links: { github: "https://github.com/rocklabs-io/ic-py" },
+  },
+  {
+    title: "ic-web3",
+    tags: ["library", "development"],
+    description:
+      "An Ethereum RPC client for canisters on the Internet Computer to interact with EVM networks.",
+    links: { github: "https://github.com/rocklabs-io/ic-web3" },
   },
 ];
