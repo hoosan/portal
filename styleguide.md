@@ -46,8 +46,7 @@ Dfinity 本家のドキュメントに更新があった場合に追従が容易
 元の文
 
 ```
-[[for-first-timers]]
-== For: First-Timers
+## For: First-Timers
 The Internet Computer is a blockchain that runs at web speed with unbounded capacity.
 
 As a crash course in blockchain history, Bitcoin created digital gold. Then, in the next step of the evolution, Ethereum developed smart contracts and pioneered DeFi and NFT use cases.
@@ -56,11 +55,7 @@ The Internet Computer is the third major blockchain innovation — a blockchain 
 
 Interested in learning more? Check out the following resources:
 
-* link:https://www.youtube.com/watch?v=YWHTNr8RZHg&list=PLuhDt1vhGcrf4DgKZecU3ar_RA1cB0vUT&index=17&ab_channel=DFINITY[Primer to the Internet Computer], a high-level overview of the Internet Computer in under 10 minutes
-* link:https://medium.com/dfinity[The Internet Computer Review], our blog covering updates for the Internet Computer
-* link:https://thereboot.com/[The Reboot], our tech publication exploring issues with the current internet
-
-Follow us on the official link:https://twitter.com/dfinity[DFINITY Twitter] for the latest updates.
+- [Primer to the Internet Computer](https://www.youtube.com/watch?v=YWHTNr8RZHg&list=PLuhDt1vhGcrf4DgKZecU3ar_RA1cB0vUT&index=17&ab_channel=DFINITY), a high-level overview of the Internet Computer in under 10 minutes
 ```
 
 翻訳後
