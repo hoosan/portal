@@ -11,7 +11,7 @@ cardImageFit: cover
 IC の Canister には、以下の特徴があります。
 
 - ブロックチェーンから直接ユーザーインターフェースを提供できます。
-- 低料金で数ギガバイトのメモリを保持することができ、 低コストで相当量の演算を実行、演算相応額を自身で支払うことができます（[リバースガス・モデル](https://internetcomputer.org/features/reverse-gas/)を御覧ください）。
+- 低料金で数ギガバイトのメモリを保持することができ、低コストで相当量の演算を実行し、演算相応額を自身で支払うことができます（[リバースガス・モデル](https://internetcomputer.org/features/reverse-gas/)を御覧ください）。
 
 エンジニアは、WebAssembly にコンパイルできる任意の言語で Canister を実装することができます。SDK は現在、[Rust](/docs/current/developer-docs/build/cdks/cdk-rs-dfinity/) と [Motoko](/docs/current/developer-docs/build/cdks/motoko-dfinity/motoko/) で利用することができます。
 
