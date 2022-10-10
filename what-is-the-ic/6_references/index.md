@@ -5,7 +5,7 @@ cardImageFit: cover
 ---
 
 - すべての IC コンポーネントがどのように機能し、組み合わされているかをより深く理解するための適当なリソースは、 [How it Works](/how-it-works/) ページと [ホワイトペーパー](https://internetcomputer.org/whitepaper.pdf)です。
-- IC のすべてのソースコードは、[IC レポジトリ](https://github.com/dfinity/ic) で公開されています。
+- IC のすべてのソースコードは、[IC リポジトリ](https://github.com/dfinity/ic) で公開されています。
 - IC のサブネット、ノード、ノードプロバイダ、Canister、NNS プロポーザル、投票、ICP トランザクションなどの情報は、[ダッシュボード](https://dashboard.internetcomputer.org/)で見ることができます。
 - Motoko は、IC 上のスマートコントラクトに特化した画期的なプログラミング言語です。[Motoko](https://github.com/dfinity/motoko) をチェックしてください。
 
