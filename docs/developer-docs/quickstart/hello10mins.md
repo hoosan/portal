@@ -1,19 +1,18 @@
 # "Hello World" Dapp を10分間でデプロイする
 
 "Hello World" Dapp を Internet Computer (IC) に 10 分以内でデプロイするためのクイックチュートリアルです。アプリのデプロイに必要な知識はターミナルの使い方のみです。
-<!-- Code editing knowledge is not necessary. -->
 
-始める前に、オンチェーンで動作しているこの Dapp のバージョンを見てみましょう：<https://6lqbm-ryaaa-aaaai-qibsa-cai.ic0.app/>
+始める前に、この Dapp がオンチェーンで動作しているのを見てみましょう：<https://6lqbm-ryaaa-aaaai-qibsa-cai.ic0.app/>
 
 このチュートリアルでは、次のことを学びます：
 
 1.  Canister SDK をインストールする
 2.  ローカルで Dapp をビルドしてデプロイする
-3.  Dapp の動力（ガス）となる無料 Cycle を収集する
+3.  Dapp の動力（ガス）となる無料 Cycle を受け取る
 4.  Cycle ウォレットを作成し、そこから他の Dapp に Cycle を転送する
 5.  Dapp をオンチェーンにデプロイする
 
-このシンプルな `Hello` Dapp は、2つの [Çanister スマートコントラクト](https://wiki.internetcomputer.org/wiki/Glossary#C)（バックエンド用とフロントエンド用）で構成されています。このアプリはテキストを入力として受け取り、greeding を返します。例えば、Canister SDK（Canisterのインストール方法は後述）を使ってコマンドラインで `greet` メソッドに `Everyone` というテキスト引数を与えて呼び出すと、ターミナルに `Hello, Everyone!` と返されます：
+このシンプルな `Hello` Dapp は、2つの [Canister スマートコントラクト](https://wiki.internetcomputer.org/wiki/Glossary#C)（バックエンド用とフロントエンド用）で構成されています。このアプリはテキストを入力として受け取り、挨拶（ greeting ）を返します。例えば、Canister SDK（Canisterのインストール方法は後述）を使ってコマンドラインで `greet` メソッドに `Everyone` というテキスト引数を与えて呼び出すと、ターミナルに `Hello, Everyone!` と返されます：
 
 ``` bash
 $ dfx canister call hello_backend greet Everyone
@@ -77,17 +76,6 @@ node.js をインストールする方法はたくさんあります。Linux で
 
 ## 2. プロジェクトを生成する（１分）
 
-<!-- After the SDK is installed, create the default "Hello World" project with two canisters (backend and frontend).
-
-The SDK comes with a starter default project that has a backend in Motoko and frontend code in HTML, CSS, and JS. Developers can use this default project to start their own dapps. In this tutorial, we will build and deploy this bundled project, so there is no need to download any other dapp code. -->
-
-<!-- The `dfx new hello` command uses the template code to create a new project directory named `hello`, template files, and a new `hello` Git repository for your project. You can create many projects with many names. -->
-
-<!-- This is roughly analogous in Web2 to Rail’s `rails new`, React.js’s `create-react-app`, or Rust’s `cargo new`. -->
-
-<!-- To create a new project for your first application: -->
-
-<!-- ### 2.1 Open a Terminal and Create a new project named "hello" -->
 
 `dfx` プロジェクトは、ソースコードや設定ファイルを含むアーティファクトのセットであり、Canister にコンパイルすることができます。以下を実行します： 
 
@@ -101,19 +89,11 @@ dfx new hello
 
 ![dfx new](_attachments/dfx-new-hello-2.png)
 
-<!-- ### 2.2 Move to your project directory
-
-``` bash
-cd hello
-```
-
-Your directory should look like this: -->
 
 "hello world” Canister と新しい `hello` Git リポジトリに必要なアーティファクトは、`hello` プロジェクトディレクトリにあります。ディレクトリはこのようになっているはずです：
 
 ![cd new](_attachments/cd-hello.png)
 
-<!-- ### 2.3 Understanding your dapp project -->
 
 `hello`プロジェクトは、2つの Canister で構成されています：
 
@@ -144,9 +124,6 @@ Your directory should look like this: -->
 
 ### 実行環境の起動する
 
-<!-- Navigate to the root directory for your project, if necessary. In this tutorial, you should be in the folder `hello` because that is the name of the project created in section 2 above.
-
-Start the local canister execution environment in Terminal A: -->
 
 ターミナル A で、プロジェクトのルートディレクトリ `hello` に移動し、次のように実行します：
 
@@ -171,11 +148,6 @@ dfx start
 これは Canister 実行環境のみなので、このデプロイはメインネットへのデプロイよりも手順が少ないですが、[Cycle](../../concepts/tokens-cycles.md) が必要です。
 :::
 
-<!-- To deploy your first dapp locally:
-
-#### 3.2.1 Check that you are still in the root directory for your project, if needed.
-
-Ensure that node modules are available in your project directory, if needed, by running the following command (it does not hurt to run this many times): -->
 
 ターミナル B で、プロジェクトのルートディレクトリ `hello` に移動します。必要なすべての node モジュールをインストールするには、以下のコマンドを実行します：
 
@@ -227,9 +199,6 @@ Dapp がデプロイされ、コマンドラインで動作確認ができたの
 npm start
 ```
 
-<!-- ### 3.4.2 Test the dapp locally in the browser
-
-To see your dapp running locally in the browser on http://localhost:8080. -->
 
 ブラウザを開き、<http://localhost:8080/> に移動してください。
 
@@ -297,7 +266,6 @@ Cycle に関する実用的な注意点：
 
 ![hello dapp and cycles wallet](_attachments/3-canisters-hello-dapp.png)
 
-<!-- ### 4.2 Check the connection to the Internet Computer (terminal B) -->
 
 サニティチェックとして、Internet Computer のブロックチェーンの現状と接続の可否を確認することで、IC への接続が安定しているかどうかを確認するとよいでしょう：
 
@@ -649,6 +617,7 @@ This tutorial works best with a node.js version higher than `16.*.*`.
 * Node Package Manager (NPM). (This comes packaged with Node, but you may want to upgrade with `npm i -g npm`) 
 * Node Version Manager (NVM), see [installing NVM](https://github.com/nvm-sh/nvm#installing-and-updating).
 * Once you have NVM, install the latest stable build with `nvm install --lts` -->
+
 <!--
 ## 2. Create a project (1 min)
 
@@ -663,6 +632,7 @@ The SDK comes with a starter default project that has a backend in Motoko and fr
 <!-- To create a new project for your first application: -->
 
 <!-- ### 2.1 Open a Terminal and Create a new project named "hello" -->
+
 <!--
 A `dfx` project is a set of artifacts, including source code and configuration files, that can be compiled to a canister. By running 
 
@@ -683,12 +653,14 @@ cd hello
 ```
 
 Your directory should look like this: -->
+
 <!--
 The `hello` project directory includes the artifacts required for a "hello world" canister and a new `hello` Git repository. Your directory should look like this:
 
 ![cd new](_attachments/cd-hello.png)
 
 <!-- ### 2.3 Understanding your dapp project -->
+
 <!--
 The `hello` project is composed of two canisters:
 
@@ -722,6 +694,7 @@ To distinguish the two terminals in this tutorial, terminal A has a dark blue ba
 <!-- Navigate to the root directory for your project, if necessary. In this tutorial, you should be in the folder `hello` because that is the name of the project created in section 2 above.
 
 Start the local canister execution environment in Terminal A: -->
+
 <!--
 In terminal A, navigate to the root directory `hello` of our project and run
 
@@ -751,6 +724,7 @@ Since this is only a canister execution environment, this deployment has fewer s
 #### 3.2.1 Check that you are still in the root directory for your project, if needed.
 
 Ensure that node modules are available in your project directory, if needed, by running the following command (it does not hurt to run this many times): -->
+
 <!--
 In terminal B, navigate to the root directory `hello` of our project. Install all the necessary node modules by running
 
@@ -805,6 +779,7 @@ npm start
 <!-- ### 3.4.2 Test the dapp locally in the browser
 
 To see your dapp running locally in the browser on http://localhost:8080. -->
+
 <!--
 Open a browser and navigate to <http://localhost:8080/>.
 
@@ -874,6 +849,7 @@ By the end of this section, you will now have three canisters:
 ![hello dapp and cycles wallet](_attachments/3-canisters-hello-dapp.png)
 
 <!-- ### 4.2 Check the connection to the Internet Computer (terminal B) -->
+
 <!--
 As a sanity check, it is good practice to check if your connection to the IC is stable by verifying the current status of the Internet Computer blockchain and your ability to connect to it:
 
