@@ -69,10 +69,6 @@ node.js をインストールする方法はたくさんあります。Linux で
 
 このチュートリアルは `16.*.*` よりも高いバージョンの node.js で最適に動作します。
 
-<!-- Besides installing node.js, users need to also install: 
-* Node Package Manager (NPM). (This comes packaged with Node, but you may want to upgrade with `npm i -g npm`) 
-* Node Version Manager (NVM), see [installing NVM](https://github.com/nvm-sh/nvm#installing-and-updating).
-* Once you have NVM, install the latest stable build with `nvm install --lts` -->
 
 ## 2. プロジェクトを生成する（１分）
 
