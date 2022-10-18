@@ -1,3 +1,276 @@
+# Bitcoin Dapps をローカルで開発する
+
+[Deploy Your First Bitcoin Dapp](../../../samples/deploying-your-first-bitcoin-dapp.md) チュートリアルでは、Internet Computer Bitcoin Dapp をデプロイする方法を探りました。このチュートリアルでは、Bitcoin Dapp をローカルで開発およびテストする方法について検討します。ローカルでテストすることで、Dapp をより迅速に反復し改善することができます。
+
+`dfx` は [ECDSA API](https://internetcomputer.org/docs/current/references/ic-interface-spec/#ic-ecdsa_public_key) と [Bitcoin API](https://internetcomputer.org/docs/current/references/ic-interface-spec/#ic-ecdsa_public_key) の両方をサポートしています。
+Internet Computer にデプロイする前に、ローカルで Dapp をテストすることができます。
+
+## ローカル Bitcoin ネットワークの構築
+
+Bitcoin の Dapps をローカルで開発するためには、自分のマシンにローカル Bitcoin ネットワークを構築する必要があります。
+自分のマシンにローカル Bitcoin ネットワークがあれば、自由に素早くブロックをマイニングすることができます。
+Bitcoin テストネット（遅い）や Bitcoin テストネット（もっと遅い）に頼らずに、様々なケースをテストできます。
+（さらに遅い）Bitcoin メインネットに依存することなく、さまざまなケースをテストすることができます。
+
+1. [Bitcoin Core](https://bitcoin.org/en/download) をダウンロードします。 Mac ユーザーの方は `.tar.gz` 版をダウンロードすることをお勧めします。
+2. `.tar.gz` ファイルを解凍します。
+3. 解凍したフォルダの中に、`data` というディレクトリを作成します。
+4. 解凍したフォルダのルートに `bitcoin.conf` というファイルを作成し、以下の内容を追加します：
+
+        # Enable regtest mode. This is required to setup a private bitcoin network.
+        regtest=1
+
+        # Dummy credentials that are required by `bitcoin-cli`.
+        rpcuser=ic-btc-integration
+        rpcpassword=QPQiNaph19FqUsCrBRN0FII7lyM26B51fAMeBQzCb-E=
+        rpcauth=ic-btc-integration:cdf2741387f3a12438f69092f0fdad8e$62081498c98bee09a0dce2b30671123fa561932992ce377585e8e08bb0c11dfa
+
+5. 以下のコマンドで `bitcoind` を実行し、Bitcoin クライアントを起動します：
+
+        ./bin/bitcoind -conf=$(pwd)/bitcoin.conf -datadir=$(pwd)/data --port=18444
+
+    すべてがうまくいっていれば、次のような出力が表示されるはずです。そうであれば `bitcoind` はリクエストを受け入れる準備ができました。
+
+        2022-07-11T12:49:51Z Bitcoin Core version v22.0.0 (release build)
+        ...
+        2022-07-11T12:49:51Z Config file arg: regtest="1"
+        2022-07-11T12:49:51Z Config file arg: rpcauth=****
+        2022-07-11T12:49:51Z Config file arg: rpcpassword=****
+        2022-07-11T12:49:51Z Config file arg: rpcuser=****
+        ...
+        2022-07-11T12:49:51Z Bound to 127.0.0.1:18445
+        2022-07-11T12:49:51Z Bound to [::]:18444
+        2022-07-11T12:49:51Z Bound to 0.0.0.0:18444
+        ...
+        2022-07-11T12:49:52Z opencon thread start
+        2022-07-11T12:49:52Z addcon thread start
+        2022-07-11T12:49:52Z 0 addresses found from DNS seeds
+        2022-07-11T12:49:52Z dnsseed thread exit
+
+    :::note
+    上記のコマンドは、あなたのマシンのポート `18444` が利用可能であると仮定しています。そうでない場合は、`-port` で指定されたポートを変更します。
+    :::
+
+## Bitcoin Dapp をデプロイする
+
+これでローカルな Bitcoin ネ ットワークが構築できたので Bitcoin Dapps の開発とローカルでのテストを始める準備ができています。
+
+次のステップでは、[examples repo](https://github.com/dfinity/examples) にあるサンプルプロジェクトを利用して、重要なコンセプトを紹介します。このプロジェクトをクローンして Bitcoin Dapp をローカルにデプロイするというのはどのようなものかを見てみましょう。
+
+1. `examples` レポジトリをクローンします。
+
+        git clone https://github.com/dfinity/examples
+
+2. 言語別に `basic_bitcoin` を選んでフォルダに移動します。
+
+        # For motoko
+        cd examples/motoko/basic_bitcoin
+
+        # For rust
+        cd examples/rust/basic_bitcoin
+
+3. git submodules を初期化します。
+
+        git submodule update --init --recursive
+
+4. Mac の場合は、[Homebrew](https://brew.sh/) をインストールし、以下を実行して追加パッケージをインストールしてください。
+
+        brew install llvm binaryen cmake
+
+### `dfx.json` の設定
+
+Bitcoin プロジェクトの場合、ローカルの Bitcoin ノードに接続するために `dfx` を設定する必要があります。
+既に、ローカルの Bitcoin ノードがポート `18444` で接続を受け付けるように設定されています。そのため、`dfx.json` の `defaults` セクションに以下の設定を追加してください：
+
+    "bitcoin": {
+        "enabled": true,
+        "nodes": ["127.0.0.1:18444"]
+    }
+
+サンプルコードでは `dfx.json` が既に設定されています。
+
+### `regtest` モードでデプロイする
+
+ローカル Bitcoin ノードは、「リグレッションテストモード」または [regtest mode](https://developer.bitcoin.org/examples/testing.html#regtest-mode) と呼ばれるモードで動作しています。
+これで Canister をデプロイし、ローカルの `Regtest` ネットワークに接続するように設定できました。
+
+1. `dfx start` を実行する
+
+    :::tip
+    もし、`dfx start` を実行したときに、次のようなエラーが表示された場合
+
+        Failed to connect to 127.0.0.1:18444 ::: Connecting to the stream timed out.
+
+    以上は `dfx` があなたの Bitcoin ノードに接続できないことを意味します。あなたの Bitcoin ノードが稼働していること、 `dfx.json` に正しいポートが設定されていることを確認してください。
+    :::
+
+2. サンプルの Canister をデプロイする：
+
+        dfx deploy basic_bitcoin --argument '(variant { Regtest })'
+
+    成功すると、次のような出力が表示されます：
+
+            Deploying: basic_bitcoin
+            Building canisters...
+            ...
+            Deployed canisters.
+            URLs:
+            Candid:
+                basic_bitcoin: http://127.0.0.1:8000/?canisterId=...
+
+Canister が稼動し、使用できるようになりました。コマンドラインを使って操作することができます。または、上記の出力に表示されているリンクである Candid UI を使用します。
+
+## Bitcoin アドレスを生成する
+Bitcoin には様々なタイプのアドレスがあります（例：P2PKH、P2SH）。これらのアドレスの大部分は、ECDSA 公開鍵から生成することができます。サンプルコード [ecdsa_public_key](https://internetcomputer.org/docs/current/references/ic-interface-spec/#ic-ecdsa_public_key) は API を使用して P2PKH アドレスを生成する方法を紹介します。
+
+Canister の Candid UI で、`get_p2pkh_address` の下にある "Call "ボタンをクリックすると P2PKH Bitcoin アドレスを生成します：
+![Generating a P2PKH Bitcoin Address](../_attachments/generate-ecdsa-key.png)
+
+あるいは、コマンドラインがお好みなら：
+
+    dfx canister call basic_bitcoin get_p2pkh_address
+
+:::note
+あなたの Bitcoin アドレスは上記とは異なります。ECDSA 公開鍵は一意であるためです。
+:::
+
+
+## Bitcoin を受け取る
+
+### マイニングブロック
+
+ローカルな Bitcoin ネットワークで BTC を受け取るには、ブロックをマイニングする必要があります。ブロックをマイニングするごとに 報酬として BTC がもらえます。
+
+`bitcoind`と同じディレクトリで、以下のコマンドを発行してブロックをマイニングすることができます。
+
+    ./bin/bitcoin-cli -conf=$(pwd)/bitcoin.conf generatetoaddress <number-of-blocks> <address>
+
+例えば、ブロックをマイニングして、そのブロックの報酬を自分の Canister に付与してもらいましょう：
+
+    ./bin/bitcoin-cli -conf=$(pwd)/bitcoin.conf generatetoaddress 1 <your-canister-btc-address>
+
+ここで `<your-canister-btc-address>` は、`get_p2pkh_address` エンドポイントをコールして取得したアドレスです。
+
+成功すると、次のような出力が表示されます：
+
+    [
+        "5eaf0bb0947bc5c3348749b7e194e000f6d93902235e7422b6472a1edfa5a821"
+    ]
+
+これは、先ほどマイニングしたブロックのハッシュです。`dfx` のログを見ると、数秒後に次のようなものが表示されます：
+
+    INFO .../blockchainmanager Added headers: Height = 1, Active chain's tip = 5eaf0bb0947bc5c3348749b7e194e000f6d93902235e7422b6472a1edfa5a821
+    DEBG .../ic_btc_canister/heartbeat New Bitcoin tip height: 1
+
+これらのログはローカルの `dfx` プロジェクトがマイニングしたばかりのブロックを取り込んだことを示しています。
+
+:::note
+最初の Bitcoin ブロックの同期には最大で30秒かかることがあります。その後のブロックはほぼ瞬時に同期されます。
+:::
+
+ここで、BTCの残高を確認してください：
+
+![Checking Bitcoin Balance](../_attachments/bitcoin-local-check-balance.png)
+
+または、コマンドラインから：
+
+    dfx canister call basic_bitcoin get_balance '("<your-canister-btc-address>")'
+
+すべてがうまくいけば、5,000,000,000 Satoshi、つまり 50 BTC の残高が表示されるはずです。
+これは、1ブロックのマイニングで得た報酬です。
+
+:::note
+マイニングした BTC はお客様のローカル Bitcoin ネットワーク内でのみ有効であり、他の場所で使用したり、使ったりすることはできません。
+:::
+
+### coinbase maturity
+
+前ステップで、あなたは1つのブロックをマイニングし、そのプロセスであなたの Canister に 50 BTC の報酬が与えられました。
+
+これらのブロック報酬の注意点として、[coinbase maturity rule](https://github.com/bitcoin/bitcoin/blob/bace615ba31cedec50afa4f296934a186b9afae6/src/consensus/consensus.h#L19) の適用を受けることが挙げられます。このルールでは、報酬を使用するためには、まず100ブロックの追加マイニングが必要です。ブロックを追加でマイニングする必要があります。
+
+以下のコマンドを実行して、100ブロック追加マイニングしてみましょう：
+
+    ./bin/bitcoin-cli -conf=$(pwd)/bitcoin.conf generatetoaddress 100 mtbZzVBwLnDmhH4pE9QynWAgh6H3aC1E6M
+
+上記のコマンドは100ブロックをマイニングし、ブロック報酬をランダムなアドレスに渡します。そうすることであなたの Canister がすでに持っている 50 BTC の報酬を使うことができるようになります。
+
+成功すると、以下のような出力が表示されます：
+
+    [
+        "0e70a5e8a56f1799e13fd7a52b445023c2d857a5d4b508971390dc9ae010dedc",
+        ...
+        "3e0410961a3b144d16dcdc95d73c262e0ec09e9812ce33835b2a55606d2be84b"
+    ]
+
+`dfx`のログを見ると、数秒以内にこのようなものが表示されるはずです：
+
+    INFO .../blockchainmanager Added headers: Height = 101, Active chain's tip = 3e0410961a3b144d16dcdc95d73c262e0ec09e9812ce33835b2a55606d2be84b
+    DEBG .../ic_btc_canister/heartbeat New Bitcoin tip height: 101
+
+これらのログは、あなたのローカル `dfx` プロジェクトが、マイニングしたばかりの100個の新しいブロックを取り込んだことを示しています。
+あなたの Canister が所有する BTC はこれで使うことができます。
+
+## Bitcoin を送金する
+
+Canister の `send` エンドポイントを使用して Bitcoin を送信することができます。
+
+Candid UI で、送信先アドレスと送信金額を追加します。以下の例では `n2dcQfuwFw7M2UYzLfM6P7DwewsQaygb8S` というアドレスに 1 BTC を送信しているところです。
+
+![Sending Bitcoin Transaction](../_attachments/bitcoin-local-send-tx.png)
+
+コマンドライン経由で同じ呼び出しするには以下のとおりです：
+
+    dfx canister call basic_bitcoin send '(record { destination_address = "n2dcQfuwFw7M2UYzLfM6P7DwewsQaygb8S"; amount_in_satoshi = 100000000; })'
+
+上記のコマンドはトランザクションを作成し、ローカルの Bitcoin ノードに送出します。
+`send` エンドポイントがどのように動作するかの詳細については、[Deploying Your First Bitcoin Dapp](../../../samples/deploying-your-first-bitcoin-dapp#sending-bitcoin) チュートリアルを参照してください。
+
+さらにもう1つ、ブロックをマイニングして、送信した取引がブロックチェーンの一部にすることです。`bitcoind` ディレクトリから以下を実行してください：
+
+    ./bin/bitcoin-cli -conf=$(pwd)/bitcoin.conf generatetoaddress 1 mtbZzVBwLnDmhH4pE9QynWAgh6H3aC1E6M
+
+上記のコマンドは、[Coinbase Maturity](./local-development#coinbase-maturity) のセクションで行ったことと同様です。
+そして同様に、`dfx` のログが更新され、この新しいブロックの取り込みを示すのがわかるはずです。
+
+すべてがうまくいった場合、1 BTC の残高があるアドレス `n2dcQfuwFw7M2UYzLfM6P7DwewsQaygb8S` が表示されているはずです：
+
+![Checking Bitcoin Balance](../_attachments/bitcoin-local-balance-after-send.png)
+
+## トラブルシューティング
+
+### トランザクションを送信する
+
+トランザクションを送信しようとしていて、そのトランザクションが採掘されていない場合、同じトランザクションを `bitcoin-cli` 経由で送信してみると、有用なエラーが見つかるかもしれません：
+
+    ./bin/bitcoin-cli -conf=$(pwd)/bitcoin.conf sendrawtransaction <tx-in-hex>
+
+例：
+
+    ./bin/bitcoin-cli -conf=$(pwd)/bitcoin.conf sendrawtransaction 0200000001b0ca9600da1057765dab692467579cb309aba2524d0cd45376874d6e39e1cd50000000006a47304402200024c768daeb38591438cb3cc7e40212442e8a3662f7465bd466d00ceede8014022069ca804f7ca0ba757c9531c5c37c41943a1a1b53b96697b27e928fb35637c5b10121024f9671d4f1a434cfa6c5ca863670b34f2836c259ef2c8c33f4195f2997dc3ee3ffffffff0200e1f505000000001976a914ce0966271055a5b17abb0e9021a7eafdfe557d3088ac1f101024010000001976a9143fc55ebf65a72a3658f0e14c75c99f6eae65b9b388ac00000000
+    error code: -25
+    error message:
+    bad-txns-inputs-missingorspent
+
+### ステートをリセットする
+
+ローカルにある Bitcoin のステートをすべて削除して、一からやり直すと便利なことが多いです。ゼロから始めることができます。そのためには：
+
+1. `dfx` プロジェクトのディレクトリで以下のコマンドを実行し、`dfx` のローカルステートを削除します。
+        dfx stop
+        rm -rf .dfx
+
+   :::warning
+   Running `rm -rf .dfx` will permanently delete _all_ the canisters you have
+   installed locally.
+   :::
+
+2. `bitcoind` を実行しているフォルダで、`bitcoind` プロセスが起動していれば停止します。以下を実行して、作成したチェーンを削除してください。
+
+    rm -r data
+    mkdir data
+
+<!--
 # Developing Bitcoin Dapps Locally
 
 In the [Deploy Your First Bitcoin Dapp](../../../samples/deploying-your-first-bitcoin-dapp.md) tutorial,
@@ -154,6 +427,7 @@ The Bitcoin address you see will be different from the one above, because the
 <!--The one key difference between working with a local Bitcoin network and Bitcoin testnet or
 mainnet, is how we receive Bitcoin.-->
 
+<!--
 ## Receiving Bitcoin
 
 ### Mining Blocks
@@ -303,3 +577,4 @@ and then run the following to delete the chain you created.
 
     rm -r data
     mkdir data
+-->
