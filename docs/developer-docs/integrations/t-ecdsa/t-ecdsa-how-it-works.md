@@ -1,3 +1,81 @@
+# 技術概要 - 仕組み
+
+IC 上の閾値 ECDSA の概要を俯瞰して説明します。このセクションの情報の一部は、本機能を使用するために必要なものではありませんが、技術的な背景情報を得るために、技術志向の読者にとって興味深いものであるかもしれません。本 IC は、Groth と Shoup の[Eurocrypt 2022 paper](https://eprint.iacr.org/2021/1330) に記載された閾値 ECDSA プロトコルを実装しています。Groth と Shoup は、この分散署名プロトコルの包括的な [design and analysis](https://eprint.iacr.org/2022/506) も発表しています。
+
+IC 上の閾値 ECDSA 実装は、抽象化すると複数のプロトコルを備えています：
+- *鍵生成*：指定されたサブネットで実行され、このサブネットのレプリカ上で秘密鍵シェアとして分配される新規の閾値 ECDSA 秘密鍵を生成します。
+- *鍵の re-sharing（再共有)*：このプロトコルはソースサブネットからターゲットサブネットに ECDSA （秘密）鍵を re-sharing します。その結果、ターゲットサブネットのレプリカ上で同じ閾値 ECDSA （秘密）鍵の別のランダムな秘密鍵シェアが使用されて秘密分散されることになります（ソースサブネットが使用する秘密鍵シェアとは異なる数のレプリカ上に秘密分散される可能性があります）。
+- *事前署名の計算、署名*：これらのプロトコルは秘密分散された（秘密）鍵で署名を計算します。事前署名を計算するための*プロトコル*、すなわち実際の署名プロトコルで使用される（スカラー）4倍算は、事前署名を計算するために署名要求に対して非同期的に実行されます。この事前計算プロトコルは、閾値 ECDSA 署名を作成する手順の大部分を計算します。*署名プロトコル*は、Canister の署名要求によって起動されます。署名プロトコルは、閾値 ECDSA 署名を効率的に計算するために、事前に計算された（スカラー）4倍算を消費します。
+- *公開鍵の取得*：Canister の公開鍵を取得することができます。その中には Canister が提供する導出パスに基づく BIP-32 ライクな鍵導出も含まれます。
+
+秘密鍵は、生成時、サブネット間の秘密鍵シェアの re-sharing 時、署名の計算時など、使用するすべての期間で、秘密鍵シェアされた形でのみ存在し、再構成（復元）された形には決してならないことに注意することが重要です。
+
+（秘密）鍵管理、つまり初期鍵生成と鍵の re-sharing を行うために、様々な NNS のプロポーザルが実装されてきました。これらのプロポーザルは、どのサブネットで ECDSA マスター（秘密）鍵を生成するか、どのサブネットに（秘密）鍵を re-sharing すればより利用しやすくなるか、どのサブネットで署名要求への応答を可能にするかを定義するために使用されています。
+
+## ECDSA 鍵
+
+IC で選択されたサブネットの鍵生成プロトコルで生成された、閾値 ECDSA の*マスター（秘密）鍵*と呼ばれる鍵が ECDSA 対応サブネットに保持されています。マスター（秘密）鍵は、Canister ECDSA 鍵の元となる（秘密）鍵です。つまり、ある楕円曲線に対するマスター（秘密）鍵が1つあれば、IC 上の各 Canister の ECDSA 鍵（* Canister ルート鍵*）を、Canister の Principal を入力として BIP-32 鍵導出機能の拡張を用いて導出することが可能です。鍵の導出は、署名および公開鍵検索 API の一部として、プロトコルによって内部で実行されます。マスター鍵から Canister のルート鍵の導出については、下図のレベル0鍵導出を参照してください。
+
+ Canister のルート鍵から、BIP-32 鍵導出機構の後方互換性のある拡張を使用して、Canister の ECDSA 鍵を無制限に導出することができます。この拡張により、鍵導出機能の各レベルの入力として、32ビット整数だけでなく、任意の長さのバイト配列も使用することができるようになりました。下図のレベル1以上は、Canister のルート鍵に基づき、さらにCanister の鍵を派生させることを表しています。
+
+Canister のルート鍵からさらに ECDSA 鍵を派生させることは、特定のユースケースを容易にするために、IC の関与なしに行うことも可能です。
+
+![Threshold ECDSA Key derivation](../_attachments/key_derivation.png)
+
+閾値 ECDSAのマスター（秘密）鍵は、閾値 ECDSA API では常に*鍵識別子*を通じて参照されます（運用開始を管理する NNS のプロポーザルでも同様です）。鍵識別子は楕円曲線名と識別子からなり、このふたつのタプル `(secp256k1, key_1)` は鍵識別子の例です。例えば、署名の計算時に秘密鍵シェアを選択するときや、対応する識別子を持つ鍵を保持する ECDSA 対応サブネットとの間で API コールと応答の XNet ルーティングの実装のときに、これらの鍵識別子は正しい鍵を参照するためにシステムによって使用されます。
+
+## 開発
+
+次に、現在提供されている Chromium（Beta）リリースと2022年後半に予定されている GA リリースのデプロイの概要を説明します。
+
+### Chromium リリース
+
+現在、Chromium リリースの一部として、楕円曲線 `secp256k1` のテスト（秘密）鍵だけが、複製係数13（ノード）でひとつのサブネットに配備されています。この（秘密）鍵は GA リリース後しばらくして NNS のプロポーザルにより削除される可能性があるため、価値のあるものには使用せず、開発およびテスト目的にのみ使用すべきです。具体的には、例えば、テスト（秘密）鍵が削除されたときに Bitcoin が失われるため本物の Bitcoin をテスト（秘密）鍵を使って保有にしなように強く助言します。Bitcoin のスマートコントラクトの開発を促進し、GA リリースの準備としてテストネット Bitcoin を保持することをテスト（秘密）鍵はむしろ目的としています。テスト（秘密）鍵は、API コールで参照するために `(secp256k1, test_key_1)` という ID を持っています。
+
+### GA リリース（2022年後半予定）
+
+来たるべき GA リリースでは、楕円曲線「secp256k1」の単一閾値 ECDSA （秘密）鍵を IC 上に配置する予定です。この鍵は、高い複製率 (&ge;34) を持つふたつの異なるサブネットで秘密分散された形で保持されます。（秘密）鍵は最初に NNS で生成され、そこで保管された後、re-sharing プロトコルを使用して新しい34ノードのサブネットに re-sharing されます。後者のサブネットは、この（秘密）鍵のアクティブな署名サブネットとして動作するようにアクティブ化されます。NNS は（秘密）鍵の可用性を高めるため、バックアップ用として秘密分散された形で鍵を保持しますが、署名要求には応じません。万が一、サブネットのいずれかが復旧不可能なほど破壊された場合、（秘密）鍵の複製を行うことで、災害時に別のサブネットに鍵を再共有することが可能となり、鍵の可用性を高めることができます。
+
+### その他の側面
+
+現在の Chromium デプロイメントでは、テスト（秘密）鍵、将来の GA リリースでは本番（秘密）鍵の両方とも、 閾値 ECDSA API へのリクエストは常に XNet を通じてリクエストされます。これは ECDSA 対応サブネットがユーザーの Canister をホストしていないためで、呼び出し側の Canister のサブネットから閾値 ECDSA 対応サブネットへの Xnet 通信とレスポンスを返すために数秒間の追加レイテンシーが発生します。
+
+将来的には、さらなる楕円曲線とそれに対応するマスター（秘密）鍵のサポートが追加される可能性があります。楕円曲線 `secp256r1` は分散型認証局 (CA) のようなユースケースをサポートするために興味深いものであり、前述のようなユースケースを促進する最有力な追加候補のひとつです。
+
+## API
+
+次に、閾値 ECDSA の API の概要について説明します。正式な仕様については、[Internet Computer Interface Specification](../../../references/ic-interface-spec.md#ic-ecdsa_public_key) の該当箇所を参照してください。この API は、閾値 ECDSA 公開鍵を取得するための `ecdsa_public_key` と、秘密分散された閾値 ECDSA （秘密）鍵を持つサブネットから閾値 ECDSA 署名の計算を要求するための `create_ecdsa_signature` という二つのメソッドから構成されています。
+
+各 API コールは、楕円曲線と鍵識別子の2つの識別子からなる閾値 ECDSA マスター（秘密）鍵を参照します。派生パスは、Canister のルート鍵より下位の鍵を派生階層で参照するために使用されます。マスター（秘密）鍵から Canister のルート鍵への鍵の導出は、API で内在的に行われます。
+
+- `ecdsa_public_key`: このメソッドは、指定した Canister の ECDSA 公開鍵を SEC1 で暗号化したものを、指定した導出パスで返します。`canister_id` が指定されていない場合、デフォルトで呼び出し元の Canister ID が使用されます。`derivation_path` は可変長のバイト文字列のベクトルです。`key_id` は楕円曲線と名前の両方を指定する構造体です。特定の `key_id` を利用できるかどうかは実装に依存します。<br/>
+楕円曲線 `secp256k1` の場合、公開鍵は BIP32 の一般化を用いて導かれる(ia.cr/2021/1330 fの付録Dを参照)。BIP-0032 互換の公開鍵を導出するためには、`derivation_path` の各バイト列 (blob) は、2<sup>31</sup>未満の符号なし整数を4バイトのビッグエンディアンで符号化したものでなければなりません。<br/>
+SEC1 で圧縮された ECDSA の `public_key` と、その子鍵を決定論的に導出するための `chain_code` からなる拡張 `public_key` が返されます。
+このコールでは、ECDSA 機能が有効であること、および `canister_id` が Canister ID の要件を満たしていることが必要です。そうでない場合は拒否されます。
+- `sign_with_ecdsa`: このメソッドは、与えられた `message_hash` の新しい ECDSA 署名を返します。これは、派生した ECDSA 公開鍵に対して個別に検証することができます。この公開鍵は、呼び出し元の `canister_id` と、ここで使用したものと同じ `derivation_path` と `key_id` を指定して `ecdsa_public_key` を呼び出すことで取得できます。<br/>
+署名は、SEC1 エンコーディングの2つの値 `r` と `s` を連結したものとして暗号化されます。楕円曲線 `secp256k1` の場合、これは 32バイトのビッグエンディアンに相当します。<br/> 
+この呼び出しにより、ECDSA は `r` と `s` を暗号化する必要があります。
+この呼び出しは、ECDSA 機能が有効で、呼び出し元が Canister であり、 `message_hash` が 32バイトの長さであることを必要とします。そうでない場合は拒否されます。
+
+## 環境
+
+IC 上での Canister 開発のライフサイクルを通じて開発者を支援するため、ローカルでの開発・テスト用の SDK と、 Canister のプレプロダクションのテストやプロダクション時の運用のための IC の両方でこの機能を利用することができます。
+
+### SDK
+
+Canister の開発は、通常、開発者のローカル環境で行われ、SDK の利用が促進されます。今回、SDK を拡張し閾値 ECDSA のマネージメント Canister API をローカル Canister の実行環境で利用できるようにしました。このため、開発・テスト用にローカルで閾値 ECDSA の API を使用した Canister を実行することができます。本機能は SDK で常に有効化されているため、API を利用するためにユーザーが追加で操作する必要はありません。
+
+SDK 環境のレプリカが最初に起動されると、新しい ECDSA （秘密）鍵が生成されます。この鍵は不揮発性メモリに保存され、レプリカを再起動するたびに変更されることはありません。
+
+技術的に関心のある読者のために、SDK はメインネットと全く同じ閾値 ECDSA の実装を使用していますが、単一のレプリカしか実行していないことに注意してください。したがって、このプロトコルは単一のレプリカという特殊なケースで動作していることになり、（秘密）鍵の生成や署名などのオーバーヘッドがわずかに発生するだけなので、SDK 環境の性能に目立った影響を与えることなく、SDK でデフォルトで有効のままにしておくことができます。また、ローカル SDK 環境での署名のスループットとレイテンシーは、IC 上のスループットとレイテンシーを代表するものではないことに注意してください。
+
+### Internet Computer
+
+IC のどのサブネット上の、どの Canister も、マネージメント Canister によって公開された閾値 ECDSA API を呼び出すことができます。呼び出しは、API コールで参照される（秘密）鍵を保持する ECDSA 対応サブネットに XNet 通信を介してルーティングされます（初期の Chromium リリースでは、テスト用の（秘密）鍵を保持するこのような署名サブネットはひとつしか存在しません）。このテスト（秘密）鍵は複製率が 13のサブネットでホストされており、将来的に削除される可能性があることに注意してください。したがって、価値のあるものには使用せず、開発およびテスト目的のみに使用する必要があります。主な意図する目的は、Bitcoin テストネットを使用し Bitcoin 対応 Dapps の開発とテストを容易にすることです。
+
+2022年後半、この機能の一般公開（GA）リリースの一部として、`secp256k1` 楕円曲線上の本番 ECDSA （秘密）鍵が配置され、Bitcoin メインネットとの統合やその他の有用なユースケースで使用される予定です。
+
+<!--
 # Technology Overview — How It Works
 
 We give a high-level outline of threshold ECDSA on the IC. Some of the information in this section is not required to use the feature, but may be of interest to the technically inclined reader for obtaining background information on the technology. The IC implements the threshold ECDSA protocol by Groth and Shoup as described in their [Eurocrypt 2022 paper](https://eprint.iacr.org/2021/1330). Groth and Shoup have also published a comprehensive [design and analysis](https://eprint.iacr.org/2022/506) of this distributed signing protocol.
@@ -73,3 +151,5 @@ For the technically interested readers we want to note that the SDK uses the exa
 Any canister on any subnet of the IC can call the threshold ECDSA API exposed by the management canister. The calls are routed via XNet communication to the ECDSA-enabled subnet that holds the key referred to in the API call (only one such signing subnet holding a test key exists for testing purposes in the initial Chromium release). Note that this test key is hosted on a subnet with a replication factor of only 13 and may be deleted in the future, thus it should not be used for anything of value, but rather solely for development and testing purposes. The main intended purpose is to facilitate the development and testing of Bitcoin-enabled dApps using Bitcoin testnet.
 
 Later in 2022, as part of the General Availability (GA) release of the feature, a production ECDSA key on the `secp256k1` elliptic curve will be deployed to be used for integration with Bitcoin mainnet and other use cases of interest.
+
+-->
