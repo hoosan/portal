@@ -1,3 +1,35 @@
+# Canister HTTPS アウトコール
+
+これまでブロックチェーンは孤立した存在であり、スマートコントラクトが外部のサーバーや他のブロックチェーンと直接通信することはできませんでした。その理由は、ブロックチェーンは複製されたステートマシンであり、各ノードはラウンドごとに同じステートに対して同じ計算を行い、同じ遷移を行う必要があるからです。外部サービスの結果を入力として計算を行うことは、ナイーブに行うとノードのステート不一致につながりやすいため、動作させるためには技術的な配慮が必要です。
+
+Internet Computer の _Canister HTTP(S) リクエスト_または _HTTP(S) アウトコール_ の機能により、ブロックチェーン史上初めて、スマートコントラクトがブロックチェーンの外部の HTTP(S) サーバーを直接呼び出し、レスポンスをスマートコントラクトの処理で使用し、その入力を使って安全に複製ステートを更新することができるようになりました。これまでのところ、スマートコントラクトと外部サーバーとの通信手段は、いわゆる*オラクル*を介したものだけでした。このドキュメントの残りの部分では、基礎となるプロトコルを参照する *HTTP* と *HTTPS* を代表して *HTTP* を用いることがあることに注意してください。近年、公共ネットワーク上の実質的にすべての HTTP トラフィックは、保護された HTTPS 上で実行されます。
+
+Canister HTTP リクエストは、多くのユースケースを可能にし、現在使用されているオラクルモデルと比較して多くの利点を持っています。
+* *より強力なトラストモデル：* Canister HTTP アウトコールは、スマートコントラクトが外部サーバーと通信するために外部仲介者（オラクル）が必要ないため、より強力なトラストモデルに基づいています。
+* *低料金：* サービスに対して追加料金を請求する仲介者が存在しないため低料金です。
+* *標準的なプログラミングパラダイムに近い：* スマートコントラクトが直接外部サーバーに HTTP リクエストを行うというパラダイムは、オラクルの使用と比較すると、エンジニアが慣れている通常のプログラミングパラダイムに非常に近いと言えます。そのため、ブロックチェーンのためのプログラミングするということをより抽象化することができます。
+
+なぜブロックチェーンでは外部との連携が重要なのか？
+* 現実の Dapp のユースケースのほとんどは、オフチェーンのエンティティとの何らかの形のデータ交換を必要とします。
+* 世界のデータのほとんどは、現在伝統的な（Web 2.0）サービスに保持されており、多くの Dapps はこのデータに基づいて構築されているため、それにアクセスする必要があります。
+* *ブロックチェーン・シンギュラリティ* に到達するためには、スマートコントラクトは Web 2.0 サービスと相互作用できる必要があります。ブロックチェーン・シンギュラリティへの過程で、ますます多くのデータが Web3.0 のブロックチェーンの世界に引き込まれ、Web2.0 サーバーを介さずに異なるスマートコントラクト間で相互作用が行われるようになるでしょう。
+
+Canister HTTP アウトコールには多くのユースケースがあり、いくつかの顕著な例については以下のリストを参照してください。
+* 最も重要なユースケースの1つは、外部 HTTP API からのデータの読み込みです。例えば、DEX で使用される価格データや分散型保険 Dapps で使用される天気データなどです。
+* IoT Dapps はセンサーが相互作用する従来のサーバーからセンサーデータを取得する必要があります。将来的には、センサーと IC ブロックチェーンが直接やり取りすることも想定されます。
+* チャットサービスでは、ユーザーにメッセージの着信に関するプッシュ通知を送信します。
+
+HTTP アウトコールの大半は、Web2.0 データを読み込むための `GET` コールになると思われますが、Web2.0 サーバーにデータを書き込むための外部システムとのやり取りでは `POST` も明らかに重要な役割を担っています。
+
+## もっと学ぶには？
+
+HTTPS アウトコール機能がどのように動作するか、またCanister をコーディングする際にどのように使用するかについて深く知りたい場合は、[How it Works](http_requests-how-it-works.md) セクションを参照してください。
+
+## ビルドをするには？
+
+[Examples リポジトリ](https://github.com/dfinity/examples) には、[Rustのサンプルコード](https://github.com/dfinity/examples/tree/master/rust/exchange_rate) がありますので、これを起点に独自の Dapp を構築することができます。
+
+<!--
 # Canister HTTPS Outcalls
 
 Up until now, blockchains have been isolated entities and smart contracts have not been able to directly communicate with external servers or other blockchains. The reason for this is that a blockchain is a replicated state machine where each replica needs to perform the same computations on the same state to make the same transitions in each round. Doing computations based on results from external services as input may easily lead to state divergence on the replicas if done in a naïve manner and thus requires some technical considerations to be workable.
@@ -28,3 +60,5 @@ If you want to take a deep dive into how the HTTPS outcalls feature works and ho
 ## Build more
 
 In the [Examples repository](https://github.com/dfinity/examples) you can find [sample code in Rust](https://github.com/dfinity/examples/tree/master/rust/exchange_rate) which you can use as starting point for building your own dApp.
+
+-->
