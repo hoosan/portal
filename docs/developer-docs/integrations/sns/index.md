@@ -1,6 +1,6 @@
-# SNS
+<!--# Service Nervous System (SNS) -->
 
-## Technical documentation
+<!--## Technical documentation-->
 Documentation in the developer docs, is, as the name suggests, aimed at developers. 
 
 Here you will find
@@ -8,7 +8,7 @@ Here you will find
 
 Info how to get an SNS
 * [Intro](get-sns/get-sns-intro.md)
-* [Frontend integration preparation](get-sns/frontend-integration.md)
+* [Frontend integration preparation](integrate-sns/frontend-integration.md)
 * [Preparation](get-sns/preparation.md)
 * [Local testing](get-sns/local-testing.md)
 * [Getting an SNS in production](get-sns/get-sns-production.md)
@@ -20,10 +20,10 @@ management info
 * [Cycles usage](managing-sns/cycles-usage.md)
 * [Upgrade SNS](managing-sns/upgradeSNS.md)
 
-## DAOs and Tokenomics documentation
+<!--## DAOs and Tokenomics documentation-->
 
 In tokenomics you will find
 
-## User Guides
+<!--## User Guides-->
 
 On the wiki you will find
