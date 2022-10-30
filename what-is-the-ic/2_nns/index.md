@@ -10,7 +10,7 @@ NNS は ICP 台帳を保持し、ICP ユーティリティトークンのアカ�
 また、ICP トークンのステークホルダーは、ICP のあらゆる側面に関する投票に参加することができます。例えば、ステークホルダーは、IC ソフトウェアのアップグレードや、新しいサブネットの追加などによる IC の拡張に関して投票することが可能です（ステーク、投票、報酬の詳細は[こちら](https://internetcomputer.org/how-it-works/network-nervous-system-nns/)を御覧ください）。また、分散型アプリの実行時に消費される ICP トークンを Cycle に変換することで、IC 上の演算する動力になります。
 さらに、NNS は全ノードに関する情報やサブネットへの割り当てなど、IC 全体の構造を管理しています。これは、信頼できる唯一の（しかし分散化された）情報源を構成しています。
 
-NNSは、世界で最も先進的な分散型自律組織（DAO）なのです。NNS の詳細は[こちら](https://internetcomputer.org/how-it-works/network-nervous-system-nns/)をご覧ください。
+NNSは、世界で最も先進的な分散型自律組織[（DAO）](/docs/current/tokenomics/#network-nervous-system-nns)なのです。
 
 <!--
 ---
