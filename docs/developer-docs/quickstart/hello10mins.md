@@ -46,7 +46,7 @@ $ "Hello, Everyone"
 `dfx` をインストールするには、以下を実行します：
 
 ``` bash
-sh -ci "$(curl -fsSL https://smartcontracts.org/install.sh)"
+sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 ```
 
 `dfx` が正しくインストールされたか確認するには以下を実行します：
@@ -520,7 +520,7 @@ dfx canister --wallet "$(dfx identity get-wallet)" update-settings --all --add-c
 
 ### 次の挑戦の準備はできていますか？
 
-DAO や NFT などの構築などさらに進むには [こちら](https://smartcontracts.org/samples)。
+DAO や NFT などの構築などさらに進むには [こちら](https://internetcomputer.org/samples)。
 
 ### もっと詳しく知りたい方は？
 

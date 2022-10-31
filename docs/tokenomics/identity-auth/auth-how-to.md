@@ -1,6 +1,6 @@
 # Internet Identity の使い方
 
-Internet Identity とは何か、ということから学びたい方は [Internet Identity とは？](what-is-ic-identity)をご覧ください。
+Internet Identity とは何か、ということから学びたい方は [Internet Identity とは？](./what-is-ic-identity.md)をご覧ください。
 
 Internet Identity アンカーの作成やデバイスの管理を行いたい方は、[Internet Identity Page](https://identity.ic0.app) をご覧ください。
 

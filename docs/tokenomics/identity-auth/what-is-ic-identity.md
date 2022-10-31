@@ -8,7 +8,7 @@
 
 Internet Identity は、最新の Web ブラウザや OS でサポートされている Web 認証 (WebAuthn) API と、Internet Computer を支えるチェーンキー暗号のフレームワークをベースに構築されています。基本的に、Internet Computer はマスターチェーンキーを使用して、各アンカーに割り当てられたデバイス内の公開キーのリストに署名します。このマスターチェーンキーは、ウェブブラウザで実行されるクライアントサイドのコードなどで認識されます。
 
-Internet Identity を組み込んだ Dapps では、Identity Anchor を使用して認証を行うよう促されます。 まだ Identity Anchor を持っていない場合は、簡単に作成して認証方法を追加することができます。 詳細については、[Internet Identity の使い方](auth-how-to)を参照してください。 追加したデバイスごとに、暗号鍵のペア(秘密鍵と公開鍵)が生成されます。 公開鍵は Internet Computer のブロックチェーンに保存され、秘密鍵は認証デバイスの中にアクセスを管理する生体認証データとともに保管されます。 Identity Anchorに複数の認証方法を追加すると、すべてのデバイスで Dapps にアクセスできるようになります。
+Internet Identity を組み込んだ Dapps では、Identity Anchor を使用して認証を行うよう促されます。 まだ Identity Anchor を持っていない場合は、簡単に作成して認証方法を追加することができます。 詳細については、[Internet Identity の使い方](./auth-how-to.md)を参照してください。 追加したデバイスごとに、暗号鍵のペア(秘密鍵と公開鍵)が生成されます。 公開鍵は Internet Computer のブロックチェーンに保存され、秘密鍵は認証デバイスの中にアクセスを管理する生体認証データとともに保管されます。 Identity Anchorに複数の認証方法を追加すると、すべてのデバイスで Dapps にアクセスできるようになります。
 
 認証に Internet Identity を使用する Dapp にアクセスする際には、まず使用する Identity Anchor を指定します。 設定されたデバイスを使って Identity Anchor を使用して認証すると、ブラウザは Internet Identity に接続し、その Dapp で使用するキーを生成します。 最後に、その Dapp へのアクセスを承認するように画面上で求められます。
 

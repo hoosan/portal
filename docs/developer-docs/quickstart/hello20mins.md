@@ -47,7 +47,7 @@ node.js をインストールするには、様々な方法があります。Lin
 
 インストールするには、以下を実行します：
 
-    $ sh -ci "$(curl -fsSL https://smartcontracts.org/install.sh)"
+    $ sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 
 `dfx` が正しくインストールされていることを確認するために、以下を実行します：
 
