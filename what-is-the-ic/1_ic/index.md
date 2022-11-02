@@ -6,10 +6,7 @@ cardImageFit: center
 
 Internet Computer Protocol のソフトウェアは、私たちが *ノード* と呼ぶ標準化されたサーバー・ハードウェア上で実行されます。ノードは世界中に散らばっており、独立した多数のデータセンターでホストされ、高度な耐障害性と分散性を確保しています。ノードは *サブネット* にグルーピングされます。各サブネットは他のサブネットから独立し、進行する独自のブロックチェーンを構成します。すべてのサブネットは、Internet Cpmouter Protocol によって接続、管理をされた上で Internet Computer(IC) を形成します。
 
-ソフトウェアのアップデートはシームレスに行われ、性能向上やバグ修正、新機能の追加などが行われ、IC の改良と進化を加速させることが可能です。
-
-さらに、ハードウェアレベルでもアップデートが可能で、ノードやサブネットの追加や削除が可能で、IC のスケーラビリティは IC が利用できるノードの数によってのみ制限されるため、実質的に無制限に拡張可能です。
-
+IC は、定期的かつシームレスなソフトウェアアップデートにより、性能の向上、バグの修正、全く新しい機能の導入など、急速なペースで改善、進化を遂げます。ハードウェアの継続的なアップグレード、ノードやサブネットの追加により、IC は、事実上無制限に拡張することができます。
 <!--
 ---
 title: The Architecture of the IC
@@ -17,10 +14,8 @@ card: /img/what-is-the-ic/built.png
 cardImageFit: center
 ---
 
-The Internet Computer Protocol software runs on standardized server hardware, which we call *nodes*. Nodes are spread around the world, hosted in numerous independent data centers in order to ensure a high degree of fault tolerance and decentralization. Nodes are grouped together into *subnets*, where each subnet constitutes its own blockchain that makes progress independently of the other subnets. All subnets are connected and directed by the Internet Computer Protocol to form the Internet Computer.
+The Internet Computer Protocol runs on servers with standardized hardware, which we call nodes. Nodes are distributed globally and hosted in independent data centers to ensure fault tolerance and decentralization. Nodes are grouped together into subnets, where each subnet constitutes its own blockchain that makes progress independently of the other subnets, resulting in unprecedented performance and scalability in the blockchain space. All subnets are connected and orchestrated by the Internet Computer Protocol to give rise to the Internet Computer.
 
-Software updates are rolled out seamlessly to boost performance, iron out bugs, or introduce entirely new features, making it possible for the IC to improve and evolve at a rapid pace.
-
-Updates are further possible at the hardware level, adding and removing nodes or subnets, allowing the IC to scale virtually without bounds as scalability is only limited by the number of nodes made available to the IC.
+The IC improves and evolves at a rapid pace through regular and seamless roll-outs of software updates that boost performance, iron out bugs, and introduce entirely new capabilities. Continuous hardware upgrades, adding nodes or subnets, make the IC scale virtually without bounds — scaling the IC is always possible by adding additional nodes.
 
 -->

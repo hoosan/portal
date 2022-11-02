@@ -1,6 +1,6 @@
 # 暗号化されたノート（Encrypted Notes）
 
-[ Encrypted Notes ](https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp)は、短いテキスト形式で秘密の情報を作成・保存する試験的なアプリケーションです。ユーザーは [ Internet Identity ](https://smartcontracts.org/docs/ic-identity-guide/what-is-ic-identity.html)で認証された、自動的に同期される複数のデバイスから自分のノートにアクセスすることができます。アプリのフロントエンドがエンドツーエンドで暗号化するため、ユーザーはアプリのバックエンドを信頼する必要がありません。
+[ Encrypted Notes ](https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp)は、短いテキスト形式で秘密の情報を作成・保存する試験的なアプリケーションです。ユーザーは [ Internet Identity ](../../docs/tokenomics/identity-auth/what-is-ic-identity.md)で認証された、自動的に同期される複数のデバイスから自分のノートにアクセスすることができます。アプリのフロントエンドがエンドツーエンドで暗号化するため、ユーザーはアプリのバックエンドを信頼する必要がありません。
 
 こちらの [ IC 上にデプロイされている Dapp ](https://cvhrw-2yaaa-aaaaj-aaiqa-cai.ic0.app/)から試すことが出来ます。
 
@@ -8,13 +8,13 @@
 
 純粋に IC 上で動作する簡素な（しかし簡素すぎない）アプリケーションの例を示したいと思います。この例は IC の _ウェブ配信機能_ と _ストレージ機能_ に依存しています。このアプリの例で次の 2 つの主要な機能に焦点を当てます。(1)クライアントサイドでの _エンドツーエンドの暗号化_ 、(2) _マルチユーザー_ 、 _マルチデバイス_ のサポート。
 
-このようなアプリの開発プラットフォームとしての IC の可能性を示すために、2 種類の Canister Development Kits ( CDKs )を用いて実装を行いました。Motoko CDK は[ Motoko ](https://smartcontracts.org/docs/language-guide/motoko.html) 言語を使って Actor ベースの Dapp を実装するためのものです。Rust CDK は[ Rust ](https://smartcontracts.org/docs/rust-guide/rust-intro.html) 言語で実装されたアプリを提供します。いずれも Canister を WebAssembly ファイルにコンパイルし、 IC 上にデプロイします。
+このようなアプリの開発プラットフォームとしての IC の可能性を示すために、2 種類の Canister Development Kits ( CDKs )を用いて実装を行いました。Motoko CDK は[ Motoko ](../developer-docs/build/cdks/motoko-dfinity/motoko) 言語を使って Actor ベースの Dapp を実装するためのものです。Rust CDK は[ Rust ](../developer-docs/build/cdks/cdk-rs-dfinity/) 言語で実装されたアプリを提供します。いずれも Canister を WebAssembly ファイルにコンパイルし、 IC 上にデプロイします。
 
 ## アプローチ
 
 Encrypted Notes の基本機能は 2 つの主要コンポーネントで構成されています。
 
-第一に、[ IC-Notes ](https://github.com/pattad/ic_notes)という Dapp のコード（非暗号化） を再利用しました。特に IC-Notes はユーザー認証のために[ Internet Identity ](https://smartcontracts.org/docs/ic-identity-guide/auth-how-to.html) ( II ) Canister に依存しており、このアプローチは Encrypted Notes にも継承されています。開発目的では II Canister のローカルインスタンス（ Encrypted Notes のローカルインスタンスと共に)をデプロイします。Encrypted Notes をメインネットにデプロイする場合、現実世界の II インスタンスが認証に使用されます。
+第一に、[ IC-Notes ](https://github.com/pattad/ic_notes)という Dapp のコード（非暗号化） を再利用しました。特に IC-Notes はユーザー認証のために[ Internet Identity ](../../docs/tokenomics/identity-auth/auth-how-to.md) ( II ) Canister に依存しており、このアプローチは Encrypted Notes にも継承されています。開発目的では II Canister のローカルインスタンス（ Encrypted Notes のローカルインスタンスと共に)をデプロイします。Encrypted Notes をメインネットにデプロイする場合、現実世界の II インスタンスが認証に使用されます。
 
 第二に、クライアントサイドでノートの内容のエンドツーエンドの暗号化を可能にしました。これは、[ IC-Vault ](https://github.com/timohanke/icvault)という別の既存のアプリからソリューションを借用したものです。私たちの Encrypted Notes アプリは IC-Vault のアプローチを踏襲し、複数のデバイスの管理をサポートしています。
 
@@ -84,7 +84,7 @@ Encrypted Notes の基本機能は 2 つの主要コンポーネントで構成�
 <!--
 # Encrypted Note-taking Dapp
 
-[Encrypted Notes](https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp) is an experimental dapp for authoring and storing confidential information in the form of short pieces of text. The user can access their notes via any number of automatically synchronized devices authenticated via [Internet Identity](https://smartcontracts.org/docs/ic-identity-guide/what-is-ic-identity.html). Thanks to the end-to-end encryption performed by the dapp’s frontend, the user does not need to trust the dapp’s backend.
+[Encrypted Notes](https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp) is an experimental dapp for authoring and storing confidential information in the form of short pieces of text. The user can access their notes via any number of automatically synchronized devices authenticated via [Internet Identity](../../docs/tokenomics/identity-auth/what-is-ic-identity.md). Thanks to the end-to-end encryption performed by the dapp’s frontend, the user does not need to trust the dapp’s backend.
 
 You can play around with the [dapp deployed on the IC](https://cvhrw-2yaaa-aaaaj-aaiqa-cai.ic0.app/) and see a quick introduction on [YouTube](https://youtu.be/DZQmtPSxvbs).
 
@@ -92,13 +92,13 @@ You can play around with the [dapp deployed on the IC](https://cvhrw-2yaaa-aaaaj
 
 We wanted to build an example of a simple (but not too simple) dapp running purely on the IC. This example relies upon the *web-serving* and *storage capabilities* of the IC. We focused on the following two key features for our example dapp: (1) client-side, *end-to-end encryption* and (2) *multi-user* and *multi-device* support.
 
-To demonstrate the potential of the IC as a platform for developing such dapps, we implemented this example using two distinct Canister Development Kits (CDKs). The Motoko CDK allows developers to implement actor-based dapps using the [Motoko](https://smartcontracts.org/docs/language-guide/motoko.html) language. The Rust CDK allows implementing dapps in [Rust](https://smartcontracts.org/docs/rust/rust-intro.html). In both cases, canisters are compiled into WebAssembly files that are then deployed onto the IC.
+To demonstrate the potential of the IC as a platform for developing such dapps, we implemented this example using two distinct Canister Development Kits (CDKs). The Motoko CDK allows developers to implement actor-based dapps using the [Motoko](../developer-docs/build/cdks/motoko-dfinity/motoko) language. The Rust CDK allows implementing dapps in [Rust](../developer-docs/build/cdks/cdk-rs-dfinity/). In both cases, canisters are compiled into WebAssembly files that are then deployed onto the IC.
 
 ## Approach
 
 The basic functionality of Encrypted Notes consists of two main components.
 
-First, we re-used the code of a (non-encrypted) dapp called [IC-Notes](https://github.com/pattad/ic_notes). In particular IC-Notes relies on the [Internet Identity](https://smartcontracts.org/docs/ic-identity-guide/auth-how-to.html) (II) canister for user authentication, an approach that is also inherited by Encrypted Notes. For development purposes, we deploy a local instance of the II canister (along with a local instance of Encrypted Notes); when deploying Encrypted Notes onto the mainnet, the real-world instance of II is used for authentication.
+First, we re-used the code of a (non-encrypted) dapp called [IC-Notes](https://github.com/pattad/ic_notes). In particular IC-Notes relies on the [Internet Identity](../../docs/tokenomics/identity-auth/auth-how-to.md) (II) canister for user authentication, an approach that is also inherited by Encrypted Notes. For development purposes, we deploy a local instance of the II canister (along with a local instance of Encrypted Notes); when deploying Encrypted Notes onto the mainnet, the real-world instance of II is used for authentication.
 
 Second, we enabled client-side, end-to-end encryption for the note contents, borrowing the solution from another existing dapp called [IC-Vault](https://github.com/timohanke/icvault). Our Encrypted Notes dapp follows the approach of IC-Vault to support managing multiple devices.
 

@@ -1,6 +1,6 @@
 # Internet Identity の使い方
 
-Internet Identity とは何か、ということから学びたい方は [Internet Identity とは？](what-is-ic-identity)をご覧ください。
+Internet Identity とは何か、ということから学びたい方は [Internet Identity とは？](./what-is-ic-identity.md)をご覧ください。
 
 Internet Identity アンカーの作成やデバイスの管理を行いたい方は、[Internet Identity Page](https://identity.ic0.app) をご覧ください。
 
@@ -176,7 +176,7 @@ Identity Anchor にリカバリーフレーズやセキュリティキーを設�
 <!--
 # How to use Internet Identity
 
-If you would like to learn what Internet Identity is, see [What is Internet Identity?](https://smartcontracts.org/docs/ic-identity-guide/what-is-ic-identity.html)
+If you would like to learn what Internet Identity is, see [What is Internet Identity?](./what-is-ic-identity.md)
 
 If you would like to create an Internet Identity anchor, or manage your devices, go to the [Internet Identity Page](https://identity.ic0.app).
 

@@ -26,7 +26,7 @@ DFINITY Canister SDK をダウンロードしてインストールする前に�
 
 2.  以下のコマンドを実行して、SDK パッケージをダウンロードしてインストールします。
 
-        sh -ci "$(curl -fsSL https://smartcontracts.org/install.sh)"
+        sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 
     このコマンドは、DFINITY コマンドラインインターフェース（CLI）及びその依存関係をローカルコンピュータにインストールする前に、使用許諾契約書を読み同意するよう促します。
 
@@ -254,7 +254,7 @@ To download and install:
 
 2.  Download and install the SDK package by running the following command:
 
-        sh -ci "$(curl -fsSL https://smartcontracts.org/install.sh)"
+        sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 
     This command prompts you to read and accept the license agreement before installing the DFINITY execution command-line interface (CLI) and its dependencies on your local computer.
 

@@ -8,7 +8,7 @@
 
 Internet Identity は、最新の Web ブラウザや OS でサポートされている Web 認証 (WebAuthn) API と、Internet Computer を支えるチェーンキー暗号のフレームワークをベースに構築されています。基本的に、Internet Computer はマスターチェーンキーを使用して、各アンカーに割り当てられたデバイス内の公開キーのリストに署名します。このマスターチェーンキーは、ウェブブラウザで実行されるクライアントサイドのコードなどで認識されます。
 
-Internet Identity を組み込んだ Dapps では、Identity Anchor を使用して認証を行うよう促されます。 まだ Identity Anchor を持っていない場合は、簡単に作成して認証方法を追加することができます。 詳細については、[Internet Identity の使い方](auth-how-to)を参照してください。 追加したデバイスごとに、暗号鍵のペア(秘密鍵と公開鍵)が生成されます。 公開鍵は Internet Computer のブロックチェーンに保存され、秘密鍵は認証デバイスの中にアクセスを管理する生体認証データとともに保管されます。 Identity Anchorに複数の認証方法を追加すると、すべてのデバイスで Dapps にアクセスできるようになります。
+Internet Identity を組み込んだ Dapps では、Identity Anchor を使用して認証を行うよう促されます。 まだ Identity Anchor を持っていない場合は、簡単に作成して認証方法を追加することができます。 詳細については、[Internet Identity の使い方](./auth-how-to.md)を参照してください。 追加したデバイスごとに、暗号鍵のペア(秘密鍵と公開鍵)が生成されます。 公開鍵は Internet Computer のブロックチェーンに保存され、秘密鍵は認証デバイスの中にアクセスを管理する生体認証データとともに保管されます。 Identity Anchorに複数の認証方法を追加すると、すべてのデバイスで Dapps にアクセスできるようになります。
 
 認証に Internet Identity を使用する Dapp にアクセスする際には、まず使用する Identity Anchor を指定します。 設定されたデバイスを使って Identity Anchor を使用して認証すると、ブラウザは Internet Identity に接続し、その Dapp で使用するキーを生成します。 最後に、その Dapp へのアクセスを承認するように画面上で求められます。
 
@@ -18,7 +18,7 @@ Identity Anchor は、冗長性などのために必要な数だけ登録する�
 
 ## Internet Identity の使い方
 
-Identity Anchor の作成と使用方法を順を追って学ぶためには、[Internet Identity の使い方](auth-how-to)をご覧ください。 また、Identity Anchors のリカバリーに関する設定方法についても説明しています。
+Identity Anchor の作成と使用方法を順を追って学ぶためには、[Internet Identity の使い方](./auth-how-to.md)をご覧ください。 また、Identity Anchors のリカバリーに関する設定方法についても説明しています。
 
 <!--
 # What is Internet Identity?
@@ -31,7 +31,7 @@ Unlike most authentication methods, Internet Identity does not require you to se
 
 Internet Identity builds on Web Authentication (WebAuthn) API supported by modern web browsers and operating systems, and the "chain key cryptography" framework that powers the Internet Computer. Essentially, the Internet Computer signs the list of public keys inside the devices assigned to each anchor using its master chain key, which client side code, for example running in the web browser, is aware of.
 
-Dapps that integrate with Internet Identity prompt you to authenticate using an identity anchor. If you don’t have an identity anchor yet, it is easy to create one and add authentication methods to it. For more details, see [How to use Internet Identity](https://smartcontracts.org/docs/ic-identity-guide/auth-how-to.html). For each device you add, a pair of cryptographic keys (private and public key) is generated. The public key is stored on the Internet Computer blockchain, while the private key remains locked inside the authentication device together with any biometric data that governs access to it. Adding multiple authentication devices to an identity anchor allows you to access dapps across all of your devices.
+Dapps that integrate with Internet Identity prompt you to authenticate using an identity anchor. If you don’t have an identity anchor yet, it is easy to create one and add authentication methods to it. For more details, see [How to use Internet Identity](./auth-how-to.md). For each device you add, a pair of cryptographic keys (private and public key) is generated. The public key is stored on the Internet Computer blockchain, while the private key remains locked inside the authentication device together with any biometric data that governs access to it. Adding multiple authentication devices to an identity anchor allows you to access dapps across all of your devices.
 
 When you access a dapp that uses Internet Identity for authentication, you first specify the identity anchor you want to use. After authenticating using an identity anchor using an assigned device, your browser connects to Internet Identity and generates a session key for use with that dapp. Finally, you are asked to authorize access to the dapp.
 
@@ -41,6 +41,6 @@ You can register as many identity anchors as you want for redundancy, or differe
 
 ## How to use Internet Identity
 
-To learn how to create and use Identity Anchors step-by-step, see [How to use Internet Identity](https://smartcontracts.org/docs/ic-identity-guide/auth-how-to.html). This also describes how to set up recovery mechanisms for Identity Anchors.
+To learn how to create and use Identity Anchors step-by-step, see [How to use Internet Identity](./auth-how-to.md). This also describes how to set up recovery mechanisms for Identity Anchors.
 
 -->
