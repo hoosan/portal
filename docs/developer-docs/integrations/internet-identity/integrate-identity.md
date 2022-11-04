@@ -1,6 +1,6 @@
 #  Internet Identity の統合
 
-これは、Internet Identity を使用してプロジェクトを統合し、テストする方法を示しています。Internet Identity の開発版 [build flavor](https://github.com/dfinity/internet-identity/blob/main/README.md#build-features-and-flavors) と [agent-js](https://github.com/dfinity/agent-js) ライブラリを使用します。
+ここでは、Internet Identity を使用してプロジェクトを統合し、テストする方法を示します。Internet Identity の開発版 [ビルドフレーバー（Flavor）](https://github.com/dfinity/internet-identity/blob/main/README.md#build-features-and-flavors) と [agent-js](https://github.com/dfinity/agent-js) ライブラリを使用します。
 
 これはスタンドアローンのプロジェクトで、自分のプロジェクトにコピーすることができます。
 
@@ -15,7 +15,7 @@ $ npm ci
 $ dfx deploy --no-wallet --argument '(null)'
 ```
 
-この時点で、レプリカ（現実的には Internet Computer のローカル版）が稼働し、3つの Canister が配備されたことになります：
+この時点で、レプリカ（実用上の意味としては Internet Computer のローカル版）が稼働し、3つの Canister がデプロイされたことになります：
 
 - `internet_identity`: Internet Identity の開発版（[最新リリース](https://github.com/dfinity/internet-identity/releases/latest) からダウンロードできます。[`dfx.json`](https://github.com/dfinity/internet-identity/blob/main/demos/using-dev-build/dfx.json) を参照してください。）
 - `webapp`: この小型のWeb アプリは、Identity（アンカー）の作成と認証のために `internet_identity` Canister を呼び出し、次に `whoami` Canister（下記参照）を呼び出して Identity が有効であることを表示します。この Web アプリのソースは [`index.html`](https://github.com/dfinity/internet-identity/blob/main/demos/using-dev-build/webapp/index.html) と [`index.js`](https://github.com/dfinity/internet-identity/blob/main/demos/using-dev-build/webapp/index.js) で見ることができます。
@@ -27,15 +27,15 @@ $ dfx deploy --no-wallet --argument '(null)'
       };
   };
   ```
-IC では Principal は、リクエストを実行する人、またはコールをする人（いわゆるコーラー）の識別子です。すべての呼び出しには有効な Principal が必要です。また、匿名呼び出し用の特別な Principal があります。Internet Identity を使用する場合、[self-authenticating principals](../../../references/ic-interface-spec.md#principals) を使用しています。これは、ラップトップに隠れた秘密鍵があり（TouchID、Windows Hello など）、ブラウザが署名して IC への呼び出しを発行する人物であることを証明するために使用する非常に凝った方法です。
+IC では Principal は、リクエストを実行する人、またはコールをする人（いわゆるコーラー）の識別子です。すべての呼び出しには有効な Principal が必要です。また、匿名呼び出し用の特別な Principal があります。Internet Identity を使用する場合、[self-authenticating principals](../../../references/ic-interface-spec.md#principals) を使用することになります。これは、あなたが秘密鍵をラップトップに有している（TouchID、Windows Hello などの裏に隠れています）ことを示すための非常に凝った方法で、この秘密鍵はブラウザが署名に用いたり、あなたが確かに IC への呼び出しを行なっている人物であると証明するために使用されます。
 
-IC が実際に `whoami` Canister に通話（リクエスト）を通した場合、それはすべてがチェックアウトされたことを意味し、`whoami` Canister は IC がリクエストに追加する情報、すなわち、あなたの識別子（Principal）をレスポンスするのみです。
+IC が実際に `whoami` Canister への呼び出し（リクエスト）を通した場合、それはすべてが確認されたことを意味し、`whoami` Canister は IC がリクエストに追加した情報（つまりあなたの識別子（Principal））を単に返します。
 
 ### Auth-Client ライブラリを使用した Internet Identity でのログイン
 
 DFINITY では、Internet Identity でログインするための[使いやすいライブラリ（agent-js）](https://github.com/dfinity/agent-js) を提供しています。
 
-ログインし、Identity を使って Canister コールに使用するために必要な手順です：
+以下は、ログインとCanister コールに Identity を使用するために必要な手順です：
 ```js
 // まず、AuthClient を作成する必要があります。
 const authClient = await AuthClient.create();
@@ -71,7 +71,7 @@ const principal = await webapp.whoami();
 
 では、その Canister を使ってみましょう。詳細を気にしないなら [ヘルパー](#ヘルパー)まで読み飛ばしてください。
 
-これらの Canister と対話するためには（例えばブラウザで Web アプリを表示するためには）、それぞれの Canister ID を把握して、 `https://localhost:8000/?canisterId=<canister ID>` という形式の URL を使う必要があります（ここで `8000` は `dfx` がレプリカへのプロキシコールに用いるポートです。 このポートは通常 `dfx.json` で指定されています）。Canister ID は `dfx コマンド` の出力で確認することができます。また、 `dfx` の "internal" (read: non-documented) ステートで確認することができます。
+これらの Canister と対話するためには（例えばブラウザで Web アプリを表示するためには）、それぞれの Canister ID を把握して、 `https://localhost:8000/?canisterId=<canister ID>` という形式の URL を使う必要があります（ここで `8000` は `dfx` がレプリカへのプロキシコールに用いるポートです。 このポートは通常 `dfx.json` で指定されています）。Canister ID は `dfx コマンド` の出力で確認することができます。また、 `dfx` の "internal" (ドキュメント化されていません) ステートで確認することができます。
 
 ```
 ~/internet-identity/demos/using-dev-build$ cat .dfx/local/canister_ids.json
