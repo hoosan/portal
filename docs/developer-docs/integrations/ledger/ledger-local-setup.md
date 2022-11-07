@@ -137,7 +137,7 @@
 
         (record { e8s = 100_000_000_000 : nat64 })
 
-これでローカルの ICP 台帳 Canister が起動しました。これで、台帳 Canister と通信する必要のある他の Canister を配置することができました。
+ローカルの ICP 台帳 Canister が起動しました。これで、台帳 Canister と通信する必要のある他の Canister をデプロイすることができます。
 
 <!--
 # Ledger Local Setup

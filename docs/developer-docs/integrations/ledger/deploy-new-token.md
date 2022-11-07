@@ -90,7 +90,7 @@
      }
     ```
 
-6.  台帳 Canister が健全であることを確認します。以下のコマンドを実行します：
+6.  台帳 Canister が正常に動作していることを確認します。以下のコマンドを実行します：
 
     ``` sh
     dfx canister --network ${NETWORK} call ledger symbol
