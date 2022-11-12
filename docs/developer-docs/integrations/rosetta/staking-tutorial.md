@@ -1,6 +1,6 @@
 # Rosetta ステーキングのチュートリアル
 
-このドキュメントでは、[Rosetta API](https://rosetta-api.org) のインターネットコンピュータ実装を使用して Neuron を作成する手順を説明します。ガバナンス Canister への資金移動、 Neuron を作成し、新しく作成された Neuron を設定します。
+このドキュメントでは、[Rosetta API](https://rosetta-api.org) に関する Internet Computer の実装を使用して Neuron を作成する手順を説明します。ガバナンス Canister への資金移動、 Neuron を作成し、新しく作成された Neuron を設定します。
 
 ## 前提知識
 
@@ -10,23 +10,23 @@
 
 2.  [curl](https://curl.se/)
 
-3.  ed25519 キーと、そのキーを使ってメッセージに署名するための「お気に入りのツール」。
+3.  ed25519 キーと、そのキーを使ってメッセージに署名するためのお気に入りのツール。
 
 4.  あなたのキーで管理される台帳アカウントの少なくとも 2 ICP （[Compute the ledger account for staking](#_compute_the_ledger_account_for_staking) のセクションを参照してください）。
 
 ## 概要
 
-インターネットコンピュータから見ると、 Neuron を作るのは多段階の操作になります。
+Internet Computer から見ると、 Neuron を作るのは多段階の操作になります。
 
 1.  台帳 Canister を呼び出して、ステークのためにガバナンス Canister にトークンを送金します。
 
 2.  ガバナンスに送金を通知します。このステップで、ガバナンス Canister は新しい Neuron を割り当てます。
 
-3.  新しく作成された Neuron を設定する：溶解遅延を設定し、溶解を開始します。
+3.  新しく作成された Neuron に対して、溶解遅延と溶解を開始する設定を行います。
 
 Rosetta API では、これらのステップをトランザクションの [operation](https://www.rosetta-api.org/docs/models/Operation.html) として表現しています。これらの操作の実行は、[Construction API flow](https://www.rosetta-api.org/docs/flow.html#construction-api) に従わなければなりません。
 
-## アカウント識別子の導出する
+## アカウント識別子を導出する
 
 ステーキングには、ガバナンス Canister のサブアカウントへのトークンの送金が必要です。送金を完了するには、台帳のアカウント識別子（送金元）とガバナンスサブアカウント（送金先）のアカウント識別子の両方を知っておく必要があります。
 
@@ -107,7 +107,7 @@ curl -0 -X POST http://localhost:8080/construction/derive \
 
 ## 署名するペイロードを取得する
 
-Notes:
+以下の点を注意してください：
 
 -   以下の `address` フィールドは、前のステップで取得したアドレスに置き換えてください。2 番目の `TRANSACTION` オペレーション（下のスニペットではインデックス 1） Nueron の台帳アドレスを使用する必要があります。それ以外の操作では、 Nueron のコントローラーの台帳アドレスを使用します。
 
@@ -381,7 +381,7 @@ EOF
 
 ## ペイロードに署名し、署名付きトランザクションを構築する
 
-お好みのツールを使って、 `/construction/payloads` レスポンスにあるペイロードに署名してください。以下のコマンドで示すように、署名を `/construction/combine` リクエストに含めます。
+お好きなツールを使って、 `/construction/payloads` レスポンスにあるペイロードに署名してください。以下のコマンドで示すように、署名を `/construction/combine` リクエストに含めます。
 
 ``` sh
 curl -0 -X POST http://localhost:8080/construction/combine \

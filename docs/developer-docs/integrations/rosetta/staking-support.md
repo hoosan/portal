@@ -1,6 +1,6 @@
 # ステーキングとNeuron 管理
 
-本ドキュメントは、Rosetta API を拡張し、Internet Computer 上での資金  “Neuron” のステーキングとガバナンス “Neuron” の管理を可能にすることを規定しています。
+本ドキュメントは、Internet Computer 上での資金のステーキングとガバナンス “Neuron” の管理を可能にする Rosetta API の拡張について規定しています。
 
 :::note
 
@@ -14,7 +14,7 @@
 
 :::
 
-## Neuron アドレスの導出する
+## Neuron アドレスの導出
 
 |               |       |
 |---------------|-------|
@@ -57,7 +57,7 @@
 }
 ```
 
-## ステークファンド
+## 資金のステーク
 
 |               |       |
 |---------------|-------|
@@ -191,11 +191,11 @@
 
 <div class="formalpara-title">
 
-**前提条件：**
+**事前条件：**
 
 </div>
 
--   `account.address` は Neuron コントローラーの台帳アドレスです。
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
 
 <div class="formalpara-title">
 
@@ -229,11 +229,11 @@
 
 <div class="formalpara-title">
 
-**前提条件：**
+**事前条件：**
 
 </div>
 
--   `account.address` は Neuron コントローラーの台帳アドレスです。
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
 
 <div class="formalpara-title">
 
@@ -241,7 +241,7 @@
 
 </div>
 
--   このとき、Neuron は `DISSOLVING` 状態です。
+-   Neuron が `DISSOLVING` 状態である。
 
 <div class="formalpara-title">
 
@@ -274,11 +274,11 @@
 
 <div class="formalpara-title">
 
-**前提条件：**
+**事前条件：**
 
 </div>
 
--   `account.address` は、Neuron コントローラーの台帳アドレスです。
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
 
 <div class="formalpara-title">
 
@@ -286,7 +286,7 @@
 
 </div>
 
--   Neuron は `NOT_DISSOLVING` 状態です。
+-   Neuron が `NOT_DISSOLVING` 状態である。
 
 <div class="formalpara-title">
 
@@ -319,11 +319,11 @@
 
 <div class="formalpara-title">
 
-**前提条件：**
+**事前条件：**
 
 </div>
 
--   `account.address` は、Neuron コントローラーの台帳アドレスです。
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
 
 - Neuron のホットキーは10個以下です。
 
@@ -372,13 +372,13 @@
 
 <div class="formalpara-title">
 
-**前提条件：**
+**事前条件：**
 
 </div>
 
--   `account.address` は、Neuron コントローラーの台帳アドレスです。
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
 
--   ホットキーは Neuron にリンクされています。
+-   ホットキーが Neuron にリンクされている。
 
 このコマンドには、ホットキーとして [IC principal](../../../references/ic-interface-spec.md#principal) を受け付ける形式と、[public key](https://www.rosetta-api.org/docs/models/PublicKey.html) を受け付ける形式があります。
 
@@ -425,13 +425,13 @@
 
 <div class="formalpara-title">
 
-**前提条件：**
+**事前条件：**
 
 </div>
 
--   `account.address` は、Neuron コントローラーの台帳アドレスです。
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
 
--   親 Neuron は少なくとも 1 ICP 相当の成熟度を持ちます。
+-   親 Neuron は少なくとも 1 ICP 相当の成熟度を持つ。
 
 <div class="formalpara-title">
 
@@ -441,7 +441,7 @@
 
 -   親 Neuron の成熟度は `0` に設定される。
 
--   新しい Neuron は、転送された成熟度と同じ残高で生成されます。
+-   新しい Neuron が、転送された成熟度と同じ残高で生成される。
 
 ``` json
 {
@@ -465,7 +465,7 @@
 
 - メタデータフィールド `controller` はオプションで、デフォルトでは既存の Neuron コントローラーと同じになります。
 
-- メタデータフィールド `percentage_to_spawn` はオプションで、デフォルトでは 100 となります。指定する場合は、1 から 100 までの整数値（境界を含む）である必要があります。
+- メタデータフィールド `percentage_to_spawn` はオプションで、デフォルトでは 100 となります。指定する場合は、1 から 100 までの整数値（境界値を含む）である必要があります。
 
 :::
 
@@ -481,11 +481,11 @@
 
 <div class="formalpara-title">
 
-**前提条件：**
+**事前条件：**
 
 </div>
 
--   `account.address` は、Neuron コントローラーの台帳アドレスです。
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
 
 -   この Neuron は、成熟度がゼロの場合、マージできません。
 
@@ -495,9 +495,9 @@
 
 </div>
 
--   成熟度はマージにより減少します。
+-   成熟度がマージにより減少する。
 
--   マージ後、Neuron のステーキング数は増加します。
+-   マージ後、Neuron のステーキング数が増加する。
 
 <div class="formalpara-title">
 
@@ -533,7 +533,7 @@
 
 
 `FOLLOW` 操作は、Neuron に対してフォロールールを設定します。
-ガバナンス Canister スマートコントラクトは、投票中の followees の票から、フォローする Neuron の票を自動的に推定します。
+ガバナンス Canister スマートコントラクトは、投票中、フォローされている Neuron の票から、その Neuron をフォローしている Neuron の票を自動的に導出します。
 
 メタデータフィールド `followees` には、フォローする Neuron のリストが格納されています。
 リストに複数の Neuron が含まれている場合、その Neuron はフォローされている Neuron の過半数の票に従って投票します（引き分けの場合は棄権します）。
@@ -559,13 +559,13 @@
 
 <div class="formalpara-title">
 
-**前提条件：**
+**事前条件：**
 
 </div>
 
-* `account.address` は、Neuron コントローラーまたはホットキーの台帳アドレスです。
-* `metadata.followees` は、有効な Neuron 識別子の配列です。
-* `metadata.topic` は、有効なトピック識別子です。
+* `account.address` が Neuron コントローラーまたはホットキーの台帳アドレスである。
+* `metadata.followees` が有効な Neuron 識別子の配列である。
+* `metadata.topic` が有効なトピック識別子である。
 
 
 <div class="formalpara-title">
@@ -574,7 +574,7 @@
 
 </div>
 
-* Neuron は指定されたフォロールールに従って投票します。
+* Neuron が指定されたフォロールールに従って投票する。
 
 <div class="formalpara-title">
 
@@ -641,11 +641,11 @@
 
 <div class="formalpara-title">
 
-**前提条件：**
+**事前条件：**
 
 </div>
 
--   `public_key` には、Neuron のコントローラーの公開鍵が含まれます。
+-   `public_key` に、Neuron のコントローラーの公開鍵が含まれている。
 
 :::note
 
@@ -733,7 +733,7 @@
 }
 ```
 
-- `account.address` は Neuron コントローラーの台帳アドレスです。
+- `account.address` が Neuron コントローラーの台帳アドレスである。
 
 <div class="formalpara-title">
 
@@ -758,8 +758,8 @@
 }
 ```
 
-- `account.address` は、neuron ホットキーの台帳アドレスです。
-- `metadata.controller.public_key` は、Neuron コントローラーの公開鍵です。
+- `account.address` が neuron ホットキーの台帳アドレスである。
+- `metadata.controller.public_key` が Neuron コントローラーの公開鍵である。
 
 :::note
 

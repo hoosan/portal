@@ -6,23 +6,23 @@
 
 送金額 `T` をアドレス `A` からアドレス `B` に転送するトランザクションは、3つのオペレーションを含むことになります：
 
--   `TRANSACTION` タイプのオペレーションがアドレス `A` に `-T` の値で適用されます。
+-   `TRANSACTION` タイプの操作がアドレス `A` に `-T` の値で適用されます。
 
--   `TRANSACTION` オペレーションタイプがアドレス `B` に金額 `T` で適用されます。
+-   `TRANSACTION` タイプの操作がアドレス `B` に金額 `T` で適用されます。
 
 -   `FEE` タイプの操作が `/construction/metadata` エンドポイントによって提案された金額でアドレス `A` に適用されます（[ConstructionMetadataResponse](https://www.rosetta-api.org/docs/models/ConstructionMetadataResponse.html) タイプの `suggested_fee` フィールドを参照してください）。
 
 トランザクション内の操作の順序は関係ありません。
 
-1回の取引で複数回の送金はできません。そのような取引の結果は明示されません。
+1回のトランザクションで複数の送金を行うことはできません。そのような取引の結果は未定義です。
 
 前提条件：
 
--   アドレス `A` は少なくとも `T` + `suggested_fee` の ICP を保持しています。
+-   アドレス `A` は少なくとも `T` + `suggested_fee` の ICP を保持していること。
 
--   アドレス `A` は、サブアカウントがトランザクションの署名に使用した公開鍵に由来する Principal になっています。
+-   アドレス `A` は、サブアカウントがトランザクションの署名に使用した公開鍵に由来する Principal になっていること。
 
--   `FEE` オペレーションで指定する金額は `suggested_fee` と絶対値で等しくなっています。
+-   `FEE` オペレーションで指定する金額は `suggested_fee` と絶対値で等しくなっていること。
 
 ### オプションのメタデータフィールド
 
@@ -34,7 +34,7 @@ Rosetta ノードは [ConstructionPayloadRequest](https://www.rosetta-api.org/do
 
 ### 例
 
-以下は、アドレス `bdc4ee05d42cd0669786899f256c8fd7217fa71177bd1fa7b9534f568680a938` からアドレス `b64ec6f964d8597afa06d4209dbce2b2df9fe722e86aeda2351bd95500cf15f8` まで 1 ICP を譲渡した取引のサンプルです。
+以下は、アドレス `bdc4ee05d42cd0669786899f256c8fd7217fa71177bd1fa7b9534f568680a938` からアドレス `b64ec6f964d8597afa06d4209dbce2b2df9fe722e86aeda2351bd95500cf15f8` まで 1 ICP を譲渡したトランザクションのサンプルです。
 
 ``` json
 {

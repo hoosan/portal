@@ -8,7 +8,7 @@ Neuron を作るには2つのステップがあります：
 
 -   任意の台帳のアカウントから、ある** ICP 数量**を Neuron のアドレスに転送します。台帳上のNeuron アドレスはガバナンス Canister に属しています。呼び出し側は、2つの部分から Neuron アドレスを計算します。
 
-    -   ガバメント Canister の Principal。
+    -   ガバナンス Canister の Principal。
 
     -   **サブアカウント**：コントローラーの Principal のハッシュと整数の nonce です。サブアカウントの計算に異なる整数 nonce を選ぶことで、ひとつの Principal が複数の Neurons を制御することができます。
 
@@ -52,7 +52,7 @@ Neuron の状態遷移と報酬については、[Internet Computer’s Network 
 
 ## 状態遷移
 
-    ステートダイアグラム-v2
+    stateDiagram-v2
         state "Non-dissolving Neuron" as non_dissolving
         state "Dissolving Reward Neuron" as dissolving
         state "Dissolved Reward Neuron" as dissolved
