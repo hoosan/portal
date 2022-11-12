@@ -1,3 +1,819 @@
+# ステーキングとNeuron 管理
+
+本ドキュメントは、Internet Computer 上での資金のステーキングとガバナンス “Neuron” の管理を可能にする Rosetta API の拡張について規定しています。
+
+:::note
+
+トランザクション内の操作は順番に適用されるため、操作の順番は重要です。本 API が提供する冪等の操作を含むトランザクションは、24時間以内であれば再試行できます。
+
+:::
+
+:::note
+
+ガバナンス Canister の制限により、Neuron 管理操作はチェーンに反映されません。もし `/construction/submit` エンドポイントから返された識別子でトランザクションを検索すると、これらのトランザクションは存在しないか、Neuron 管理操作を見逃してしまうかもしれません。その代わり、 `/construction/submit` は `/block/transaction` が返すのと同じフォーマットで、 `metadata` フィールドにすべての操作のステータスを返します。
+
+:::
+
+## Neuron アドレスの導出
+
+|               |       |
+|---------------|-------|
+| Since version | 1.3.0 |
+
+メタデータフィールド `account_type` に `"neuron"` を指定して `/construction/derive` エンドポイントを呼び出し、公開鍵で制御される Neuron に対応する台帳アドレスを計算します。
+
+### リクエスト
+
+``` json
+{
+  "network_identifier": {
+    "blockchain": "Internet Computer",
+    "network": "00000000000000020101"
+  },
+  "public_key": {
+    "hex_bytes": "1b400d60aaf34eaf6dcbab9bba46001a23497886cf11066f7846933d30e5ad3f",
+    "curve_type": "edwards25519"
+  },
+  "metadata": {
+    "account_type": "neuron",
+    "neuron_index": 0
+  }
+}
+```
+
+:::note
+
+バージョン 1.3.0 以降では、同じキーを使って多くの Neuron を制御することができます。メタデータフィールド `neuron_index` に異なる値を指定することで、Neuron を区別することができます。Rosetta ノードでは、すべての Neuron 管理操作で `neuron_index` をサポートしています。`neuron_index` は `0` から `264 - 1` (`18446744073709551615`) までの任意の整数です。指定しない場合は 0 となります。JavaScript を使用して Rosetta ノードへのリクエストを作成する場合は、`neuron_index` を表すために [`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) タイプを使用することを検討してください。`Number` 型は `253 - 1` (`9007199254740991`) 以下の値のみを正確に表現することができます。
+
+:::
+
+### レスポンス
+
+``` json
+{
+  "account_identifier": {
+    "address": "531b163cd9d6c1d88f867bdf16f1ede020be7bcd928d746f92fbf7e797c5526a"
+  }
+}
+```
+
+## 資金のステーク
+
+|               |       |
+|---------------|-------|
+| Since version | 1.0.5 |
+| Idempotent?   | yes   |
+
+資金をステークするには、Neuron アドレスへの送金とそれに続く `STAKE` 操作を実行します。
+
+`STAKE` オペレーションで設定する必要があるのは `account` フィールドだけで、これは Neuron コントローラーの台帳アカウントと同じである必要があります。`STAKE` オペレーションの `metadata` フィールドには、 `neuron_index` フィールドを指定することができます。`neuron_index` を指定する場合、その値は Neuron アカウントの識別子を導き出すために使用したものと同じでなければなりません。
+
+### リクエスト
+
+``` json
+{
+  "network_identifier": {
+    "blockchain": "Internet Computer",
+    "network": "00000000000000020101",
+  },
+  "operations": [
+    {
+      "operation_identifier": { "index": 0 },
+      "type": "TRANSACTION",
+      "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+      "amount": {
+        "value": "-100000000",
+        "currency": { "symbol": "ICP", "decimals": 8 }
+      }
+    },
+    {
+      "operation_identifier": { "index": 1 },
+      "type": "TRANSACTION",
+      "account": { "address": "531b163cd9d6c1d88f867bdf16f1ede020be7bcd928d746f92fbf7e797c5526a" },
+      "amount": {
+        "value": "100000000",
+        "currency": { "symbol": "ICP", "decimals": 8 }
+      }
+    },
+    {
+      "operation_identifier": { "index": 2 },
+      "type": "FEE",
+      "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+      "amount": {
+        "value": "-10000",
+        "currency": { "symbol": "ICP", "decimals": 8 }
+      }
+    },
+    {
+      "operation_identifier": { "index": 3 },
+      "type": "STAKE",
+      "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+      "metadata": {
+        "neuron_index": 0
+      }
+    }
+  ]
+}
+```
+
+### レスポンス
+
+``` json
+{
+  "transaction_identifier": {
+    "hash": "2f23fd8cca835af21f3ac375bac601f97ead75f2e79143bdf71fe2c4be043e8f"
+  },
+  "metadata": {
+    "operations": [
+      {
+        "operation_identifier": { "index": 0 },
+        "type": "TRANSACTION",
+        "status": "COMPLETED",
+        "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+        "amount": {
+          "value": "-100000000",
+          "currency": { "symbol": "ICP", "decimals": 8 }
+        }
+      },
+      {
+        "operation_identifier": { "index": 1 },
+        "type": "TRANSACTION",
+        "status": "COMPLETED",
+        "account": { "address": "531b163cd9d6c1d88f867bdf16f1ede020be7bcd928d746f92fbf7e797c5526a" },
+        "amount": {
+          "value": "100000000",
+          "currency": { "symbol": "ICP", "decimals": 8 }
+        }
+      },
+      {
+        "operation_identifier": { "index": 2 },
+        "type": "FEE",
+        "status": "COMPLETED",
+        "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+        "amount": {
+          "value": "-10000",
+          "currency": { "symbol": "ICP", "decimals": 8 }
+        }
+      },
+      {
+        "operation_identifier": { "index": 3 },
+        "type": "STAKE",
+        "status": "COMPLETED",
+        "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+        "metadata": {
+          "neuron_index": 0
+        }
+      }
+    ]
+  }
+}
+```
+
+## Neuron を管理する
+
+### 溶解タイムスタンプをセットする
+
+|                      |            |
+|----------------------|------------|
+| Since version        | 1.1.0      |
+| Idempotent?          | yes        |
+| Minimal access level | controller |
+
+この操作は、Neuron が `DISSOLVED` 状態へ到達することができる時間を更新します。
+
+溶解タイムスタンプは常に単調に増加します。
+
+-   もし Neuron が `DISSOLVING` 状態であれば、この操作は溶解のタイムスタンプをさらに将来に移動させることができます。
+
+-   もし Neuron が `NOT_DISSOLVING` 状態であれば、時間 T で `SET_DISSOLVE_TIMESTAMP` を実行すると、Neuron の溶解遅延（Neuron の溶解にかかる最小時間）を `T - current_time` まで増やそうとします。
+
+-   `DISSOLVED` 状態のNeuron は、`SET_DISSOLVE_TIMESTAMP` を実行すると `NOT_DISSOLVING` 状態に移行し、それに応じて溶解遅延が設定されます。
+
+<div class="formalpara-title">
+
+**事前条件：**
+
+</div>
+
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
+
+<div class="formalpara-title">
+
+**例**
+
+</div>
+
+``` json
+{
+  "operation_identifier": { "index": 4 },
+  "type": "SET_DISSOLVE_TIMESTAMP",
+  "account": {
+    "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d"
+  },
+  "metadata": {
+    "neuron_index": 0,
+    "dissolve_time_utc_seconds": 1879939507
+  }
+}
+```
+
+### 溶解を開始する
+
+|                      |            |
+|----------------------|------------|
+| Since version        | 1.1.0      |
+| Idempotent?          | yes        |
+| Minimal access level | controller |
+
+`START_DISSOLVNG` 操作は、Neuron の状態を `DISSOLVING` に変更します。
+
+<div class="formalpara-title">
+
+**事前条件：**
+
+</div>
+
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
+
+<div class="formalpara-title">
+
+**事後条件：**
+
+</div>
+
+-   Neuron が `DISSOLVING` 状態である。
+
+<div class="formalpara-title">
+
+**例**
+
+</div>
+
+``` json
+{
+  "operation_identifier": { "index": 5 },
+  "type": "START_DISSOLVING",
+  "account": {
+    "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d"
+  },
+  "metadata": {
+    "neuron_index": 0
+  }
+}
+```
+
+### 溶解をストップする
+
+|                      |            |
+|----------------------|------------|
+| Since version        | 1.1.0      |
+| Idempotent?          | yes        |
+| Minimal access level | controller |
+
+`STOP_DISSOLVNG` 操作は、Neuron の状態を `NOT_DISSOLVING` に変更します。
+
+<div class="formalpara-title">
+
+**事前条件：**
+
+</div>
+
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
+
+<div class="formalpara-title">
+
+**事後条件：**
+
+</div>
+
+-   Neuron が `NOT_DISSOLVING` 状態である。
+
+<div class="formalpara-title">
+
+**例**
+
+</div>
+
+``` json
+{
+  "operation_identifier": { "index": 6 },
+  "type": "STOP_DISSOLVING",
+  "account": {
+    "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d"
+  },
+  "metadata": {
+    "neuron_index": 0
+  }
+}
+```
+
+### ホットキーを追加する
+
+|                      |            |
+|----------------------|------------|
+| Since version        | 1.2.0      |
+| Idempotent?          | yes        |
+| Minimal access level | controller |
+
+`ADD_HOTKEY` 操作は、Neuron にホットキーを追加します。ガバナンス Canister では、一部の重要でない操作を、コントローラのキーではなくホットキーで署名することができます（たとえば、投票やクエリの成否など）。
+
+<div class="formalpara-title">
+
+**事前条件：**
+
+</div>
+
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
+
+- Neuron のホットキーは10個以下です。
+
+このコマンドには、ホットキーとして [IC principal](../../../references/ic-interface-spec.md#principal) を受け付ける形式と、[public key](https://www.rosetta-api.org/docs/models/PublicKey.html) を受け付ける形式があります。
+
+#### ホットキーとしての Principal を追加する
+
+``` json
+{
+  "operation_identifier": { "index": 0 },
+  "type": "ADD_HOTKEY",
+  "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+  "metadata": {
+    "neuron_index": 0,
+    "principal": "sp3em-jkiyw-tospm-2huim-jor4p-et4s7-ay35f-q7tnm-hi4k2-pyicb-xae"
+  }
+}
+```
+
+#### ホットキーとしての公開鍵を追加する
+
+``` json
+{
+  "operation_identifier": { "index": 0 },
+  "type": "ADD_HOTKEY",
+  "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+  "metadata": {
+    "neuron_index": 0,
+    "public_key": {
+      "hex_bytes":  "1b400d60aaf34eaf6dcbab9bba46001a23497886cf11066f7846933d30e5ad3f",
+      "curve_type": "edwards25519"
+    }
+  }
+}
+```
+
+### ホットキーを削除する
+
+|                      |            |
+|----------------------|------------|
+| Since version        | 1.2.0      |
+| Idempotent?          | yes        |
+| Minimal access level | controller |
+
+`REMOVE_HOTKEY` 操作は、以前に追加されたホットキーを Neuron から削除します。
+
+<div class="formalpara-title">
+
+**事前条件：**
+
+</div>
+
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
+
+-   ホットキーが Neuron にリンクされている。
+
+このコマンドには、ホットキーとして [IC principal](../../../references/ic-interface-spec.md#principal) を受け付ける形式と、[public key](https://www.rosetta-api.org/docs/models/PublicKey.html) を受け付ける形式があります。
+
+#### ホットキーとしての Principal を削除する
+
+``` json
+{
+  "operation_identifier": { "index": 0 },
+  "type": "REMOVE_HOTKEY",
+  "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+  "metadata": {
+    "neuron_index": 0,
+    "principal": "sp3em-jkiyw-tospm-2huim-jor4p-et4s7-ay35f-q7tnm-hi4k2-pyicb-xae"
+  }
+}
+```
+
+#### ホットキーとしての公開鍵を削除する
+
+``` json
+{
+  "operation_identifier": { "index": 0 },
+  "type": "REMOVE_HOTKEY",
+  "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+  "metadata": {
+    "neuron_index": 0,
+    "public_key": {
+      "hex_bytes":  "1b400d60aaf34eaf6dcbab9bba46001a23497886cf11066f7846933d30e5ad3f",
+      "curve_type": "edwards25519"
+    }
+  }
+}
+```
+
+### Nueron を産出する（Spawn Neurons）
+
+|                      |            |
+|----------------------|------------|
+| Since version        | 1.3.0      |
+| Idempotent?          | yes        |
+| Minimal access level | controller |
+
+`SPAWN` オペレーションは、十分な成熟度を持つ既存の Neuron から新しい Neuron を作成します。この操作では、既存のNeuron からすべての成熟度を、ステークされた新しく産出される Neuron に転送します。
+
+<div class="formalpara-title">
+
+**事前条件：**
+
+</div>
+
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
+
+-   親 Neuron は少なくとも 1 ICP 相当の成熟度を持つ。
+
+<div class="formalpara-title">
+
+**事後条件：**
+
+</div>
+
+-   親 Neuron の成熟度は `0` に設定される。
+
+-   新しい Neuron が、転送された成熟度と同じ残高で生成される。
+
+``` json
+{
+  "operation_identifier": { "index": 0 },
+  "type": "SPAWN",
+  "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+  "metadata": {
+    "neuron_index": 0,
+    "controller": {
+      "principal": "sp3em-jkiyw-tospm-2huim-jor4p-et4s7-ay35f-q7tnm-hi4k2-pyicb-xae"
+    },
+    "spawned_neuron_index": 1,
+    "percentage_to_spawn": 75
+  }
+}
+```
+
+:::note
+
+- メタデータフィールド `spawned_neuron_index` は必須です。Rosetta ノードはこのインデックスを使用して、産出された Neuron のサブアカウントを計算します。すべての産出された Neuron は `spawned_neuron_index` が異なる値でなければなりません。
+
+- メタデータフィールド `controller` はオプションで、デフォルトでは既存の Neuron コントローラーと同じになります。
+
+- メタデータフィールド `percentage_to_spawn` はオプションで、デフォルトでは 100 となります。指定する場合は、1 から 100 までの整数値（境界値を含む）である必要があります。
+
+:::
+
+### 成熟した Nueron をマージする
+
+|                      |            |
+|----------------------|------------|
+| Since version        | 1.4.0      |
+| Idempotent?          | no         |
+| Minimal access level | controller |
+
+`MERGE_MATURITY` オペレーションは、Neuron の既存の成熟度をそのステークにマージします。マージする成熟度のパーセンテージを指定することができ、また成熟度全体をマージすることもできます。
+
+<div class="formalpara-title">
+
+**事前条件：**
+
+</div>
+
+-   `account.address` が Neuron コントローラーの台帳アドレスである。
+
+-   この Neuron は、成熟度がゼロの場合、マージできません。
+
+<div class="formalpara-title">
+
+**事後条件：**
+
+</div>
+
+-   成熟度がマージにより減少する。
+
+-   マージ後、Neuron のステーキング数が増加する。
+
+<div class="formalpara-title">
+
+**例**
+
+</div>
+
+``` json
+{
+  "operation_identifier": { "index": 0 },
+  "type": "MERGE_MATURITY",
+  "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+  "metadata": {
+    "neuron_index": 0,
+    "percentage_to_merge": 14
+  }
+}
+```
+
+:::note
+
+メタデータフィールド `percentage_to_merge` はオプションで、デフォルトでは 100 となります。指定する場合は、1 から 100 までの整数値（境界を含む）である必要があります。
+
+:::
+
+### Neuron をフォローする
+
+|                      |            |
+|----------------------|------------|
+| Since version        | 1.5.0      |
+| Idempotent?          | yes        |
+| Minimal access level | hotkey     |
+
+
+`FOLLOW` 操作は、Neuron に対してフォロールールを設定します。
+ガバナンス Canister スマートコントラクトは、投票中、フォローされている Neuron の票から、その Neuron をフォローしている Neuron の票を自動的に導出します。
+
+メタデータフィールド `followees` には、フォローする Neuron のリストが格納されています。
+リストに複数の Neuron が含まれている場合、その Neuron はフォローされている Neuron の過半数の票に従って投票します（引き分けの場合は棄権します）。
+リストが空の場合、このトピックのルールは破棄されます（つまり、（このトピック）タイプのプロポーザルに対して、Neuron は他の Neuron をフォローしていないことになります）。
+
+メタデータフィールド `topic` を指定することで、ルールを特定のトピックに限定することができます。
+トピックは 0 から 10 までの整数値です（この値を含む）。
+`topic` フィールドのデフォルト値は 0 です。
+各トピックには、最大で1つのルールを関連付けることができます。
+以下にトピックコードを列挙します。
+
+1. Undefined (all topics).
+2. Neuron management.
+3. Exchange rate.
+4. Network economics.
+5. Governance.
+6. Node administration.
+7. Participant management.
+8. Subnet management.
+9. Network canister management.
+10. KYC.
+11. Node provider rewards.
+
+<div class="formalpara-title">
+
+**事前条件：**
+
+</div>
+
+* `account.address` が Neuron コントローラーまたはホットキーの台帳アドレスである。
+* `metadata.followees` が有効な Neuron 識別子の配列である。
+* `metadata.topic` が有効なトピック識別子である。
+
+
+<div class="formalpara-title">
+
+**事後条件：**
+
+</div>
+
+* Neuron が指定されたフォロールールに従って投票する。
+
+<div class="formalpara-title">
+
+**コントローラーとして `FOLLOW` を呼び出す：**
+
+</div>
+
+```json
+{
+  "operation_identifier": { "index": 0 },
+  "type": "FOLLOW",
+  "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+  "metadata": {
+    "topic": 0,
+    "followees": [4169717477823915596, 7814871076665269296],
+    "neuron_index": 0
+  }
+}
+```
+
+<div class="formalpara-title">
+
+**ホットキーで `FOLLOW` を呼び出す:**
+
+</div>
+
+```json
+{
+  "operation_identifier": { "index": 0 },
+  "type": "FOLLOW",
+  "account": { "address": "8af54f1fa09faeca18d294e0787346264f9f1d6189ed20ff14f029a160b787e8" },
+  "metadata": {
+    "topic": 0,
+    "followees": [4169717477823915596, 7814871076665269296],
+    "neuron_index": 0,
+    "controller": {
+      "public_key": {
+        "hex_bytes": "ba5242d02642aede88a5f9fe82482a9fd0b6dc25f38c729253116c6865384a9d",
+        "curve_type": "edwards25519"
+      }
+    }
+  }
+}
+```
+
+:::note
+
+`followees` メタデータフィールドには、ガバナンス Canister スマートコントラクトによって割り当てられた一意の Neuron 識別子のリストが含まれます。これは呼び出し側が選択した Neuron インデックスのリストではありません。
+`STAKE` と `NEURON_INFO` オペレーションの `neuron_id` メタデータフィールドから、あなたの Neuron の一意の Neuron 識別子を取得することができます。
+
+:::
+
+
+## Neuron 属性へのアクセスする
+
+### パブリック情報にアクセスする
+
+|                      |        |
+|----------------------|--------|
+| Since version        | 1.3.0  |
+| Minimal access level | public |
+
+ステーキング数量と公開されている Neuron のメタデータにアクセスするために、`/account/balance` エンドポイントを呼び出します。
+
+<div class="formalpara-title">
+
+**事前条件：**
+
+</div>
+
+-   `public_key` に、Neuron のコントローラーの公開鍵が含まれている。
+
+:::note
+
+-   この操作はオンラインモードでのみ利用可能です。
+
+-   エンドポイントは常に Neuron の最新の状態を返すので、リクエストにはブロック識別子を指定してはいけません。
+
+:::
+
+#### リクエスト
+
+``` json
+{
+  "network_identifier": {
+    "blockchain": "Internet Computer",
+    "network": "00000000000000020101"
+  },
+  "account_identifier": {
+    "address": "a4ac33c6a25a102756e3aac64fe9d3267dbef25392d031cfb3d2185dba93b4c4"
+  },
+  "metadata": {
+    "account_type": "neuron",
+    "neuron_index": 0,
+    "public_key": {
+      "hex_bytes": "ba5242d02642aede88a5f9fe82482a9fd0b6dc25f38c729253116c6865384a9d",
+      "curve_type": "edwards25519"
+    }
+  }
+}
+```
+
+#### レスポンス
+
+``` json
+{
+  "block_identifier": {
+    "index": 1150,
+    "hash": "ca02e34bafa2f58b18a66073deb5f389271ee74bd59a024f9f7b176a890039b2"
+  },
+  "balances": [
+    {
+      "value": "100000000",
+      "currency": {
+        "symbol": "ICP",
+        "decimals": 8
+      }
+    }
+  ],
+  "metadata": {
+    "verified_query": false,
+    "retrieved_at_timestamp_seconds": 1639670156,
+    "state": "DISSOLVING",
+    "age_seconds": 0,
+    "dissolve_delay_seconds": 240269355,
+    "voting_power": 195170955,
+    "created_timestamp_seconds": 1638802541
+  }
+}
+```
+
+### 保護された情報へアクセスする
+
+|                      |        |
+|----------------------|--------|
+| Since version        | 1.5.0  |
+| Idempotent?          | yes    |
+| Minimal access level | hotkey |
+
+`NEURON_INFO` オペレーションはガバナンス Canister から Neuron の状態を取得し、成熟度などの保護されたフィールドも取得します。この操作は Neuron の状態を変更することはありません。この操作は、Neuron コントローラまたはホットキーのいずれかで実行できます。
+
+<div class="formalpara-title">
+
+**`NEURON_INFO` をコントローラーとして呼び出す場合:**
+
+</div>
+
+``` json
+{
+  "operation_identifier": { "index": 0 },
+  "type": "NEURON_INFO",
+  "account": { "address": "907ff6c714a545110b42982b72aa39c5b7742d610e234a9d40bf8cf624e7a70d" },
+  "metadata": {
+    "neuron_index": 0
+  }
+}
+```
+
+- `account.address` が Neuron コントローラーの台帳アドレスである。
+
+<div class="formalpara-title">
+
+**ホットキーで `NEURON_INFO` を呼び出す：**
+
+</div>
+
+``` json
+{
+  "operation_identifier": { "index": 0 },
+  "type": "NEURON_INFO",
+  "account": { "address": "8af54f1fa09faeca18d294e0787346264f9f1d6189ed20ff14f029a160b787e8" },
+  "metadata": {
+    "neuron_index": 0,
+    "controller": {
+      "public_key": {
+        "hex_bytes": "ba5242d02642aede88a5f9fe82482a9fd0b6dc25f38c729253116c6865384a9d",
+        "curve_type": "edwards25519"
+      }
+    }
+  }
+}
+```
+
+- `account.address` が neuron ホットキーの台帳アドレスである。
+- `metadata.controller.public_key` が Neuron コントローラーの公開鍵である。
+
+:::note
+
+Rosetta API はコントローラーの公開鍵とNeuron インデックスで Neuron を識別するため、ホットキーで操作を実行する場合、呼び出し側が公開鍵を指定する必要があります。
+
+:::
+
+Rosetta API は、操作後のメタデータ `/construction/submit` エンドポイントに、Neuron の状態を返します。
+
+<div class="formalpara-title">
+
+**construction/submit エンドポイントからの応答例です：**
+
+</div>
+
+``` json
+{
+  "transaction_identifier": {
+    "hash": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "metadata": {
+    "operations": [
+      {
+        "operation_identifier": { "index": 0 },
+        "type": "NEURON_INFO",
+        "status": "COMPLETED",
+        "account": {
+          "address": "8af54f1fa09faeca18d294e0787346264f9f1d6189ed20ff14f029a160b787e8"
+        },
+        "metadata": {
+          "controller": {
+            "principal": "sp3em-jkiyw-tospm-2huim-jor4p-et4s7-ay35f-q7tnm-hi4k2-pyicb-xae"
+          },
+          "followees": [
+            "0": [111, 222],
+            "8": [555, 666]
+          ],
+          "hotkeys": [
+            "6xpcx-hldf5-4ddrg-onbug-4e2kw-rc25g-rxknf-p2wij-hxhqj-azcii-oqe"
+          ],
+          "kyc_verified": true,
+          "maturity_e8s_equivalent": 1000,
+          "neuron_fees_e8s": 0,
+          "neuron_id": 18089972080608815000,
+          "neuron_index": 0,
+          "state": "DISSOLVING"
+        }
+      }
+    ]
+  }
+}
+```
+
+<!--
 # Staking and neuron management
 
 This document specifies extensions of the Rosetta API enabling staking funds and managing governance "neurons" on the Internet Computer.
@@ -812,3 +1628,5 @@ The Rosetta API returns the state of the neuron as operation metadata in the `/c
   }
 }
 ```
+
+-->
