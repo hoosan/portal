@@ -1,6 +1,17 @@
 # 機能統合について
 
-これまでのセクションでは、IC 上で Canister を作り始める方法を案内してきましたが、ここでは、様々な（時には最先端の）追加機能を Dapps に統合する方法を紹介します。
+これまでのセクションでは、IC 上で Canister を作り始める方法を案内してきましたが、ここでは、様々な（時には最先端の）追加機能を Dapps に統合する方法を紹介します。 Identity から台帳統合、他のブロックチェーンとの統合、IC から外部への通信、そして Dapps の制御の分散化まで、すべてここにあります。
+
+## Service Nervous System（SNS）
+NNS が IC を制御するオープントークン DAO であるのと同様に、SNS はアルゴリズム DAO であり、開発者が自分の Dapps のために分散化されたトークンベースのガバナンスシステムを作ることを可能にします。[SNSドキュメントの概要](./sns/index.md) をはじめ、ターゲット別に分類した後、開発者向けのドキュメントを提供します。
+
+他には以下の項目があります。
+
+* [SNS の技術的な紹介](./sns/sns-intro.md)
+* [SNS の取得方法に関する情報](./sns/get-sns/get-sns-intro.md)
+* フロントエンドとの連携、[台帳 Canister](./sns/integrate-sns/ledger-integration.md) や [index Canister](./sns/integrate-sns/index-integration.md) を含む SNS との連携方法に関する情報
+* [SNS の管理方法に関する情報](./sns/managing-sns/manage-sns-intro.md)
+
 
 ## Bitcoin 統合
 Bitcoin ネットワークと直接統合することで、IC 上の Canister が Bitcoin を受け取り、保有し、送信することを、すべてBitcoin ネットワーク上のトランザクションで直接行うことができます。つまり、Canister は、Bitcoin ネットワーク上で Bitcoin を保有する一般ユーザーと全く同じように行動することができます。
@@ -46,7 +57,16 @@ Rosetta は、Coinbase が導入したオープンスタンダードで、取引
 <!--
 # Functionality Integrations
 
-While previous sections guide you to start building canisters on the IC, here you can see how to integrate various (sometimes advanced) extra functionality to your dapp.
+While previous sections guide you to start building canisters on the IC, here you can see how to integrate various (sometimes advanced) extra functionality to your dapp. From identity to ledger integrations, to integrating with other blockchains, to communicating from the IC to the outside world, and even decentralizing control of your dapp, it's all here.
+
+## Service Nervous System (SNS)
+Similar to how the NNS is the open tokenized DAO that controls the IC, SNSs are algorithmic DAOs that allow developers to create decentralized, token-based governance systems for their dapps. This section provides an [overview of the SNS documentation](./sns/index.md), sorted by the target group that it aims at, and then provides the documentation aimed at developers.
+The latter contains
+
+* [A technical introduction to the SNS](./sns/sns-intro.md)
+* [Information on how to get an SNS](./sns/get-sns/get-sns-intro.md)
+* Information on how to integrate with an SNS, including frontend integration and integration with the [ledger canister](./sns/integrate-sns/ledger-integration.md) and [index canister](./sns/integrate-sns/index-integration.md)
+* [Information on how to manage an SNS](./sns/managing-sns/manage-sns-intro.md)
 
 ## Bitcoin Integration
 Integrate directly with the Bitcoin network allowing canisters on the IC to receive, hold, and send Bitcoin, all directly with transactions on the Bitcoin network. I.e., canisters can act exactly like regular users holding bitcoin on the Bitcoin network.
@@ -86,5 +106,3 @@ Rosetta is an open standard introduced by Coinbase to simplify the integration o
 * [staking support](./rosetta/staking-support.md) specifies extensions of the Rosetta API enabling staking funds and managing governance neurons on the IC
 * [staking tutorial](./rosetta/staking-tutorial.md) walks through the process of creating a neuron
 * [hotkeys](./rosetta/hotkeys.md) explains how to generate a hotkey for neuron management
-
--->
