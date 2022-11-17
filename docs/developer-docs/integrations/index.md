@@ -105,4 +105,6 @@ Rosetta is an open standard introduced by Coinbase to simplify the integration o
 * [neuron lifecycle](./rosetta/neuron-lifecycle.md) gives an overview of neurons (IC assets allowing controllers to participate in the governance of the network by submitting and voting on proposals)
 * [staking support](./rosetta/staking-support.md) specifies extensions of the Rosetta API enabling staking funds and managing governance neurons on the IC
 * [staking tutorial](./rosetta/staking-tutorial.md) walks through the process of creating a neuron
-* [hotkeys](./rosetta/hotkeys.md) explains how to generate a hotkey for neuron management
+* [hotkeys](./rosetta/hotkeys.md) explains how to generate a hotkey for neuron management]
+
+-->
