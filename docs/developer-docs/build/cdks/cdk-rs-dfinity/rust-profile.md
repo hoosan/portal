@@ -117,7 +117,21 @@ Candid ファイルを更新するには、以下のようにします:
 
 2.  `src/rust_profile/rust_profile.did` ファイルをテキストエディタで開いてください。
 
-3.  `getSelf`、`update`、`get`、`search` 関数のために[こちら](../../_attachments/profile.did) の `service` の定義をコピー＆ペーストして書き込んでください：
+3.  `getSelf`、`update`、`get`、`search` 関数に対する以下の `Profile` 型宣言と `service` 定義をコピー＆ペーストしてください：
+
+    ```did
+    type Profile = record {
+        "name": text;
+        "description": text;
+        "keywords": vec text;
+    };
+    service : {
+        "getSelf": () -> (Profile) query;
+        "get": (text) -> (Profile) query;
+        "update": (Profile) -> ();
+        "search": (text) -> (opt Profile) query;
+    }
+    ```
 
 4.  変更を保存してファイルを閉じ、次に進んでください。
 
