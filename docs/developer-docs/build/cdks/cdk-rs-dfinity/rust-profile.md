@@ -117,7 +117,21 @@ Candid ファイルを更新するには、以下のようにします:
 
 2.  `src/rust_profile/rust_profile.did` ファイルをテキストエディタで開いてください。
 
-3.  `getSelf`、`update`、`get`、`search` 関数のために[こちら](../../_attachments/profile.did) の `service` の定義をコピー＆ペーストして書き込んでください：
+3.  `getSelf`、`update`、`get`、`search` 関数に対する以下の `Profile` 型宣言と `service` 定義をコピー＆ペーストしてください：
+
+    ```did
+    type Profile = record {
+        "name": text;
+        "description": text;
+        "keywords": vec text;
+    };
+    service : {
+        "getSelf": () -> (Profile) query;
+        "get": (text) -> (Profile) query;
+        "update": (Profile) -> ();
+        "search": (text) -> (opt Profile) query;
+    }
+    ```
 
 4.  変更を保存してファイルを閉じ、次に進んでください。
 
@@ -453,7 +467,21 @@ To update Candid file for this tutorial:
 
 2.  Open the `src/rust_profile_backend/rust_profile_backend.did` file in a text editor.
 
-3.  Copy and paste [these](../../_attachments/profile.did) `type` declaration and `service` definition for the `getSelf`, `update`, `get`, and `search` functions.
+3.  Copy and paste the following `Profile` type declaration and `service` definition for the `getSelf`, `update`, `get`, and `search` functions.
+    ```did
+    type Profile = record {
+        "name": text;
+        "description": text;
+        "keywords": vec text;
+    };
+
+    service : {
+        "getSelf": () -> (Profile) query;
+        "get": (text) -> (Profile) query;
+        "update": (Profile) -> ();
+        "search": (text) -> (opt Profile) query;
+    }
+    ```
 
 4.  Save your changes and close the file to continue.
 
