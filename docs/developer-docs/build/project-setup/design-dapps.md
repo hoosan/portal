@@ -1,3 +1,40 @@
+# Dapp のデザイン
+
+アプリのアイデアを考えるとき、どのような構成にするかなど、さまざまな設計上の判断を迫られることになります。Internet Computer では、アプリの実装を考える上で、特に設定上で注意を払うべき判断がいくつかあります。
+
+## シングルまたはマルチ Canister アーキテクチャー
+
+Dapp を設計する際に考慮すべき最初の決定の1つは、単一の Canister にカプセル化するか、複数の Canister で構成するかです。
+
+例えば、フロントエンドのないシンプルなサービスを書いている場合、単一の Canister を使用して、プロジェクト管理とメンテナンスを簡素化し、機能の追加に集中するのがよいでしょう。フロントエンドのアセットとバックエンドのビジネスロジックの両方を持つ Dapp の場合、プロジェクトは少なくともふたつの Canister で構成されることになります。ひとつの Canister はユーザーインターフェース・コンポーネントを管理し、もうひとつは Canister はアプリケーションが提供するバックエンド・サービスに対応します。
+
+計画にあたっては、再利用可能な共通サービスを独自の Canister に配置し、より専門的な他の Canister からインポートして呼び出したり、他の開発者が使用できるようにすることも検討するとよいでしょう。[LinkedUp](https://github.com/dfinity/linkedup) サンプル Dapp は、プロフェッショナルサービスの Dapp をふたつの Canister に分割して、このアプローチを説明しています。LinkedUp の例では、ソーシャルコネクションを確立する機能は `connectd`  Canister で、プロフェッショナルプロファイルをセットアップする機能は `linkedup` Canister で定義されていて分離されています。例えば、プロファイルの属性や共有されたコネクションに基づいてイベントをスケジュールするために、3つ目の Canister でアプリケーションを拡張することを想像することは容易です。
+
+## 型・ユーティリティから Actor を分離する
+
+プロジェクトのアーキテクチャーを計画する際に、一般的なプラクティスとして、メインの Actor 用のコードをひとつのファイルに配置し、プログラムで使用する型や Actor を必要としないユーティリティ関数を定義するためのファイルを別途追加するというものがあります。
+
+例えば、アプリのバックエンドロジックを以下のファイルで構成するように設定することができます：
+
+-   `Main.mo` または `main.rs` は Actor がクエリやアップデートの呼び出しを送信するために必要な関数を表現します。
+
+-   `Util.mo` または `util.rs` は Actor が使用できるようにインポートできるヘルパー関数と組み合わせて使用します。
+
+-   `Types.mo` または `types.rs` は、Dapp 用のすべてのデータ型を定義します。
+
+## クエリコールの利用
+
+[クエリとアップデートメソッド](../../../concepts/canisters-code#query-update) で述べたように、クエリはアップデートコールより速く結果を返します。したがって、関数を明示的に `query` としてマークすることは、アプリケーションのパフォーマンスを向上させるための効果的な戦略です。計画や設計の段階では、クエリや更新を実行できる関数ではなく、クエリコールを使用するのが最良の方法であることを（最大限）考慮する必要があります。
+
+これは一般的なルールであり、ほとんどの種類の Dapps に適用できます。ただし、クエリがコンセンサスを得られず、ブロックチェーンに表示されないというセキュリティとパフォーマンスのトレードオフも考慮する必要があります。アプリケーションによっては、そのトレードオフが適切な場合もあります。例えば、ブログプラットフォームを開発している場合、タグに一致する記事を取得するクエリは、おそらく大多数のノードが結果に同意していることを保証するコンセンサスを経る必要はないでしょう。しかし、金融データのような機密情報を取得するアプリの場合は、基本的なクエリよりも確実な結果を求めるかもしれません。
+
+ベーシッククエリの代わりに、Internet Computer は**認証済みクエリ（certified queries）**もサポートしています。認証済みクエリを使用すると、エンドユーザーが信頼できる **認証済みレスポンス** を受け取ることができます。認証済みクエリの使用は高度な技術であり、チュートリアルやその他の開発者向けドキュメントでは扱っていませんが、[Interface specification](../../../references/ic-interface-spec.md) で、認証の仕組みと、クエリにレスポンスして認証済みデータを返すためのプログラム構成について学ぶことができます。
+
+## データの保存と検索
+
+Internet Computer では、直交型持続性と呼ばれる長期間のデータ保存に**ステーブルメモリ**を使用し、データの取得に**クエリコール**を使用することができます。1つ以上のキーを使って効率的にデータを取り出すには、通常、ハッシュテーブルのようなデータ構造を使用することで実現できます。また、より伝統的なデータベースを Canister 内に実装することも可能です。
+
+<!--
 # Designing Dapps
 
 As you come up with ideas for dapps, you are going to make many design decisions about how to structure and organize your project. On the Internet Computer, there are a few design decisions that you should pay particular attention to as you plan the implementation for your app.
@@ -33,3 +70,5 @@ As an alternative to basic queries, the Internet Computer also supports **certif
 ## Data storage and retrieval
 
 The Internet Computer enables you to use **stable memory** to handle long-term data storage—often referred to as orthogonal persistence—and to use **query calls** to retrieve your data. Efficiently retrieving data using one or more keys can typically be achieved by using data structures like hash tables. It is also possible to implement a more traditional database inside a canister.
+
+-->
