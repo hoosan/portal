@@ -4,7 +4,7 @@
 
 ICP トークンとは異なり、Cycle は Canister にのみ関連付けられ、ユーザーや開発者の Principal には関連付けられません。 Canister だけが、操作の実行や使用するリソースの支払いに Cycle を必要とし消費するため、ユーザーと開発者は、**Cycle ウォレット**と呼ばれる特別なタイプの Canister を通じて Cycle の配布と所有権を管理します。Cycle ウォレットは、新しい Canister の作成などの操作に必要な Cycle を保持しているため、ユーザーの Principal の代わりに、Cycle ウォレットの Canister Principal を使用してこれらの操作が実行出来ます。
 
-ローカル Canister 実行環境を使用するために、SDK はすべてのプロジェクトで自動的にデフォルトの Cycle ウォレットを作成します。また Cycle ウォレットを使用して実行される操作のほとんどはバックエンドで行われます。例えば、Cycle ウォレットはあなたの（Principal）代わりに、 Canister Principal の登録や、ローカル Canister 実行環境での Canister のデプロイを行います。
+ローカル Canister 実行環境を使用するために、SDK はすべてのプロジェクトで自動的にデフォルトの Cycle ウォレットを作成します。また Cycle ウォレットを使用して実行される操作のほとんどは見えないところで行われます。例えば、Cycle ウォレットはあなたの（Principal）代わりに、 Canister Principal の登録や、ローカル Canister 実行環境での Canister のデプロイを行います。
 
 しかし、プロダクト環境では Principal を管理して、Cycle を明示的に登録することや、新しい Canister に転送し、カストディアンとして機能できる Principal を指定し、所有権を持たせる必要があります。これらのタスクの一部は、ウェブブラウザで実行されるデフォルトの Cycle ウォレット Dapp を使って実行できます。また、実行したい特定のアクションに応じて、ターミナルで `dfx wallet` コマンドを実行したり、デフォルトの Cycle ウォレット Canister のメソッドを直接呼び出すことで、これらの Cycle と Canister の管理タスクを実行することができます。
 
@@ -58,13 +58,13 @@ ICP トークンとは異なり、Cycle は Canister にのみ関連付けられ
 
 Internet Computer にデプロイする場合、Cycle ウォレットが作成され、通常、ICP トークンを Cycle に変換し、Cycle を新しい Canister Principal に転送し、デフォルトの Cycle ウォレット WebAssembly モジュール（WASM）で Canister を更新することが可能です。[ICP トークンを Cycle に変換する](../../quickstart/network-quickstart.md#creating-a-cycles-wallet)では、この方法を説明しています。
 
-ICP を Cycle に変換し、新しい Cycle ウォレットを作成するための Dapps があります。例えば、[NNS Dapp](./../tokenomics/token-holders/nns-app-quickstart#_deploy_a_canister_with_cycles) などです。
+ICP を Cycle に変換し、新しい Cycle ウォレットを作成するための Dapps があります。例えば、[NNS Dapp](../../../tokenomics/token-holders/nns-app-quickstart#_deploy_a_canister_with_cycles) などです。
 
 ##  Cycle 残高の確認
 
 ローカルの Canister 実行環境、または Inernet Computer 上の Cycle ウォレットでは、`dfx wallet balance` コマンドまたは `wallet_balance` メソッドを使用して現在の Cycle  残高を確認することができます。
 
-### ローカル環境で Cycle 残高の確認する
+### ローカル環境で Cycle 残高を確認する
 
 ローカルで開発を行っている場合、`dfx wallet balance` コマンドを使用すると、プロジェクトごとに現在の Cycle 残高をチェックすることができます。
 
