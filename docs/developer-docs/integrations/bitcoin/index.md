@@ -1,10 +1,10 @@
 # Bitcoin 統合
 
-Internet Computer は、Bitcoin ネットワークと直接統合されています。これにより、Internet Computer 上の Canister は、Bitcoin の受信、保有、送信をすべて Bitcoin ネットワーク上のトランザクションと直接的に行うことができます。つまり、 Canister は、Bitcoin ネットワーク上で Bitcoin を保有する通常のユーザーと全く同じように利用することが可能になります。これらはすべて、（1）Internet Computer がプロトコルレベルで Bitcoin と統合し、（2） Canister が新しい閾値 ECDSA プロトコルによって ECDSA 鍵を安全に保持（および使用）できることによって可能になりました。Internet Computer は、このような他のブロックチェーンとの直接統合を行う最初のブロックチェーンネットワークの一つであり、この目的のために新しい技術基盤を構築しています。
+Internet Computer は、Bitcoin ネットワークと直接統合されています。これにより、Internet Computer 上の Canister は、Bitcoin の受信、保有、送信をすべて Bitcoin ネットワーク上のトランザクションと直接的に行うことができます。つまり、Canister は、Bitcoin ネットワーク上で Bitcoin を保有する通常のユーザーと全く同じように利用することが可能になります。これらはすべて、（1）Internet Computer がプロトコルレベルで Bitcoin と統合し、（2）Canister が新しい閾値 ECDSA プロトコルによって ECDSA 鍵を安全に保持（および使用）できることによって可能になりました。Internet Computer は、このような他のブロックチェーンとの直接統合を行う最初のブロックチェーンネットワークの一つであり、この目的のために新しい技術基盤を構築しています。
 
 この統合により、斬新なユースケースを数多く実現することができます：
 
--   *Bitcoin のスマートコントラクト：*  Canister は Bitcoin ネットワーク上の Bitcoin を直接保持できるため、エンジニアは Canister を使用して強力な Bitcoin のスマートコントラクトを実装することが可能になります。どのような Canister のスマートコントラクトでも、Bitcoin のスマートコントラクト機能を提供できるようになりました。例えば、ユーザーが秘密鍵を管理する必要のない生体認証によるオンチェーン Bitcoin ウォレットや、ソーシャル Dapps を使用してユーザーがピアツーピアで Bitcoin 取引を行うことができる socialFi などです。
+-   *Bitcoin のスマートコントラクト：* Canister は Bitcoin ネットワーク上の Bitcoin を直接保持できるため、エンジニアは Canister を使用して強力な Bitcoin のスマートコントラクトを実装することが可能になります。どのような Canister のスマートコントラクトでも、Bitcoin のスマートコントラクト機能を提供できるようになります。例えば、ユーザーが秘密鍵を管理する必要のない生体認証によるオンチェーン Bitcoin ウォレットや、ソーシャル Dapps を使用してユーザーがピアツーピアで Bitcoin 取引を行うことができる socialFi などです。
 -   Internet Computer 上の分散型取引所での *Bitcoin の取引*。
 -   SNS を活用した DAO が IC 上のサービスを分散化する際に、Bitcoin を使用して *分散型セール (Decentralization Sale)* でトークンを購入すること。
 -   *Chain Key Bitcoin （ckBTC）*は Wrapped Bitcoin の発展型で、Bitcoin メインネットの Bitcoin 機能のリリースに伴い、IC 上で利用可能になります。ckBTC は IC 上で最も簡単に Bitcoin を扱うことができ、IC 上の Bitcoin に興味を持つ多くの人にとって正しい選択になるかもしれません。なお、ckBTC は今後数カ月間の Bitcoin の一般提供（ GA ）リリースと、IC 上での Bitcoin メインネットのローンチによってのみ利用可能となる予定です。
