@@ -6,37 +6,37 @@ Bitcoin を IC 内で統合するには、（1）IC と Bitcoin ネットワー�
 
 IC と Bitcoin ネットワークのプロトコルレベルでの統合により、IC は Bitcoin ブロックを Bitcoin ネットワークから直接取得し、含まれるトランザクションを処理することができます。これにより、IC 上で完全な Bitcoin UTXO セットをオンチェーンに維持することができます。Canister は、完全な Bitcoin UTXO セットに対してクエリーを実行することができます。これにより、Canister は自分自身のアドレスを含む任意の Bitcoin アドレスの保有する UTXO、すなわち残高について知ることができます。
 
-**革新的の ECDSA プロトコル**
+**革新的な ECDSA プロトコル**
 
-Canister 自身は、新しい閾値 ECDSA プロトコルを用いて ECDSA 鍵を持つことができるため、Bitcoin を受け取り、保持できます。また、Canister はBitcoin のトランザクションを作成し、Bitcoin API を介して Bitcoin ネットワークに送信することができます。Canister は閾値 ECDSA の機能を利用して、Bitcoin ネットワークに送信する取引で閾値 ECDSA の署名をリクエストして UTXO を消費することができます。閾値 ECDSA は、IC の Chain Key 暗号のツールボックスのプロトコルを拡張したものです。IC の閾値 ECDSA プロトコルの詳細は、[こちらの](../t-ecdsa/t-ecdsa-how-it-works.md) 閾値 ECDSA のドキュメントページで見ることができます。
+Canister 自身は、新しい閾値 ECDSA プロトコルを用いて ECDSA 鍵を持つことができるため、Bitcoin を受け取り、保持できます。また、Canister は Bitcoin のトランザクションを作成し、Bitcoin API を介して Bitcoin ネットワークに送信することができます。Canister は閾値 ECDSA の機能を利用して、Bitcoin ネットワークに送信する取引で閾値 ECDSA の署名をリクエストして UTXO を消費することができます。閾値 ECDSA は、IC の Chain Key 暗号のツールボックスのプロトコルを拡張したものです。IC の閾値 ECDSA プロトコルの詳細は、[こちらの](../t-ecdsa/t-ecdsa-how-it-works.md) 閾値 ECDSA のドキュメントページで見ることができます。
 
-プロトコルレベルの Bitcoin 統合と閾値 ECDSA プロトコルは、それぞれマネージメント Canister 上で API を公開しています。それらの API はエンジニアが IC 上で Bitcoin のスマートコントラクトを記述するために使用するシステムレベルの API です。 Bitcoin の UTXO とトランザクションの概念を中心に設計された低レベルの API であり、その使用は簡単なものではなく、Bitcoin の仕組みについて深い理解が必要とされます。
+プロトコルレベルの Bitcoin 統合と閾値 ECDSA プロトコルは、それぞれマネージメント Canister 上で API を公開しています。それらの API はエンジニアが IC 上で Bitcoin のスマートコントラクトを記述するために使用するシステムレベルの API です。Bitcoin の UTXO とトランザクションの概念を中心に設計された低レベルの API であり、その使用は簡単なものではなく、Bitcoin の仕組みについて深い理解が必要とされます。
 
-次に、Bitcoin との直接統合の背後にある上記の技術の大まかな概要を説明します。詳細は、[Bitcoin page on the Internet Computer Wiki](https://wiki.internetcomputer.org/wiki/Bitcoin_integration) および [threshold ECDSA documentation page](../t-ecdsa/t-ecdsa-how-it-works.md) を参照してください。
+次に、Bitcoin との直接統合の背後にある上記の技術の大まかな概要を説明します。詳細は、[Bitcoin page on the Internet Computer Wiki](https://wiki.internetcomputer.org/wiki/Bitcoin_integration) および [閾値 ECDSA documentation page](../t-ecdsa/t-ecdsa-how-it-works.md) を参照してください。
 
 ## プロトコルレベルでの IC と Bitcoin ネットワークとの統合
 
 Internet Computer プロトコルと Bitcoin プロトコルを統合し、2つのネットワーク間の直接的な技術統合が可能になりました。この統合は、任意の数の Internet Computer サブネットでアクティブにすることができます。まず最初は 1つの専用の Bitcoin-activated サブネットのみが存在することになり、任意のサブネット上の Canister からの Bitcoin API へのリクエストは、この単一の Bitcoin-activated サブネットにルーティングされることになります。この統合は、2つの重要な目的を果たすものです：
--    Bitcoin の UTXO セットを取得し、Internet Computer の複製されたステートに含めてチェーン上に保持し、Canister が発行した Bitcoin アカウントが行う UTXO セットと残高の問い合わせにレスポンスができるようにすること。
--   Canister の署名付き Bitcoin トランザクションを受け入れ、 Bitcoin ネットワークに送信すること。
+-   Bitcoin の UTXO セットを取得し、Internet Computer の複製されたステートに含めてチェーン上に保持し、Canister が発行した Bitcoin アカウントが行う UTXO セットと残高の問い合わせにレスポンスができるようにすること。
+-   Canister の署名付き Bitcoin トランザクションを受け入れ、Bitcoin ネットワークに送信すること。
 
 ![Bitcoin Integration](../_attachments/bitcoin_integration.png)
 
 **コンポーネント**
 
- Bitcoin が有効なサブネットでは、マネージメント Canister の API を介して、マネージメント Canister の一部として、すなわちレプリカの一部として実装された *BTC Canister*（Bitcoin Canister）が、Canister にアクセスできるようにされています。BTC Canister は、オンチェーンの Bitcoin 関連のステート、すなわち UTXO セット、フォークの解決を可能にする最新の Bitcoin ブロック、および外に出ていくトランザクションを保持します。
+Bitcoin が有効なサブネットでは、マネージメント Canister の API を介して、マネージメント Canister の一部として、すなわちレプリカの一部として実装された *BTC Canister*（Bitcoin Canister）が、Canister にアクセスできるようにされています。BTC Canister は、オンチェーンの Bitcoin 関連のステート、すなわち UTXO セット、フォークの解決を可能にする最新の Bitcoin ブロック、および外に出ていくトランザクションを保持します。
 
-ネットワーク層の * Bitcoin アダプター*は、通常の Bitcoin ノードと同じように、Bitcoin ネットワークのノードに接続します。
+ネットワーク層の* Bitcoin アダプター*は、通常の Bitcoin ノードと同じように、Bitcoin ネットワークのノードに接続します。
 
 ** Bitcoin UTXO セットの維持管理**
 
-BTC Canister とアダプターは統合されており、IC のプロトコルスタックを介して相互に通信します。BTC Canister は、受け取った最新の Bitcoin ブロックの後継ブロックを Bitcoin アダプターに要求します。サブネットの各レプリカのアダプターは、要求されたブロックを Bitcoin ネットワークから取得し、ブロック作成レプリカのアダプターは、要求されたブロックをコンセンサスを経て Bitcoin Canister に提供します。 Bitcoin Canister は、プルーフ・オブ・ワークを検証し、ブロックのトランザクションを抽出し、トランザクションから UTXO を抽出し、複製されたステートに維持されている UTXO セットを更新するという形式でブロックを処理して、消費された UTXO とトランザクションによって作成された UTXO らを反映させます。UTXO セットと、まだ UTXO セットに吸収されていない最近のブロックのセットは、UTXO と残高に対するリクエストに応答するために使用されます。
+BTC Canister とアダプターは統合されており、IC のプロトコルスタックを介して相互に通信します。BTC Canister は、受け取った最新の Bitcoin ブロックの後継ブロックを Bitcoin アダプターに要求します。サブネットの各レプリカのアダプターは、要求されたブロックを Bitcoin ネットワークから取得し、ブロック作成レプリカのアダプターは、要求されたブロックをコンセンサスを経て BTC Canister に提供します。BTC Canister は、プルーフ・オブ・ワークを検証し、ブロックのトランザクションを抽出し、トランザクションから UTXO を抽出し、複製されたステートに維持されている UTXO セットを更新するという形式でブロックを処理して、消費された UTXO とトランザクションによって作成された UTXO らを反映させます。UTXO セットと、まだ UTXO セットに吸収されていない最近のブロックのセットは、UTXO と残高に対するリクエストに応答するために使用されます。
 
-フォークを安全に解決したり様々な種類の攻撃から保護するために、セキュリティの領域において非常に複雑な実装になっています。例えば、フォークを解決できるようにするために、Bitcoin Canister は UTXO セットにまだ吸収されていない Bitcoin ブロックを一定数維持する必要があります。しかし、与えられたアドレスの UTXO を計算するためには、UTXO セット内のものに加えて、吸収させずに維持しているブロック内にある UTXO を効率的に考慮しなければなりません。
+フォークを安全に解決したり様々な種類の攻撃から保護するために、セキュリティの領域において非常に複雑な実装になっています。例えば、フォークを解決できるようにするために、BTC Canister は UTXO セットにまだ吸収されていない Bitcoin ブロックを一定数維持する必要があります。しかし、与えられたアドレスの UTXO を計算するためには、UTXO セット内のものに加えて、吸収させずに維持しているブロック内にある UTXO を効率的に考慮しなければなりません。
 
 **トランザクションを送信する**
 
-Canister は、対応するマネージメント Canister  API を使用して、Bitcoin トランザクションを送信することができます。そうすることで、Bitcoin ネットワークに送信されるためのトランザクションをキューに入れます。すべてのサブネットラウンドで、アダプターは Bitcoin Canister から保留中のトランザクションを取得し、Bitcoin ネットワークに送信するために非同期にキューに入れます。サブネットの各レプリカが Bitcoin ネットワークの複数の接続されたノードを介してトランザクションを送信するので、Bitcoin ネットワーク内のトランザクションの効率的で迅速なディストリビューションに繋がります。
+Canister は、対応するマネージメント Canister API を使用して、Bitcoin トランザクションを送信することができます。そうすることで、Bitcoin ネットワークに送信されるためのトランザクションをキューに入れます。すべてのサブネットラウンドで、アダプターは BTC Canister から保留中のトランザクションを取得し、Bitcoin ネットワークに送信するために非同期にキューに入れます。サブネットの各レプリカが Bitcoin ネットワークの複数の接続されたノードを介してトランザクションを送信するので、Bitcoin ネットワーク内のトランザクションの効率的で迅速なディストリビューションに繋がります。
 
 ## 革新的な閾値 ECDSA プロトコル
 
@@ -58,7 +58,7 @@ Bitcoin 機能は IC の単一サブネット上で起動され、Canister か�
 
 Bitcoin 統合により、以下のマネージメント Canister の API が利用可能になります（閾値 ECDSA APIについては、[そのドキュメントページ](../t-ecdsa/t-ecdsa-how-it-works.md)と[インターフェース仕様](../../../references/ic-interface-spec.md)で説明しています）。Bitcoin 関連の各メソッドは、Bitcoin `mainnet` と `testnet` のどちらを使用するかを指定する必要があります。
 
--   `bitcoin_get_utxos`:  `get_utxos_request` が与えられると（Bitcoin アドレスと Bitcoin ネットワーク（メインネットまたはテストネット）を指定する必要があります）、Bitcoin コンポーネントで有効になっている Bitcoin ブロックチェーンの現在のビューに基づいて、この関数は指定した Bitcoin ネットワーク内の指定したアドレスに関するすべての未使用トランザクションアウトプット（UTXOs）を返します。UTXO はブロックの高さの降順でソートされて返されます。<br/>
+-   `bitcoin_get_utxos`: `get_utxos_request` が与えられると（Bitcoin アドレスと Bitcoin ネットワーク（メインネットまたはテストネット）を指定する必要があります）、Bitcoin コンポーネントで有効になっている Bitcoin ブロックチェーンの現在のビューに基づいて、この関数は指定した Bitcoin ネットワーク内の指定したアドレスに関するすべての未使用トランザクションアウトプット（UTXOs）を返します。UTXO はブロックの高さの降順でソートされて返されます。<br/>
 オプションのフィルターパラメータを使用して、返される UTXO のセットを制限することができます。パラメータに最小の承認数を指定するか、または多くの UTXO を持つアドレスに対してページ分割されている場合はページへの参照を指定することができます。前者のケースでは、指定された数以上の承認数を持つ UTXO のみが返されます。つまり、承認数がこの回数より少ないトランザクションは考慮されません。言い換えれば、承認数が c の場合、少なくとも c 回承認されているトランザクションによって生じたアウトプットのうち、消費されてないものが返されます。ただし、返されたアウトプットは承認回数が c 回未満のトランザクションにはすでに消費されている可能性があります。<br/>
 オプションのフィルターなしの `get_utxos_request` は、ブロックチェーン全体を考慮したリクエストになり、これは `min_confirmations` を 0 に設定することと同じです。
 -  `bitcoin_get_balance`: Bitcoin アドレスと Bitcoin ネットワーク (メインネットまたはテストネット) を指定する `get_balance_request` を受け取ると、この関数は、指定した Bitcoin ネットワークにおけるこのアドレスの現在の残高を Satoshi (10<sup>8</sup> Satoshi = 1 Bitcoin) で返します。`bitcoin_get_utxos` と同じアドレス形式がサポートされています。
@@ -81,7 +81,7 @@ Bitcoin 統合により、以下のマネージメント Canister の API が利
 
 それぞれ Bitcoin テストネットと Bitcoin メインネットと統合する機能の IC デプロイとは対照的に、SDK はリグレッションテスト（regtest）モードでローカルに動作する bitcoind ノードと統合されています。regtest モードで bitcoind を使用することは、Bitcoin の開発において好ましい方法です。開発者をできる限り手助けするために、私たちは SDK を regtest モードの bitcoind と統合し、IC に最高の Bitcoin 開発体験をもたらしました。このセットアップにより、スマートコントラクトの開発と自動テストの両方が、まずローカル環境で行われます。
 
-ローカル SDK 環境を実行しているシングルレプリカの Bitcoin アダプターは、Bitcoin テストネットまたは メインネットの複数のノードではなく、ローカルの bitcoind ノードに接続します。dfx の関連フラグを確認するには、`dfx start —help` の出力を見てください。
+ローカル SDK 環境を実行しているシングルレプリカの Bitcoin アダプターは、Bitcoin テストネットまたはメインネットの複数のノードではなく、ローカルの bitcoind ノードに接続します。dfx の関連フラグを確認するには、`dfx start —help` の出力を見てください。
 
 ### IC テストネット上の Bitcoin
 
