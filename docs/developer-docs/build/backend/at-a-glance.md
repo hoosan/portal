@@ -1,3 +1,28 @@
+# 一覧表示
+
+[クイックスタート](../../quickstart/hello10mins.md)は、途中の風景を眺めることなく、シンプルなデフォルトアプリケーションをデプロイするための素早いパスを提供します。このセクションの個々のチュートリアルは、特定のシナリオをウォークするして、各ステップの詳細を指摘します。
+
+クイックスタートやチュートリアルが苦手な方は、この一目でわかるチートシートに手順をまとめていますので、すぐに参照できます。
+
+SDK をインストールした後に必要なことは、以下のとおりです：
+
+1.  新しいプロジェクトを作成し、プロジェクトディレクトリに移動します。
+
+        dfx new <project_name> && cd <project_name>>
+
+2.  サービスやアプリケーションを定義するバックエンドを編集します。
+
+3.  サービスやアプリケーションのフロントエンドとなる HTML、JavaScript、CSS を編集することができます。
+
+4.  ローカルデプロイの場合は Internet Computer を起動し、ネットワークデプロイの場合は Internet Computer への接続を確認します。
+
+5.  ローカルまたはネットワーク上で登録、ビルド、デプロイ。
+
+        dfx deploy --network <network>
+
+6.  サービスやアプリケーションをブラウザで見ることができます。
+
+<!--
 # At a glance
 
 The [Quick start](../../quickstart/hello10mins.md) provides a fast path to deploying a simple default application without stopping to admire the scenery along the way. Individual tutorials in this section walk through specific scenarios, pointing out details about what you’re doing in each step.
@@ -21,3 +46,5 @@ After you install the SDK, here’s all you need to know:
         dfx deploy --network <network>
 
 6.  View your service or application in a browser.
+
+-->
