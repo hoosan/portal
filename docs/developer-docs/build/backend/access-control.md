@@ -2,19 +2,19 @@
 
 Dapps では、ユーザーごとに異なる操作を制御するために、ロールベースのパーミッションが必要になることがあります。
 
-このチュートリアルでは、ユーザー Identity の作成と切り替えを説明するために、異なるロールに割り当てられたユーザーに対して異なる greeding を表示するシンプルな Dapp を作成します。
+このチュートリアルでは、ユーザー Identity の作成と切り替えを説明するために、異なるロールに割り当てられたユーザーに対して異なる挨拶文を表示するシンプルな Dapp を作成します。
 
 この例では、`owner`、`admin`、`authorized` の3つのロールが指定されています。
 
--   `admin` ロールが割り当てられているユーザーには、`You have a role with administrative privileges` と表示された greeding 文が表示されます。
+-   `admin` ロールが割り当てられているユーザーには、`You have a role with administrative privileges` という挨拶文が表示されます。
 
--   `Authorized`ロールが割り当てられているユーザーには、`Would you like to play a game?` と表示された greeding 文が表示されます。
+-   `Authorized`ロールが割り当てられているユーザーには、`Would you like to play a game?` という挨拶文が表示されます。
 
--   これらのロールが割り当てられていないユーザーには、`Nice to meet you!` と表示された greeding 文が表示されます。
+-   これらのロールが割り当てられていないユーザーには、`Nice to meet you!` という挨拶文が表示されます。
 
 さらに、Canister を初期化したユーザー Identity にのみ `owner` ロールが割り当てられ、 `owner` と `admin` ロールのみが他のユーザーにロールを割り当てることができます。
 
-ハイレベルでは、各ユーザーは公開鍵と秘密鍵のペアを持ちます。ユーザーがアクセスする Canister ID に紐付いた公開鍵がセキュリティ Principal となり、これをメッセージ呼び出し元として使用して、Internet Computer ブロックチェーン上で動作する Canister への関数コールを認証することができます。次の図は、ユーザー Identity がメッセージ呼び出し元を認証する方法を簡略化して示しています。
+大まかにいうと、各ユーザーは公開鍵と秘密鍵のペアを持ちます。ユーザーがアクセスする Canister ID に紐付いた公開鍵がセキュリティ Principal となり、これをメッセージ呼び出し元として使用して、Internet Computer ブロックチェーン上で動作する Canister への関数コールを認証することができます。次の図は、ユーザー Identity がメッセージ呼び出し元を認証する方法を簡略化して示しています。
 
 ![principal identities](../_attachments/principal-identities.svg)
 
@@ -36,7 +36,7 @@ Dapps では、ユーザーごとに異なる操作を制御するために、�
 
 1.  ローカルコンピューターでターミナルシェルを開きます（まだ開いていない場合）。
 
-2.  Internet Computer のブロックチェーン・プロジェクトに使用しているフォルダがある場合は移動します。
+2.  Internet Computer ブロックチェーンのプロジェクト用に使用しているフォルダがある場合にはそちらに移動します。
 
 3.  以下のコマンドを実行し、新しいプロジェクトを作成します：
 
@@ -60,7 +60,7 @@ Dapps では、ユーザーごとに異なる操作を制御するために、�
 
     -   これまでのチュートリアルで見てきた `greet` 関数のバリエーションであることに気がつくかもしれません。
 
-        しかし、このアプリでは、`greet` 関数がメッセージの呼び出し元を利用して、適用すべきパーミッションを決定し、呼び出し元に関連するパーミッションに基づいて、どの greeding を表示すべきかを決定します。
+        しかし、このアプリでは、`greet` 関数がメッセージの呼び出し元を利用して、適用すべきパーミッションを決定し、呼び出し元に関連するパーミッションに基づいて、どの挨拶文を表示すべきかを決定します。
 
     -   1つは `Roles` 用、もう1つは `Permissions` 用のカスタムタイプです。
 
@@ -113,7 +113,7 @@ Dapp をローカルにデプロイするには：
 
 ## 現在の Identity コンテキストを確認する
 
-追加の Identity を作成する前に、`default` Identity に関連する Principal 識別子と `default` Identity の Cycle ウォレットを確認しましょう。Internet Computer ブロックチェーンでは、 Principal はユーザー、Canister、ノード、サブネットの内部代表です。 Principal のテキスト表現は、 Principal データタイプで作業しているときに表示される外部識別子です。
+追加の Identity を作成する前に、`default` Identity に関連する Principal 識別子と `default` Identity の Cycle ウォレットを確認しましょう。Internet Computer ブロックチェーンでは、 Principal はユーザー、Canister、ノード、サブネットを識別するための内部的な代表値です。 Principal のテキスト表現は、 Principal データタイプで作業しているときに表示される外部識別子です。
 
 現在の Identity と Principal を確認するには：
 
