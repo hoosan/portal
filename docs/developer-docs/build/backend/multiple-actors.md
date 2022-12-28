@@ -1,3 +1,208 @@
+# 複数の Actor を使用する
+
+このチュートリアルでは、複数の Actor を持つプロジェクトを作成します。現在、Motoko ファイルで定義できる Actor は1つだけで、1つの Actor は常に1つの Canister にコンパイルされます。しかし、複数の Actor を持つ**プロジェクト**を作成し、同じ`dfx.json` 設定ファイルから複数の Canister をビルドすることが可能です。
+
+このチュートリアルでは、同じプロジェクトで3つの Actor に対して別々のプログラムファイルを作成することになります。このプロジェクトでは、以下の無関係な Actor を定義しています：
+
+-   `assistant` Actor は、ToDo リストにタスクを追加、表示する機能を提供します。
+
+    簡略化するために、このチュートリアルのコードサンプルには、ToDo 項目を追加する関数と、追加された ToDo 項目の現在のリストを表示する関数だけを含んでいます。この Canister のより完全なバージョン（項目を完了にしたり、リストから削除したりする追加機能）は [examples](https://github.com/dfinity/examples/) リポジトリの [Simple to-do checklist](https://github.com/dfinity/examples/tree/master/motoko/simple-to-do) として公開されています。
+
+-   `rock_paper_scissors` Actor は、ハードコードされたジャンケン大会で勝者を決定するための関数を提供します。
+
+    このコードサンプルは、ハードコードされたプレーヤーと選択肢を持つ Motoko プログラムにおける `switch` と `case` の基本的な使い方を説明するものです。
+
+-   `daemon` Actor は、デーモンを起動したり停止したりするためのモック関数を提供します。
+
+    このコードサンプルは、デモンストレーションのために、単に変数を代入し、メッセージを表示するものです。
+
+## 始める前に
+
+チュートリアルを始める前に、以下を確認してください：
+
+-   [ダウンロードとインストール](../../quickstart/local-quickstart#download-and-install)で説明されているように、SDK パッケージをダウンロードしインストールする。
+
+-   コンピューター上で動作しているローカル Canister の実行環境を停止しています。
+
+このチュートリアルの所要時間は約 20分です。
+
+## プロジェクトを作成する
+
+このチュートリアルのための新しいプロジェクトを作成するには：
+
+1.  ローカルコンピューターでターミナルシェルを開いてください（まだ開いていない場合）。
+
+2.  Internet Computer のプロジェクトに使用しているフォルダがあれば、そこに移動します。
+
+3.  以下のコマンドを実行して、新しいプロジェクトを作成します：
+
+        dfx new multiple_actors
+
+4.  以下のコマンドを実行して、プロジェクトディレクトリに移動してください：
+
+        cd multiple_actors
+
+## デフォルトコンフィグレーションを修正する
+
+新しいプロジェクトを作成すると、デフォルトの `dfx.json` 設定ファイルがプロジェクトディレクトリに追加されることはすでにお分かりいただけたと思います。このチュートリアルでは、このファイルにセクションを追加して、ビルドしたい Actor を定義する各 Canister の場所を指定する必要があります。
+
+デフォルトの設定ファイル `dfx.json` を変更するには：
+
+1.  テキストエディタで `dfx.json` 設定ファイルを開き、デフォルトの `multiple_actors` Canister 名とソースディレクトリを `assistant` に変更します。
+
+    例えば、`canisters` キーの下には以下のようになります：
+
+            "assistant": {
+              "main": "src/assistant/main.mo",
+              "type": "motoko"
+            },
+
+    設定ファイルのこの `canisters` セクションに設定を追加するので、`assistant` のメインソースコードファイルの場所と Canister タイプを囲む中括弧の後に**コンマ**も追加する必要があります。
+
+2.  ファイルから `multiple_actors_assets` セクションを削除します。
+
+3.  Canister 名、ソースコードの場所、Canister タイプを `rock_paper_scissors` に、同じく Canister 名、ソースコードの場所、 Canister タイプを `daemon` プログラムファイルに追加し、 `assistant` Canister 定義の下に追加します。
+
+    変更後、`dfx.json` ファイルの `canisters` セクションは、[この](../_attachments/multiple-actors-dfx.json)ような形になるはずです。
+
+    その他の部分はそのままで大丈夫です。
+
+4.  変更を保存し、`dfx.json` ファイルを閉じて続行します。
+
+5.  以下のコマンドを実行して、デフォルトのソースファイルディレクトリの名前を `dfx.json` 設定ファイルで指定された名前と一致するように変更します：
+
+        cp -r src/multiple_actors/ src/assistant/
+
+6.  以下のコマンドを実行して `assistant` ソースファイルのディレクトリをコピーし、`rock_paper_scissors` Actor のメイン Canister ファイルを作成します：
+
+        cp -r src/assistant/ src/rock_paper_scissors/
+
+7.  以下のコマンドを実行して、`assistant` のソースファイルのディレクトリをコピーし、`daemon` Actor のメイン Canister ファイルを作成します：
+
+        cp -r src/assistant/ src/daemon/
+
+## デフォルト Canister を修正する
+
+これで `src` ディレクトリに3つのディレクトリができ、それぞれに `main.mo` というテンプレートファイルができました。このチュートリアルでは、各テンプレート `main.mo` ファイルの内容を別の Actor で置き換えます。
+
+デフォルトのソースコードを変更するには：
+
+1.  テキストエディタで `src/assistant/main.mo` ファイルを開き、既存の内容を削除してください。
+
+2.  [このコード](../_attachments/multiple-actors-assistant-main.mo)をコピーして、ファイルに貼り付けてください。
+
+3.  変更を保存して、`main.mo` ファイルを閉じて続行します。
+
+4.  テキストエディタで `src/rock_paper_scissors/main.mo` ファイルを開き、既存の内容を削除してください。
+
+5.  [このコード](../_attachments/multiple-actors-rock-main.mo)をコピーして、ファイルに貼り付けてください。
+
+6.  変更を保存して、`main.mo` ファイルを閉じて続行します。
+
+7.  テキストエディタで `src/daemon/main.mo` ファイルを開き、既存の内容を削除してください。
+
+8.  [このコード](../_attachments/multiple-actors-daemon-main.mo)をコピーして、ファイルに貼り付けてください。
+
+9.  変更を保存して、`main.mo` ファイルを閉じて続行します。
+
+## ローカル Canister 実行環境を起動する
+
+ローカルに `multiple_actors` プロジェクトをインストールする前に、ローカル Canister 実行環境を起動する必要があります。もし、Internet Computer のブロックチェーンメインネットにデプロイするつもりであれば、このセクションはスキップします。
+
+ローカル Canister の実行環境を起動するには：
+
+1.  ローカルコンピューターで新しいターミナルウィンドウまたはタブを開きます。
+
+2.  必要であれば、プロジェクトのルートディレクトリに移動します。
+
+3.  次のコマンドを実行して、ローカルの Canister 実行環境を起動します。
+
+        dfx start
+
+4.   Canister の実行操作を表示しているターミナルは開いたままにして、フォーカスを新しいプロジェクトを作成した元のターミナルに切り替えます。
+
+## マルチ Canister 型 Dapp をデプロイする
+
+マルチ Canister Dapp をデプロイするには、ローカル Canister 実行環境または Internet Computer ブロックチェーンメインネットに Canister を登録、ビルド、インストールする必要があります。
+
+ローカルに Dapp をデプロイするには：
+
+1.  必要に応じて、まだプロジェクトのルートディレクトリにいることを確認します。
+
+2.  以下のコマンドを実行して、アプリケーションを登録、ビルド、デプロイします：
+
+        dfx deploy
+
+Internet Computer ブロックチェーン・メインネットに Dapp をデプロイするには：
+
+3.  必要に応じて、まだプロジェクトのルートディレクトリにいることを確認します。
+
+4.  `dfx deploy` コマンドに `--network` オプションと `dfx.json` ファイルで設定されたネットワークエイリアスを指定して実行します。例えば、ネットワークエイリアス `ic` で指定された URL で Internet Computer メインネットに接続する場合、以下のようなコマンドを実行します：
+
+        dfx deploy --network ic
+
+`dfx deploy` コマンドの出力には、実行された操作に関する情報が表示されます。例えば、このコマンドは `dfx.json` 設定ファイルで定義された3つの Canister の識別子を表示します。
+
+    Deploying all canisters.
+    Creating canisters...
+    Creating canister "assistant"...
+    "assistant" canister created with canister id: "75hes-oqbaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q"
+    Creating canister "daemon"...
+    "daemon" canister created with canister id: "cxeji-wacaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q"
+    Creating canister "rock_paper_scissors"...
+    "rock_paper_scissors" canister created with canister id: "7kncf-oidaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q"
+
+##  Canister を呼び出してデプロイを確認する
+
+これで、3つの **Canister** スマートコントラクトが、ローカル Canister 実行環境または Internet Computer ブロックチェーンメインネット上にデプロイされ、`dfx canister call` コマンドを使用してそれらをテストすることができるようになりました。
+
+ローカルにデプロイした Canister をテストするには：
+
+1.  `dfx canister call` コマンドを使用して、`addTodo` 関数を使って Canister  `assistant` を呼び出し、以下のコマンドを実行して追加したいタスクを渡します：
+
+        dfx canister call assistant addTodo '("Schedule monthly demos")'
+
+2.  以下のコマンドを実行して、`showTodos` 関数を使用して ToDo リストの項目が返されることを確認します：
+
+        dfx canister call assistant showTodos
+
+    このコマンドは、次のような出力を返します：
+
+        ("
+        ___TO-DOs___
+        (1) Schedule monthly demos")
+
+3.  `dfx canister call` コマンドを使用して、以下のコマンドを実行し、`contest` 機能を使用して Canister `rock_paper_scissors` を呼び出します：
+
+        dfx canister call rock_paper_scissors contest
+
+    コマンドは、以下のようなハードコードされたコンテストの結果を返します：
+
+        ("Bob won")
+
+4.  `dfx canister call` コマンドを使用して、以下のコマンドを実行し、 `launch` 機能を使用して、`daemon` Canister を呼び出します。
+
+        dfx canister call daemon launch
+
+5.  モック `launch` 関数が "The daemon process is running" というメッセージを返すことを確認します：
+
+        (""The daemon process is running"")
+
+Internet Computer ブロックチェーン・メインネット上で動作する Canister をテストするには、上記と同じコマンドを使用します。`—network` オプションと `dfx.json` ファイルで設定したネットワークエイリアスを指定します。
+
+## ローカルネットワークを停止する
+
+Dapp のテストが終わったら、ローカル Canister の実行環境を停止して、バックグラウンドで実行し続けないようにします。
+
+ローカル Canister の実行環境を停止するには、以下のようにします：
+
+1.  ネットワーク操作が表示されているターミナルで、Control-C キーを押して、ローカルネットワークの処理を中断します。
+
+2.  以下のコマンドを実行して、ローカル Canister の実行環境を停止します：
+
+        dfx stop
+
+<!--
 # Use multiple actors
 
 In this tutorial, you are going to create a project with multiple actors. Currently, you can only define one actor in a Motoko file and a single actor is always compiled to a single canister. You can, however, create **projects** that have multiple actors and can build multiple canisters from the same `dfx.json` configuration file.
@@ -201,3 +406,5 @@ To stop the local canister execution environment:
 2.  Stop the local canister execution environment by running the following command:
 
         dfx stop
+
+-->

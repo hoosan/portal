@@ -1,3 +1,344 @@
+# Canister 間コールを行う
+
+ Internet Computer ブロックチェーンは、ある Canister の機能を別の Canister から呼び出せることが開発者にとって最も重要な機能のひとつです。この Canister 間の呼び出し機能（** Canister 間コール**とも呼ばれる）は、複数の Dapps で機能を再利用・共有することを可能にします。
+
+例えば、仕事上の人脈づくりや、地域のイベント、募金活動などを行うためのアプリを作成したいとします。それぞれの Dapps には、友人や家族、同僚など、何らかの基準や共通の関心に基づいてソーシャルな関係を特定するためのソーシャルコンポーネントが含まれるかもしれません。
+
+このようなソーシャルコンポーネントに対応するために、ユーザーとの関係を保存する Canister を1つ作成し、プロフェッショナルネットワーキング、コミュニティ主催、資金調達などのアプリケーションを作成して、 Canister に定義されているソーシャルコネクション用の関数をインポートして呼び出すとよいでしょう。その後、ソーシャルコネクション Canister を使用するアプリケーションを追加で作成したり、ソーシャルコネクション Canister が提供する機能を拡張して、他の開発者のより広いコミュニティで使用できます。
+
+Motoko ベースの LinkedUp サンプル Dapp は、オープンプロフェッショナルネットワークの簡単な実装を提供し、プロジェクト内での Canister 間コールの使用方法を示してくれます。
+
+LinkedUp サンプルアプリは、以下の Canister を使用して実装されています：
+
+-   `linkedup`  Canister は、ユーザーの職歴や学歴などの基本プロファイル情報を作成し、保存します。
+
+-   `connectd`  Canister は、ユーザーの接続を作成し、保存します。
+
+-   `linkedup_assets` Canister は、ユーザーインターフェイスを定義する JavaScript、HTML、CSS ファイルを含むフロントエンドアセットを格納します。
+
+## 始める前に
+
+サンプル Dapp をビルドする前に、以下を確認してください：
+
+-   [ダウンロードとインストール](../../quickstart/local-quickstart#download-and-install)で説明されているように、SDK パッケージをダウンロードしインストールする。
+
+-   `dfx`が提供するローカル Canister の実行環境を停止する。
+
+## デモをダウンロードする
+
+LinkedUp サンプル Dapp を使って、 Canister 間コールをテストするには：
+
+1.  ターミナルシェルを開き、Internet Computer のサンプルプロジェクトに使用しているフォルダに移動します。
+
+2.  `linkedup` レポジトリをクローンします。
+
+        git clone https://github.com/dfinity/linkedup.git
+
+3.  `linkedup` リポジトリのローカルワーキングディレクトリに移動します。
+
+        cd linkedup
+
+4.  以下のコマンドを実行して、node モジュールをインストールします。
+
+        npm install
+
+    必要に応じて、以下のコマンドを実行し、見つかった脆弱性を修正します。
+
+        npm audit fix
+
+5.  テキストエディタで `dfx.json` ファイルを開き、`dfx` の設定が、インストールした `dfx` 実行ファイルと同じバージョン番号になっていることを確認します。
+
+## ローカル Canister の実行環境を起動する
+
+開発用に `dfx` はローカル Canister の実行環境を提供します。これは `dfx.json` ファイルを必要とするので、linkedup のルートディレクトリにいることを確認する必要があります。
+
+ローカル Canister の実行環境を起動するには：
+
+1.  ローカルコンピューターで新しいターミナルウィンドウまたはタブを開きます。
+
+2.  必要に応じて、プロジェクトのルートディレクトリに移動します。
+
+3.  コンピューター上で以下のコマンドを実行し、ローカルの Canister 実行環境を起動します：
+
+        dfx start --background
+
+    ローカル Canister の実行環境が起動操作を完了したら、次のステップに進みます。
+
+## Canister 識別子を登録する
+
+ローカル Canister 実行環境が稼働したら、プロジェクトに固有の Canister 識別子（ID）を生成できます。
+
+ Canister 識別子を登録するには：
+
+1.  必要であれば、プロジェクトディレクトリに留まっていることを確認します。
+
+2.  以下のコマンドを実行して、プロジェクトに固有の Canister 識別子を登録します：
+
+        dfx canister create --all
+
+    このコマンドは、`dfx.json` 設定ファイルに定義されている Canister の識別子を表示します。
+
+        "connectd" canister created with canister id: "75hes-oqbaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q"
+        "linkedup" canister created with canister id: "cxeji-wacaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q"
+        "linkedup_assets" canister created with canister id: "7kncf-oidaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q"
+
+    ローカル Canister 実行環境を実行しているため、これらの識別子はローカル Canister 実行環境でのみ有効であることに留意してください。 Internet Computer のブロックチェーンメインネットに Canister を配置するには、`—network` コマンドラインオプションを使用して適切なターゲットを指定する必要があります。
+
+## デモプロジェクトのビルドとデプロイ
+
+LinkUp サンプル Dapp のビルドとデプロイは、以下の手順で行います：
+
+1.  必要であれば、`pwd` コマンドを実行して、まだプロジェクトディレクトリにいることを確認します。
+
+2.  以下のコマンドを実行して、LinkedUp Canister をビルドします：
+
+        dfx build
+
+3.  以下のコマンドを実行して、プロジェクトをローカル Canister 実行環境にデプロイします：
+
+        dfx canister install --all
+
+    次のようなメッセージとともに、`connectd`、`linkedup`、`linkedup_assets` の各 Canister の識別子が表示されるはずです：
+
+        Installing code for canister connectd, with canister_id 75hes-oqbaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q
+        Installing code for canister linkedup, with canister_id cxeji-wacaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q
+        Installing code for canister linkedup_assets, with canister_id 7kncf-oidaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q
+
+4.  `dfx canister install` コマンドによって返された `linkedup_assets`  Canister 識別子をコピーします。
+
+    このサンプルアプリでは、`linkedup_assets` Canister にのみ、アプリのユーザーインターフェースにアクセスするためのフロントエンドアセットが含まれています。したがって、ブラウザでアプリを開くには、`linkedup_assets` Canister の識別子を指定する必要があります。
+
+5.  ウェブブラウザで `linkedup_assets` Canister を開きます。
+
+    例えば、ローカル Canister 実行環境がデフォルトのローカルホストアドレスとポート番号にバインドされる場合、URL は次のようになります：
+
+        http://127.0.0.1:8000/?canisterId=7kncf-oidaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q
+
+## プロフィールとコネクションを作成する
+
+LinkedUp サンプル Dapp のデモを実行するには、次の手順を踏みます：
+
+1.  ブラウザのタブまたはウィンドウを開きます。
+
+2.  Web サーバのホスト名、ポート、および `canisterId` キーワードを入力し、表示する URL として `linkedup_assets` Canister の識別子を貼り付けます。
+
+        127.0.0.1:8000/?canisterId=<ic-identifier-for-linkedup-assets>
+
+    ブラウザに紹介ページが表示されます。
+
+     Canister にアクセスするための本人確認のための公開鍵・秘密鍵のペアが自動的に生成されるので、サービスを利用する前にユーザー名とパスワードを入力したり、本人確認のためのアカウントを登録したりする必要はありません。
+
+3.  **Login** をクリックします。
+
+    ブラウザには、空のプロファイルページが表示されます。
+
+    ![linkedup empty maya](../_attachments/linkedup-empty-maya.png)
+
+4.  **Edit** をクリックし、プロフィール情報を入力し、アバター写真の画像アドレスをコピー＆ペーストして、**submit** をクリックしてください。
+
+    ![linkedup edit maya](../_attachments/linkedup-edit-maya.png)
+
+    **Submit** をクリックすると、プロフィールが作成され、職歴を閲覧することができます。
+
+    例：
+
+    ![linkedup profile maya](../_attachments/linkedup-profile-maya.png)
+
+### 別のプロファイルを追加する
+
+この時点では、他のプロフィールを検索したり、接続先として追加したりすることはできません。検索とコネクトの機能を試すには：
+
+-   サンプルアプリに追加プロファイルを投入するスクリプトを実行します。
+
+-   プライベートウィンドウを開いて、手動でプロフィールを作成します。
+
+このチュートリアルでは、別のプロファイルを手動で作成します。
+
+異なる Identity のユーザープロファイルを追加するには：
+
+1.  ブラウザのウィンドウ右上にあるアイコンをクリックすると、ブラウザのメニューが表示されます。
+
+    例えば、Google Chrome をお使いの場合、縦長の楕円をクリックすると、More メニューが表示されます。
+
+2.  Google Chrome を使用している場合は **シークレット ウィンドウを開く**、Firefox を使用している場合は **新規
+プライベートウィンドウ** をクリックして、Canister への最初のブラウザ接続で生成されたユーザ Identity を使用せずに Canister にナビゲートできるようにします。
+
+3.  最初のブラウザセッションの URL をコピーしてプライベートブラウザウィンドウに貼り付け、**Login** をクリックします。
+
+    ![linkedup incognito](../_attachments/linkedup-incognito.png)
+
+    プライベートブラウザウィンドウにはプロフィールが表示されませんが、最初のブラウザタブには元のプロフィールが表示されていることに注意してください。
+
+4.  **Edit** をクリックし、プロフィール情報を入力し、アバター写真の画像アドレスをコピー＆ペーストし、**Submit** をクリックします。
+
+    ![linkedup edit dylan](../_attachments/linkedup-edit-dylan.png)
+
+    **Submit** をクリックすると、2つ目のプロフィールが表示され、職歴を確認することができます。
+
+    例：
+
+    ![linkedup profile dylan](../_attachments/linkedup-profile-dylan.png)
+
+5.  最初に作成したプロフィールの名前または姓を入力します。たとえば、Maya Garcia という人のプロフィールを作成した場合は、Maya と入力し、**Search** をクリックします。
+
+    ![linkedup search from dylan for maya](../_attachments/linkedup-search-from-dylan-for-maya.png)
+
+    検索条件に一致するプロフィールが表示されます。
+
+    ![linkedup search result](../_attachments/linkedup-search-result.png)
+
+6.  検索結果から連絡先を選択し、接続ボタンが表示されるまで待ち、**Connect** をクリックします。
+
+    ![linkedup connect from dylan to maya](../_attachments/linkedup-connect-from-dylan-to-maya.png)
+
+    接続要求が完了すると、第２のプロファイルは第１のプロファイルへの接続を表示します。たとえば、以下のようになります：
+
+    ![linkedup connected to maya](../_attachments/linkedup-connected-to-maya.png)
+
+7.  元のプロファイルが表示されているブラウザのタブに戻ります。
+
+    元のプロファイルとプライベートブラウザウィンドウで作成したプロファイルの間に接続を作成したい場合は、Search、Select、Connect の手順を繰り返すことで行うことができます。
+
+## 設定ファイルを調べる
+
+サンプルアプリの基本的な機能を調べたので、設定ファイルやソースファイルがどのように使われるかを調べるためのコンテキストができました。
+
+設定ファイルを調べるには：
+
+1.  `linkedup` ディレクトリに移動し、プロジェクトの `dfx.json` ファイルを開いてください。
+
+2.  ふたつのメイン Canister、`connectd` と `linkedup` が定義されており、それぞれ `main.mo` ソースファイルを持っていることに注意してください。
+
+3.  `linkedup_assets`  Canister は、フロントエンドのエントリポイントである `main.js` と CSS と HTML ファイル形式のアセットを指定することに注意してください。
+
+4.  なお、ローカル Canister の実行環境では、Dapp はデフォルトの IP アドレスとポート番号を使用してデプロイされるように設定されています。
+
+## connectd のソースコードを調べる
+
+ソーシャルコネクション Canister  `connectd` のソースコードは、以下のファイルのようになっています：
+
+-   `digraph.mo` ファイルは、ユーザーの接続を記述するための頂点と辺の有向グラフを作成するための関数を提供します。
+
+-   `main.mo`には、LinkedUp サンプルアプリが呼び出すことができ、ユーザープロファイルに関連する接続を定義するための Actor と主要な関数が含まれています。
+
+-   `types.mo` ファイルは、`digraph` と `main` プログラムファイルで使用するために、頂点をユーザー Identity にマップするカスタムタイプを定義します。
+
+## Linkedup ソースコードの調べる
+
+職歴や学歴を記載したプロフィールのソースコードは、以下のファイルに整理されています：
+
+-   `Main.mo`ファイルには、LinkedUp サンプルアプリの Actor と主要な関数が含まれています。
+
+-   `types.mo` ファイルは、`linkedup` Canister の `main` プログラムファイルにインポートして使用する、ユーザー Indentity とプロファイルのフィールドを記述するカスタムタイプを定義します。
+
+-   `utils.mo` ファイルはヘルパー関数を提供します。
+
+### クエリとアップデートの操作
+
+LinkedUp のサンプルアプリを使っていると、プロフィールを見たり検索したりすると、すぐに結果が返ってくるものがあることに気づくかもしれません。一方、プロフィールの作成や接続の追加などの操作では、少し時間がかかることがあります。
+
+これらのパフォーマンスの違いは、`linkedup` Canister でクエリとアップデートコールを使用する場合の違いを示しています。
+
+例えば、 `src/linkedup/main.mo` ファイルでは、 `create` と `update` 関数は Canister のステートを変更するアップデートコールであり、したがってコンセンサスを経る必要がありますが、プログラムでは `get` と `search` 関数のクエリコールを使ってプロファイルを表示または検索しています。
+
+      // Profiles
+
+      public shared(msg) func create(profile: NewProfile): async () {
+        directory.createOne(msg.caller, profile);
+      };
+
+      public shared(msg) func update(profile: Profile): async () {
+        if(Utils.hasAccess(msg.caller, profile)) {
+          directory.updateOne(profile.id, profile);
+        };
+      };
+
+      public query func get(userId: UserId): async Profile {
+        Utils.getProfile(directory, userId)
+      };
+
+      public query func search(term: Text): async [Profile] {
+        directory.findBy(term)
+      };
+
+### Canister 間の相互作用
+
+このサンプルアプリでは、`linkedup`  Canister は `connectd` Canister で定義された関数を利用しています。このように分離することで、各 Canister のコードを単純化することができます。さらに重要なことは、ある Canister で定義された共通の関数を、他の Canister から呼び出すことでプロジェクトを拡張できることを説明することです。
+
+ある Canister で定義されたパブリック関数を別の Canister で利用できるようにするには、次のようにします：
+
+1.  呼び出し用 Canister に `import` ステートメントを追加します。
+
+    この例では、パブリック関数は `connectd`  Canister で定義され、`linkedup`  Canister から呼び出されます。
+
+    したがって、`src/linkedup/main.mo` には以下のコードが含まれます：
+
+        // Make the Connectd app's public methods available locally
+        import Connectd "canister:connectd";
+
+2.  インポートされた Canister のパブリック・メソッドを呼び出すには、`canister.function` 構文を使用します。
+
+    この例では、`linkedup` Canister はインポートされた `connectd` Canister の `connect` と `getConnections` 関数を呼び出します。
+
+`linkedup` Canister と `connectd`  Canister の間の相互作用を可能にするコードは、`main.mo` ソースファイルから見ることができます。
+
+例えば、`src/connectd/main.mo`では、以下のような関数が定義されています：
+
+\+
+
+    actor Connectd {
+      flexible var graph: Digraph.Digraph = Digraph.Digraph();
+
+      public func healthcheck(): async Bool { true };
+
+      public func connect(userA: Vertex, userB: Vertex): async () {
+        graph.addEdge(userA, userB);
+      };
+
+      public func getConnections(user: Vertex): async [Vertex] {
+        graph.getAdjacent(user)
+      };
+
+    };
+
+`Import` 文のおかげで、`connectd` 関数は `linkedup` Canister から利用できるようになり、`src/linkedup/main.mo` には以下のコードが含まれます：
+
+      // Connections
+
+      public shared(msg) func connect(userId: UserId): async () {
+        // Call Connectd's public methods without an API
+        await Connectd.connect(msg.caller, userId);
+      };
+
+      public func getConnections(userId: UserId): async [Profile] {
+        let userIds = await Connectd.getConnections(userId);
+        directory.findMany(userIds)
+      };
+
+      public shared(msg) func isConnected(userId: UserId): async Bool {
+        let userIds = await Connectd.getConnections(msg.caller);
+        Utils.includes(userId, userIds)
+      };
+
+      // User Auth
+
+      public shared query(msg) func getOwnId(): async UserId { msg.caller }
+
+    };
+
+## ローカル Canister の実行環境を停止する
+
+`linkedup` Dapp のテストが終わったら、ローカル Canister の実行環境を停止して、バックグラウンドで実行し続けないようにします。
+
+ローカル Canister の実行環境を停止するには、以下のようにします：
+
+1.  ネットワーク操作が表示されているターミナルで、Control-C キーを押して、ローカルネットワークの処理を中断します。
+
+2.  以下のコマンドを実行して、ローカル Canister の実行環境を停止します：
+
+        dfx stop
+
+<!--
 # Make inter-canister calls
 
 One of the most important features of the Internet Computer blockchain for developers is the ability to call functions in one canister from another canister. This capability to make calls between canisters—also sometimes referred to as **inter-canister calls**—enables you to reuse and share functionality in multiple dapps.
@@ -336,3 +677,5 @@ To stop the local canister execution environment:
 2.  Stop the local canister execution environment by running the following command:
 
         dfx stop
+
+-->

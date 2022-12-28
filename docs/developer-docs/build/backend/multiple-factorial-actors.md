@@ -1,3 +1,197 @@
+# 複数の Actor を利用する
+
+February 2020 (Alpha) :proglang: Motoko :IC: Internet Computer :company-id: DFINITY
+
+このチュートリアルでは、複数の Actor を持つプロジェクトを作成します。現在、Motoko のファイルではひとつの Actor しか定義できず、ひとつの Actor は常にひとつの Canister にコンパイルされます。また、あるキャニスタの Actor で定義された関数を別の Canister で定義された Actor から呼び出したり、複数の Actor インスタンスをサポートする Actor クラスを Motoko プログラムで定義することはまだできません。しかし、複数の Actor を持つ **プロジェクト** を作成し、同じ `dfx.json` 設定ファイルから複数の Canister をビルドすることはできます。
+
+このチュートリアルでは、同じプロジェクトで3つの Actor に対して別々のプログラムファイルを作成します。このプロジェクトでは、以下の無関係な Actor を定義しています：
+
+-   `assistant`  Actor は、ToDo リストにタスクを追加したり、表示したりする機能を提供します。
+
+    簡略化するために、このチュートリアルのコードサンプルには、ToDo 項目を追加する関数と、追加された ToDo 項目の現在のリストを表示する関数だけを含んでいます。この Canister のより完全なバージョン（項目を完了にしたり、リストから削除したりする追加機能）は [examples](https://github.com/dfinity/examples/) リポジトリの [Simple to-do checklist](https://github.com/dfinity/examples/tree/master/motoko/simple-to-do) として公開されています。
+
+-   `factorial`  Actor は、指定された数の階乗を求める関数を提供します。
+
+-   `daemon` Actor は、デーモンを起動したり停止したりするためのモック関数を提供します。
+
+    このコードサンプルは、デモンストレーションのために、単に変数を代入し、メッセージを表示するものです。
+
+## 始める前に
+
+チュートリアルを始める前に、以下を確認してください：
+
+-   [ダウンロードとインストール](../../quickstart/local-quickstart#download-and-install)で説明されているように、SDK パッケージをダウンロードしインストールする。
+
+-   コンピューター上で動作しているローカル Canister の実行環境を停止しています。
+
+このチュートリアルの所要時間は約 20分です。
+
+## プロジェクトを作成する
+
+このチュートリアルのための新しいプロジェクトを作成するには：
+
+1.  ローカルコンピューターでターミナルシェルを開いてください（まだ開いていない場合）。
+
+2.  Internet Computer のプロジェクトに使用しているフォルダがあれば、そこに移動します。
+
+3.  以下のコマンドを実行して、新しいプロジェクトを作成します：
+
+
+        dfx new multiple_actors
+
+4.  以下のコマンドを実行して、プロジェクトディレクトリに移動してください：
+
+        cd multiple_actors
+
+## デフォルトコンフィグレーションを修正する
+
+新しいプロジェクトを作成すると、デフォルトの `dfx.json` 設定ファイルがプロジェクトディレクトリに追加されることはすでにお分かりいただけたと思います。このチュートリアルでは、このファイルにセクションを追加して、ビルドしたい Actor を定義する各 Canister の場所を指定する必要があります。
+
+デフォルトの設定ファイル `dfx.json` を変更するには：
+
+1.  テキストエディターで `dfx.json` 設定ファイルを開き、デフォルトの `multiple_actors` Canister 名とソースディレクトリを `assistant` に変更します。
+
+    例：
+
+        {
+          "canisters": {
+            "assistant": {
+              "frontend": {
+                "entrypoint": "src/multiple_actors/public/index.js"
+              },
+              "main": "src/assistant/main.mo"
+            },
+
+    設定ファイルのこの `canisters` セクションに設定を追加するので、`assistant` のメインソースコードファイルの場所と Canister タイプを囲む中括弧の後に**コンマ**も追加する必要があります。
+
+2.  `assistant` のソースファイルの場所の下に、`factorial` プログラム用の新しい Canister 名とソースファイルの場所、`daemon` プログラムファイル用の新しい Canister 名とソースファイルの場所を追加してください。
+
+    例：
+
+            "factorial": {
+              "main": "src/factorial/main.mo"
+            },
+            "daemon": {
+              "main": "src/daemon/main.mo"
+                }
+          },
+
+    その他の部分はそのままで大丈夫です。
+
+3.  以下のコマンドを実行して、デフォルトのソースファイルディレクトリの名前を `dfx.json` 設定ファイルで指定された名前と一致するように変更します。
+
+        cp -r src/multiple_actors/ src/assistant/
+
+4.  以下のコマンドを実行して、`assistant` のソースファイルのディレクトリをコピーし、`factorial` Actor のメインプログラムファイルを作成します。
+
+        cp -r src/assistant/ src/factorial/
+
+5.  以下のコマンドを実行して、`assistant` のソースファイルのディレクトリをコピーし、`daemon` Actor のメインプログラムファイルを作成します。
+
+        cp -r src/assistant/ src/daemon/
+
+## デフォルトのテンプレートプログラムを変更する
+
+これで `src` ディレクトリに3つのディレクトリができ、それぞれに `main.mo` というテンプレートファイルができました。このチュートリアルでは、各テンプレート `main.mo` ファイルの内容を別の Actor で置き換えます。
+
+デフォルトのテンプレートのソースコードを変更するには：
+
+1.  テキストエディタで `src/assistant/main.mo` ファイルを開き、既存のコンテンツを削除してください。
+
+2.  以下のサンプルコードをコピーして、ファイルに貼り付けてください：
+
+        include::example$multiple-actors/assistant/main.mo
+
+3.  テキストエディタで `src/factorial/main.mo` ファイルを開き、既存のコンテンツを削除してください。
+
+4.  以下のサンプルコードをコピーして、ファイルに貼り付けてください：
+
+        include::example$multiple-actors/factorial/main.mo
+
+5.  テキストエディタで `src/daemon/main.mo` ファイルを開き、既存のコンテンツを削除してください。
+
+6.  以下のサンプルコードをコピーして、ファイルに貼り付けてください：
+
+        include::example$multiple-actors/daemon/main.mo
+
+## プロジェクトですべての Canister をビルドする
+
+これで、ローカル・レプリカ・ネットワークにデプロイを実行可能な WebAssembly モジュールにコンパイルできるプログラムができました。
+
+プロジェクト内の各 Actor の実行ファイルをビルドするには、次のようにします：
+
+1.  必要であれば、プロジェクトのルートディレクトリ `~/ic-projects/multiple_actors` に変更します。
+
+2.  以下のコマンドを実行して、各プログラムの WebAssembly 実行ファイルをビルドしてください：
+
+        dfx build --all
+
+    If the command is successful, it builds all of the canisters you have specified in the `dfx.json` file.
+
+        Building canister assistant
+        Building canister factorial
+        Building canister daemon
+
+## プロジェクトに Canister をデプロイする
+
+これで、 Actor ーごとにコンパイルされた3つのプログラムができあがり、デプロイの準備が整いました。
+
+ Canister をデプロイするには：
+
+1.  以下のコマンドを実行して、ローカルコンピューターで IC ネットワークを起動します：
+
+        dfx start
+
+2.  新しいターミナルシェルを開き、プロジェクトのルートディレクトリ `~/ic-projects/multiple_actors` に移動します。
+
+    例：
+
+        cd ~/ic-projects/multiple_actors
+
+3.  以下のコマンドを実行して、ローカルネットワーク上に Canister をデプロイします。
+
+        dfx canister install --all
+
+## 関数を呼び出してデプロイメントを検証する
+
+これで、3つのプログラムがローカルのレプリカネットワーク上に ** Canister ** として配置され、`dfx canister call` コマンドを使用して各プログラムをテストすることができるようになりました。
+
+ローカル・レプリカ・ネットワークにデプロイしたプログラムをテストするには：
+
+1.  `dfx canister call` コマンドを使用して、`addTodo` 関数を使って Canister `assistant` を呼び出し、以下のコマンドを実行して追加したいタスクを渡します：
+
+        dfx canister call assistant addTodo '("Schedule monthly demos")'
+
+2.  以下のコマンドを実行して、`showTodos` 関数を使用して ToDo リストの項目が返されることを確認します：
+
+        dfx canister call assistant showTodos
+
+    このコマンドは、次のような出力を返します：
+
+        ("
+        ___TO-DOs___
+        (1) Schedule monthly demos
+
+3.  `dfx canister call` コマンドを使用して、以下のコマンドを実行し、`fac` 関数を使用して Canister の `factorial` を呼び出します：
+
+        dfx canister call factorial fac '(8)'
+
+    このコマンドは、以下のような結果を返します：
+
+        (40320)
+
+4.  `dfx canister call` コマンドを使用して、以下のコマンドを実行し、`launch` 機能を使用して、canister `daemon` を呼び出します：
+
+        dfx canister call daemon launch
+
+5.  モック `launch` 関数が "The daemon process is running" というメッセージを返すことを確認します：
+
+        (""The daemon process is running"")
+
+6.  以下のコマンドを実行して、ローカルコンピューターで動作している IC プロセスを停止します：
+        dfx stop
+
+<!--
 # Using multiple actors
 
 February 2020 (Alpha) :proglang: Motoko :IC: Internet Computer :company-id: DFINITY
@@ -190,3 +384,5 @@ To test the programs you have deployed on the local replica network:
 6.  Stop the IC processes running on your local computer by running the following command:
 
         dfx stop
+
+-->
