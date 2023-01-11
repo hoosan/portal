@@ -20,13 +20,13 @@
 
 -   [Import library modules](./phonebook.md) は、リスト内のキーと値のペアを扱うための、いくつかの基本的な Motoko ベースライブラリ関数をインポートして使用する方法を説明しています。
 
--   [Use multiple actors](./multiple-actors.md) は、1つのプロジェクトに複数の無関係な Actor を含める方法を説明し、同じプロジェクトに複数の Canister をコンパイルできることを説明しています。
+-   [複数の Actor を使用する](./multiple-actors.md) は、1つのプロジェクトに複数の無関係な Actor を含める方法を説明し、同じプロジェクトに複数の Canister をコンパイルできることを説明しています。
 
 -   [フロントエンドのカスタマイズ](../frontend/custom-frontend.md)では、シンプルな React フレームワークを使用して、デフォルトのサンプル Canister 用の新しいフロントエンドを作成し、表示されるインターフェイスをカスタマイズするためのいくつかの基本的な修正方法を説明します。CSS、HTML、JavaScript、React または他のフレームワークを使ってユーザー・インターフェースを構築する方法を既に知っている場合は、このチュートリアルを読み飛ばすことができます。
 
 -   [Add a stylesheet](../frontend/my-contacts.md) は、React を使用してプロジェクトの新しいフロントエンドを作成するときに、スタイルシートを追加する方法を説明します。React にスタイルシートを追加する方法をすでに知っている場合は、このチュートリアルを読み飛ばすことができます。
 
--   [Make inter-canister calls](./intercanister-calls.md) は、ある Canister で定義された関数を、同じプロジェクト内の別の Canister から呼び出す簡単な方法を説明しています。
+-   [Canister 間コールを行う](./intercanister-calls.md) は、ある Canister で定義された関数を、同じプロジェクト内の別の Canister から呼び出す簡単な方法を説明しています。
 
 -   [スケーラブルなアプリケーションの作成](./scalability-cancan.md)では、複数の Canister を使用して拡張性のあるアプリケーションを作成することについて説明しています。
 
