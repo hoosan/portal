@@ -1,4 +1,4 @@
-# 再現性の高い Canister のビルド
+# 再現性のある Canister のビルド
 
 コンセンサスプロトコルのおかげで、 Internet Computer は常に Canister のコードを正しく実行することができます。しかし、これは Canister の *正しい* コードが実行されているという意味ではありません。誰かが開発した Canister を使用する場合、 Canister に重要な決定（例えば、ICP を Canister に送るなど）をさせる前に、その Canister が本当に意図したコードを実行しているか確認したいと思うかもしれません。これを確認するためには、ふたつの質問に答えることで検証できます。
 
@@ -185,7 +185,7 @@ Canister プロジェクトのルートディレクトリから、以下のよ�
     /canister# mkdir artifacts
     /canister# reprotest -vv --store-dir=artifacts --variations '+all,-time' 'dfx build --network ic' '.dfx/ic/canisters/*/*.wasm'
 
-最初のコマンドは、先に提供された `Dockerfile` を使って Docker コンテナをビルドします。2つ目のコマンドは、コンテナ内でインタラクティブなシェル（`-it` フラグ）を開きます。ここでは特権モードで実行します（`—privileged` フラグ）。これは、`reprotest` がカーネルモジュールを使用して、ビルド環境のバリエーションを増やしているためです。また、いくつかのバリエーションを除外することで、非特権モードで実行することもできます。[reprotest manual](https://manpages.debian.org/stretch/reprotest/reprotest.1.en.html)  を参照してください。`rm` フラグは、シェルを閉じた後にコンテナを破壊します。最後に、コンテナ内にビルド用のディレクトリを作成し、冗長モードで `reprotest` を起動します（`-vv` フラグ）。最初の引数として、実行したいビルドコマンドを与える必要があります。ここでは、`dfx build --network ic` とします。もし、別のビルドプロセスを使用している場合には、調整してください。これで、ふたつの異なる環境でビルドが実行されます。最後に、ふたつのビルドの最後に比較するパスを `reprotest` に指定する必要があります。ここでは、`.dfx/ic` ディレクトリにある、すべての Canister 用の Wasm コードを比較します。Rust コンパイラは動的なメモリ割り当てに `jemalloc` を使用しており、このライブラリは `reprotest` が時間変化の実装に使用している `faketime` と [compatible](https://github.com/wolfcw/libfaketime/issues/130) はないため、時間変化の実装を省略しています。しかし、手動でシステム時刻を変更しながら、 `reprotest` が生成する成果物を比較することをお勧めします。
+最初のコマンドは、先に提供された `Dockerfile` を使って Docker コンテナをビルドします。2つ目のコマンドは、コンテナ内でインタラクティブなシェル（`-it` フラグ）を開きます。ここでは特権モードで実行します（`--privileged` フラグ）。これは、`reprotest` がカーネルモジュールを使用して、ビルド環境のバリエーションを増やしているためです。また、いくつかのバリエーションを除外することで、非特権モードで実行することもできます。[reprotest manual](https://manpages.debian.org/stretch/reprotest/reprotest.1.en.html)  を参照してください。`--rm` フラグは、シェルを閉じた後にコンテナを破壊します。最後に、コンテナ内にビルド用のディレクトリを作成し、冗長モードで `reprotest` を起動します（`-vv` フラグ）。最初の引数として、実行したいビルドコマンドを与える必要があります。ここでは、`dfx build --network ic` とします。もし、別のビルドプロセスを使用している場合には、調整してください。これで、ふたつの異なる環境でビルドが実行されます。最後に、ふたつのビルドの最後に比較するパスを `reprotest` に指定する必要があります。ここでは、`.dfx/ic` ディレクトリにある、すべての Canister 用の Wasm コードを比較します。Rust コンパイラは動的なメモリ割り当てに `jemalloc` を使用しており、このライブラリは `reprotest` が時間変化の実装に使用している `faketime` と [compatible](https://github.com/wolfcw/libfaketime/issues/130) はないため、時間変化の実装を省略しています。しかし、手動でシステム時刻を変更しながら、 `reprotest` が生成する成果物を比較することをお勧めします。
 
 比較の結果、差異が見つからなかった場合は、このような出力が表示されます：
 
