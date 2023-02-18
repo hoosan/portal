@@ -2,11 +2,11 @@
 
 ## NFT とは何か？
 
-NFT または Non-fungible Token は、特定のデジタルアセットまたは物理的アセットに関連付けられたブロックチェーン上の記録です。ブロックチェーン上のユニークなデジタル表現により、所有権の証明や売買が可能になります。 
+NFT または Non-fungible Token は、特定のデジタルアセットまたは物理的アセットに関連付けられたブロックチェーン上の記録です。ブロックチェーン上での一意なデジタル表現により、所有権の証明や売買が可能になります。 
 
 ## Internet Computer の NFT
 
-Internet Computer（IC）は NFT に多くの可能性をもたらします。画像、サウンドクリップ、ビデオなどのデジタルアセットでは、アセット全体をオンチェーンでライブ配信し、オンチェーンゲームやメタバース体験に含めることができます。さらに、[HTTPS アウトコール](/https-outcalls) を介して IC 内部や外部のデータに基づいて変化する動的な NFT を想定することができます。
+Internet Computer（IC）は NFT に多くの可能性をもたらします。画像、サウンドクリップ、ビデオなどのデジタルアセットでは、アセット全体をオンチェーンでライブ配信し、オンチェーンゲームやメタバース体験に含めることができます。さらに、[HTTPS アウトコール](/https-outcalls) を介して IC 内部や外部のデータに基づいて変化する動的な NFT を想像することができます。
 
 多くのアプリケーションにとって、その決定的な特徴は永続性と不変性（または事前に定義されたルールに従った変化）です。リバースガスモデルや Canister 型スマートコントラクトのアップグレード可能性など、IC の設計決定の中には、NFT 開発者が特に意識する必要があるものがあります。
 
@@ -25,9 +25,9 @@ IC 上の NFT 実装は通常、以下の3つの機能を備えています：
 
 まず、すべての Canister に数年間維持できる十分な Cycle があることを確認します。IC 上のストレージと計算は他のプラットフォームよりはるかに安価なので、これは一般的に大きな費用ではありません。他の人が簡単に Canister をトップアップ（補充）できるようにするには、NFT Canister のコントローラーとして[ブラックホール Canister ](https://github.com/ninegua/ic-blackhole)や他の不変のプロキシ Canister を追加することを検討すべきです。これにより、ユーザーは [Tip Jar サービス](https://k25co-pqaaa-aaaab-aaakq-cai.ic0.app/) を使って Canister にトップアップすることができるようになります。
 
-### 余裕のある freezing_threshold（凍結閾値）を設定する
+### 凍結閾値（freezing threshold）を余裕をもって設定する
 
-IC には、Canister を Cycle 切れから救うための便利なメカニズムがあります。Canister には設定可能な [`freezing_threshold`](../../references/ic-interface-spec.md#ic-create_canister) があります。`freezing_threshold` は、Canister のコントローラーで設定することができ、秒単位で指定できます。IC は、これを閾値として動的に Cycle を評価させます。この値は、少なくとも `freezing_threshold` で指定された時間内は Canister がアイドル状態のリソースを支払うことができるようにします。これを保証するために、Canister は Cycle バランスが閾値に達するとフリーズし、ハートビートを含むすべてのアップデートコールが直ちに拒否され、それ以後の Canister の Cycle バランスに影響を与えません。デフォルト値は約30日ですが、NFT の場合、開発者は `freezing_threshold` を最低でも90日、できれば180日に設定すべきです。これにより、NFT の開発者とそのユーザーは、最終的に Cycle を使い果たす前に Canister をトップアップし、対応する十分な時間を確保することができます。
+IC には、Canister を Cycle 切れから救うための便利なメカニズムがあります。Canister には設定可能な [`freezing_threshold`](../../references/ic-interface-spec.md#ic-create_canister) があります。`freezing_threshold` は、Canister のコントローラーで設定することができ、秒単位で指定できます。IC は、これを閾値として動的に Cycle を評価させます。この値は、`freezing_threshold` で指定された時間内は少なくとも Canister がアイドル状態のリソースを支払うことができるというものです。これを保証するために、Canister は Cycle バランスが閾値に達するとフリーズし、ハートビートを含むすべてのアップデートコールが直ちに拒否され、それ以後の Canister の Cycle バランスに影響を与えません。デフォルト値は約30日ですが、NFT の場合、開発者は `freezing_threshold` を最低でも90日、できれば180日に設定すべきです。これにより、NFT の開発者とそのユーザーは、Cycle を完全に使い果たす前に Canister をトップアップして対応するための十分な時間を確保することができます。
 
 
 ### Canister の監視が可能であることを確認する
@@ -42,7 +42,7 @@ IC 上では、Canister の Cycle バランスはコントローラーのみが�
 
 ### ベストプラクティスに従った効率的な実装
 
-Canister が予想以上に高価になる可能性がある誤用がいくつかあります。ここでは、NFT Canister を導入する際に遭遇する可能性のある事例を紹介します。
+実装の仕方によっては、Canister が予想以上に高価になる可能性があります。ここでは、NFT Canister を導入する際に遭遇する可能性のある事例を紹介します。
 
 * ハートビートを利用：何もしない素のハートビートでは、〜0.055T Cycle/day のコストがかかります。[より安価なスケジューリングを可能にする代替手段を実装する](https://forum.dfinity.org/t/heartbeat-improvements-timers-community-consideration/14201)という議論があります。
 * Motoko 開発者へのアドバイス：
@@ -51,9 +51,9 @@ Canister が予想以上に高価になる可能性がある誤用がいくつ�
     * 大きなバイナリアセットを保存する場合は、`[Nat8]` の代わりに `Blob` を使用します。
     * Candid `vec nat8/blob` 値を送受信する場合は、`[Nat8]` ではなく `Blob` を使用することを検討してください。選択するのはあなたですが、`Blob` の方が4倍コンパクトで、ガベージコレクション（GC）への負担がずっと少なくなります。
     * Blob の手動メモリ管理が単純な場合（例えば、追加するだけで、削除はしない）、GC への負担をさらに減らすために、大きな `Blob` をステーブルメモリに格納することを検討してください。
-    * オブジェクトのコピーコストを削減するために大きなヒープにアクセスする追加限定のシナリオの場合は、`compacting-gc` 設定を使用することを検討してみてください。
+    * `compacting-gc` 設定を使用することを検討してみてください。特に、追加のみ（Append-only）のシナリオでは、より大きなヒープにアクセスできるようにし、オブジェクトのコピーコストを削減することができます。
 * Rust の開発者へのアドバイス：
-    * アップグレードのためにステートをシリアライズ・デシリアライズする必要がある場合は、`Vec<u8>` や `String` 型を多用することに注意してください。
+    * アップグレードのためにステートをシリアライズ・デシリアライズする必要がある場合は、`Vec<u8>` や `String` 型を多用しないように注意してください。
     * [Roman の効果的な Rust Canister に関するブログポスト](https://mmapped.blog/posts/01-effective-rust-canisters.html)をお読みください。
 
 また、[Good practices for canister development by Joachim Breitner](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister) という一般的な記事も必読です。
