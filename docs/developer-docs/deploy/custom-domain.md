@@ -13,7 +13,7 @@ DNS を制御することでサイトのリダイレクトが可能になり、T
 3. ファイル `service-worker/src/sw/http_request.ts` 内の `hostnameCanisterIdMap` にドメインと Canister のマッピングを追加し、 Canister  ID をマッピングしてください。
 4. サービスワーカーを `service-worker/README.md` の説明に従ってビルドします。出力は以下のようになるはずです：
     - `index.html`
-    - ミニファイ `.js` ファイル
+    - ミニファイされた `.js` ファイル
     - `.map` ファイル
 5. サーバーまたは CDN からアセット（`index.html`、`.js`、`.map`ファイル）をホスティングし、カスタムドメイン名をこのサーバーに向けます。
 6. テスト

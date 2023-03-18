@@ -1,6 +1,6 @@
 # コンピューティングとストレージのコスト
 
-Internet Computer は、Cycle によってサポートされる計算操作とストレージを必要とします。Cycle は、Internet Computer（ICP）ユーティリティ・トークンの変換から生成されます。
+Internet Computer は、Cycle によってサポートされる計算操作とストレージを必要とします。Cycle は、Internet Computer（ICP）ユーティリティ・トークンを変換することで生成されます。
 
 ## コスト定義における Network Nervous System（NNS）の役割
 
@@ -8,7 +8,7 @@ Internet Computer は、Cycle によってサポートされる計算操作と�
 
 ## 詳細： Internet Computer のトランザクションにおける計算とストレージのコスト
 
-Internet Computer のブロックチェーン上で稼働する Canister スマートコントラクトの演算は、イーサリアムの "gas" と同様の役割を果たす "Cycle" を燃料としています。しかし、いくつかの大きな違いがあります。最も根本的な違いのひとつは、イーサリアムが「ユーザーペイ」、 Internet Computerと「スマートコントラクトペイ」（「リバースガス」と呼ばれることもあります）モデルを活用している点です。イーサリアムのブロックチェーンでは、エンドユーザーが取引のたびにスマートコントラクトが消費するガスの代金を送る必要がありますが、 Internet Computer では、Canister スマートコントラクトに Cycle があらかじめチャージされており、コントラクトが事実上自身の計算を支払うため、ユーザーはその責任から解放されるのです。
+Internet Computer のブロックチェーン上で稼働する Canister スマートコントラクトの演算は、イーサリアムの "gas" と同様の役割を果たす "Cycle" を燃料としています。しかし、いくつかの大きな違いがあります。最も根本的な違いのひとつは、イーサリアムが「ユーザーペイ」なモデルであるのに対し、 Internet Computerと「スマートコントラクトペイ」（「リバースガス」と呼ばれることもあります）モデルを活用している点です。イーサリアムのブロックチェーンでは、エンドユーザーが取引のたびにスマートコントラクトが消費するガスの代金を送る必要がありますが、 Internet Computer では、Canister スマートコントラクトに Cycle があらかじめチャージされており、コントラクトが事実上自身の計算を支払うため、ユーザーはその責任から解放されるのです。
 
 2022年8月29日時点の Internet Computer の計算およびストレージ・トランザクションのコストの詳細は以下をご覧ください。
 Canister の運用コストがどのように計算されるかの徹底的な例は、[こちら](https://medium.com/@DBOXFoundation/findings-from-calculating-the-cycle-consumption-of-messity-a-universal-example-b2af8dcd3151) に記載されています。
