@@ -1,3 +1,20 @@
+# Large web assembly モジュール
+
+現在、IC にインストールできるプログラムのサイズは 2MB に制限されています。
+2MB を（わずかに）超える WebAssembly モジュールについては、アップロード前に gzip によるファイル圧縮を行い、IC がファイルを解凍し、含まれる WebAssembly モジュールをインストールすることにより、IC へのインストールが可能です。
+
+## gzip 圧縮された WebAssembly モジュールのインストール
+
+WebAssembly モジュールは `gzip` で圧縮され、`dfx install` でアップロードされます。既存の Canister にモジュールをアップロードする際には、`--mode reinstall` または `--mode upgrade` を追加する必要があるかもしれません。
+
+``` bash
+$ gzip my-canister.wasm
+$ dfx canister install my-canister --wasm my-canister.wasm.gz
+```
+
+圧縮は現在、`dfx deploy` ではサポートされていません。
+
+<!--
 # Large web assembly modules
 
 The size of programs that can be installed on the IC is currently limited to 2MB.
@@ -13,3 +30,5 @@ $ dfx canister install my-canister --wasm my-canister.wasm.gz
 ```
 
 Compression is currently not supported by `dfx deploy`.
+
+-->
