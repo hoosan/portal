@@ -38,6 +38,7 @@ export type SampleContentType =
   | "code samples"
   | "documentation"
   | "live demos"
+  | "tutorial"
   | "videos"
   | "community repo";
 
@@ -49,7 +50,7 @@ export const sampleItems: SampleItem[] = [
     domains: ["Asynchronous DeFi"],
     languages: ["motoko", "rust"],
     level: "advanced",
-    contentType: ["code samples", "documentation", "live demos"],
+    contentType: ["code samples", "documentation", "live demos", "tutorial"],
     body: "Deploy a canister on the Internet Computer that can send and receive Bitcoin.",
     links: {
       action: {
@@ -69,7 +70,7 @@ export const sampleItems: SampleItem[] = [
     domains: ["Global"],
     languages: ["motoko", "rust"],
     level: "advanced",
-    contentType: ["code samples", "documentation", "live demos"],
+    contentType: ["code samples", "documentation", "live demos", "tutorial"],
     body: "Build a threshold ECDSA test key on a subnet.",
     links: {
       action: {
@@ -87,19 +88,19 @@ export const sampleItems: SampleItem[] = [
     title: "Canister HTTPS Outcalls",
     image: require("../../../static/img/samples/https-outcalls.jpeg").default,
     domains: ["Global", "Website"],
-    languages: ["rust", "javascript"],
+    languages: ["rust", "motoko"],
     level: "intermediate",
-    contentType: ["documentation"],
+    contentType: ["code samples", "documentation"],
     body: "Demonstrates how to build a dapp with canister outgoing HTTP calls.",
     links: {
       action: {
         text: "Get Code",
-        to: "https://github.com/dfinity/examples/tree/master/rust/exchange_rate",
+        to: "https://github.com/dfinity/examples/tree/master/motoko/send_http_get",
       },
       motoko:
-      "https://github.com/dfinity/examples/tree/master/motoko/exchange_rate",
-      docs: "/docs/current/samples/http-requests-exchange-rates",
-      rust: "https://github.com/dfinity/examples/tree/master/rust/exchange_rate",
+      "https://github.com/dfinity/examples/tree/master/motoko/send_http_get",
+      docs: "docs/current/developer-docs/integrations/https-outcalls/https-outcalls-how-to-use",
+      rust: "https://github.com/dfinity/examples/tree/master/rust/send_http_get",
     },
   },
   {
@@ -129,7 +130,7 @@ export const sampleItems: SampleItem[] = [
     domains: ["Website", "Global"],
     languages: ["motoko", "rust", "javascript"],
     level: "beginner",
-    contentType: ["documentation", "videos"],
+    contentType: ["documentation", "videos", "tutorial"],
     body: "Quickly set up a static website structure, add content and basic styling, and deploy on the IC.",
     links: {
       action: { text: "Docs", to: "/samples/host-a-website" },
@@ -144,7 +145,7 @@ export const sampleItems: SampleItem[] = [
     domains: ["Asynchronous DeFi", "Website"],
     languages: ["motoko", "rust", "javascript"],
     level: "intermediate",
-    contentType: ["code samples", "documentation", "videos", "live demos"],
+    contentType: ["code samples", "documentation", "videos", "live demos", "tutorial"],
     body: "Build dapp to enable DeFi applications on the IC.",
     links: {
       action: {
@@ -165,7 +166,7 @@ export const sampleItems: SampleItem[] = [
     domains: ["Metaverse and NFTs", "GameFi"],
     languages: ["rust"],
     level: "intermediate",
-    contentType: ["code samples", "documentation", "videos"],
+    contentType: ["code samples", "documentation", "tutorial", "videos"],
     body: "Create a user generated NFT and share it. This dapp uses the DIP721 NFT standard.",
     links: {
       rust: "https://github.com/dfinity/examples/tree/master/rust/dip721-nft-container",
@@ -180,7 +181,7 @@ export const sampleItems: SampleItem[] = [
     domains: ["Global", "Asynchronous DeFi"],
     languages: ["motoko", "rust"],
     level: "intermediate",
-    contentType: ["code samples", "documentation", "videos"],
+    contentType: ["code samples", "documentation", "tutorial", "videos"],
     body: "Dapp initializes a set of accounts and corresponding tokens as well as enables  proposals for communal votes.",
     links: {
       motoko:
@@ -198,7 +199,7 @@ export const sampleItems: SampleItem[] = [
     domains: ["Website"],
     languages: ["motoko", "rust", "javascript"],
     level: "advanced",
-    contentType: ["code samples", "documentation", "videos", "live demos"],
+    contentType: ["code samples", "documentation", "videos", "live demos", "tutorial"],
     body: "Create, access and modify confidential notes from multiple devices using Internet Identity and end-to-end encryption.",
     links: {
       motoko:
@@ -250,6 +251,40 @@ export const sampleItems: SampleItem[] = [
     body: "Demonstrates how to deploy a web game on the IC.",
     links: {
       docs: "/docs/current/samples/host-a-webgame",
+    },
+  },
+  {
+    index: 12,
+    title: "NNS Integration",
+    image: require("../../../static/img/samples/nns-proposal.jpg").default,
+    domains: ["Website"],
+    languages: ["motoko", "javascript"],
+    level: "intermediate",
+    contentType: ["code samples", "documentation", "live demos"],
+    body: "Learn how to connect a canister to a neuron, to make a dapp that can submit proposals to the NNS.",
+    links: {
+      motoko:
+        "https://github.com/InternetComputerOG/NNS-Proposal-Submission-Dapp",
+      livePreview: "https://uf2fn-liaaa-aaaal-abeba-cai.ic0.app/",
+    },
+  },
+  {
+    index: 13,
+    title: "IOS Integration",
+    image: require("../../../static/img/samples/default.gif").default,
+    domains: ["Website"],
+    languages: ["motoko", "javascript"],
+    level: "intermediate",
+    contentType: ["code samples", "documentation"],
+    body: "Integrate with a native ios application enabling push notifications and authentication.",
+    links: {
+      action: {
+        text: "Get Code",
+        to: "https://github.com/dfinity/examples/tree/master/motoko/ios-notifications",
+      },
+      motoko:
+      "https://github.com/dfinity/examples/tree/master/motoko/ios-notifications",
+      docs: "/docs/current/samples/ios-integration",
     },
   },
 ];

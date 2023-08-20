@@ -1,103 +1,8 @@
-# スケーラブルなアプリの作成
+# 18: Scalable dapp example
 
-CanCan サンプルアプリケーションは、動画共有サービスを簡略化したもので、独自のアプリケーションのモデルとして使用できる機能をいくつか紹介しています。例えば、CanCan のサンプルアプリケーションを利用することで、以下のようなことが学べます：
+## Overview
 
--   コンテンツをフラグメントに分割してアップロード・保存し、クエリを使用してフラグメントを取得・再集合して効率的なストリーミングを行うことで、スケーラブルなアプリケーションを構築する方法。
-
--   異なるバックエンド言語で記述された Canister を使用するアプリケーションの相互運用性を設定する方法。
-
--   異なるユーザーによってアップロードされたビデオを保存するための基本的な認証モデルを実装する方法。
-
--   デスクトップまたはモバイルアプリケーション向けに、より洗練されたユーザーインターフェース機能を実装したフロントエンドを構築する方法。
-
-## アップロードされたコンテンツを複数の Canister に分割する
-
-Canister はコンパイルされた WebAssembly モジュールであるため、一定の既知の制限があります。例えば、現在の WebAssembly モジュールでは、メモリに最大 4GB、オブジェクトの呼び出し回数に上限があります。
-
-CanCan のような動画共有のサンプルアプリケーションでは、これらの制限があるため、複数の Canister が必要となり、データを小さなチャンクに分割して保存、取得する必要があります。
-
-### 分散ハッシュテーブルを実装する
-
-Internet Computer 向けにスケーラブルな動画共有サービスを構築する最初の試みでは、バックエンドサービスとして分散ハッシュ テーブル（DHT）を使用し、アップロードまたはストリーミングする動画のデータチャンクを事前に定義された Canister セットに分散する単純な get および put 関数を使用しました。プロジェクトの初期段階では、コンセプトの実証と、保存と検索のためにビデオデータを適切にトランスコードできることを確認するにはこのアプローチで十分でした。
-
-しかし、分散ハッシュテーブルは、保存のためにデータを投入し、視聴のためにデータを取得できる特定の数の Canister に依存していたため、アプリケーションのスケーラビリティには限界がありました。さらに、分散ハッシュテーブルのバックエンドサービスの最初の実装には、ノードが利用できなかったりデータを失う原因となり得る一般的なネットワーク接続の問題に対応するためのコードが含まれていました。
-
-### スケーラビリティを簡略化する
-
-Internet Computer プロトコルは、サブネット内のノード間で複製されたステートに依存しているため、他のプラットフォームやプロトコル上で動作するアプリケーションでは一般的に利用できない、フォールトトレランスとフェールオーバーに関する特定の保証をネイティブに提供します。
-
-Internet Computer は、Canister がリクエストを受信し応答を保証することを認識することで、オリジナルの分散ハッシュテーブルのバックエンドサービスは、よりシンプルで拡張性の高い BigMap というバックエンドサービスに置き換わりました。
-
-BigMap は、Internet Computer 上で Key-Value ストレージを利用したスケーラブルなアプリケーションを構築するための、シンプルなプラグインライブラリです。BigMapライブラリをバックエンドサービスとして使用することで、CanCan サンプルアプリケーションは、動的にデータをチャンクし、シリアライズし、複数の Canister に配布することができます。
-
-このライブラリは、アプリケーション固有のインメモリデータを抽象化するためのビルディングブロックを提供し、任意の数のキャニスタを使用して拡張することができます。各 Canister の容量はまだ限られていますが、アプリケーションは必要な Canister をインスタンス化し、各ユーザーのビデオコンテンツを完全に構成するフラグメントを `manifest` というインデックスファイルに記録しておきます。
-
-`BigMap` サービスに必要なコードは、従来の分散ハッシュテーブルよりもはるかにシンプルです。なぜなら、プラットフォームとしての Internet Computer が、スケーラビリティ、レプリケーション、フェイルオーバー、フォールトトレランスを提供してくれるからです。
-
-## 相互運用性を実証する
-
-CanCan サンプルアプリケーションのリポジトリに含まれる BigMap サービスは、プログラミング言語 Rust で書かれています。しかし、CanCan サンプルアプリケーションは、異なる言語で書かれた Canister 間の相互運用性を示すものでもあります。
-
-この場合、BigMap の機能は Rust プログラミング言語で実装され、その他のサービス（ビデオコンテンツのエンコードとデコード、認証のためのユーザープリシパルの管理など）は Motoko で実装されています。
-
-サンプルアプリケーションの各部を Canister としてデプロイすることで、各部の相互通信がシームレスなユーザーエクスペリエンスを提供することができます。
-
-CanCan のリポジトリでご覧いただける `BigMap` サービスは Rust で書かれていますが、実際には以下のことを実証するために、Rust と Motoko の両方のプログラミング言語で実装されています：
-
--   Motoko のコードと、 Canister としてデプロイされた Rust のコードの両方を Internet Computer 上で実行することができます。
-
--   CanCan サンプルアプリケーションの動作に影響を与えることなく、バックエンド言語の切り替えが可能です。
-
--   Candid 言語は、JavaScript、Rust、Motoko に依存しない BigMap API を記述するための共通言語を提供するため、どちらの言語実装もシームレスに動作します。
-
-## 認証モデル
-
-LinkedUp のサンプルアプリケーションと同様に、CanCan のサンプルアプリケーションでも、公開鍵と秘密鍵のペア、ブラウザベースのローカルストレージ、および `Principal` データ型を使用してユーザーを認証しています。
-
-## フロントエンドの機能を実装する
-
-CanCan のサンプルアプリケーションでは、React ライブラリと TypeScript を組み合わせて、フロントエンドのユーザーインターフェイスを実装しています。
-
-## データモデル概要
-
-このアプリケーションは、ユーザーに関する情報とビデオに関する情報を保存します。ほとんどのブラウザをサポートするために、動画はバイト配列に直列化され、動画データは [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) オブジェクトと呼ばれるバイトの 500kb セグメントに格納されています。動画が要求されると、マニフェストは動画の再生に必要なチャンクのリストをロードし、標準の `<video>` 要素で動画を表示する前にチャンクを連結します。
-
-### ユーザープロファイル
-
-ユーザプロファイルは `profiles/{username}` として保存され、以下のデータモデルで定義されます：
-
-    export interface Profile {
-      username: string;         // maya
-      following: string[];      // [`alice`, `bob]`
-      followers: string[];      // ['palice']
-      uploadedVideos: string[]; // ['profiles/maya/videos/a5b54646-2ea3-4e0e-82d1-da3ab8148df2']
-      likedVideos: string[];    // ['profiles/bob/videos/b74e4eb0-dea8-4a4a-a1ae-d4593dc86930']
-      avatar?: string;          // ?ImageData (TODO)
-    }
-
-### ビデオ
-
-アップロードされたビデオは `profiles/{username}/videos/{videoId}` と `public/videos`（プラットフォーム上のすべての既存ビデオの配列）に格納されている一意の識別子によって識別されます。
-
-ビデオのメタデータは `profiles/{username}/videos/{videoId}/metadata` に格納されます。個々のビデオフラグメントは `profiles/{username}/videos/{videoId}/chunks/chunk.{0-10}` に格納されます。
-
-ビデオは `profiles/{username}` に格納され、以下のデータモデルを使用して定義されます：
-
-    export interface Video {
-      src: string;       // 'profiles/maya/videos/f5a44646-2ea3-4e0f-83d2-da3ab8148df2'
-      userId: string;    // 'maya'
-      createdAt: string; // Date.now()
-      caption: string;   // 'cool movie, punk'
-      tags: string[];    // ['outside', 'grilling', 'beveragino']
-      likes: string[];    // ['sam', 'kelly']
-      viewCount: number; // 102
-      name: string; // 'grilling'
-    }
-
-<!--
-# Create scalable apps
-
-The CanCan sample application is a simplified video-sharing service that demonstrates several features that you can use as models for your own applications. For example, here are a few things you can learn by exploring the CanCan sample application:
+The [CanCan sample application](https://github.com/dfinity/cancan) is a simplified video-sharing service that demonstrates several features that you can use as models for your own applications. For example, here are a few things you can learn by exploring the CanCan sample application:
 
 -   How to build a scalable application by splitting content into fragments for upload and storage then using queries to retrieve and reassemble the fragments for efficient streaming.
 
@@ -119,7 +24,7 @@ The initial attempt to build a scalable video-sharing service for the Internet C
 
 However, the scalability of the application was limited because the distributed hash table relied on a specific number of canisters that it could populate with data for storage and retrieve data from for viewing. In addition, the original implementation of the distributed hash table backend service included code to accommodate common network connectivity issues that could cause nodes to be unavailable or lose data.
 
-### Simplifying scalability
+## Simplifying scalability
 
 Because the Internet Computer protocol relies on replicated state across nodes in a subnet, it provides certain guarantees about fault tolerance and failover natively that are not generally available to applications running on other platforms or protocols.
 
@@ -155,7 +60,7 @@ Much like the LinkedUp sample application, the CanCan sample application uses th
 
 The CanCan sample application uses the React library in combination with TypeScript to implement frontend user interface.
 
-## Data model overview
+### Data model overview
 
 The application stores information about users and information about videos. To support most browsers, the videos are serialized into byte arrays with video data stored in 500kb segments of bytes that are referred to as [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) objects. When a video is requested, the manifest loads the list of chunks required to play the video and concatenates the chunks before displaying the video in a standard `<video>` element.
 
@@ -163,14 +68,16 @@ The application stores information about users and information about videos. To 
 
 User profiles are stored as `profiles/{username}` and are defined using the following data model:
 
-    export interface Profile {
-      username: string;         // maya
-      following: string[];      // [`alice`, `bob]`
-      followers: string[];      // ['palice']
-      uploadedVideos: string[]; // ['profiles/maya/videos/a5b54646-2ea3-4e0e-82d1-da3ab8148df2']
-      likedVideos: string[];    // ['profiles/bob/videos/b74e4eb0-dea8-4a4a-a1ae-d4593dc86930']
-      avatar?: string;          // ?ImageData (TODO)
-    }
+```
+export interface Profile {
+  username: string;         // maya
+  following: string[];      // [`alice`, `bob]`
+  followers: string[];      // ['palice']
+  uploadedVideos: string[]; // ['profiles/maya/videos/a5b54646-2ea3-4e0e-82d1-da3ab8148df2']
+  likedVideos: string[];    // ['profiles/bob/videos/b74e4eb0-dea8-4a4a-a1ae-d4593dc86930']
+  avatar?: string;          // ?ImageData (TODO)
+}
+```
 
 ### Videos
 
@@ -180,15 +87,120 @@ Metadata for videos is stored at `profiles/{username}/videos/{videoId}/metadata`
 
 Videos are stored as `profiles/{username}` and are defined using the following data model:
 
-    export interface Video {
-      src: string;       // 'profiles/maya/videos/f5a44646-2ea3-4e0f-83d2-da3ab8148df2'
-      userId: string;    // 'maya'
-      createdAt: string; // Date.now()
-      caption: string;   // 'cool movie, punk'
-      tags: string[];    // ['outside', 'grilling', 'beveragino']
-      likes: string[];    // ['sam', 'kelly']
-      viewCount: number; // 102
-      name: string; // 'grilling'
-    }
+```
+export interface Video {
+  src: string;       // 'profiles/maya/videos/f5a44646-2ea3-4e0f-83d2-da3ab8148df2'
+  userId: string;    // 'maya'
+  createdAt: string; // Date.now()
+  caption: string;   // 'cool movie, punk'
+  tags: string[];    // ['outside', 'grilling', 'beveragino']
+  likes: string[];    // ['sam', 'kelly']
+  viewCount: number; // 102
+  name: string; // 'grilling'
+}
+```
 
--->
+### Prerequisites
+
+Before getting started, assure you have set up your developer environment according to the instructions in the [developer environment guide](./dev-env.md).
+
+Additionally, the following packages are required for this guide:
+- [x] Download and install [Node.js](https://nodejs.org).
+- [x] Download and install [Python](https://www.python.org).
+- [x] Download and install [Vessel@0.6.0](https://github.com/dfinity/vessel/releases/tag/v0.6.0).
+
+## Deploying the CanCan dapp
+
+Double-check you have [vessel](https://github.com/dfinity/vessel) installed at version 0.6.*, then clone this repository and navigate to the `cancan` directory.
+
+
+```shell
+vessel --version
+# vessel 0.6.0
+
+git clone git@github.com:dfinity/cancan.git
+cd cancan
+```
+
+Start a local Internet Computer replica by running the following command:
+
+```shell
+dfx start --clean
+```
+
+Then, edit the `dfx.json` file to use the latest version of dfx:
+
+```
+  "dfx": "0.14.1"
+```
+
+Execute the following command in another terminal tab in the same directory:
+
+```shell
+npm install
+```
+
+Replace the contents of the `./bootstrap.sh` script with the following:
+
+```
+#!/bin/bash
+
+set -e
+echo "Running bootstrap script..."
+
+# Support bootstrapping CanCan from any folder
+BASEDIR=$(
+  cd "$(dirname "$0")"
+  pwd
+)
+cd "$BASEDIR"
+
+host="localhost"
+address="http://$host"
+
+echo "dfx build"
+npm run deploy
+
+# echo "Running seed script..."
+# echo "\nThis command may prompt you to install node to run.\nPlease accept and continue."
+# npm run seed -- 2
+
+URL="http://$(dfx canister id cancan_ui).$host:4943/"
+
+echo "Open at $URL"
+
+case $(uname) in
+Linux) xdg-open $URL || true ;;
+*) open $URL || true ;;
+esac
+```
+
+Next, edit the `package-set.dhall` file to update the upstream URL:
+
+```
+let upstream =
+  https://github.com/dfinity/vessel-package-set/releases/download/mo-0.7.5-20230118/package-set.dhall
+```
+
+
+Then, run the bootstrap script:
+
+```
+./bootstrap.sh
+```
+
+This will deploy a local canister called `cancan_ui_backend`. To open the front-end, get the frontend canister id by running `dfx canister id cancan_ui_frontend`. Then open your browser, and navigate to `http://<cancan_ui-canister-id>.localhost:8000/sign-in`.
+
+To run a development server with fast refreshing and hot-reloading, you can use this command in the app's root directory:
+
+```shell
+npm run start
+```
+
+Your default browser will open (or focus) a tab at `localhost:3000`, to which you must then append `/?canisterId=${cancan_ui_canister_id}`, where `cancan_ui_canister_id` is typically (at current) `ryjl3-tyaaa-aaaaa-aaaba-cai`.
+
+Now you can make changes to any frontend code and see instant updates, in many cases not even requiring a page refresh, so UI state is preserved between changes. Occasionally adding a CSS rule won't trigger an update, and the user has to manually refresh to see those changes.
+
+## Next steps
+
+To complete this guide, check out some additional [sample dapps](sample-apps.md).

@@ -1,43 +1,17 @@
-# Hello, World!
+# Hello, world!
 
-このサンプルは、以下の 2 つの Canister スマートコントラクトからなるごく単純な Dapp です。
+## Overview 
+This sample demonstrates a simple dapp consisting of two canisters:
 
-- アプリケーションのロジックを実装しているシンプルなバックエンド Canister である `hello` と
+-   A simple backend canister, `hello`, implementing the logic of the application.
 
-- Dapp の Web ユーザーインターフェースのアセットを提供するシンプルなフロントエンドアセット Caninster である `hello_assets`
+-   A simple frontend asset canister, `hello_assets`, serving the assets of the dapp’s web user interface.
 
-これは、よくある _hello world_ に相当する Dapp で、 [IC 上のここで](https://6lqbm-ryaaa-aaaai-qibsa-cai.ic0.app/) 動作しているのを見ることができます。
+It is the dapp equivalent of the ubiquitous 'Hello, world!' and can be seen running [here on the IC](https://6lqbm-ryaaa-aaaai-qibsa-cai.ic0.app/).
 
-このサンプルは、クイックスタートドキュメントで説明した、`dfx new` を実行して作成されるデフォルトのプロジェクトに基づいています。
+## Architecture
 
-サンプルコードはこちらの github の [samples](https://github.com/dfinity/examples) リポジトリの、 [Motoko](https://github.com/dfinity/examples/tree/master/motoko/hello) と [Rust](https://github.com/dfinity/examples/tree/master/rust/hello) のどちらでも見ることができます。
-
-Canister `hello` は Motoko で実装されても Rust で実装されても、同じ Candid インターフェイスを提供します。
-
-    service : {
-      greet: (text) -> (text);
-    }
-
-フロントエンド Canister である `hello_assets` は、引数入力のためのテキストボックスと、その引数で greet 関数を呼び出すためのボタンを持つ HTML ページを表示します。 呼び出しの結果はメッセージボックスに表示されます。
-
-![hello フロントエンド](_attachments/hello.png)
-
-フロントエンド Canister は `dfx` によって提供される汎用的な Canister ですが、 ブラウザに提供するアセットは、dfx プロジェクトの設定とプロジェクトファイルによって決定されます。
-
-フロントエンド Canister とそのアセットは、両方のプロジェクトで同じものです。
-
-<!--
-# Hello, World!
-
-This sample demonstrates a dead simple dapp consisting of two canisters:
-
--   a simple backend canister, `hello`, implementing the logic of the application, and
-
--   a simple frontend asset canister, `hello_assets`, serving the assets of the dapp’s web user interface.
-
-It is the dapp equivalent of the ubiquitous *hello world* and can be seen running [here on the IC](https://6lqbm-ryaaa-aaaai-qibsa-cai.ic0.app/).
-
-This sample is based on the default project created by running `dfx new` as described in the quickstart documents.
+This sample is based on the default project created by running `dfx new` as described in the quick start documents.
 
 The sample code is available from the [samples](https://github.com/dfinity/examples) repository in both [Motoko](https://github.com/dfinity/examples/tree/master/motoko/hello) and [Rust](https://github.com/dfinity/examples/tree/master/rust/hello).
 
@@ -55,4 +29,136 @@ The frontend canister is a generic canister provided by `dfx` but the assets it 
 
 The frontend canister and its assets are identical for both projects.
 
--->
+## Motoko variant
+
+This example demonstrates a dead simple dapp consisting of two canister smart contracts:
+
+- A simple backend canister, hello, implementing the logic of the application in Motoko.
+- A simple frontend asset canister, hello_assets serving the assets of the dapp's web user interface.
+
+This example is based on the default project created by running `dfx new hello`.
+
+### Prerequisites
+This example requires an installation of:
+- [x] Install the [IC SDK](../developer-docs/setup/install/index.mdx).
+- [x] Install `node.js` (to build the web frontend).
+
+- #### Step 1: Open a terminal window.
+
+If you haven't already, create a default project with the command:
+
+`dfx new hello`
+`cd hello`
+
+- #### Step 2: Start a local canister execution environment:
+
+`dfx start --background`
+
+- #### Step 3: Ensure that the required node modules are available in your project directory, if needed, by running the following command:
+
+`npm install`
+
+- #### Step 4: Register, build and deploy the project with the command:
+
+`dfx deploy`
+`npm start`
+
+- #### Step 5: Call the hello canister's greet function:
+
+`dfx canister call hello_backend greet everyone`
+
+- #### Step 6: Observe the following result:
+
+`("Hello, everyone!")`
+
+The previous steps use dfx to directly call the function on the hello (backend) canister. To access the web user interface of the dapp, that is served by canister hello_assets, do the following:
+
+- #### Step 7: Determine the URL of the hello_frontend asset canister.
+
+`echo "http://localhost:4943/?canisterId=$(dfx canister id hello_frontend)"`
+
+- #### Step 8: Navigate to the URL in your browser.
+The browser should display a simple HTML page with a sample asset image file, an input field, and a button.
+
+- #### Step 9: Enter the text "everyone" and click the button to see the greeting returned by the backend hello canister.
+
+### Troubleshooting
+If the web page doesn't display properly, or displays the wrong contents, you may need to clear your browser cache.
+
+Alternatively, open the URL in a fresh, in-private browser window to start with a clean cache.
+
+## Rust variant
+This example demonstrates a dead simple dapp consisting of two canister smart contracts:
+
+- A simple backend canister, hello, implementing the logic of the application in Rust.
+- A simple frontend asset canister, hello_assets serving the assets of the dapp's web user interface.
+
+This example is based on the default project created by running `dfx new --type=rust hello`.
+
+### Prerequisites 
+This example requires an installation of:
+- [x] Install the [IC SDK](../developer-docs/setup/install/index.mdx).
+- [x] Install `node.js` (to build the web frontend).
+
+- #### Step 1: Open a terminal window.
+
+If you haven't already, create a default project with the command:
+
+```
+dfx new --type=rust hello
+cd hello
+```
+
+- #### Step 2: Start a local canister execution environment:
+
+```
+dfx start --background
+```
+
+- #### Step 3: Ensure that the required node modules are available in your project directory, if needed, by running the following command:
+
+```
+npm install
+```
+
+- #### Step 4: Register, build and deploy the project with the command:
+
+```
+dfx deploy
+npm start
+```
+
+- #### Step 5: Call the hello canister's greet function:
+
+```
+dfx canister call hello_backend greet everyone
+```
+
+- #### Step 6: Observe the following result:
+
+```
+("Hello, everyone!")
+```
+
+The previous steps use dfx to directly call the function on the hello (backend) canister. To access the web user interface of the dapp, that is served by canister hello_assets, do the following:
+
+- #### Step 7: Determine the URL of the hello_frontend asset canister.
+
+```
+echo "http://localhost:4943/?canisterId=$(dfx canister id hello_frontend)"
+```
+
+- #### Step 8: Navigate to the URL in your browser.
+The browser should display a simple HTML page with a sample asset image file, an input field, and a button.
+
+- #### Step 9: Enter the text "everyone" and click the button to see the greeting returned by the backend hello canister.
+
+### Troubleshooting
+If the web page doesn't display properly, or displays the wrong contents, you may need to clear your browser cache.
+
+Alternatively, open the URL in a fresh, in-private browser window to start with a clean cache.
+
+### Resources
+- [ic-cdk](https://docs.rs/ic-cdk/latest/ic_cdk/)
+- [ic-cdk-macros](https://docs.rs/ic-cdk-macros)
+- [JavaScript API Reference](https://erxue-5aaaa-aaaab-qaagq-cai.ic0.app/)

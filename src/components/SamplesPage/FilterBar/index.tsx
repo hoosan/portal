@@ -26,6 +26,7 @@ const contentTypeOptions: SampleContentType[] = [
   "code samples",
   "videos",
   "documentation",
+  "tutorial",
   "live demos",
   "community repo",
 ];
@@ -118,7 +119,7 @@ function Index({
 
   return (
     <>
-      <a id="start" />
+      <div id="start" />
       <div className={styles.container}>
         <div className={styles.filterBarHeader}>
           <span className={styles.title}>Sample codes</span>

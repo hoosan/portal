@@ -1,50 +1,59 @@
-# 一覧表示
+# 4: Motoko quick start
 
-[クイックスタート](../../quickstart/hello10mins.md)は、途中で詳細な内容に深く立ち入ることなく、シンプルなデフォルトアプリケーションをデプロイするための素早いパスを提供します。このセクションの個々のチュートリアルは、特定のシナリオをウォークするして、各ステップの詳細を指摘します。
+## Overview
 
-クイックスタートやチュートリアルが苦手な方は、この一目でわかるチートシートに手順をまとめていますので、すぐに参照できます。
+The [deploy your first dapp in 5 minutes](/tutorials/deploy_sample_app.md) tutorial provides a fast path to deploying a simple default application without stopping to admire the scenery along the way. Individual tutorials in this section walk through specific scenarios, pointing out details about what you’re doing in each step.
 
-SDK をインストールした後に必要なことは、以下のとおりです：
+If the quick start and tutorials are not quite your style, this at-a-glance cheat sheet summarizes the steps to follow for quick reference.
 
-1.  新しいプロジェクトを作成し、プロジェクトディレクトリに移動します。
+## Prerequisites
 
-        dfx new <project_name> && cd <project_name>>
+Before getting started, assure you have set up your developer environment according to the instructions in the [developer environment guide](./dev-env.md).
 
-2.  サービスやアプリケーションを定義するバックエンドを編集します。
+## Creating a new project
 
-3.  サービスやアプリケーションのフロントエンドとなる HTML、JavaScript、CSS を編集することができます。
+Open a terminal window on your local computer, if you don’t already have one open.
 
-4.  ローカルデプロイの場合は Internet Computer を起動し、ネットワークデプロイの場合は Internet Computer への接続を確認します。
+Create a new project and change to the project directory.
 
-5.  ローカルまたはネットワーク上で登録、ビルド、デプロイ。
+```
+dfx new <project_name> && cd <project_name>>
+```
 
-        dfx deploy --network <network>
+## Editing the default files
 
-6.  サービスやアプリケーションをブラウザで見ることができます。
+Edit the `src/<project_name>_backend` files to define your service or application.
 
-<!--
-# At a glance
+Edit the `src/<project_name>_frontend` files with HTML, JavaScript, and CSS that provides the frontend for your service or application.
 
-The [Quick start](../../quickstart/hello10mins.md) provides a fast path to deploying a simple default application without stopping to admire the scenery along the way. Individual tutorials in this section walk through specific scenarios, pointing out details about what you’re doing in each step.
+## Starting the deployment environment
 
-If the quick start and tutorials aren’t quite your style, this at-a-glance cheat sheet summarizes the steps to follow for quick reference.
+Start the Internet Computer for local development or check your connection to the Internet Computer for network deployment:
+- [Local deployment](../../setup/deploy-locally.md).
+- [Mainnet deployment](../../setup/deploy-mainnet.md).
 
-After you install the SDK, here’s all you need to know:
+## Register, build, and deploy locally or on the mainnet 
 
-1.  Create a new project and change to the project directory.
+For the mainnet, use: `--network ic`.
 
-        dfx new <project_name> && cd <project_name>>
+```
+dfx deploy --network <network>
+```
 
-2.  Edit the backend that defines your service or application.
+## View your service or application in a browser, using the URLS in the output of the `dfx deploy` command:
 
-3.  Edit the HTML, JavaScript, and CSS that provides the frontend for your service or application.
+```
+...
+Committing batch.
+Committing batch with 18 operations.
+Deployed canisters.
+URLs:
+Frontend canister via browser
+        access_hello_frontend: http://127.0.0.1:8080/?canisterId=cuj6u-c4aaa-aaaaa-qaajq-cai
+Backend canister via Candid interface:
+        access_hello_backend: http://127.0.0.1:8080/?canisterId=cbopz-duaaa-aaaaa-qaaka-cai&id=ctiya-peaaa-aaaaa-qaaja-cai
+```
 
-4.  Start the Internet Computer for local development or check your connection to the Internet Computer for network deployment.
+## Next steps
 
-5.  Register, build, and deploy locally or on the network.
-
-        dfx deploy --network <network>
-
-6.  View your service or application in a browser.
-
--->
+For a more detailed look at writing and deploying canisters, move onto the [writing and deploying canisters page](deploying.md).

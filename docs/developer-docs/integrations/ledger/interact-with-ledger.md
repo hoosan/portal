@@ -90,11 +90,11 @@ ICP で Canister が支払いを受けるようにするには、Canister が支
 <!--
 # Interact with the ICP ledger
 
-
+## Overview
 
 ## Interact with ICP ledger from the command line
 
-Dfx provides a convenience command to interact with the ICP ledger canister and related functionality. You can find the documentation [here](https://internetcomputer.org/docs/current/references/cli-reference/dfx-ledger/) or just enter the following command into your console:
+`dfx` provides a convenience command to interact with the ICP ledger canister and related functionality. You can find the documentation [here](https://internetcomputer.org/docs/current/references/cli-reference/dfx-ledger.md) or just enter the following command into your console:
 
 ``` bash
 dfx ledger --help
@@ -102,15 +102,17 @@ dfx ledger --help
 
 It's worth checking out the `--help` flag of the subcommands as well.
 
-Currently, dfx exposes only a subset of the ICP ledger functionality, namely `balance` and `transfer`.
+Currently, `dfx` exposes only a subset of the ICP ledger functionality, namely `balance` and `transfer`.
 Both commands provide a flag to specify a ledger canister id (`--ledger-canister-id`). This simplifies interacting with a local ledger deployment or other tokens that provide the same interface.
 
-#### Balance
+### Balance
 
 Get the ICP balance of a specific account:
+
 ``` bash
 dfx ledger --network ic balance <account-id>
 ```
+
 The `<account-id>` is encoded as a hex string.
 In many cases you want to check the main account balance of a specific principal. You can use the following command for this:
 
@@ -118,14 +120,13 @@ In many cases you want to check the main account balance of a specific principal
 dfx ledger --network ic balance $(dfx ledger account-id --of-principal <principal-id>)
 ```
 
-#### Transfer
+### Transfer
 
 The transfer function can be used to transfer ICP from your account to another. 
 
 ``` bash
 dfx ledger --network ic transfer --amount <amount> --memo <memo> <receiver-account-id>
 ```
-
 
 <!-- ## Interact with ICP using Candid UI -->
 
@@ -163,9 +164,9 @@ The following diagram shows a simplified illustration of this pattern:
 ```
 
 
-#### Notification by ICP ledger (Currently disabled)
+#### Notification by ICP ledger (currently disabled)
 
-In this pattern the ledger iteself notifies the receiver. Thereby, the receiver can trust the notification immediately. However, this flow is currently disabled because the call to the receiver is not yet implemented as a one-way call. 
+In this pattern the ledger itself notifies the receiver. Thereby, the receiver can trust the notification immediately. However, this flow is currently disabled because the call to the receiver is not yet implemented as a one-way call. 
 
 ```plantuml
     participant Sender

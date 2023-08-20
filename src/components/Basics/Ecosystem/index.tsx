@@ -5,37 +5,38 @@ import styles from "./index.module.css";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import transitions from "@site/static/transitions.json";
+import LinkArrowRight from "../../Common/Icons/LinkArrowRight";
 
 const cards = [
   {
-    logo: require("../../../../static/img/basics/ii-logo.png").default,
+    logo: require("../../../../static/img/basics/ii-logo.webp").default,
     title: "Internet Identity",
     oneLiner: "Blockchain authentication system",
     stats: "1,000,000+ users",
   },
 
   {
-    logo: require("../../../../static/img/basics/sonic-logo.png").default,
+    logo: require("../../../../static/img/basics/sonic-logo.webp").default,
     title: "Sonic",
     oneLiner: "Swap built end-to-end DeFi platform",
     stats: "30,000+ users",
   },
 
   {
-    logo: require("../../../../static/img/basics/openchat-logo.png").default,
+    logo: require("../../../../static/img/basics/openchat-logo.webp").default,
     title: "OpenChat",
     oneLiner: "Decentralized alternative to WhatsApp",
     stats: "50,000+ users",
   },
   {
-    logo: require("../../../../static/img/basics/distrikt-logo.png").default,
+    logo: require("../../../../static/img/basics/distrikt-logo.webp").default,
     title: "Distrikt",
     oneLiner: "Professional social media platform",
     stats: "70,000+ users",
   },
 
   {
-    logo: require("../../../../static/img/basics/dscvr-logo.png").default,
+    logo: require("../../../../static/img/basics/dscvr-logo.webp").default,
     title: "DSCVR",
     oneLiner: "Decentralized social news aggregator",
     stats: "40,000+ users",
@@ -62,29 +63,22 @@ const Ecosystem = () => {
         className={styles.container}
       >
         <motion.div variants={transitions.item} className={styles.content}>
-          <h3 className="heading-3">Users don’t need tokens and wallets</h3>
-          <p className="paragraph-large">
+          <h3 className="tw-heading-5 md:tw-heading-3 m-0">
+            Users don’t need tokens and wallets
+          </h3>
+          <p className="tw-paragraph md:tw-lead m-0">
             The reverse gas model enables free-to-use, truly user-friendly
             dapps, ready for mass adoption.
           </p>
-          <Link href="/showcase" className="cta-link">
-            <svg
-              width="24"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M16.172 11L10.808 5.63605L12.222 4.22205L20 12L12.222 19.778L10.808 18.364L16.172 13H4V11H16.172Z"
-                fill="currentColor"
-              />
-            </svg>
+          <Link href="/ecosystem" className="link-primary link-with-icon">
+            <LinkArrowRight />
             Explore Internet Computer Ecosystem
           </Link>
         </motion.div>
         <div className={clsx(styles.cards, styles.cardsDesktop)}>
           {cards.map((card) => (
             <div className={styles.card} key={card.title}>
-              <img src={card.logo} alt="" />
+              <img src={card.logo} alt={`${card.title} logo`} loading="lazy" />
               <h3 className="">{card.title}</h3>
               <p className="">{card.oneLiner}</p>
               <span className={styles.stats}>{card.stats}</span>
@@ -94,7 +88,7 @@ const Ecosystem = () => {
         <div className={clsx(styles.cards, styles.cardsMobile)}>
           {mobileProjects.map((card) => (
             <div className={styles.card} key={card.title}>
-              <img src={card.logo} alt="" />
+              <img src={card.logo} alt={`${card.title} logo`} loading="lazy" />
               <h3 className="">{card.title}</h3>
               <p className="">{card.oneLiner}</p>
               <span className={styles.stats}>{card.stats}</span>

@@ -1,17 +1,19 @@
 import styles from "./index.module.css";
 import Link from "@docusaurus/Link";
-import React, { useEffect, useState } from "react";
+import React, { MouseEventHandler, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useWindowSize } from "@docusaurus/theme-common";
 import clsx from "clsx";
 
 const SectionsLinks = [
-  // { text: "Dashboard", to: "#dashboard" },
-  { text: "Basics", to: "#basics" },
+  { text: "Stats", to: "#stats" },
+  { text: "Community", to: "#community" },
   { text: "Dapps", to: "#dapps" },
+  { text: "The Vision", to: "#vision" },
+  { text: "Technology", to: "#technology" },
   { text: "Sustainable", to: "#sustainable" },
-  { text: "Foundation", to: "#foundation" },
   { text: "Start Building", to: "#startBuilding" },
+  { text: "Foundation", to: "#foundation" },
 ];
 const container = {
   hidden: {
@@ -51,6 +53,14 @@ export default function SectionsBar() {
       return () => window.removeEventListener("scroll", shouldDisplay);
     }
   }, []);
+
+  const scrollToTop: MouseEventHandler = (e) => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    location.hash = "";
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
     <div className={styles.container}>
       {display && isMobile ? (
@@ -99,7 +109,11 @@ export default function SectionsBar() {
             >
               <div className={styles.desktopContainer}>
                 <div className={styles.grid}>
-                  <Link to={"#home"} className={styles.dfinityLink} />
+                  <Link
+                    to={"#home"}
+                    className={styles.dfinityLink}
+                    onClick={scrollToTop}
+                  />
                   {SectionsLinks.map(({ text, to }) => (
                     <Link key={to} to={to}>
                       <span>{text}</span>

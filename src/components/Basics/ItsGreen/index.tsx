@@ -1,48 +1,54 @@
-import React, { useEffect, useRef } from "react";
-import styles from "./index.module.css";
+import React, { useRef } from "react";
 
-import Icon1 from "../../../../static/img/basics/icon-plant.svg";
-import Icon2 from "../../../../static/img/basics/icon-iot.svg";
-import Icon3 from "../../../../static/img/basics/icon-db.svg";
-import { motion, useAnimation } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import transitions from "@site/static/transitions.json";
-import GreenBlur from "@site/static/img/basics/greenBlur.png";
 import Link from "@docusaurus/Link";
-import ExternalLinkIcon from "../../../../static/img/external-link.svg";
-import clsx from "clsx";
 import { useSpawnAnimation } from "@site/src/utils/use-spawn-animation";
+import transitions from "@site/static/transitions.json";
+import clsx from "clsx";
+import { motion } from "framer-motion";
+import Icon3 from "../../../../static/img/basics/icon-db.svg";
+import Icon2 from "../../../../static/img/basics/icon-iot.svg";
+import Icon1 from "../../../../static/img/basics/icon-plant.svg";
+import ExternalLinkIcon from "../../../../static/img/external-link.svg";
 
 const comparison = [
   {
+    projectName: "ICP",
     logo: "/img/basics/logos/logo-icp.svg",
     value: 0.008,
   },
   {
+    projectName: "Solana",
     logo: "/img/basics/logos/logo-solana.svg",
     value: 0.166,
   },
   {
+    projectName: "Algorand",
+
     logo: "/img/basics/logos/logo-algorand.svg",
     value: 2.7,
   },
   {
+    projectName: "Avalanche",
     logo: "/img/basics/logos/logo-avalanche.svg",
     value: 4.76,
   },
   {
+    projectName: "Polkadot",
     logo: "/img/basics/logos/logo-polkadot.svg",
     value: 17.4,
   },
   {
+    projectName: "Ethereum",
     logo: "/img/basics/logos/logo-eth.svg",
     value: 30.0,
   },
   {
+    projectName: "Tezos",
     logo: "/img/basics/logos/logo-tezos.svg",
     value: 41.45,
   },
   {
+    projectName: "Cardano",
     logo: "/img/basics/logos/logo-cardano.svg",
     value: 51.59,
   },
@@ -56,18 +62,20 @@ const ComparedProject: React.FC<{
 }> = ({ project, isFirst }) => {
   const labelRef = useRef<HTMLSpanElement>();
   return (
-    <motion.div
+    <motion.figure
       key={project.logo}
-      className="flex gap-6 items-center"
+      className="flex gap-6 items-center mx-0"
       variants={{
         hidden: { opacity: 0 },
         show: { opacity: 1 },
       }}
+      aria-label={`${project.projectName} consumes ${project.value} Wh/tx`}
     >
       <img
         src={project.logo}
         alt=""
-        className={clsx(isFirst ? "" : "m-[5px]")}
+        className={clsx(isFirst ? "w-10 h-10" : "w-[30px] h-[30px] m-[5px]")}
+        loading="lazy"
       ></img>
       <div className="flex items-center flex-1 pr-[72px] box-content">
         <div
@@ -107,7 +115,7 @@ const ComparedProject: React.FC<{
           </motion.div>
         </div>
       </div>
-    </motion.div>
+    </motion.figure>
   );
 };
 
@@ -116,25 +124,38 @@ const ItsGreen: React.FC<{ id?: string }> = ({ id }) => {
   const statsAnim = useSpawnAnimation();
 
   return (
-    <section className={styles.outerContainer} id={id}>
-      <img src={GreenBlur} className={styles.BGGradient} alt="" />
+    <section className="container-10 relative" id={id}>
+      <img
+        src="/img/features/blob-bg-hero.png"
+        alt=""
+        className="absolute left-1/2 -translate-x-7/12 -top-[40vmax] w-[260vmax] max-w-none md:max-w-[300vmin] z-[-1]"
+      />
 
       <motion.div
         ref={iconAnim.ref}
         animate={iconAnim.controls}
         initial="hidden"
         variants={transitions.container}
-        className={styles.container}
+        className="text-white md:w-8/10 mt-64 md:mt-64 mb-20 md:mb-40 relative"
       >
-        <motion.h2 variants={transitions.item} className={styles.heading}>
-          Scalability &amp; utility at low carbon cost
+        <motion.h2
+          variants={transitions.item}
+          className="tw-heading-4 md:tw-heading-60 mb-6"
+        >
+          Blockchain operation that's climate friendly
         </motion.h2>
-        <motion.p variants={transitions.item} className="paragraph-large mb-8">
-          Massive cost savings, environmental protection and high performance.
-          The Internet Computer’s advanced architecture and cryptography runs
-          smart contract software with breakthrough levels of efficiency. Even
-          with conservative estimations, energy consumption is still
-          substantially lower than competing blockchains.
+
+        <motion.p
+          variants={transitions.item}
+          className="tw-paragraph md:tw-lead mb-8"
+        >
+          Thanks to the unique architecture and novel cryptography, the Internet
+          Computer hosts smart contract software, data, and computation, with
+          energy consumption levels comparable with traditional software that
+          runs on Big Tech's cloud services and orders of magnitude lower than
+          competing blockchains. Web3 projects that incorporate Internet
+          Computer smart contracts can dramatically lower their carbon
+          footprint, and help reduce climate change.
         </motion.p>
         <motion.p
           variants={transitions.item}
@@ -154,19 +175,29 @@ const ItsGreen: React.FC<{ id?: string }> = ({ id }) => {
             <ExternalLinkIcon className="inline-block align-bottom ml-2"></ExternalLinkIcon>
           </Link>
         </motion.p>
-        <Icon1></Icon1>
-        <Icon2></Icon2>
-        <Icon3></Icon3>
 
-        <motion.div
-          className="space-y-3"
+        <Icon1
+          aria-hidden
+          className="absolute w-30 md:w-40 top-[-150px] right-[130px] md:top-[-160px] md:right-[20px]"
+        ></Icon1>
+        <Icon2
+          aria-hidden
+          className="absolute w-30 md:w-40 top-[-220px] right-0 md:top-[-240px] md:right-[-240px]"
+        ></Icon2>
+        <Icon3
+          aria-hidden
+          className="absolute w-30 md:w-40 -top-30 right-[-30px] md:top-[70px] md:right-[-180px]"
+        ></Icon3>
+
+        <motion.figure
+          className="space-y-3 mx-0"
           variants={{
             hidden: { opacity: 0 },
             show: {
               opacity: 1,
               transition: {
                 delayChildren: 0,
-                staggerChildren: 0.2,
+                staggerChildren: 0.1,
               },
             },
           }}
@@ -181,7 +212,7 @@ const ItsGreen: React.FC<{ id?: string }> = ({ id }) => {
               isFirst={i === 0}
             ></ComparedProject>
           ))}
-          <motion.p
+          <motion.figcaption
             variants={{
               hidden: { opacity: 0 },
               show: { opacity: 1 },
@@ -190,8 +221,8 @@ const ItsGreen: React.FC<{ id?: string }> = ({ id }) => {
           >
             A comparison of the energy consumption per transaction between
             blockchains
-          </motion.p>
-        </motion.div>
+          </motion.figcaption>
+        </motion.figure>
       </motion.div>
     </section>
   );

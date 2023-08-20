@@ -14,7 +14,7 @@ Internet Computer Protocol は、サブネットの複数のノードが故障�
 <!--
 ---
 title: Low-latency high-throughput consensus
-card: /img/what-is-the-ic/consensus.jpg
+card: /img/what-is-the-ic/consensus.webp
 cardImageFit: cover
 ---
 

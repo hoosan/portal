@@ -1,18 +1,14 @@
-import React from "react";
+import cardGroups from "@site/.docusaurus/howitworks-cards/default/howitworks-cards.json";
+import { HowItWorksCardGroup } from "@site/src/components/HowItWorksPage/HowItWorksData";
 import Layout from "@theme/Layout";
-import useGlobalData from "@docusaurus/useGlobalData";
-import {
-  HowItWorksCardGroup,
-  HowItWorksPageData,
-} from "@site/src/components/HowItWorksPage/HowItWorksData";
-import ArrowRight from "@site/static/img/arrow-right.svg";
-import DarkHeroStyles from "../components/Common/DarkHeroStyles";
-import { useScrollSpyMenu } from "../utils/use-scroll-spy-menu";
-import slugify from "slugify";
 import clsx from "clsx";
+import React from "react";
+import slugify from "slugify";
+import DarkHeroStyles from "../components/Common/DarkHeroStyles";
 import IntraPageNav from "../components/Common/IntraPageNav";
+import ShareMeta from "../components/Common/ShareMeta";
 import { css } from "../utils/dummy-css";
-import Head from "@docusaurus/Head";
+import { useScrollSpyMenu } from "../utils/use-scroll-spy-menu";
 
 const CardGroup: React.FC<{ group: HowItWorksCardGroup }> = ({ group }) => {
   const groupClassName = `${slugify(group.title)}-item`;
@@ -100,13 +96,11 @@ const CardGroup: React.FC<{ group: HowItWorksCardGroup }> = ({ group }) => {
 };
 
 function HowItWorks() {
-  const cardGroups = useGlobalData()["howitworks-cards"]
-    .default as HowItWorksPageData;
-
   return (
     <Layout
-      title="How It Works"
+      title="How it works"
       description="Learn how the Internet Computer blockchain realizes the vision of the World Computer. Dive into its technology, open-source repositories, in-depth video academy sessions, white papers, publications, and detailed technology articles."
+      editPath={`https://github.com/dfinity/portal/tree/master/how-it-works`}
     >
       <style>
         {css`
@@ -115,38 +109,27 @@ function HowItWorks() {
           }
         `}
       </style>
-      <Head>
-        <meta
-          property="og:image"
-          content={
-            "https://internetcomputer.org/img/shareImages/share-how-it-works.jpeg"
-          }
-        />
-        <meta
-          name="twitter:image"
-          content={
-            "https://internetcomputer.org/img/shareImages/share-how-it-works.jpeg"
-          }
-        />
-        <title>How It Works</title>
-      </Head>
+      <ShareMeta image="/img/shareImages/share-how-it-works.jpeg"></ShareMeta>
       <main className="text-black relative">
         <section className="overflow-hidden bg-infinite text-white">
           <DarkHeroStyles></DarkHeroStyles>
           <div className="container-10 pt-12 mb-30 md:mb-40 md:pt-36 relative">
             <div className="md:w-7/10">
               <h1 className="tw-heading-3 md:tw-heading-2 mb-6">
-                Realizing the Vision of the World Computer
+                Realizing the vision of the World Computer
               </h1>
               <p className="tw-lead-sm md:tw-lead mb-0">
-                Learn how the Internet Computer blockchain realizes the vision of the World Computer. Dive into its technology, open-source repositories, in-depth video academy sessions, white papers, publications, and detailed technology articles.
+                Learn how the Internet Computer blockchain realizes the vision
+                of the World Computer. Dive into its technology, open-source
+                repositories, in-depth video academy sessions, white papers,
+                publications, and detailed technology articles.
               </p>
             </div>
           </div>
           <div className="container-10 relative">
             <img
               alt=""
-              src="/img/whiteBlurredCircle.png"
+              src="/img/whiteBlurredCircle.webp"
               className="absolute pointer-events-none max-w-none w-[800px] aspect-square -right-[200px] bottom-[-400px] md:w-[1500px] md:bottom-[-680px] md:right-[-550px] object-contain object-center"
             />
           </div>

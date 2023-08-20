@@ -22,7 +22,7 @@ Chain Key 暗号を活用することで、以下のことが可能になりま�
 <!--
 ---
 title: Chain-key cryptography underpins the IC's security architecture
-card: /img/what-is-the-ic/chainkey.jpg
+card: /img/what-is-the-ic/chainkey.webp
 cardImageFit: cover
 ---
 
