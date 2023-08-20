@@ -1,74 +1,6 @@
-# ICP 台帳
+# The ICP ledger
 
-
-Internet Computer プロトコル（ICP）は、ユーティリティ・トークン（ティッカー “ICP"）の管理を、**台帳 Canister **と呼ばれる特殊な Canister を使って行います。これは Internet Computer の特別なサブネット（NNS サブネット）上で他の Canister と一緒に動作する一つの Canister です。台帳 Canister は、**アカウント**と**トランザクション**を保持するスマートコントラクトです。トランザクションは、アカウントに** ICP トークンをミント**するか、あるアカウントから別のアカウントに **ICP トークンを送金**するか、ICP トークンを Cycle に変換する等で存在を消す** ICPトークンをバーン**するかのいずれかです。台帳 Canister は、genesis 時のステート（初期のステート）から始まる全ての取引を追跡可能な履歴として維持しています。
-
-このセクションの構成は以下の通りです：
-
-- このページでは、ICP と台帳の基本を紹介します。台帳 Canister の完全な公開インターフェースについてのより詳しい説明は、 [references section](/docs/current/references/) の [The Ledger canister](/docs/current/references/ledger) をご覧ください。
-- [ICP 台帳との連携](interact-with-ledger.md) には、コマンドライン、JavaScript アプリケーション、 Canister から ICP 台帳を操作するための実践的なチュートリアルが用意されています。
-- [台帳のローカルセットアップ](./ledger-local-setup.md) は、開発用にローカルレプリカに台帳 Canister をデプロイする手順を説明します。
-- [新しいトークンのデプロイ](./deploy-new-token.md) では、カスタム台帳 Canister をデプロイして独自のトークンを作成し、それを [Rosetta API](../rosetta/) を介して取引所で利用できるようにする方法を説明しています。
-
-## 基礎
-
-### アカウント
-
-アカウントは、Internet Computer（IC）Principal を保持しているアカウント所有者に属し、その所有者によって管理されます。2人以上の IC Principal によってアカウントが所有されることはありません（ジョイントアカウントはないということ）。しかし、Principal は Canister と同様に外部ユーザーを参照することができるため、ジョイントアカウントは Canister として実装することができます。
-
-アカウント所有者は、複数のアカウントを管理することができます。この場合、各アカウントはペア (account_owner, sub_account) に対応します。サブアカウントはオプションのビット文字列で、同じ所有者の異なるサブアカウントを区別するのに役立ちます。
-
-台帳上のアカウントはアドレスで識別され、そのアドレスは Principal ID とサブアカウント識別子から導かれます。
-
-この文脈では、Principal ID は、ビットコインやイーサリアムのユーザーの公開鍵のハッシュと大まかに等しいと考えることができます。ユーザーは対応する秘密鍵を使ってメッセージに署名し、その結果、台帳 Canister を認証して Principal のアカウントで操作することになります。Canister は、台帳 Canister にアカウントを持つこともでき、その場合のアドレスは Canister の Principal に由来します。
-
-台帳 Canister は、Internet Computer 内部の管理操作を使用して初期化されます。初期化プロセスの一部として、アカウントと関連する ICP トークン残高のセットで Canister が作成されます。
-
-:::note なぜ台帳は Principal ID だけでなく、Account ID を使用するのですか？
-
-アカウント導入の主な理由は、Principal が複数のアカウントを制御できるようにするためです。ユーザーはウォレットソフトウェアを利用することで複数アカウントの制御を行うことができますが、Canister は同様のことを行うことができません。
-:::
-
-### トランザクションタイプ
-
-台帳 Canister の内部ステートを変更する操作には、次の3つがあります：
-
--   **ICP トークンのアカウントでのミント**
-
--   **ICP トークンのアカウント間の送金**
-
--   **ICP トークンのバーン**
-
-すべての操作は、台帳 Canister にトランザクションとして記録されます。
-
-台帳は、ハッシュ化されたブロックチェーン、すなわち Canister スマートコントラクト（台帳 Canister）の内部で稼働するブロックチェーンとして取引を管理し、それが NNS サブネットブロックチェーン上で稼働しています。
-
-ステートの変化が記録されると、それぞれの新しいトランザクションがブロックに配置され、一意のインデックスが割り当てられます。チェーン全体は、最新の（ブロック）チェーンのリンクに署名することで定期的に認証されます。チェーンを認証するために使用される署名は、Internet Computer のルート公開鍵にアクセスできる任意の第三者によって検証することができます。特定の取引は、台帳を照会することで取得することができます。
-
-
-### ICP ユーティリティ・トークンの基本プロパティ
-
-ICP トークンはビットコインなどの分散型ネットワークを司るユーティリティ・トークンに似ていますが、重要な点で異なるところもあります。
-
-ICP トークンは、以下の点でビットコインと類似しています：
-
-- 各 ICP トークンは小数点第8位まで単位を持ちます。
-
-- すべての取引は、genesis の初期状態から始まる台帳に保存されます。
-
-- トークンは完全にファンジブルです。
-
-- アカウント識別子は 32バイトで、公開鍵のハッシュとほぼ等しく、オプションで追加のサブアカウント指定子もあります。
-
-ICP トークンはビットコインと以下の点で異なります：
-
-- ステークされた参加者ノードは、Proof of Work を使うのではなく、閾値 BLS 署名の一種を使い、チェーンの有効なステートに合意します。
-
-- どんなトランザクションも 8バイトの memo を保管できます。この memo フィールドは Rosetta API によってトランザクションを区別するための nonce を格納するために使用されますが、このフィールドの他の用途も可能です。
-
-<!--
-# The ICP Ledger
-
+## Overview
 
 The Internet Computer Protocol (ICP) implements management of its utility token (ticker "ICP") using a specialized canister, called the **ledger canister**. There is a single ledger canister which runs alongside other canisters on a special subnet of the Internet Computer - the NNS subnet. The ledger canister is a smart contract that holds **accounts** and **transactions**. These transactions either **mint ICP tokens** for accounts, **transfer ICP tokens** from one account to another, or **burn ICP tokens**, eliminating them from existence, e.g. while converting ICP tokens to cycles. The ledger canister maintains a traceable history of all transactions starting from its genesis state (initial state). 
 
@@ -76,10 +8,11 @@ This section is structured as follows:
 
 - This page provides an introduction to the basics of ICP and the ledger. For a more detailed explanation of the complete public interface of the ledger canister head over to the [specification](/docs/current/references/ledger) in the [references section](/docs/current/references/).
 - [Interact with the ICP ledger](interact-with-ledger.md) provides hands on tutorials to interact with the ICP ledger from the command line, JavaScript applications and from canisters.
-- [Ledger Local Setup](./ledger-local-setup.md) walks you through the steps to deploy a ledger canister to your local replica for development.
-- [Deploy New Token](./deploy-new-token.md) explains how you can create your own token by deploying a custom ledger canister and make it available to exchanges via the [Rosetta API](../rosetta/).
+- [Ledger local setup](./ledger-local-setup.md) walks you through the steps to deploy a ledger canister to your local replica for development.
+- [Deploy new token](./deploy-new-token.md) explains how you can create your own token by deploying a custom ledger canister and make it available to exchanges via the [Rosetta API](../rosetta/).
+- [Account trimming](./collecting-dust.md) explains the mechanism to trim the dust accounts from the ledger.
 
-## The Basics
+## Architecture
 
 ### Accounts
 
@@ -93,7 +26,7 @@ In this context, you can think of principal identifiers as a rough equivalent to
 
 The ledger canister is initialized using administrative operations that are internal to the Internet Computer. As part of the initialization process, the canister is created with the set of accounts and associated ICP token balances.
 
-:::note Why does the ledger use Account IDs and not just Principal IDs?
+:::info Why does the ledger use Account IDs and not just Principal IDs?
 
 The main reason for introducing accounts was to allow a principal to control multiple accounts. While this could be abstracted away for a user by a the wallet software, this is not possible for canisters.
 :::
@@ -110,7 +43,7 @@ There are three operations that can change the internal state of the ledger cani
 
 All operations are recorded as transactions in the ledger canister.
 
-The ledger maintains the transactions as a hashed blockchain, i.e., a blockchain running inside a cansiter smart contract (the ledger canister), which in turn is running on the NNS subnet blockchain.
+The ledger maintains the transactions as a hashed blockchain, i.e., a blockchain running inside a canister smart contract (the ledger canister), which in turn is running on the NNS subnet blockchain.
 
 As state changes are recorded, each new transaction is placed in a block and assigned a unique index. The entire chain is regularly authenticated by signing the latest chain link. The signature used to authenticate the chain can be verified by any third party who has access to the root public key of the Internet Computer. Specific transactions can be retrieved by querying the ledger.
 
@@ -134,5 +67,3 @@ The ICP token differs from Bitcoin in the following ways:
 -   Rather than using proof of work, staked participant nodes use a variant of threshold BLS signatures to agree on a valid state of the chain.
 
 -   Any transaction can store an 8-byte memo — this memo field is used by the Rosetta API to store the nonce that distinguishes between transactions. However, other uses for the field are possible.
-
--->

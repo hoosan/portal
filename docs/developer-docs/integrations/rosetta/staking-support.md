@@ -816,18 +816,14 @@ Rosetta API は、操作後のメタデータ `/construction/submit` エンド�
 <!--
 # Staking and neuron management
 
+## Overview
+
 This document specifies extensions of the Rosetta API enabling staking funds and managing governance "neurons" on the Internet Computer.
 
-:::note
-
+:::info
 Operations within a transaction are applied in order, so the order of operations is significant. Transactions that contain idempotent operations provided by this API can be re-tried within the 24-hour window.
 
-:::
-
-:::note
-
 Due to limitations of the governance canister, neuron management operations are not reflected on the chain. If you lookup transactions by identifier returned from the `/construction/submit` endpoint, these transactions might not exist or miss neuron management operations. Instead, `/construction/submit` returns the statuses of all the operations in the `metadata` field using the same format as `/block/transaction` would return.
-
 :::
 
 ## Deriving neuron address
@@ -857,7 +853,7 @@ Call the `/construction/derive` endpoint with metadata field `account_type` set 
 }
 ```
 
-:::note
+:::info
 
 Since version 1.3.0, you can control many neurons using the same key. You can differentiate between neurons by specifying different values of the `neuron_index` metadata field. The rosetta node supports `neuron_index` in all neuron management operations. `neuron_index` is an arbitrary integer between `0` and `264 - 1` (`18446744073709551615`). It is equal to zero if not specified. If you use JavaScript to construct requests to the Rosetta node, consider using the [`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) type to represent the `neuron_index`. The `Number` type can precisely represent only values below `253 - 1` (`9007199254740991`).
 
@@ -997,7 +993,16 @@ The only field that you must set for the `STAKE` operation is `account`, which s
 
 This operation updates the time when the neuron can reach the `DISSOLVED` state.
 
-Dissolve timestamp always increases monotonically.
+**Prerequisites:**
+
+<div class="formalpara-title">
+
+-   `account.address` is the ledger address of the neuron contoller.
+
+</div>
+
+
+The dissolve timestamp always increases monotonically.
 
 -   If the neuron is in the `DISSOLVING` state, this operation can move the dissolve timestamp further into the future.
 
@@ -1007,13 +1012,6 @@ Dissolve timestamp always increases monotonically.
 
 <div class="formalpara-title">
 
-**Preconditions:**
-
-</div>
-
--   `account.address` is the ledger address of the neuron contoller.
-
-<div class="formalpara-title">
 
 **Example**
 
@@ -1045,7 +1043,7 @@ The `START_DISSOLVNG` operation changes the state of the neuron to `DISSOLVING`.
 
 <div class="formalpara-title">
 
-**Preconditions:**
+**Prerequisites:**
 
 </div>
 
@@ -1090,7 +1088,7 @@ The `STOP_DISSOLVNG` operation changes the state of the neuron to `NOT_DISSOLVIN
 
 <div class="formalpara-title">
 
-**Preconditions:**
+**Prerequisites:**
 
 </div>
 
@@ -1135,7 +1133,7 @@ The `ADD_HOTKEY` operation adds a hotkey to the neuron. The Governance canister 
 
 <div class="formalpara-title">
 
-**Preconditions:**
+**Prerequisites:**
 
 </div>
 
@@ -1143,7 +1141,7 @@ The `ADD_HOTKEY` operation adds a hotkey to the neuron. The Governance canister 
 
 -   The neuron has less than 10 hotkeys.
 
-The command has two forms: one form accepts an [IC principal](../../../references/ic-interface-spec.md#principal) as a hotkey, another form accepts a [public key](https://www.rosetta-api.org/docs/models/PublicKey.html).
+The command has two forms: one form accepts an [IC principal](/references/ic-interface-spec.md#principal) as a hotkey, another form accepts a [public key](https://www.rosetta-api.org/docs/models/PublicKey.html).
 
 #### Add a principal as a hotkey
 
@@ -1188,7 +1186,7 @@ The `REMOVE_HOTKEY` operation remove a previously added hotkey from the neuron.
 
 <div class="formalpara-title">
 
-**Preconditions:**
+**Prerequisites:**
 
 </div>
 
@@ -1196,7 +1194,7 @@ The `REMOVE_HOTKEY` operation remove a previously added hotkey from the neuron.
 
 -   The hotkey is linked to the neuron.
 
-The command has two forms: one form accepts an [IC principal](../../../references/ic-interface-spec.md#principal) as a hotkey, another form accepts a [public key](https://www.rosetta-api.org/docs/models/PublicKey.html).
+The command has two forms: one form accepts an [IC principal](/references/ic-interface-spec.md#principal) as a hotkey, another form accepts a [public key](https://www.rosetta-api.org/docs/models/PublicKey.html).
 
 #### Remove a principal as a hotkey
 
@@ -1241,7 +1239,7 @@ The `SPAWN` operation creates a new neuron from an existing neuron with enough m
 
 <div class="formalpara-title">
 
-**Preconditions:**
+**Prerequisites:**
 
 </div>
 
@@ -1275,7 +1273,7 @@ The `SPAWN` operation creates a new neuron from an existing neuron with enough m
 }
 ```
 
-:::note
+:::info
 
 - `spawned_neuron_index` metadata field is required. The rosetta node uses this index to compute the subaccount for the spawned neuron. All spawned neurons must have different values of `spawned_neuron_index`.
 
@@ -1297,7 +1295,7 @@ The `MERGE_MATURITY` operation merges the existing maturity of the neuron into i
 
 <div class="formalpara-title">
 
-**Preconditions:**
+**Prerequisites:**
 
 </div>
 
@@ -1333,7 +1331,7 @@ The `MERGE_MATURITY` operation merges the existing maturity of the neuron into i
 }
 ```
 
-:::note
+:::info
 
 `percentage_to_merge` metadata field is optional and equal to 100 by default. If specified, the value must be an integer between 1 and 100 (bounds included).
 
@@ -1375,7 +1373,7 @@ The topic codes are listed below.
 
 <div class="formalpara-title">
 
-**Preconditions:**
+**Prerequisites:**
 
 </div>
 
@@ -1436,7 +1434,7 @@ The topic codes are listed below.
 }
 ```
 
-:::note
+:::info
 
 The `followees` metadata field contains list of unique neuron identifiers assigned by the Governance canister smart contract, not the list of neuron indices chosen by the caller.
 You can obtain unique neuron identifiers of you your neurons from the `neuron_id` metadata field of the `STAKE` and `NEURON_INFO` operations.
@@ -1457,13 +1455,13 @@ Call the `/account/balance` endpoint to access the staked amount and publicly av
 
 <div class="formalpara-title">
 
-**Preconditions:**
+**Prerequisites:**
 
 </div>
 
 -   `public_key` contains the public key of a neuron’s controller.
 
-:::note
+:::info
 
 -   This operation is available only in online mode.
 
@@ -1577,7 +1575,7 @@ The `NEURON_INFO` operation retrieves the state of the neuron from the governanc
 - `account.address` is the ledger address of the neuron hotkey.
 - `metadata.controller.public_key` is the public key of the neuron controller.
 
-:::note
+:::info
 
 Since Rosetta API identifies neurons by the controller’s public key and neuron index, the caller has to specify the public key when executing the operation using a hotkey.
 

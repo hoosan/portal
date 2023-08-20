@@ -1,327 +1,176 @@
-import React, { useEffect, useRef, useState } from "react";
+import Link from "@docusaurus/Link";
+import { useDarkHeaderInHero } from "@site/src/utils/use-dark-header-in-hero";
+import { useFontsLoaded } from "@site/src/utils/use-fonts-loaded";
+import transitions from "@site/static/transitions.json";
+import {
+  motion,
+  useMotionTemplate,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import React, { Fragment, ReactNode, useRef } from "react";
+import AnimateSpawn from "../../Common/AnimateSpawn";
 import DarkHeroStyles from "../../Common/DarkHeroStyles";
-import { COLORS, PARTICLE_COUNT } from "./config";
-import { Particle } from "./particle";
-import { ShapeMap } from "./shapemap";
-import { Vector2D } from "./vector";
+import LinkArrowRight from "../../Common/Icons/LinkArrowRight";
+import LinkArrowUpRight from "../../Common/Icons/LinkArrowUpRight";
+import { Facts } from "./Facts";
+import ParticleAnimation from "./ParticleAnimation";
 
-type Force = (pos: Vector2D) => Vector2D;
+const PreHero: React.FC<{
+  headline: ReactNode;
+  subheadline: ReactNode;
+  cta?: ReactNode;
+  ctaLink?: string;
+  cards: {
+    caption: string;
+    title: string;
+    link: string;
+  }[];
+}> = ({ headline, subheadline, cta, ctaLink, cards }) => {
+  const fontLoaded = useFontsLoaded();
 
-function getForces(center: Vector2D, minDim: number): Force[] {
-  const factor = 1; //950 / minDim;
+  const darkRef = useRef<HTMLDivElement>(null);
+  const isDark = useDarkHeaderInHero(darkRef);
 
-  return [
-    (p) => {
-      const dir = p.sub(center);
-      const mag = dir.mag();
-      dir.mult_mut(7000 / factor / mag / mag);
-      return dir;
-    },
-    (p) => {
-      const dir = center.sub(p);
-      dir.mult_mut(20 / factor / dir.mag());
-      return dir;
-    },
-    (p) => {
-      const dir = center.sub(p);
-      const mag = dir.mag();
-      return new Vector2D(
-        ((1000 / factor) * dir.y) / mag / mag,
-        ((1000 / factor) * -dir.x) / mag / mag
-      );
-    },
-  ];
-}
+  const heroRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLDivElement>(null);
 
-export default function PreHero({
-  debugForces = false,
-  debugColors = false,
-  paintParticles = true,
-}): JSX.Element {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [particles, setParticles] = useState<Particle[]>([]);
-  const [shapeMap, setShapeMap] = useState<ShapeMap>(null);
-  const [forces, setForces] = useState<Force[]>();
-  const [start, setStart] = useState(false);
-  const [animate, setAnimate] = useState(true);
-  const frameIndexRef = useRef(0);
+  const { scrollYProgress } = useScroll({
+    target: headlineRef,
+    offset: ["start start", "end start"],
+  });
 
-  const wasResize = useRef(true);
+  const blurSize = useTransform(scrollYProgress, [0.3, 0.66], [0, 50]);
+  const boxBlurSize = useTransform(scrollYProgress, [0.3, 0.4], [50, 0]);
 
-  useEffect(() => {
-    setStart(true);
-    canvasRef.current.width = window.innerWidth;
-    canvasRef.current.height = window.innerHeight;
-
-    const center = new Vector2D(
-      canvasRef.current.width / 2,
-      canvasRef.current.height / 2
-    );
-    setForces(
-      getForces(center, Math.min(window.innerHeight, window.innerWidth))
-    );
-
-    setParticles(
-      Array.from({ length: PARTICLE_COUNT }).map(() =>
-        Particle.randomInCircle(
-          canvasRef.current.width / 2,
-          canvasRef.current.height / 2,
-          Math.min(window.innerHeight, window.innerWidth) / 6
-        )
-      )
-    );
-
-    setShapeMap(new ShapeMap());
-
-    function onResize() {
-      wasResize.current = true;
-    }
-
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
-  useEffect(() => {
-    let handle: number;
-
-    let lastUpdate = Date.now();
-    const frameRate = 60;
-
-    let perfLog: number[] = [];
-
-    function paint() {
-      const start = Date.now();
-      handle = requestAnimationFrame(paint);
-      if (!animate) return;
-
-      const now = Date.now();
-      if (now - lastUpdate < (1000 / frameRate) * 0.65) {
-        return;
-      }
-      lastUpdate = now;
-
-      if (wasResize.current) {
-        wasResize.current = false;
-        canvasRef.current.width = window.innerWidth;
-        canvasRef.current.height = window.innerHeight;
-
-        const center = new Vector2D(
-          canvasRef.current.width / 2,
-          canvasRef.current.height / 2
-        );
-        setForces(
-          getForces(center, Math.min(window.innerHeight, window.innerWidth))
-        );
-      }
-
-      frameIndexRef.current += 1;
-
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d")!;
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-
-      const center = new Vector2D(canvasWidth / 2, canvasHeight / 2);
-
-      ctx.fillStyle = "rgb(30,1,94)";
-      ctx.globalAlpha = 1;
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-      if (frameIndexRef.current <= frameRate) {
-        ctx.globalAlpha = frameIndexRef.current / frameRate;
-      }
-
-      if (debugColors) {
-        for (let x = 0; x < canvasWidth; x += 40) {
-          for (let y = 0; y < canvasHeight; y += 40) {
-            const p = new Vector2D(x + 20, y + 20);
-            const color =
-              COLORS[
-                Math.floor(
-                  (Math.atan2(p.y - center.y, p.x - center.x) / Math.PI) * 150 +
-                    150
-                )
-              ];
-            ctx.fillStyle = color;
-            ctx.fillRect(p.x - 20, p.y - 20, p.x + 20, p.y + 20);
-          }
-        }
-      } else if (paintParticles) {
-        const renderedParticleCount =
-          canvasWidth < canvasHeight
-            ? Math.floor(particles.length / 3)
-            : particles.length;
-        for (let pi = 0; pi < particles.length; pi++) {
-          const p = particles[pi];
-          let force = new Vector2D(0, 0);
-          for (const f of forces) {
-            force.add_mut(f(p.pos));
-          }
-          const dy =
-            canvasWidth > canvasHeight
-              ? Math.max(1, Math.abs(p.pos.y - canvasHeight / 2))
-              : Math.max(1, Math.abs(p.pos.x - canvasWidth / 2));
-          // force.mult_mut(Math.min(1, dy / 1000));
-          const attenn = Math.min(1, dy / 1000);
-          const dist = center.sub(p.pos).mag();
-
-          force.mult_mut(dist > 300 ? attenn : 1);
-          force.x += Math.random() * 20 - 10;
-          force.y += Math.random() * 20 - 10;
-          p.update(force.x / 200, force.y / 200);
-          p.update(force.x / 200, force.y / 200);
-
-          if (pi < renderedParticleCount) {
-            const color = Math.floor(
-              (Math.atan2(p.pos.y - center.y, p.pos.x - center.x) / Math.PI) *
-                150 +
-                150
-            );
-
-            p.draw(ctx, color, shapeMap, canvasWidth, canvasHeight);
-          }
-        }
-      }
-
-      if (debugForces) {
-        for (let x = 0; x < canvasWidth; x += 40) {
-          for (let y = 0; y < canvasHeight; y += 40) {
-            const p = new Vector2D(x + 20, y + 20);
-            let force = new Vector2D(0, 0);
-            for (const f of forces) {
-              force.add_mut(f(p));
-            }
-
-            const dist = center.sub(p).mag();
-            const dy = Math.max(1, Math.abs(p.y - canvasHeight / 2));
-            const attenn = Math.min(1, dy / 1000);
-            force.mult_mut(dist > 300 ? attenn : 1);
-
-            //   if (Math.abs(force) < 0.2) {
-
-            //   }
-            // force.mult_mut(100);
-            ctx.beginPath();
-            ctx.moveTo(p.x - force.x * 2, p.y - force.y * 2);
-            ctx.lineTo(p.x + force.x * 2, p.y + force.y * 2);
-            ctx.stroke();
-            ctx.fillRect(p.x + force.x - 1, p.y + force.y - 1, 2, 2);
-            // ctx.fill();
-          }
-        }
-      }
-
-      perfLog.push(Date.now() - start);
-      if (perfLog.length === frameRate * 3) {
-        const avg = perfLog.reduce((acc, v) => v + acc, 0) / perfLog.length;
-        console.log(`avg paint: ${avg.toFixed(2)}ms`);
-        perfLog = [];
-      }
-    }
-
-    handle = requestAnimationFrame(paint);
-
-    return () => {
-      cancelAnimationFrame(handle);
-    };
-  }, [particles, forces, setForces, animate, shapeMap]);
-
-  const [bgDark, setBgDark] = useState(true);
-  const [headerHeight, setHeaderHeight] = useState(0);
-
-  useEffect(() => {
-    setHeaderHeight(
-      document.querySelector("nav.navbar").getBoundingClientRect().height
-    );
-  }, []);
-
-  useEffect(() => {
-    function onScroll() {
-      if (window.scrollY > window.innerHeight - headerHeight && bgDark) {
-        setBgDark(false);
-      } else if (
-        window.scrollY < window.innerHeight - headerHeight &&
-        !bgDark
-      ) {
-        setBgDark(true);
-      }
-
-      if (window.scrollY > window.innerHeight && animate) {
-        setAnimate(false);
-      } else if (window.scrollY < window.innerHeight && !animate) {
-        setAnimate(true);
-      }
-    }
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [bgDark, animate, headerHeight]);
+  const blur = useMotionTemplate`blur(${blurSize}px)`;
+  const boxBlur = useMotionTemplate`blur(${boxBlurSize}px)`;
 
   return (
-    <section className="w-screen h-screen bg-[#1B025A]">
-      <>
-        {bgDark && <DarkHeroStyles bgColor="transparent" />}
+    <section className=" bg-[#1B025A]" id="home" ref={darkRef}>
+      {isDark && <DarkHeroStyles bgColor="transparent" />}
+      <ParticleAnimation
+        animate={true}
+        blur={blur}
+        debugForces={false}
+      ></ParticleAnimation>
 
-        <canvas
-          className="w-full h-full fixed inset-0 bg-[#1B025A]"
-          ref={canvasRef}
-        ></canvas>
-      </>
-      <div className="fixed inset-0 flex items-center">
-        <div className="container-10 text-center">
-          <h1
-            className="tw-heading-3 md:tw-heading-2 text-white animate-scale-in"
-            style={{
-              animationPlayState: start ? "running" : "paused",
-            }}
-          >
-           Reimagine Anything
-            <br />
-            Using World Computer
-          </h1>
-        </div>
-        <img
-          src="/img/home/hero-blur.svg"
-          alt=""
-          className="absolute bottom-0 translate-y-6/10 md:translate-y-7/10 left-1/2 -translate-x-1/2 max-w-none w-[800px] md:w-full h-auto"
-        ></img>
-
-        <button
-          className="bg-transparent appearance-none border-none p-0 m-0 animate-fade-in left-1/2 -translate-x-1/2 bottom-[10vh] md:bottom-[5vh] absolute w-12 h-12 md:w-[70px] md:h-[70px] rounded-xl backdrop-blur-xl flex items-center justify-center"
-          onClick={() => {
-            document.getElementById("home").scrollIntoView();
-          }}
-          style={{
-            animationPlayState: start ? "running" : "paused",
-          }}
-        >
-          <svg
-            width="24"
-            height="38"
-            viewBox="0 0 24 38"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M23 25.4247L12 36L1 25.4247M12 0L12 35.8937"
-              stroke="url(#paint0_linear_127_29571)"
-              stroke-width="1.77"
-            />
-            <defs>
-              <linearGradient
-                id="paint0_linear_127_29571"
-                x1="11.5784"
-                y1="35.8937"
-                x2="11.5784"
-                y2="6.09638e-09"
-                gradientUnits="userSpaceOnUse"
+      <div className="overflow-hidden relative">
+        <div className="md:pt-0 flex items-center" ref={headlineRef}>
+          <div className="container-10 text-left w-full pt-24 md:pt-[10vh]">
+            <motion.div
+              className="mb-20 md:mb-0"
+              style={{
+                // animationPlayState: start ? "running" : "paused",
+                animationPlayState: "paused",
+                // opacity: blobOpacity,
+              }}
+            >
+              <h1
+                className="animate-fade-up tw-heading-60 md:tw-heading-2 lg:tw-heading-1 text-white mb-3 md:mb-8"
+                style={{
+                  animationPlayState: fontLoaded ? "running" : "paused",
+                }}
               >
-                <stop stop-color="white" />
-                <stop offset="1" stop-color="white" stop-opacity="0" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </button>
+                {headline}
+              </h1>
+              <p
+                className="animate-fade-up tw-heading-4 md:tw-heading-3 text-white mb-6 [animation-delay:100ms]"
+                style={{
+                  animationPlayState: fontLoaded ? "running" : "paused",
+                }}
+              >
+                {subheadline}
+              </p>
+              <div
+                className="animate-fade-up [animation-delay:150ms]"
+                style={{
+                  animationPlayState: fontLoaded ? "running" : "paused",
+                }}
+              >
+                <Link className="button-outline-white" href={ctaLink}>
+                  {cta}
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+        <div
+          className="container-12 text-white relative pb-56 md:pb-80 md:pt-[8.4vh]"
+          ref={heroRef}
+          id="stats"
+        >
+          <div className="">
+            <motion.div
+              className="-mx-6 md:mx-0 px-6 md:rounded-[32px] pt-10 pb-30 md:p-10 text-white flex flex-col md:flex-row justify-between self-stretch md:mb-[calc(33vh-188px)] animate-fade-in"
+              style={{
+                backdropFilter: boxBlur,
+                WebkitBackdropFilter: boxBlur,
+                animationDelay: "500ms",
+                animationPlayState: fontLoaded ? "running" : "paused",
+              }}
+            >
+              {cards.map((item, index, arr) => (
+                <Fragment key={item.title}>
+                  <Link
+                    className="flex-1 text-white text-left md:text-center flex flex-row md:flex-col items-center group hover:no-underline hover:text-white animate-fade-up"
+                    style={{
+                      animationDelay: `${index * 100 + 600}ms`,
+                      animationPlayState: fontLoaded ? "running" : "paused",
+                    }}
+                    href={item.link}
+                  >
+                    <div className="flex-1">
+                      <div className="text-white/60 tw-button-sm md:tw-heading-7-caps mb-1">
+                        {item.caption}
+                      </div>
+                      <h2 className="tw-lead-lg lg:tw-title-sm mb-0 md:mb-8">
+                        {item.title}
+                      </h2>
+                    </div>
+                    <div className="rounded-full border-white/30 border-solid border-2 inline-flex items-center justify-center w-7 h-7 md:w-10 md:h-10 text-white group-hover:text-infinite group-hover:bg-white group-hover:border-white transition-all duration-200">
+                      <LinkArrowRight className="w-4 md:w-auto" />
+                    </div>
+                  </Link>
+                  {index < arr.length - 1 && (
+                    <div className="w-full h-px bg-white/20 md:w-px md:h-auto my-6 md:my-0 md:mx-8"></div>
+                  )}
+                </Fragment>
+              ))}
+            </motion.div>
+            <div className="md:pt-30 -mx-6 md:mx-0 px-6 md:rounded-[32px] ">
+              <Facts />
+              <AnimateSpawn
+                variants={transitions.container}
+                className="container-10 bg-black-30 rounded-xl pb-30 pt-8 md:py-0 md:h-60 flex items-center relative overflow-hidden"
+              >
+                <div className="md:mx-1/10 flex flex-col justify-center gap-8 items-start">
+                  <Link
+                    className="button-outline-white text-center sm:text-left"
+                    href="https://dashboard.internetcomputer.org"
+                  >
+                    INTERNET COMPUTER DASHBOARD
+                  </Link>
+                  <Link
+                    href="https://wiki.internetcomputer.org/wiki/L1_comparison"
+                    className="link-primary-light link-with-icon"
+                  >
+                    Comparison of Layer-1 blockchains
+                    <LinkArrowUpRight />
+                  </Link>
+                </div>
+                <img
+                  src="/img/home/dashboard.svg"
+                  className="absolute right-0 bottom-0 pointer-events-none"
+                  loading="lazy"
+                  alt=""
+                ></img>
+              </AnimateSpawn>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
-}
+};
+export default PreHero;
