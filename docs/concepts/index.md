@@ -1,6 +1,29 @@
 ---
+
 hide_table_of_contents: true
 ---
+# 仕組み
+
+Internet Computer 上でうまく動作するプログラムを書くために、 の内部構造について多くを知る必要はありません。しかし、いくつかの重要な概念を学ぶことで、Internet Computer が提供するユニークな機能を最大限に活用することができます。
+
+ICの設計とアーキテクチャについて少し知っておくと、あなたの目標に沿った利点を実現しやすくなり、あなたが開発するアプリケーションの種類に役立ちます。
+
+このセクションのトピックでは、IC のアーキテクチャと動作を理解するのに役立つ主要なコンポーネントと用語を紹介します。[ICの概要](./what-is-IC.md)、ICを駆動する[ノードと](./nodes-subnets.md) [データ](./data-centers.md)センターをお読みください。について詳しく知ることができます。 [canisters](./canisters-code.md)チェーン上で完全にホストされる分散型アプリを構築する方法と理由、そしてなぜ私たちがチェーンに[信頼を](./trust-in-canisters.md)置く必要があるのかを知ることができます。canisters が[トークンとcycles](tokens-cycles.md)によってどのように動かされるのか、またInternet Computer がどのように[管理さ](./governance.md)れ、分散型方法で開発されるのかについて詳しく知ることができます。
+
+しかし、すぐにコードを開発したいのであれば、この入門的な資料-主要な概念と用語-を読み飛ばして、後で必要なときにこのカテゴリーか[用語集で](/docs/references/glossary.md)調べることができます。
+
+さらに入門的な情報をお探しの場合は、以下の関連リソースをご覧ください：
+
+- [ Internet Computer （ビデオ）の概要](https://www.youtube.com/watch?v=XgsOKP224Zw)。
+
+- [ canisters の紹介 - スマート・コントラクトの進化（ビデオ）](https://www.youtube.com/watch?v=LKpGuBOXxtQ)。
+
+import DocCardList from '@theme/DocCardList'；
+
+<DocCardList />
+
+<!---
+
 
 # How it works
 
@@ -21,3 +44,4 @@ If you are looking for more introductory information, check out the following re
 import DocCardList from '@theme/DocCardList';
 
 <DocCardList />
+-->

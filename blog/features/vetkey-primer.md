@@ -1,3 +1,161 @@
+# VETKey入門
+
+**VETKeys**機能は、Internet Computer （IC）で現在開発中です。これは「**Verifiable** **Encrypted** **Threshold**Keys（**検証可能な** **暗号化** **閾値**鍵）」の略で、IC上で多くの暗号機能を実現します。VETKeysの主な動機はオンチェーン暗号化を促進することであり、この入門書ではその例を念頭に置いています。
+
+VETKeys機能についてあまり議論されていないことの1つは、暗号化という観点でどのようにしてここまでたどり着いたかということです。この投稿の目的は、VETKeysの講演や論文、そして今後の投稿をよりよく理解できるように、暗号の背景を説明することです。VETkeysのこれらの基礎を理解することは、アプリケーションを構築するためにVETkeysを使用するために必要なこと*では*ありませんが、より深く潜ることに興味があり、背景を理解したい人のために説明します。それでは、最初から始めましょう。
+
+## 暗号プリミティブ
+
+暗号技術において「[プリミティブ](https://en.wikipedia.org/wiki/Cryptographic_primitive)」とは、基本的な構成要素の一種であり、その機能のみを使用することも、他の、より複雑な暗号ツールやプロトコルを構築することもできます。
+コアとなるプリミティブの例には、以下のようなものがあります：
+
+- ブロック暗号（例：[AES）](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)
+- ハッシュ関数（[SHA3](https://en.wikipedia.org/wiki/SHA-3)、[BLAKE3など）](https://en.wikipedia.org/wiki/BLAKE_\(hash_function\)#BLAKE3)
+- 鍵交換（[Diffie-Hellmanなど）](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange)
+- 署名スキーム（[ECDSA](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm)、[BLSなど）](https://en.wikipedia.org/wiki/BLS_digital_signature)
+- 公開鍵暗号化方式（[RSA](https://en.wikipedia.org/wiki/RSA_\(cryptosystem\))、[ElGamalなど）](https://en.wikipedia.org/wiki/ElGamal_encryption)
+
+VETKeys は*新しいプリミティブを*導入し、特に**VETKD を**導入しています。VETKDは、IDベース暗号化（IBE）と呼ばれる古いプリミティブを拡張したもので、それ自体が公開鍵暗号化を拡張したものです。
+
+## 公開鍵暗号化（PKE）
+
+*1976*年、Whit DiffieとMartin Hellmanが公開鍵暗号方式を紹介した論文「New Directions」の冒頭で述べた言葉です。
+
+![DH ND](../_assets/dh76.png)
+
+PKEは誰もが日常的に使用しているため、それが何であるかについてはある程度直感的に理解していると思われますが、後で構築するもののために、ここで説明します。PKE はメッセージを暗号化することで、公開された通信路で秘密裏に通信することを可能にします。アリスが暗号化されたメッセージをボブに送りたいとすると、 PKEスキームは以下のように実行されます：
+
+- ボブは鍵生成アルゴリズム $mathsf{KG}$ を使って秘密鍵と公開鍵のペア $(\\mathit{sk\_{bob}, pk\_{bob}})$ を生成します。
+- Bobは自分の公開鍵をオンライン(公開鍵基盤(PKI)など)に保存します。
+- アリスはボブの公開鍵$mathit{pk\_{bob}}$を(例えばPKIから)取得し、それを使って暗号化アルゴリズム$mathsf{Enc}$を使ってボブへのメッセージを暗号化し、結果の暗号文をボブに送信します。
+- ボブはアリスから暗号文を復号したいとき、自分の秘密鍵 ${mathit{sk\_{bob}}$ と復号アルゴリズム ${mathsf{Dec}}$ を使ってメッセージを復号し、取り出します。
+
+![PKE](../_assets/pke.png)
+
+:::info
+公開鍵暗号の規格では、秘密鍵を生成し、そこから公開鍵を導出します。このため、公開鍵がどのように*見えるかを*ほとんど制御できず、 ユーザとその公開鍵のマッピングを管理するために、 信頼できる公開鍵基盤 (PKI) に頼る必要があります。これはすぐに複雑になり（暗号化された電子メールを送ろうとしたことがありますか？）、実用的なアプリケーションでの暗号の使用を妨げることになります。
+::：
+
+## IDベースの暗号化（IBE）
+
+暗号化における多くのものと同様に、IBEもAdi Shamir \[Shamir84\]によって導入されました。具体的なインスタンス化の提供は、1984年の導入から2001年まで未解決の問題のままでした。2つのIBEスキームが提案されました。ここでは、Dan BonehとMatthew Franklinによって導入されたIBEに焦点を当てます。
+
+![BF IBE](../_assets/BF01.png)
+
+IBEは、PKEの使い勝手の問題のいくつかに対処しています。IBEは、任意の文字列を公開鍵（"alice@email.com "や"@alicetweets "など）とし、そこから秘密鍵を導出します。
+
+IBE スキームがどのように機能するかを見るために、次のシナリオを考えてみましょう。アリスが$mathit{id\_{bob}}$を使ってボブへのメッセージを暗号化したいとします。典型的なシナリオでは、信頼できるKey Deriver (KD)が存在し、以下のように実行されます：
+
+- KDはIBE鍵生成アルゴリズムを実行し、マスター鍵ペア($mathit{msk, mpk}$)を生成。
+- AliceはIBE暗号化アルゴリズムを実行し、$mathit{id\_{bob}}$とKDの$mathit{mpk}$を使用してBobへのメッセージを暗号化し、結果の暗号文をBobに送信。
+- Bobは$mathit{id\_{bob}}$をKDに認証し、対応する復号(秘密)鍵($mathit{sk\_{bob}}$)を要求。
+- KDは$mathit{msk}$を用いて$mathit{id\_{bob}}$から$mathit{sk\_{bob}}$を導出し、Bobに送信。
+- Bobは$mathit{sk\_{bob}}$と$mathit{id\_{bob}}$を使ってAliceからの暗号文を復号し、メッセージを取得。
+
+![IBE Example](../_assets/ibe.png)
+
+:::info
+
+このタイプのIBEスキームについて注意すべき重要な点があります。ブロックチェーンの世界に身を置く私たちは、当然ながら信頼できるサードパーティーと仕事をすることに熱心ではありません。したがって、IBEの鍵の導出手順を分散化することが1つの中心的な目標です。
+
+:::
+
+## VETKD
+
+ブロックチェーンが非常にパブリックな場所であり、完全性と可用性を得るために透明性が重要なfactor であることを考慮すると、競合しない方法で機密性やプライバシーを達成する方法はすぐには明らかではありません。これがVETKDの使命です。
+
+### 閾値の設定
+
+ここでは秘密***鍵の導出に***最も注意を払いますが、それは最も機密性の高い部分であり、中央の（潜在的に信頼されていない、認可されていない、または危殆化した）一人の当事者から保護したいためであり、それゆえVETKDの**KD**であることに注意してください。中央集権化という点に対処するために、分散設定に移行する必要があります。  信頼できるパーティが1つもないと仮定して、複数のパーティに信頼を分散させ、そのうちのある*閾値の*パーティが復号鍵を導出するためにマスター秘密鍵の共有について協力することを要求します。
+
+パーティはどのようにしてマスター秘密鍵を**共有**するのでしょうか。これは分散鍵生成(DKG)プロトコルを活用することで行われ、ある閾値の誠実なパーティ(ノード)が協力してマスター鍵の共有セットを取得します。ノード間の共謀がないと仮定すると、1つのノードが完全な秘密鍵を保持することはありません。
+クリックすると、[閾値暗号](https://en.wikipedia.org/wiki/Threshold_cryptosystem)、[DKG](https://en.wikipedia.org/wiki/Distributed_key_generation)、[Boneh-Shoup本の](http://toc.cryptobook.us/)第22章について詳しく知ることができます。
+
+上記から明らかなように、中央集権的な鍵の導出プロセスは不要であり、 そのためにKDプロセスに**Tが**必要なのです。VとEについてはどうなのでしょうか？
+
+### 構文
+
+アリスが暗号化されたメッセージを（パブリック・ブロックチェーンを介して）ボブに送りたいとします。鍵の管理は特にWeb3では難しいので、*オンデマンドで鍵を導出*できることが望ましいです。シナリオは以下の通り：
+
+- ネットワークのノードは$mathsf{DKGプロトコル}$に参加して、マスター秘密鍵（$mathit{msk}$）とマスター公開鍵（$mathit{mpk}$）の共有を取得。この結果、各ノード$i$は鍵共有$( \\mathit{msk\_i, mpk\_i})$を持つことになります。
+- アリスはボブのアイデンティティ$mathit{id\_{bob}}$とマスター公開鍵$mathit{mpk}$でメッセージを暗号化し、結果の暗号文をボブに送信します。
+- Bobは復号したいので、$mathit{id\_{bob}}$をICに認証し、復号鍵の導出を要求。停止！
+
+このシナリオを続行すると、ノードは復号鍵を導出してBobに共有を送信することに なるが、パブリックネットワークでは、これらの共有は見ることができ、 オブザーバによって結合される可能性があることに注意。そのため、観測者や悪意のあるノードがそれらを組み合わせて$mathit{sk\_{bob}}$を取得できないように、導出された鍵共有は暗号化されて転送される必要があります。では続けましょう。
+
+- Bobは復号化したいので、$mathit{id\_{bob}}$をICに認証。トランスポート鍵生成アルゴリズム$mathsf{TKG}$を用いてトランスポート公開鍵$mathit{tpk}$を生成・送信し、復号鍵の導出を要求。Bobは$mathit{tpk}$を送信することで、ノードに自分への応答を暗号 化する方法を与える。
+- Bobの$mathit{id\_{bob}}$に対する認証が通ると(おそらくdapp)、ネットワーク内のノードは$mathsf{EKDerive}$アルゴリズムを使用して、$mathit{msk}$と$mathit{id\_{bob}}$を使用して復号鍵共有を導出し、$mathit{tpk\_{bob}}$の下で暗号化する。これはVETKDの**E**要件です。
+
+閾値システムでは、有効な鍵を生成するのに十分な数の鍵共有が必要です。この場合、いつ有効な鍵共有が十分にあるかどうかを知ることは、 処理を停止させるために有用である。
+
+- 誰でも$mathsf{EKSVerify}$アルゴリズムを使って、 暗号化された鍵共有に本当に正当な復号鍵共有が含まれているかどうかを 検証することができるので、いつ「十分な数の」有効な鍵共有が存在するかを知る ことができます。これがVETKDにおける**V**要件の説明です。
+- ノードはまた、暗号化された共有を結合して、$mathsf{Combine}$ アルゴリズムを使用して、 完全な暗号化された派生鍵$mathit{ek}$を生成することができる。
+- EKVerify}$アルゴリズムにより、誰でも$mathit{ek}$が本当に$mathit{tpk\_{bob}}$の下で暗号化された$mathit{mpk}$の下で$mathit{id\_{bob}}$の正当な派生鍵を含んでいることを検証できる。
+- 最後に、復元アルゴリズム$mathsf{Recover}$により、ボブのTSKを用いて、$mathit{msk}$配下の$mathit{id\_{bob}}$に対応する派生鍵を復号可能。
+- これでBobは復号できます。
+
+この図は論文からの抜粋。
+![VETKD Example](../_assets/vetkdscene.png)
+
+言及したすべてのアルゴリズム（$mathsf{DKG, TKG, EKDerive, EKSVerify, Combine, EKVerify, Recover}$）は、VETKDプリミティブを記述する*構文を*形成します。プリミティブを完全に記述するには、正しさ（プリミティブの意図された動作の記述）、安全性（どのような敵対者からのどのような攻撃の下でプリミティブが安全であり続けるか）、および構築（望ましい構文、正しさ、および安全性をキャプチャするプロトコルを構築する方法の記述）にも注意する必要があります。正しさと安全性はアプリケーション（署名、IBEなど）によって異なるので、これらの概要を知るには論文に譲ります。
+
+### 構築
+
+さて、VETKDの目的とその記述方法がわかりました。次の自然な疑問は、このようなプリミティブをどのように構築できるかということです。どの構成要素が必要でしょうか？
+
+一見したところ、ノード間でマスター秘密鍵の共有を生成・配布するための分散鍵生成スキームが必要であることが推測できます。また、ユーザのトランスポート鍵の下で派生鍵共有を暗号化する公開鍵暗号化スキームが必要であることも推測できます。残る主な問題は、復号鍵をどのように導出するかです。
+
+重要なのは、\[BF01\]に埋もれたある観察が答えを与えてくれることです。Moni Naorは、IBEスキームが署名スキームに直接変換できることを指摘しています。Boneh-Franklin IBEの鍵導出を具体的に考えると、結果として得られる署名スキームはBLSになります。
+
+### BLS署名
+
+デジタル署名は、メッセージや取引、その他の情報の真正性を証明するために、暗号やブロックチェーンの世界のあらゆるところで使用されています。デジタル署名は非常に普及しているため、デジタル署名について時間をかけて学ぶ価値があります。ウィキペディア[（デジタル署名と](https://en.wikipedia.org/wiki/Digital_signature) [BLS](https://en.wikipedia.org/wiki/BLS_digital_signature)）でハイレベルな見解を得ることができ、より正式な詳細を知りたい場合は[ボネ・シュウプの本を](http://toc.cryptobook.us/)読んでください。
+
+BLS署名は、2001年にDan Boneh、Ben Lynn、Hovav Shachamによって導入されたデジタル署名の一種です。
+
+![BLS Signatures Abstract](../_assets/BLS01.png)
+
+BLS署名の主な特徴は、非常に短く、一意で、計算が速く、集約可能で、分散環境に移植しやすいことです（少なくとも他の署名方式に比べて...）。
+他の署名スキームと同様に、BLSは3つのアルゴリズムで構成されています。（潜在的に分散された）鍵生成アルゴリズム（(D)KG）、署名アルゴリズム（Sign）、検証アルゴリズム（Verify）です。閾値設定では、これは4番目の組み合わせアルゴリズム（Combine）を含むように拡張されます。
+閾値BLS署名は、Internet Computer 、シナリオの動機付けとなる例としてそれを使用してみましょう。あるサブネットのノードが、特定のメッセージがICから送信されていることをアリスに確信させたいとします。非常に高いレベルで、シナリオは以下のように実行されます：
+
+- ネットワークのノードはDKGプロセスに参加し、(秘密)鍵共有を取得します。
+- 各ノードは署名鍵の共有を使ってメッセージ$m$の署名共有を計算。
+- ノードは$mathsf{Combine}$プロセスに参加して署名共有を結合し、Aliceに送 信される単一の署名を生成。
+- アリスは検証アルゴリズム$mathsf{Verify}$ を使って、ノードから送られた署名がInternet Computer の公開鍵で検証されるかどうかをチェックする。
+
+IBEが署名を含意することは前述のとおり。BF01\]の論文から、直感的な構成は、署名スキームの秘密鍵をIBEのマスターキーに設定することです。次に署名スキームの公開鍵をIBEのシステムパラメータとします。VETKDシナリオでは、IBEスキームのマスター・キーはノード間で共有されるBLS署名キーの秘密鍵です。導出されたIDは閾値署名され、対称暗号化鍵としてだけでなく、Boneh-Franklin復号鍵としても機能する署名が得られます。
+
+### すべてのまとめ
+
+VETKDは、IDベースの暗号化を分散環境で拡張するために使用できる新しいプリミティブです。VETKDを構築するために必要な主なツールは、DKG、PKE（ElGamalを使用）、閾値BLS署名であり、以下のように鍵を取得するために使用されます：
+
+- マスター鍵 - DKG発行のBLS署名鍵
+- トランスポート鍵 - ElGamal鍵ペア
+- 暗号化鍵共有 - ElGamal公開鍵で暗号化されたID上のBLS署名共有。
+- 暗号化鍵の結合 - 有効な暗号化鍵シェアの閾値が結合され（ブロックチェーンシナリオではブロックメーカーが結合）、暗号化された派生鍵が生成されます。
+- 復号鍵 - 結合された暗号化された派生鍵のElGamal復号。
+
+これらのVETKeyを持つことで、機能のゴリマインが開かれます。VETKeyファミリーには、VETKDからVETIBE、VETSigs、VETPRF、VETVRFへの拡張など、さらなる説明があります。今後の投稿では、これらについて詳しく説明します。
+
+## 備考
+
+このページは、VETKDとそのビルディング・ブロックのハイレベルな見解と説明を含みます。このページのゴールは、技術的な選択肢についてもっと知りたいが、研究論文を読むのに必要な暗号学的なバックグラウンドが（今のところ）ないかもしれない、IC上で構築する開発者のための直感を構築することです。
+また、VETKDを構築する1つの可能な方法を示しています。他にも、論文でより詳しく説明されている、いくつかの派手な機能を持つものがあります。VETKDを構築するための多くのユースケースや動機があり、それらは[ビデオの](https://youtu.be/baM6jHnmMq8)中で議論されています。また、コミュニティで何が必要とされているかによって、構築できる拡張機能もあります。最後に、このページはonchainでホストされていることに注意してください。
+
+## 参考文献
+
+- [BS23](http://toc.cryptobook.us/)- The Boneh-Shoup Book.
+- [BF01](https://crypto.stanford.edu/~dabo/papers/bfibe.pdf)- IBEの論文。
+- [BLS01](https://www.iacr.org/archive/asiacrypt2001/22480516.pdf)- BLSの論文。
+- [DH76](https://ee.stanford.edu/~hellman/publications/24.pdf)- DiffieとHellmanのNew Directions論文。
+- [VETKD Youtube](https://youtu.be/baM6jHnmMq8)- VETKD Community Conversation intro.
+
+## 参加する
+
+素敵な暗号ツールを作るという点で、私たちにできることは限られています。この業界で成功する最善の方法は、参加することです。ですからVETKDがあなたのプロジェクトに役立つとお考えでしたら、私たちにお知らせください。フィードバックをお聞かせください。現在、最も簡単な方法は、[フォーラムでの](https://forum.dfinity.org/t/threshold-key-derivation-privacy-on-the-ic/16560)議論に参加することです。また、「いいね！」、「シェア」、「購読」、その他全てにご協力をお願いします。
+
+<!---
 # VETKeys Primer
 
 The **VETKeys** feature is in ongoing development on the Internet Computer (IC). It stands for ‘**V**erifiable **E**ncrypted **T**hreshold Keys’ and enables a number of cryptographic functionalities on the IC. The primary motivation for VETKeys is to facilitate onchain encryption, as such we focus this primer with that example in mind. 
@@ -140,3 +298,5 @@ It also shows one possible way of building VETKD, there are others, some with fa
 
 ## Participate
 There is only so much we can do in terms of producing nice crypto tools. It’s up to you to pick them up and use them to address real world privacy issues faced in Web3. The best way to succeed in this industry is to engage. So! Let us know what you’re building and if you think VETKD could be useful for your project. We’re happy to hear feedback and to explain more things if you need them. Currently the easiest way to engage is to join the discussion on the [forum](https://forum.dfinity.org/t/threshold-key-derivation-privacy-on-the-ic/16560). Also, like, share, subscribe, and all the rest.
+
+-->

@@ -1,6 +1,271 @@
 ---
+
 sidebar_position: 1
 ---
+# ウェブフロントエンドの構築
+
+## 概要
+
+Internet Computer では、標準的なウェブ技術で構築されたフロントエンドをホストすることができます。dapps では、通信レイヤーとして
+の[JavaScript エージェントを](https://www.npmjs.com/package/@dfinity/agent)使用します。
+ `dfx` によって提供される[アセットcanister](https://github.com/dfinity/sdk/tree/master/src/canisters/frontend/ic-frontend-canister)を使って静的ファイルを IC にアップロードすることで、
+分散化された技術でアプリケーション全体を実行できるようになります。このセクションでは、`dfx new` コマンドを実行することで生成される
+デフォルトのフロントエンドテンプレート、フロントエンドの設定canister 、そしてプロジェクトのユーザーインターフェイスを構築するための
+他のフレームワークの使用について詳しく見ていきます。
+
+フロントエンドを開発するさまざまな段階でのサンプルコードを含むチュートリアルへの簡単なリンクをいくつか紹介しますdapp ：
+
+- [フロントエンドをカスタマイズ](./custom-frontend.md)する: Reactを構築するチュートリアルdapp.
+
+- canister の関数を公開し、テストするために、素のインターフェイスとして[Candid](../backend/motoko/hello-location.md#candid-ui)を使用します。
+
+- [生のHTMLとJavaScriptを](../backend/motoko/explore-templates.md#default-frontend)使用して、シンプルなHTMLエントリーページを表示します。
+
+- [Reactとコンパイル済みJavaScript](./custom-frontend.md)を使用して、HTMLの属性と要素をページに直接埋め込みます。
+
+- [React と TypeScript](./add-stylesheet.md)を使用して、外部ファイルから CSS プロパティをインポートします。
+
+## デフォルトテンプレートの使用方法
+
+チュートリアルやガイド、サンプルコードのプロジェクトで気づいたかもしれませんが、デフォルトでは、`dfx` で作成された各プロジェクトには、テンプレート`index.js` と`webpack.config.js` ファイルが含まれています。
+
+デフォルトでは、`index.js` ファイルは、`src/declarations/project_frontend/` フォルダにあるエージェントをインポートします。'project' はプロジェクト名です（このガイドでは、プロジェクト名は 'hello' です）。このディレクトリは、`dfx deploy` をローカルで実行するとき、または IC にデプロイするときに、`dfx` によって生成されます。
+
+生成されるエージェントのコードは以下のようになります：
+
+`src/declarations/hello_frontend/index.js`:
+
+```
+
+import { Actor, HttpAgent } from "@dfinity/agent";
+
+// Imports and re-exports candid interface
+import { idlFactory } from "./hello_frontend.did.js";
+export { idlFactory } from "./hello_frontend.did.js";
+
+/* CANISTER_ID is replaced by webpack based on node environment
+ * Note: canister environment variable will be standardized as
+ * process.env.CANISTER_ID_<CANISTER_NAME_UPPERCASE>
+ * beginning in dfx 0.15.0
+ */
+export const canisterId =
+  process.env.CANISTER_ID_HELLO_FRONTEND ||
+  process.env.HELLO_FRONTEND_CANISTER_ID;
+
+export const createActor = (canisterId, options = {}) => {
+  const agent = options.agent || new HttpAgent({ ...options.agentOptions });
+
+  if (options.agent && options.agentOptions) {
+    console.warn(
+      "Detected both agent and agentOptions passed to createActor. Ignoring agentOptions and proceeding with the provided agent."
+    );
+  }
+
+  // Fetch root key for certificate validation during development
+  if (process.env.DFX_NETWORK !== "ic") {
+    agent.fetchRootKey().catch((err) => {
+      console.warn(
+        "Unable to fetch root key. Check to ensure that your local replica is running"
+      );
+      console.error(err);
+    });
+  }
+
+  // Creates an actor with using the candid interface and the HttpAgent
+  return Actor.createActor(idlFactory, {
+    agent,
+    canisterId,
+    ...options.actorOptions,
+  });
+};
+
+export const hello_frontend = createActor(canisterId);
+```
+
+`src/hello_frontend/src/index.js` ファイルを見ると、生成されたactor を受け取り、それを使って hellocanisterの greet メソッドを呼び出していることがわかります：
+
+    import { hello_backend } from "../../declarations/hello_backend";
+    
+    document.querySelector("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const button = e.target.querySelector("button");
+    
+      const name = document.getElementById("name").value.toString();
+    
+      button.setAttribute("disabled", true);
+    
+      // Interact with foo actor, calling the greet method
+      const greeting = await hello_backend.greet(name);
+    
+      button.removeAttribute("disabled");
+    
+      document.getElementById("greeting").innerText = greeting;
+    
+      return false;
+    });
+
+多くのプロジェクトでは、`declarations` のコードを変更せずに使用し、`src/hello_frontend/assets` と`src/hello_frontend/src` で
+を変更してdapp のフロントエンドをカスタマイズできます。 しかし、プロジェクトに追加の要件がある場合は、以下を読み進めてください。
+
+## webpackの設定の変更
+
+webpackは、JavaScriptベースのアプリケーションのための人気のある、高度に設定可能なモジュールバンドルラーであるため、新しいプロジェクト
+、デフォルトの`webpack.config.js` ファイルが作成され、`react` や`markdown` など、使用したい特定のモジュールを簡単に追加することができます。
+
+### 入力と出力の設定
+
+多くの場合、デフォルトの`webpack.config.js` ファイルを変更せずにそのまま使用することもできますし、
+プラグインやモジュール、その他のカスタム設定を追加して、ニーズに合わせることもできます。
+ `webpack.config.js` 設定に加える具体的な変更は、使いたい他のツールやフレームワークによって大きく異なります。
+
+たとえば、[フロントエンドのカスタマイズ](custom-frontend)
+や[スタイルシートの](add-stylesheet)フロントエンドチュートリアルを追加する実験を行った場合、React
+JavaScript で動作するように次のセクションを修正したかもしれません：
+
+```
+        module: {
+          rules: [
+            { test: /\.(ts|tsx|jsx)$/, loader: "ts-loader" },
+            { test: /\.css$/, use: ['style-loader','css-loader'] }
+          ]
+        }
+      };
+    }
+```
+
+アプリケーションがビルドスクリプトの実行に`dfx` を使用しない場合、変数を自分で指定できます。例えば
+
+    DFX_NETWORK=ic NODE_ENV=production HELLO_CANISTER_ID=rrkah... npm run build
+
+### プロジェクトで node.js が利用可能であることの確認
+
+プロジェクトはデフォルトのフロントエンドのフレームワークを webpack に依存しているため、
+開発環境に`node.js` がインストールされ、プロジェクトディレクトリにアクセスできる必要があります。
+
+- デフォルトの webpack 設定とcanister エイリアスを使用せずにプロジェクトを開発したい場合は、
+   `frontend` canister を`dfx.json` ファイルから削除するか、特定のcanister 名を使用してプロジェクトをビルドします。
+  例えば、以下のコマンドを実行することで、フロントエンドアセットを使わずにhelloプログラムのみをビルドすることができます：
+  
+      dfx build hello_backend
+
+- デフォルトの webpack 設定を使用していて`dfx build` の実行に失敗した場合は、プロジェクトディレクトリで`npm install`
+  を実行してから`dfx build` を再実行してみてください。
+
+- プロジェクトディレクトリで`npm install` を実行しても問題が解決しない場合は、
+   `webpack.config.js` ファイルの設定に構文エラーがないか確認してください。
+
+## React フレームワークでの他のモジュールの使用
+
+[サンプルリポジトリの](https://github.com/dfinity/examples)いくつかのチュートリアルとサンプルプロジェクトでは、`npm install` コマンドを使用して React モジュールを追加する方法（
+）を説明しています。これらのモジュールを使用して、プロジェクトで使用したいユーザーインターフェイス
+コンポーネントを構築できます。たとえば、次のコマンドを実行して
+ `react-router` モジュールをインストールします：
+
+    npm install --save react react-router-dom
+
+次に、このモジュールを使用して、次のようなナビゲーションコンポーネントを構築できます：
+
+    import React from 'react';
+    import { NavLink } from 'react-router-dom';
+    
+    const Navigation = () => {
+      return (
+        <nav className="main-nav">
+          <ul>
+            <li><NavLink to="/myphotos">Remember</NavLink></li>
+            <li><NavLink to="/myvids">Watch</NavLink></li>
+            <li><NavLink to="/audio">Listen</NavLink></li>
+            <li><NavLink to="/articles">Read</NavLink></li>
+            <li><NavLink to="/contribute">Write</NavLink></li>
+          </ul>
+        </nav>
+      );
+    }
+    
+    export default Navigation;
+
+## webpack-dev-serverを使った高速な繰り返し処理
+
+`dfx 0.7.7` に始まり、`dfx new` スターターでは webpack-dev-server を提供しています。
+
+webpack-dev-server は`webpack-dev-server` Webpack アセットへのインメモリアクセスを提供し、
+ライブリロードを使用して変更を行い、すぐにブラウザに反映させることができます。
+
+`webpack-dev-server` を利用するには
+
+- #### ステップ1: 新しいプロジェクトを作成し、プロジェクトディレクトリに移動します。
+
+- #### ステップ2: 必要であれば、`dfx start` コマンドでICをローカルに起動します。
+
+その後、`dfx deploy` コマンドを実行するなど、通常と同じようにdapp をデプロイします。
+
+- #### ステップ3: 以下のコマンドを実行してwebpack開発サーバーを起動します：
+  
+  ```
+   npm start
+  ```
+
+- #### ステップ 4: Web ブラウザを開き、ポート 8080 を使用してアプリケーションのアセットcanister に移動します。
+  
+  例えば
+  
+  ```
+   http://localhost:8080
+  ```
+
+- #### ステップ 5: 新しいターミナルウィンドウまたはタブを開き、プロジェクトディレクトリに移動します。
+
+- #### ステップ 6: テキストエディタでプロジェクトの`src/hello_frontend/src/index.js` ファイルを開き、内容を変更します。
+  
+  例えば、JavaScriptを使ってページに要素を追加します：
+  
+  document.body.onload = addElement；
+  
+  ```
+   document.body.onload = addElement;
+  
+   function addElement () {
+     // create a new div element
+     const newDiv = document.createElement("div");
+  
+     // and give it some content
+     const newContent = document.createTextNode("Test live page reloading!");
+  
+     // add the text node to the newly created div
+     newDiv.appendChild(newContent);
+  
+     // add the newly created element and its content into the DOM
+     const currentDiv = document.getElementById("div1");
+     document.body.insertBefore(newDiv, currentDiv);
+   }
+  ```
+
+- #### ステップ7：`index.js` ファイルに変更を保存しますが、エディタを開いたままにして変更を続けます。
+
+- #### ステップ8: ブラウザをリフレッシュするか、ブラウザが勝手にリフレッシュして変更を確認します。
+  
+  プロジェクトのフロントエンドの作業が終わったら、
+  Control-Cを押してwebpack開発サーバーを停止できます。
+
+## 他のフレームワークの使用
+
+webpack以外のbundlerを使いたい場合もあるでしょう。バンドルラーごとの説明はまだ準備できていませんが、
+バンドルラーに慣れている場合は、次の手順で進めることができます：
+
+- #### ステップ 1:`package.json` から`copy:types`,`prestart`,`prebuild` スクリプトを削除します。
+
+- #### ステップ 2:`dfx deploy` を実行して、canisters 用のローカルバインディングを生成します。
+
+- #### ステップ 3: 生成されたバインディングを保存したいディレクトリにコピーします。
+
+- #### ステップ 4:`declarations/<canister_name>/index.js` を修正し、`process.env.<CANISTER_NAME>_CANISTER_ID` をバンドラの環境変数に相当するパターンに置き換えます。
+  
+  - canister の ID をハードコードしてもかまいません。
+
+- #### ステップ 5: 宣言をコミットし、コードベースにインポートします。
+
+<!---
+
 
 # Building a web frontend
 
@@ -258,3 +523,5 @@ with your bundler, the following steps should get you going:
     - Alternately hardcode the canister ID if that is your preferred workflow
 
 - #### Step 5: Commit the declarations and import them in your codebase.
+
+-->

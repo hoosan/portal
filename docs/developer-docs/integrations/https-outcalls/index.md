@@ -1,3 +1,49 @@
+# HTTPSアウトコール
+
+## 概要
+
+これまでブロックチェーンは孤立した存在であり、スマートコントラクトは外部のサーバーや他のブロックチェーンと直接通信することができませんでした。その理由は、ブロックチェーンは複製されたステートマシンであり、各レプリカは各ラウンドで同じ遷移を行うために同じステートに対して同じ計算を実行する必要があるからです。外部サービスからの結果を入力として計算を行うことは、素朴な方法で行われた場合、レプリカのステート発散につながりやすく、実行可能であるためにはいくつかの技術的な考慮が必要です。
+
+**canister ** Internet Computer 、**HTTP(S)リクエスト**、または**HTTP(S)アウトコールの**機能により、ブロックチェーンの歴史上初めて、スマートコントラクトがブロックチェーンの外部のHTTP(S)サーバーに直接コールを行い、その応答をスマートコントラクトのさらなる処理で使用することが可能になり、レプリケートされたステートをそれらの入力を使用して安全にアップデートすることができます。これまでのところ、スマートコントラクトが外部サーバーと通信する唯一の手段は、いわゆる**オラクルを**介したものでした。
+
+:::info
+このドキュメントの残りの部分では、基礎となるプロトコルを参照して、**HTTPと** **HTTPSの**両方に**HTTP**代表を使用する場合があることに注意してください。
+ ：
+
+Canister HTTPリクエストは多くのユースケースを可能にし、現在使われているオラクルモデルよりも多くの利点があります。
+
+- **より強力な信頼モデル：** canister HTTPアウトコールは、スマートコントラクトが外部サーバーと通信するために外部の仲介者（オラクル）が必要ないため、より強力な信頼モデルに基づいています。
+- **手数料の**低減：サービスに対して追加手数料を請求する仲介者が存在しません。
+- **標準的なプログラミングパラダイムに**近い：スマートコントラクトが直接外部サーバーにHTTPリクエストを行うというパラダイムは、オラクルを使用する場合と比較すると、エンジニアが慣れ親しんでいる「通常の」プログラミングパラダイムにはるかに近いです。したがって、ブロックチェーンのためにプログラミングするという事実をさらに抽象化することができます。
+
+#### なぜブロックチェーンにとって外部とのインターフェースが重要なのでしょうか？
+
+- 現実世界のdApp のユースケースのほとんどは、チェーン外のエンティティとの何らかの形でのデータ交換を必要とします。
+- 現在、世界のデータのほとんどは伝統的な（Web 2.0）サービスに保持されており、dApps の多くはこのデータに基づいて構築されているため、このデータにアクセスする必要があります。
+- **ブロックチェーンのシンギュラリティに**到達するためには、スマートコントラクトがWeb 2.0サービスと相互作用できる必要があります。ブロックチェーン・シンギュラリティへの旅において、増え続けるデータがWeb 3.0のブロックチェーンの世界に引き込まれ、Web 2.0サーバーを介さずに異なるスマートコントラクト間で相互作用が行われるようになるでしょう。
+
+## 使用例
+
+canister HTTPSアウトコールのユースケースは数多くあります。
+
+- 最も重要なユースケースの1つは、外部のHTTP APIからデータを読み取ることです。例えば、DEXで使用される価格データや、分散型保険dApps で使用される天候データなどです。
+- IoTdApps は、センサーが相互作用する従来のサーバーからセンサーデータを取得する必要があります。将来的には、センサーとICブロックチェーンが直接やり取りすることも想定されます。
+- ユーザーにメッセージ着信のプッシュ通知を送信するチャットサービス。
+
+HTTPコールの大半は、Web 2.0データを読み取るための`GET` コールであると予想されますが、`POST` 、Web 2.0サーバーにデータを書き込めるようにするために、外部システムとのインタラクションでも重要な役割を果たすことは明らかです。
+
+## リソース
+
+- HTTPS outcalls 機能がどのように機能するのか、また、canister をコーディングする際にどのように使用するのかを深く知りたい場合は、「[how it works](https-outcalls-how-it-works.md)」のセクションを参照してください。
+
+- [examples リポジトリには](https://github.com/dfinity/examples)、独自のdapp を構築するための出発点として使用できるサンプルコードがあります：
+  
+  - [Rust で HTTP GET リクエスト](https://github.com/dfinity/examples/tree/master/rust/send_http_get)を行うサンプルコード
+  - で[HTTP GET](https://github.com/dfinity/examples/tree/master/motoko/send_http_get)リクエストを行うサンプルコード[ Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_get)
+  - Rust で HTTP[POST](https://github.com/dfinity/examples/tree/master/rust/send_http_post)リクエストを行うサンプルコード
+  - で HTTP[POST](https://github.com/dfinity/examples/tree/master/motoko/send_http_post)リクエストを行うサンプルコード[ Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_post)
+
+<!---
 # HTTPS outcalls
 
 ## Overview
@@ -37,3 +83,4 @@ We expect the majority of HTTP calls to be `GET` calls for reading Web 2.0 data,
     * Sample code for making [HTTP GET requests in Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_get) 
     * Sample code for making [HTTP POST requests in Rust](https://github.com/dfinity/examples/tree/master/rust/send_http_post) 
     * Sample code for making [HTTP POST requests in Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_post)
+-->

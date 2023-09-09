@@ -1,68 +1,74 @@
-# ICP 台帳との連携
+# ICP元帳との対話
 
+## 概要
 
+## コマンドラインからのICP台帳との対話
 
-## コマンドラインから ICP 台帳を操作する
-
-DFX は、ICP 台帳 Canister と関連する機能を操作するための便利なコマンドを提供します。ドキュメントは[こちら](https://internetcomputer.org/docs/current/references/cli-reference/dfx-ledger/) を参照してください。また、以下のコマンドをコンソールに入力するだけでも利用できます：
+`dfx` は、ICP ledger と関連機能を操作するための便利なコマンドです。canister [ここに](https://internetcomputer.org/docs/current/references/cli-reference/dfx-ledger.md)ドキュメントを見つけるか、次のコマンドをコンソールに入力するだけです：
 
 ``` bash
 dfx ledger --help
 ```
 
-サブコマンドの `--help` フラグもチェックしておくとよいでしょう。
+サブコマンドの`--help` フラグもチェックする価値があります。
 
-現在、dfx は ICP の台帳機能の一部、すなわち `balance` と `transfer` のみを公開しています。
-どちらのコマンドも、台帳の Canister ID を指定するフラグを提供します (`--ledger-canister-id`) 。これにより、ローカルの台帳の デプロイや、同じインターフェイスを提供する他のトークンとのやりとりを簡略化することができます。
+現在、`dfx` は、ICP ledger 機能のサブセット、つまり`balance` と`transfer` のみを公開しています。
+両コマンドには、ledgercanister id (`--ledger-canister-id`) を指定するフラグがあります。これにより、ローカル台帳デプロイメントや、同じインターフェイスを提供する他のトークンとのやり取りが簡単になります。
 
-#### 残高
+### 残高
 
-特定のアカウントの ICP 残高を取得します：
+特定のアカウントのICP残高を取得します：
+
 ``` bash
 dfx ledger --network ic balance <account-id>
 ```
-`<account-id>` は hex string（16進数文字列）でエンコードされています。
-多くの場合、特定の本人のメインアカウントの残高を確認したいものです。この場合、以下のコマンドを使用することができます。
+
+`<account-id>` は 16 進文字列としてエンコードされます。を実行すると、現在の`dfx` ID のアカウント ID を表示できます：
+
+``` bash
+dfx ledger account-id
+```
+
+多くの場合、特定のプリンシパルのメイン口座残高を確認したいものです。`--of-principal` 引数を指定しながら、`balance` コマンドと`account-id` コマンドを組み合わせると、この便利なコマンドを実行できます：
 
 ``` bash
 dfx ledger --network ic balance $(dfx ledger account-id --of-principal <principal-id>)
 ```
 
-#### 送金
+### 振替
 
-送金機能は、自分のアカウントから他のアカウントに ICP を転送するために使用することができます。
+Transfer機能は、ICPを自分の口座から他の口座に移すために使用できます。
 
 ``` bash
 dfx ledger --network ic transfer --amount <amount> --memo <memo> <receiver-account-id>
 ```
 
-
 <!-- ## Interact with ICP using Candid UI -->
 
-## Web アプリケーションから ICP 台帳と連動する
+## ウェブアプリケーションからICP元帳と対話
 
-JavaScript アプリケーションから ICP 台帳を簡単に操作するために、[nns-js ライブラリ](https://github.com/dfinity/nns-js)を使用することができます。
+JavaScriptアプリケーションからICP ledgerを簡単に操作するために、[nns-jsライブラリを](https://github.com/dfinity/nns-js)使用することができます。
 
-## Canister からの ICP を操作する
+## アプリケーションからICPと対話canister
 
-[ICP 送金サンプル](/docs/current/samples/token-transfer)は、Canister から ICP 台帳を操作するための良い出発点となります。この例では、Motoko と Rust で `balance` と `transfer` を使用する方法を紹介しています。
+canisterこの[例では](/docs/current/samples/token-transfer)、Motoko と Rust での`balance` と`transfer` の使い方を紹介しています。
 
-### ICPの受け取り
+### ICPの受信
 
-ICP で Canister が支払いを受けるようにするには、Canister が支払いについて知っていることを確認する必要があります。送金は送信者と台帳 Canister にしか関与しないからです。
+canister canister がICPで支払いを受け取るには、 が支払いについて知っていることを確認する必要があります。canister 
 
-これを実現するために、現在、主に2つのパターンがあります。さらに、台帳とトークナイゼーションに関する[Chartered Working Group](https://forum.dfinity.org/t/announcing-technical-working-groups/11781) があり、台帳スタンダード・トークン・インターフェースとペイメントフローの定義に重点を置いています。
+これを実現するには、現在主に2つのパターンがあります。さらに、台帳とトークン化に関する[ワーキンググループが](https://forum.dfinity.org/t/announcing-technical-working-groups/11781)あり、標準的な台帳/トークン・インターフェースと決済フローを定義することに注力しています。
 
 #### 送信者による直接通知
 
-このパターンでは、送信者は受信者に支払いについて通知します。しかし、受信者は台帳の[`query_blocks` インターフェース](/docs/current/references/ledger#_getting_ledger_blocks)を使って支払いを確認する必要があります。
-次の図は、このパターンを単純化したものです。
+このパターンでは、送信者が受信者に支払いを通知します。ただし、受信者は台帳の[`query_blocks` インタフェースを](/docs/current/references/ledger#_getting_ledger_blocks)使用して支払いを検証する必要があります。
+次の図は、このパターンを簡略化したものです：
 
-```plantuml
+``` plantuml
     participant Sender
     participant "ICP Ledger"
     participant Receiver
-
+    
     Sender -> "ICP Ledger": transfer()
     "ICP Ledger" --> Sender: blockNumber
     Sender -> Receiver: notify(blockNumber)
@@ -71,23 +77,22 @@ ICP で Canister が支払いを受けるようにするには、Canister が支
     Receiver -> Receiver: verify payment
 ```
 
+#### ICP台帳による通知（現在は無効）
 
-#### ICP 台帳による通知(現在は無効)
+このパターンでは、台帳自体が受信者に通知します。これにより、受信者は通知を即座に信頼できます。ただし、受信側への呼び出しがまだ一方向呼び出しとして実装されていないため、このフローは現在無効になっています。
 
-このパターンでは、台帳自身が受信者に通知します。これにより、受信者はその通知を即座に信用することができます。ただし、受信者への呼び出しが一方通行で実装されていないため、現状、このフローは無効です。
-
-```plantuml
+``` plantuml
     participant Sender
     participant "ICP Ledger"
     participant Receiver
-
+    
     Sender -> "ICP Ledger": transfer()
     "ICP Ledger" --> Sender: blockNumber
     Sender -> "ICP Ledger": notify(blockNumber, receiver)
-    "ICP Ledger" --> "Receiver": transaction_notification(details)
+    "ICP Ledger" -> "Receiver": transaction_notification(details)
 ```
 
-<!--
+<!---
 # Interact with the ICP ledger
 
 ## Overview
@@ -133,9 +138,8 @@ The transfer function can be used to transfer ICP from your account to another.
 dfx ledger --network ic transfer --amount <amount> --memo <memo> <receiver-account-id>
 ```
 
-<!-- ## Interact with ICP using Candid UI -->
+<!-- ## Interact with ICP using Candid UI -!->
 
-<!--
 ## Interact with ICP ledger from your web application
 
 In order to simplify working with ICP ledger from JavaScript applications, you can use the [nns-js library](https://github.com/dfinity/nns-js).
@@ -161,10 +165,10 @@ The following diagram shows a simplified illustration of this pattern:
     participant Receiver
     
     Sender -> "ICP Ledger": transfer()
-    "ICP Ledger" ==> Sender: blockNumber
+    "ICP Ledger" -!-> Sender: blockNumber
     Sender -> Receiver: notify(blockNumber)
     Receiver -> "ICP Ledger": query_blocks(blockNumber)
-    "ICP Ledger" ==> Receiver: block
+    "ICP Ledger" -!-> Receiver: block
     Receiver -> Receiver: verify payment
 ```
 
@@ -179,10 +183,9 @@ In this pattern the ledger itself notifies the receiver. Thereby, the receiver c
     participant Receiver
     
     Sender -> "ICP Ledger": transfer()
-    "ICP Ledger" ==> Sender: blockNumber
+    "ICP Ledger" -!-> Sender: blockNumber
     Sender -> "ICP Ledger": notify(blockNumber, receiver)
-    "ICP Ledger" ==> "Receiver": transaction_notification(details)
+    "ICP Ledger" -> "Receiver": transaction_notification(details)
 ```
 
 -->
-<!--158, 161, 176, 178行目の==>はコメントアウト対策のためにーー＞（あえて全角にしています）から変更しました-->

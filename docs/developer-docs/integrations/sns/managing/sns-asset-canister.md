@@ -1,3 +1,173 @@
+# SNSアセットcanisters
+
+## 概要
+
+[アセットcanister](https://github.com/dfinity/sdk/tree/master/src/canisters/frontend/ic-frontend-canister)は、IC 上に配置されたcanister から静的アセットを保存したり取得したりする方法をユーザに提供します。一般的に、アセットcanisters は HTML、CSS、または JavaScript アセットを提供するために使用され、これらは通常dapp のフロントエンドの一部です。このため、アセットcanister はフロントエンドcanister とも呼ばれます。このガイドでは、アセットcanister と呼ぶことにします。
+
+SNS のコンテキストでは、dapp'の関連アセットcanister はdapp に関連するフロントエンドアセットを提供し、SNS DAO のフロントエンドを含むこともあります。
+
+アセットcanister の内容はSNSの立ち上げ前に設定されなければならず、その後の変更は`Prepare` パーミッションを持つプリンシパルによって行われなければなりません。この`Prepare` パーミッションを持つプリンシパルは、アセットcanister に一括で変更を加え、それらの変更を「ロック」することができます。これらの変更を適用するには、提案書を提出する必要があります。ロック」された変更に対するプロポーザルは誰でも提出できます。変更が提案されると、SNS DAOによって投票されます。承認された場合、SNSガバナンスcanister は承認された変更をコミットできる唯一の存在です。この構成により、アセットcanister への変更が承認された提案によってのみ行われることが保証されます。これらの変更は、このドキュメントの残りの部分では、アセットcanister の「更新」と呼ばれます。
+
+このセクションは、プロジェクトにアセットcanister が含まれている場合に関連し、アセットcanister の制御を SNS に引き渡すテスト方法について説明します。
+
+:::info
+
+この文書では、**アップグレードという**用語は、canister のWebAssembly モジュールのアップグレード版をデプロイすることを指します。
+
+**更新という**用語は、アセットcanister 内に保存されているアセットを変更または更新することを指します。
+::：
+
+## アセットのデプロイcanister
+
+アセットcanister の制御を SNS に引き渡すには、まずアセットをデプロイする必要があります。dapp のコントロールが SNS に引き渡されると、関連するアセットcanister も同じようになります。
+
+SNS の起動中にアセットcanister を展開する概要は次のとおりです：
+
+- まず、アセットcanister を[dfx 0.14.1+](https://github.com/dfinity/sdk/blob/release-0.14.1/src/distributed/assetstorage.wasm.gz) の Wasm ファイルで作成するか、アップグレードする必要があります。
+- 次に、dapp は、以下のパーミッションを設定することで、アセットcanister のコントロールを SNS に渡します：
+  - SNS のガバナンスcanister には`Commit` のパーミッションが与えられます。これは、以前の開発者が`grant_permissions` コマンドを使用して行います (以下のパーミッションの付与セクションを参照)。そうでなければ、SNS がコントローラになった時点でこのパーミッションを付与する必要があります。
+  - `Prepare` パーミッションを持つプリンシパルのホワイトリストを作成し、特定の個人にアセットへの変更をアップロードするパーミッションを与えますcanister 。変更がアセットに適用される前に、提案によって承認される必要がありますcanister 。
+  - SNS を作成するユーザーまたは開発者は、自分の個人的な権限を削除する必要があります。
+- 最後に、設定をコミットするために SNS の機能を登録する必要があります。
+
+アセットcanister をデプロイするには、`dfx.json` ファイル内のcanister を`"type": "assets"` に設定します。canister がビルドされると、dfx は assets.wasm.gz ファイルや candid/assets.did ファイルなどの必要なファイルを自動的に生成します。
+
+`dfx.json` ファイル内でアセットcanister を設定する例を以下に示します：
+
+```
+    "assets": {
+      "source": [],
+      "type": "assets"
+    }
+```
+
+### テストのためのローカルへのデプロイ
+
+テスト目的でアセットcanister をローカルにデプロイするには、以下のコマンドを使用します：
+
+    dfx deploy assets --network "local" --no-wallet
+
+dapp を SNS に渡す前に、アセットcanister をデプロイし、パーミッションを設定しておく必要があります。
+
+### メインネットへのデプロイ
+
+:::info
+メインネットにデプロイするには、cycles を含むウォレットが必要です。cycles ウォレットの詳細については、[こちらを](../../../setup/cycles/cycles-wallet.md)参照してください。
+::：
+
+アセットcanister をメインネットにデプロイするには、以下のコマンドを使用します：
+
+    dfx deploy assets --network "ic" --wallet <principal>
+
+dapp が SNS に引き渡される前に、アセットcanister がデプロイされ、パーミッションが設定されている必要があります。
+
+## アセットcanister のパーミッションの設定
+
+アセットcanister を設定する場合、プリンシパルのホワイトリストを含むパーミッションのセットを作成する必要があります。このホワイトリストには、アセットcanister 内のアセットを更新する変更の提出を許可される人の詳細が記載されています。このホワイトリストは、SNSを立ち上げる前に設定する必要があります。変更の提出を許可されたプリンシパルには、`Prepare` パーミッションが与えられます。
+
+`Prepare` 権限を持つプリンシパルがアセットcanister に変更を提出すると、これらの変更は「ロック」ステートに設定されます。その後、誰でも「ロック」された変更を適用する提案を提出できます。この提案を提出するために必要なパーミッションはありません。
+
+SNS立ち上げ時には、アセットcanister のコントロールをSNSに引き渡す必要があります。すべてのdapp canisters と同様にcanister の制御を SNS ルートに割り当てる以外に、SNS のガバナンスcanister を`Commit` 権限を持つプリンシパルとしてホワイトリストに追加する必要があります。`Commit` 権限を持つプリンシパルのみが、提案された変更を適用できます。
+
+アセットcanister が SNS に引き渡されたら、ガバナンスcanister のみが`Commit` 権限を持ち、ホワイトリストのプリンシパルは`Prepare` 権限を持つべきです。SNSを設定し、デプロイした開発者は、SNSの立ち上げ時に権限を削除してください。
+
+SNSは、カスタム提案タイプとして追加する必要がある提案を介して`take_ownership` 。これにより、すべてのパーミッションがクリアされ、SNSガバナンスcanister `Commit` のパーミッションのみが与えられます。SNS が`take_ownership` を呼び出さない場合、ユーザーはアセットへのすべての変更が SNS プロポーザルで承認されたことを確認できません。
+
+### パーミッションの付与
+
+アセット内のプリンシパルにパーミッションを付与するにはcanister 、次のコマンドを使用します：
+
+    dfx canister call --network ic <canister-id> grant_permission <principal>
+
+### パーミッションの取り消し
+
+アセット内のプリンシパルのパーミッションを取り消すにはcanister 、次のコマンドを使用します：
+
+    dfx canister call --network ic <canister-id>  revoke_permission <principal>
+
+### 権限の一覧表示
+
+アセットcanister の権限を一覧表示するには、次のコマンドを使用します：
+
+    dfx canister call --network ic <canister-id> list_permitted '(record {permission = variant {<Permission>}})'
+
+たとえば、`Commit` パーミッションを持つすべてのプリンシパルを一覧表示するには、次のコマンドを使用します：
+
+    dfx canister call --network ic oa7fk-maaaa-aaaam-abgka-cai list_permitted '(record {permission = variant {Commit}})'
+
+たとえば、`Prepare` パーミッションを持つすべてのプリンシパルを一覧表示するには、次のコマンドを使用します：
+
+    dfx canister call --network ic oa7fk-maaaa-aaaam-abgka-cai list_permitted '(record {permission = variant {Commit}})'
+
+アセットcanister がデプロイされ、パーミッションが設定されると、SNS 分散スワップを開始できます。SNSの起動については、[こちらを](../launching/launch-summary.md)参照してください。
+
+## SNS GenericNervousSystemFunctions（ジェネリック神経系機能
+
+汎用プロポーザルは、各SNSがカスタムプロポーザルを定義するための方法です。アセットcanister に変更をコミットするには、このような汎用プロポーザルを使用します。
+
+汎用プロポーザルを使用するには、まずこの新しいプロポーザルタイプをSNSに「登録」する必要があります。そのためには、`AddGenericNervousSystemFunction` プロポーザルを使用します。
+
+`commit_proposed_batch` API をサポートする新しい`AddGenericNervousSystemFunction` SNS 課題を提出するには、canister id をアセットcanister (これは以下の更新ステップで更新されます) とし、`commit_proposed_batch` 関数をターゲットとします。検証関数は`validate_commit_proposed_batch` とします。
+
+`ExecuteNervousSystemFunction` SNSプロポーザルは、新しく登録されたプロポーザルを実行するために使用されます。`dfx deploy <frontend canister name> --network ic --by-proposal` の出力を用いて`ExecuteNervousSystemFunction` SNS 課題を申請するには、以下の更新手順を参照してください。
+
+## SNS 課題の提出と資産のアップグレードcanister
+
+アセット（canister ）が SNS の管理下に置かれると、変更は SNS プロポーザルで行う必要があります。
+
+アセットcanister を更新するために SNS 提案を提出する前に、アセットcanister が[dfx 0.14.1+](https://github.com/dfinity/sdk/blob/release-0.14.1/src/distributed/assetstorage.wasm.gz) にバンドルされている Wasm を使用するように（提案によって）アップグレードされていることを確認してください。
+
+- #### ステップ 1: SNS 提案を提出するには、まず`Prepare` 権限を持つプリンシパルに実行してもらいます：
+
+<!-- end list -->
+
+    dfx deploy <frontend canister name> --network ic --by-proposal
+
+出力は以下のようになります：
+
+    Proposed commit of batch 2 with evidence e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855. Either commit it by proposal, or delete it.
+
+- #### ステップ2: バッチ番号とエビデンス値を保存し、アセットcanister APIで使用します。
+
+- #### ステップ 3: 他の人が提案のエビデンスを検証できるように、他の人にdapp リポジトリをクローンしてもらい、実行してもらいます：
+
+<!-- end list -->
+
+    dfx deploy <frontend canister name> --network ic --compute-evidence
+
+計算されたエビデンスはステップ2のエビデンスと一致するはずです。
+
+- #### ステップ 4: 以下の API を使用して、バッチをコミットする新しい提案を提出します：
+
+これらのアセットcanister API をプロポーザルで使用してください：
+
+```
+   type CommitProposedBatchArguments = record {
+   batch_id: BatchId;
+   evidence: blob;
+  };
+  type ValidationResult = variant { Ok : text; Err : text };
+
+
+    validate_commit_proposed_batch: (CommitProposedBatchArguments) -> (ValidationResult);
+  commit_proposed_batch: (CommitProposedBatchArguments) -> ();
+
+```
+
+提案が却下された場合、作成者はこの新しいアセットcanister API を使用する必要があります：
+
+```
+  type DeleteBatchArguments = record {
+    batch_id: BatchId;
+  };
+  delete_batch: (DeleteBatchArguments) -> ();
+```
+
+## アセットcanister の例
+
+SNS アセットcanister の例として、canister `sqbzf-5aaaa-aaaam-aavya-cai` があります。これは[DragginzDapp SNS](https://dashboard.internetcomputer.org/canister/sqbzf-5aaaa-aaaam-aavya-cai) のアセットcanister の一部です。
+
+<!---
 # SNS asset canisters
 
 ## Overview
@@ -184,3 +354,5 @@ If the proposal is rejected, the preparer should use this new asset canister API
 
 An example of an SNS asset canister is canister `sqbzf-5aaaa-aaaam-aavya-cai`, which is an asset canister part of the [Dragginz Dapp SNS](https://dashboard.internetcomputer.org/canister/sqbzf-5aaaa-aaaam-aavya-cai).
 
+
+-->

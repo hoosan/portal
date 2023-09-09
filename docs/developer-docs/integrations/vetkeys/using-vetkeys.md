@@ -1,3 +1,73 @@
+# vetKeys APIデモ
+
+## 概要
+
+このデモは、https://github.com/dfinity/interface-spec/pull/158 で提案されている vetKD システム API を提供するcanister (`src/system_api`) を、デモ用に安全でない方法で実装したものです。
+
+このデモでは、[このリポジトリに](https://github.com/dfinity/examples/tree/master/rust/vetkd)あるファイルを使用します。
+
+## 前提条件
+
+- \[x\] IC SDKの[インストール](./../../setup/install/)ページで説明されているように、IC SDKパッケージをダウンロードしてインストールしてください。
+- \[x\][npmを](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)ダウンロードしてインストールしてください。
+- \[x\][gitを](https://git-scm.com/downloads)ダウンロードしてインストールします。
+
+### ステップ1: このプロジェクトを含むGithubリポジトリのクローンを作成します：
+
+    git clone https://github.com/dfinity/examples/
+
+次に、このプロジェクト専用のディレクトリに移動します：
+
+Motoko ：
+
+    cd examples/motoko/vetkd
+
+Rustデプロイの場合：
+
+    cd examples/rust/vetkd
+
+### ステップ2: 次に、Internet Computer のローカルインスタンスを起動します：
+
+``` sh
+dfx start --clean --background
+```
+
+### ステップ3:Canister SDK (dfx)がRustソースコードにハードコードされているcanister IDを使用していることを確認します：
+
+``` sh
+dfx canister create system_api --specified-id s55qq-oqaaa-aaaaa-aaakq-cai
+```
+
+これを行わないと、Canister SDK (dfx)は、`system_api` と`app_backend` canisters に対して、ローカル環境で異なるcanister ID を使用する可能性があります。
+
+### ステップ 4: 必要であれば、以下のコマンドを実行して、必要なノードモジュールがプロジェクトディレクトリで利用可能であることを確認します：
+
+``` sh
+npm install
+```
+
+### ステップ 5: プロジェクトを登録、ビルド、デプロイします：
+
+``` sh
+dfx deploy
+```
+
+このコマンドは、次のような出力で正常に終了するはずです：
+
+``` sh
+Deployed canisters.
+URLs:
+Frontend canister via browser
+ app_frontend_js: http://127.0.0.1:4943/?canisterId=by6od-j4aaa-aaaaa-qaadq-cai
+Backend canister via Candid interface:
+ app_backend: http://127.0.0.1:4943/?canisterId=avqkn-guaaa-aaaaa-qaaea-cai&id=tcvdh-niaaa-aaaaa-aaaoa-cai
+ app_frontend: http://127.0.0.1:4943/?canisterId=avqkn-guaaa-aaaaa-qaaea-cai&id=b77ix-eeaaa-aaaaa-qaada-cai
+ system_api: http://127.0.0.1:4943/?canisterId=avqkn-guaaa-aaaaa-qaaea-cai&id=s55qq-oqaaa-aaaaa-aaakq-cai
+```
+
+### ステップ 6:`app_frontend_js` の印刷された URL をブラウザで開きます。
+
+<!---
 # vetKeys API demo
 
 ## Overview
@@ -73,3 +143,5 @@ Backend canister via Candid interface:
 ```
 
 ### Step 6: Open the printed URL for the `app_frontend_js` in your browser.
+
+-->

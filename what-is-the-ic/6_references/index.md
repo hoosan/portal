@@ -1,20 +1,16 @@
 ---
-title: リファレンスと詳細情報
-card: /img/what-is-the-ic/features.jpg
-cardImageFit: cover
----
 
-- すべての IC コンポーネントがどのように機能し、組み合わされているかをより深く理解するための適当なリソースは、 [How it Works](/how-it-works/) ページと [ホワイトペーパー](https://internetcomputer.org/whitepaper.pdf)です。
-- IC のすべてのソースコードは、[IC リポジトリ](https://github.com/dfinity/ic) で公開されています。
-- IC のサブネット、ノード、ノードプロバイダ、Canister、NNS プロポーザル、投票、ICP トランザクションなどの情報は、[ダッシュボード](https://dashboard.internetcomputer.org/)で見ることができます。
-- Motoko は、IC 上のスマートコントラクトに特化した画期的なプログラミング言語です。[Motoko](https://github.com/dfinity/motoko) をチェックしてください。
-
-<!--
----
 title: References and further information
 card: /img/what-is-the-ic/features.webp
 cardImageFit: cover
 ---
+- ICの全コンポーネントがどのように機能し、どのように組み合わされるかをより深く理解するための素晴らしいリソースは、[How it Worksの](/how-it-works/)ページと[ホワイトペーパー](https://internetcomputer.org/whitepaper.pdf)です。
+- ICのすべてのソースコードは[ICレポで](https://github.com/dfinity/ic)入手できます。
+- ICのサブネット、ノード、ノード・プロバイダ、canisters 、NNSプロポーザル、投票、ICPトランザクションなどの情報は、[ダッシュボードで](https://dashboard.internetcomputer.org/)ご覧いただけます。
+- Motoko はIC上のスマートコントラクトに合わせた新しいプログラミング言語です。チェックアウト [Motoko](https://github.com/dfinity/motoko).
+
+<!---
+
 
 - Great resources to get a deeper understanding of how all components of the IC work and fit together are the [How it Works](/how-it-works/) page and the [white paper](https://internetcomputer.org/whitepaper.pdf).
 - All of the IC's source code is available in [the IC repo](https://github.com/dfinity/ic).

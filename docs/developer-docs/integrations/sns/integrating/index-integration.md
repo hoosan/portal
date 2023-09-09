@@ -1,6 +1,67 @@
 ---
+
 sidebar_position: 3
 ---
+# SNSインデックスcanister
+
+## 概要
+
+canister インデックスは、[元帳canister](ledger-integration.md)からトランザクションを取得し、**口座**別にインデックスを付けます。
+これにより、元帳チェーンから降順で口座のトランザクションを照会したり、**プリンシパルに**属する口座のリストを照会したりできます。
+インデックスcanister は、SNS プロジェクトの一部として常にデプロイされます。
+
+このcanister は、特定の口座のトランザクションを表示したいアプリケーションに便利です。
+
+定期的に(ハートビートごとに)、インデックスcanister は
+の元帳canister からトランザクションを照会し、アカウントごとに既知のトランザクションのインデックスを構築します。
+
+## 初期化
+
+canister
+NNS が の新しい SNS を作成すると、自動的に SNS インデックス がデプロイされます。dapp canister
+
+インデックスcanister の初期化には、インデックスを作成する ICRC-1 台帳canister のプリンシパルが必要です：
+
+    type InitArgs = record {
+    ledger_id : principal;
+    };
+
+`dfx` を使用した例：
+
+``` shell
+dfx deploy icrc1-index --argument "(record {
+      ledger_id = principal \"rrkah-fqaaa-aaaaa-aaaaq-cai\"
+    }
+)"
+```
+
+## 使用方法
+
+提供されるメソッドは以下のとおりです：
+
+    get_account_transactions : (GetAccountTransactionsArgs) -> (GetTransactionsResult);
+
+- このメソッドは、指定されたアカウントのトランザクションを返します。取引は id の降順で返されます。
+  オプションとして、ユーザーは開始取引 ID を指定することができ、この ID より前の取引のみを照会できます。開始が指定されない場合は、最後のトランザクションが使用されます。
+
+<!-- end list -->
+
+    ledger_id : () -> (principal) query;
+
+- このメソッドは、インデックス付けされている元帳canister のプリンシパルを返します。
+
+<!-- end list -->
+
+    list_subaccounts : (ListSubaccountsArgs) -> (vec SubAccount) query;
+
+- このメソッドは、プリンシパルに対してインデックス付けされたすべてのサブアカウントをリストします。
+
+## キャンディッド参照ファイル
+
+インターフェースの詳細については、インデックスcanister の[Candid ファイルを](https://gitlab.com/dfinity-lab/public/ic/-/blob/master/rs/rosetta-api/icrc1/index/index.did)確認してください。
+
+<!---
+
 # SNS index canister
 ## Overview
 The index canister fetches transactions from the [ledger canister](ledger-integration.md) and indexes them by **account**. 
@@ -57,3 +118,5 @@ list_subaccounts : (ListSubaccountsArgs) -> (vec SubAccount) query;
 ## Candid reference file
 
 Please check the [Candid file](https://gitlab.com/dfinity-lab/public/ic/-/blob/master/rs/rosetta-api/icrc1/index/index.did) of the index canister for the interface details.
+
+-->

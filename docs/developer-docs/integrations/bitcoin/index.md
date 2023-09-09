@@ -1,3 +1,43 @@
+# ビットコインの統合
+
+## 概要
+
+Internet Computer はビットコインネットワークと直接統合されています。これにより、Internet Computer 上のcanisters は、ビットコインの受信、保有、送信をすべてビットコインネットワーク上のトランザクションで直接行うことができます。Canisters は、ビットコインネットワーク上でビットコインを保有する通常のユーザーとまったく同じように行動できます。これらはすべて、以下の方法で可能になります：
+
+- Internet Computer はプロトコルレベルでビットコインと統合しています。
+- Canisters 閾値ECDSAに基づく連鎖鍵署名のための新しいプロトコルによって、ECDSA鍵を安全に保持（および使用）できること。
+
+Internet Computer は、このような他のブロックチェーンとの直接統合を行う最初のブロックチェーンネットワークの一つであり、この目的のために新しい技術基盤を構築しました。
+
+## 使用例
+
+この統合により、多くの新しいユースケースが可能になります：
+
+- **ビットコイン・スマートコントラクト：** canister はビットコイン・ネットワーク上のビットコインを直接保持することができ、エンジニアはcanisters を使用して強力なビットコイン・スマートコントラクトを実装することができます。どのようなcanister スマートコントラクトでも、ビットコイン・スマートコントラクト機能を提供できるようになりました。例えば、ユーザーが秘密鍵を管理する必要のないバイオメトリクス認証のオンチェーンビットコインウォレットや、ユーザーがソーシャルdApps を使用してピアツーピアのビットコイン取引を行うことができるソーシャルファイなど。
+- **ビットコインの取引：** Internet Computer 上の分散型取引所において、第三者による資産の保管を必要とせずにビットコインを直接取引。
+- **分散化スワップ：**SNSを利用したDAOがIC上のサービスを分散化する際に、ビットコインを利用してトークンを購入する分散化スワップ。
+- **Chain Key Bitcoin (ckBTC):**ビットコインで1:1裏付けされたInternet Computer 上のビットコイン類似品。ビットコインのメインネットがビットコインの機能をリリースした直後に IC 上で利用可能になる予定。ckBTC は IC 上でビットコインを扱う最も簡単な方法。
+
+## 例
+
+これらは、ビットコイン統合機能の使用方法のほんの一例に過ぎません。この機能によって無限の可能性が広がるのは、あなたの想像力だけです。このドキュメントでは、あなた自身のdApps でこの機能を使用する方法を説明します。また、ビットコイン統合APIはUTXOとビットコイントランザクションレベルで動作する低レベルAPIであり、使用することは自明ではないことに注意してください。
+
+ビットコイン機能のビットコインメインネットリリース（一般利用可能リリース）後、**チェーンキービットコイン（ckBTC）** canister が利用可能になります。ckBTCcanister は IC 上でオンチェーンビットコインを提供します。これはラップされたビットコインのように見えますが、分散型アーキテクチャであり、ブリッジの代わりにスレッショルド ECDSA を使用しているため、基本的な信頼モデルははるかに強力です。
+
+私たちは、いくつかの明確な利点があるため、多くの人々がプロジェクトに私たちのネイティブ統合の代わりにckBTCを使用することを好むと想定しています：
+
+- **統合が簡単:**低レベルのBitcoin統合APIを使用する代わりに、Internet Computer 上の他の台帳と同じようにckBTC台帳にアクセスできます。ckBTC台帳は、ICRC-1トークン規格に準拠し、カジブルトークンを使用します。
+- **より速く、より安価な送金:**ckBTC は、Internet Computer の低い確定時間（数秒以内）で、ビットコインネットワーク上のビットコイン送金の数分の一のコストで送金できます。このスキームを使用すると、ビットコインネットワークとの決済転送のみをビットコインネットワーク上で行う必要があり、大部分の転送はIC上で直接高速かつ低コストで行うことができます。
+
+## リソース
+
+- ビットコイン統合の仕組みについてさらに深く知りたい方は、[仕組みの](bitcoin-how-it-works.md)ページをご覧ください。プロトコルレベルのビットコイン統合の概要、閾値ECDSAプロトコルに基づく新しいチェーンキーECDSAの実装、APIなどをご覧いただけます。
+- さらに深く知りたい場合は、チェーンキー[ECDSA のドキュメントを](https://internetcomputer.org/docs/current/developer-docs/integrations/t-ecdsa)ご覧ください。
+- [Bitcoin integration Wiki](https://wiki.internetcomputer.org/wiki/Bitcoin_integration).
+- ローカルで Bitcoin 統合の実験に興味がある場合は、[ローカル開発ガイドを](local-development.md)参照してください。
+- [サンプルレポには](https://github.com/dfinity/examples) [Rust](https://github.com/dfinity/examples/tree/master/rust/basic_bitcoin)と [Motoko](https://github.com/dfinity/examples/tree/master/motoko/basic_bitcoin)サンプル[コードのウォークスルーに従って](../../../samples/deploying-your-first-bitcoin-dapp.md)ビルドを開始できます。
+
+<!---
 # Bitcoin integration
 
 ## Overview
@@ -32,3 +72,5 @@ We envision that many people will prefer to use ckBTC instead of our native inte
 - [Bitcoin integration Wiki](https://wiki.internetcomputer.org/wiki/Bitcoin_integration).
 - If you are interested in experimenting with Bitcoin integration locally, see the [local development guide](local-development.md).
 - In the [examples repo](https://github.com/dfinity/examples) you can find sample code in [Rust](https://github.com/dfinity/examples/tree/master/rust/basic_bitcoin) and [Motoko](https://github.com/dfinity/examples/tree/master/motoko/basic_bitcoin) from which you can start to build following the [sample code walk-through](../../../samples/deploying-your-first-bitcoin-dapp.md).
+
+-->

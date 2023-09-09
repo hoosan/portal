@@ -1,9 +1,52 @@
 ---
+
 title: Developer weekly update August 9, 2023
 description: This week, we have a wide variety of updates, including details on a new NNS proposal, updates regarding v2 response verification for asset canisters, and dive a bit into a newly publish paper on threshold Schnorr signature protocol.
 tags: [Devs]
 image: /img/blog/dev-update-blog-aug-9.jpg
 ---
+# 開発者ウィークリー・アップデート 2023年8月9日
+
+![August 9 2023](../../static/img/blog/dev-update-blog-aug-9.jpg)
+
+開発者の皆さん、こんにちは！今週の開発者ウィークリー・アップデートへようこそ。今週は、新しい NNS 提案の詳細、アセットcanisters の v2 レスポンス検証に関する更新、閾値 Schnorr 署名プロトコルに関する新しく発表された論文の紹介など、さまざまな更新があります。
+
+それでは始めましょう！
+
+## 新しいNNS提案 - 2023年8月10日投票開始
+
+新しいNNS提案が提出され、2023年8月10日に投票が開始されます。この提案は、SNSでこの種の提案が同時に複数開かれることを防ぐ一時的な措置として、NNSガバナンス内でOpenSnsTokenSwap提案を無効にするものです。OpenSnsTokenSwapプロポーザル機能は、修正が導入された後、別のプロポーザルによって将来的に再び有効になります。
+
+この提案が承認されると、SNSのロードマップや開発計画に支障をきたす可能性があります。
+
+この提案のリリースノート全文は[DFINITY のフォーラムで](https://forum.dfinity.org/t/nns-update-august-7-2023/21992)読むことができます。また、この提案は NNSdapp の[こちらで](https://dashboard.internetcomputer.org/proposal/123943)見ることができます。
+
+## `dfx` v2レスポンス検証の更新
+
+dfx`0.15.0-beta.1` のリリースにより、アセットcanisters のレスポンス検証 v2 が再度有効になりました。レスポンス検証 v2 はもともと dfx`0.14.0` および`0.14.1` で導入されたものですが、いくつかの実装エラーがあるため、この実装は実運用では使用しないでください。
+
+これを一時的に解決するため、dfx のバージョン`0.14.2` と`0.14.3` ではレスポンス検証 v1 を使用しています。
+
+しかし、dfx の最新ベータ版`0.15.0-beta.1` には、アセットcanisters に対してレスポンス検証 v2 を再導入するサービスワーキングが含まれており、バージョン`0.14.2` と`0.14.3` に含まれているレスポンス検証 v1 のサービスワーカーと互換性があります。
+
+現在動作しているレスポンス検証の実装を利用するために、`0.14.0` または`0.14.1` を実行しているcanisters を`0.14.3` にアップグレードすることをお勧めします。また、canisters を`0.15.0-beta.1` でテストし、正しく動作することを確認することをお勧めします。
+
+この更新に関するフォーラムの投稿の全文は、[こちらを](https://forum.dfinity.org/t/upcoming-service-worker-rollout-with-v2-response-verification-upgrade-asset-canisters-with-dfx-0-14-3/21738)ご覧ください。
+
+## 新しいCrypto ePrint論文の発表
+
+DFINITY チームメンバーのJens GrothとVictor Shoupは最近、閾値Schnorr署名の新しいプロトコルを紹介する論文を発表しました。この論文で著者らは、これらの新しいプロトコルがどのように非同期方式で通信し、最適な耐障害性と堅牢な性能を提供するかを説明しています。この論文では、大規模な秘密鍵の共有を安全に配布するための秘密鍵共有プロトコルと、異なるパーティから提供されたエフェメラルな公開鍵を効率的に結合し、より少ない数の安全な公開鍵にするための新しいアルゴリズムの2つについて説明します。
+
+これらの新しいプロトコルは、閾値暗号とマルチパーティ計算において主要な役割を果たし、開発者の新しい革新的なアプリケーションを可能にします。
+
+論文の全文は[こちらから](https://eprint.iacr.org/2023/1175?mc_cid=1462bb863c&mc_eid=a324a031ab)ご覧いただけます。
+
+それでは、次週の開発者向けアップデートをお楽しみに！
+
+\-DFINITY
+
+<!---
+
 
 # Developer weekly update August 9, 2023
 
@@ -46,3 +89,5 @@ That'll wrap this up for this week, be sure to check in next week for the next r
 -DFINITY
 
 
+
+-->

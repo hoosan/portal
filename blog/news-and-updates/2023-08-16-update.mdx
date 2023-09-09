@@ -1,9 +1,148 @@
 ---
+
 title: Developer weekly update August 16, 2023
 description: In this issue, we're excited to introduce the first portion of a new documentation series, Developer Journey, plus talk about the upcoming `dfx` release and new documentation on the Motoko feature `mo-doc`.
 tags: [Devs]
 image: /img/blog/dev-update-blog-aug-16.jpg
 ---
+# 開発者ウィークリー・アップデート 2023年8月16日
+
+![August 16 2023](../../static/img/blog/dev-update-blog-aug-16.jpg)
+
+開発者の皆さん、こんにちは！今週の開発者ウィークリー・アップデートへようこそ。今回は、新しいドキュメントシリーズの最初の部分をご紹介します：今回は、新しいドキュメントシリーズ「Developer Journey」の第一弾をご紹介するほか、近日リリース予定の`dfx` やMotoko の新機能`mo-doc` に関するドキュメントをご紹介します。
+
+## デベロッパー・ジャーニーの紹介
+
+本日は、新しいチュートリアルシリーズ「Developer Journey」をご紹介します！このシリーズは、新しい開発者をInternet Computer での開発を通して、詳細で多様な旅にお連れするように設計されています。旅は、IC とは何か、IC がどのように機能するか、開発者環境をどのようにセットアップするかなどの概要など、旅の残りの部分のコンテキストを提供する入門レベルである「プレフライトオペレーション」から始まります。その後、ICの宇宙飛行士になるためのスキルを身につけ、ICの追加コンポーネントについて学ぶための一連のモジュールを学びます！
+
+全体として、この旅には以下のモジュールとコンポーネントが含まれます：
+
+### レベル0：飛行前の操作
+
+- 0.1:Internet Computer の概要
+
+- 0.2:Internet Computer の用語
+
+- 0.3: 開発者環境のセットアップ
+
+- 0.4:canisters の紹介。
+
+- 0.5: 言語紹介.
+
+- 0.6: dfx入門。
+
+### レベル1: スペースカデット
+
+- 1.1:ライブデモ
+
+- 1.2:最初のdapp 。
+
+- 1.3:cycles の取得と使用。
+
+- 1.4:canisters のデプロイ。
+
+- 1.5:canisters の管理 .
+
+- 1.6:Motoko: レベル1.
+
+### レベル2：スペース・エクスプローラ
+
+- 2.1:canisters のアップグレード .
+
+- 2.2:サードパーティの使用canisters.
+
+- 2.3:Canister のクエリーおよび更新メソッド。
+
+- 2.4:canister 間通話
+
+- 2.5: エージェント紹介。
+
+- 2.6:Motoko: レベル 2。
+
+### レベル3：スペースエンジニア
+
+- 3.1:アイデンティティと認証。
+
+- 3.2:ICP台帳の使用
+
+- 3.3:ICRC-1トークン
+
+- 3.4:XRCcanister の使用。
+
+- 3.5: Quillの使用。
+
+- 3.6:Motoko: レベル3。
+
+### レベル4：宇宙パイロット
+
+- 4.1:HTTPSアウトコールの使用。
+
+- 4.2:Internet Computer でのNFT。
+
+- 4.3:決定論的タイムスライス。
+
+- 4.4:ビットコインの作成dapp.
+
+- 4.5: MOPSでのライブラリの使用。
+
+- 4.6:Motoko: レベル4。
+
+### レベル5：Internet Computer 宇宙飛行士
+
+- 5.1:暗号化ノートdapp vetKDを使用。
+
+- 5.2:RosettaによるICRC-1トークンの作成。
+
+- 5.3:SNSの作成
+
+- 5.4:アップグレード可能なNFTアセットを使用したウェブゲームの作成
+
+- 5.5: ユーザーアカウントのII認証によるメディアストリーミングプラットフォームの作成。
+
+- 5.6: 次のステップ
+
+本シリーズの最初の部分である「レベル0：プリフライト・オペレーション」は現在公開中です！開発者の旅は[ここから](https://internetcomputer.org/docs/current/tutorials/developer-journey//level-0/)始められます。
+
+## `dfx 0.15` リリース予定
+
+`dfx` バージョン は今後数週間のうちにリリースされる予定です。この新バージョンの には、開発者が期待する重要な新機能と修正がいくつか含まれています！これらの機能には次のようなものがあります：`0.15.0` `dfx` 
+
+- 新しい`dfx deploy --playground` 機能は、canisters をMotoko のプレイグラウンドに直接デプロイするために使用できます。この機能に特化したブログ記事は近日中に公開される予定です。
+
+- アセットcanister のレスポンス検証 v2 の修正。この修正については、先週の開発者向けウィークリーアップデートでもう少し詳しく説明[しました](2023-08-09-update.mdx)。
+
+- `dfx nns` と`dfx sns` コマンドの削除。これらは新しいサブコマンド`dfx extensions` の一部となります。
+
+リリースノートの詳細については、次回のブログ記事でお知らせします。ご期待ください！
+
+## `mo-doc`
+
+`mo-doc` は、 コードのドキュメントを生成するために使用できるコマンドラインツールです。 のソースコードに基づき、様々な形式のドキュメントを生成することができます。Motoko Motoko 
+
+`mo-doc` を使うには、Motoko Github リリースページから直接ダウンロードするか、`dfx` に含まれているバイナリを使います。
+
+そして、以下のコマンドを使ってドキュメントを生成します：
+
+    (dfx cache show)/mo-doc [options]
+
+ツールのオプションは以下の通りです：
+
+- `--source <path>`:このオプションは、Motoko ソースファイルを検索するディレクトリを指定します。デフォルトは`src` です。
+
+- `--output <path>`:`docs`このオプションは、ドキュメントが生成されるディレクトリを指定します。
+
+- `--format <format>`:デフォルトはHTMLです。
+
+- `--help`:このオプションは使用情報を表示します。
+
+例を含む完全なドキュメントは[ここに](https://internetcomputer.org/docs/current/developer-docs/backend/motoko/mo-doc)あります。
+
+これで今週の更新は終わりです。今週号のチーム・スポットライトもぜひご覧ください！
+
+\-DFINITY
+
+<!---
+
 
 # Developer weekly update August 16, 2023
 
@@ -142,3 +281,5 @@ You can find the full documentation with examples [here](https://internetcompute
 That'll wrap things up for this week's update. Be sure to also check out this week's issue of team spotlight, where we interview the node team!
 
 -DFINITY
+
+-->

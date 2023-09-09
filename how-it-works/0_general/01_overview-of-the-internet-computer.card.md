@@ -1,6 +1,43 @@
 ---
+
 title: Architecture of the Internet Computer
 ---
+![](/img/how-it-works/ic-architecture.jpg)
+
+# のアーキテクチャInternet Computer
+
+Internet Computer (IC)は、スマートコントラクトの形式でプログラムとデータをホストし、スマートコントラクト上で安全かつ信頼できる方法で計算を実行し、無限に拡張できるオープンで安全な*ブロックチェーンベースのネットワーク*である*ワールドコンピュータの*ビジョンを実現します。
+
+Internet Computer 上のスマートコントラクトは、*canister スマートコントラクトと*呼ばれます。 *canisters*[*WebAssembly *](https://en.wikipedia.org/wiki/WebAssembly)
+それぞれの は、 がコードを実行するときにのみ変更される、独自の分離されたデータストレージを持っています。canister canister 
+
+Canisters
+サブネットは独立したブロックチェーンであり、グローバルに分散されたデータセンターに配置された*ノードマシン*（*ノード*）上で稼働します。1つのサブネットは何万もの スマートコントラクトを安全にホストすることができ、合計で数百ギガバイトのメモリになります。現在、数十のサブネットがあり、将来的には数千に増加します。 サブネット上でホストされる各 について、そのコードとデータはサブネット内のすべてのノードに保存され、そのコードはサブネット内のすべてのノードによって実行されます。ストレージと計算のこのレプリケーションは、 スマートコントラクトがサブネット内の一部のノードに不具合があっても（クラッシュしたり、悪意のあるパーティにハッキングされたりして）実行し続けられるよう、
+ canister
+ canister
+ canister *フォールトトレランスを*実現するために不可欠です。 このレプリケーションは、ブロックチェーンに支えられた、高スループット、低レイテンシーのコンセンサスメカニズムと 実行用の効率的な仮想マシンを実装したコア
+ WebAssembly *Internet Computer Protocol （ICP*）によって実現されます。
+
+ICのマルチサブネットアーキテクチャは、よく知られたシャーディングアプローチよりもはるかに強力です。それは、異なるサブネット上のスマートコントラクトが互いにシームレスに通信することを可能にするからです。
+Canisters *非同期メッセージを*介して通信します。つまり、メッセージを送信するときにブロックするのではなく、最終的に応答が到着したときにその応答を処理します。
+この新しいアプローチによるインターcanister コールは、単にサブネットを追加することによってICをスケールアウトすることができます。
+
+コアとなるICPは、（[閾値暗号に](https://en.wikipedia.org/wiki/Threshold_cryptosystem)基づく）高度な暗号プロトコルのツールボックスである[*連鎖鍵暗号を*](https://internetcomputer.org/how-it-works/#Chain-key-cryptography)多用しており、前例のないスケーラビリティを備えたICの分散運用を可能にしています。
+連鎖鍵暗号には、障害のあるノードやプロトコルのアップグレードに対処する方法など、運用上の懸念に堅牢かつ安全に対処するための洗練された技術のコレクションも含まれており、私たちはこれを[*連鎖進化技術（chain-evolution technology*](https://internetcomputer.org/how-it-works/#Chain-evolution-technology)
+ ）と呼んでいます（例えば、他のブロックチェーンのように、創始ブロックから始まるすべてのブロックを検証することなく、ノードが簡単にサブネットに参加できるようにするなど）。
+連鎖鍵暗号ツールボックスのもう一つの構成要素は[*連鎖鍵署名*](https://internetcomputer.org/how-it-works/#Chain-key-transactions)です。
+、閾値暗号を使用して、canister 、他のブロックチェーンと相互作用（書き込み）することができます。
+
+完全な分散化の要件を満たすために、ICにはガバナンスに対する完全な分散化アプローチが必要です。
+ICプラットフォームのガバナンスは、[*Network Nervous System （NNS*](https://internetcomputer.org/how-it-works/#Network-nervous-system)）と呼ばれる*トークン化された分散型自律組織（DAO*）を通じて実現されます。
+IC上の各個人dapp は、dapp の*サービス神経システム（SNS*）に基づく、すぐに使えるトークン化されたDAOをカスタマイズしてデプロイすることで、NNSと同様の独自のガバナンスシステムを持つことができます。
+
+このシステムは [Internet Computer](https://dashboard.internetcomputer.org/)は、DFINITY Foundationによって2021年5月10日にローンチされ、オープンソース化されました。Internet Computer は現在、ICPトークン保有者によって管理される独立したネットワークですが、DFINITY はその進化をサポートし続けています。
+
+[より深く](/how-it-works/architecture-of-the-internet-computer/)
+
+<!---
+
 
 ![](/img/how-it-works/ic-architecture.jpg)
 
@@ -36,3 +73,5 @@ Each individual dapp on the IC can have its own governance system similar to the
 The [Internet Computer](https://dashboard.internetcomputer.org/) was launched and open-sourced on May 10th 2021 by the DFINITY Foundation. The Internet Computer is now an independent network controlled by ICP token holders but DFINITY continues supporting its evolution.
 
 [Go deeper](/how-it-works/architecture-of-the-internet-computer/)
+
+-->

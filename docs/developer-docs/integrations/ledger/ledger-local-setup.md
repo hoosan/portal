@@ -1,3 +1,187 @@
+# 元帳のローカル設定
+
+## 概要
+
+ローカル開発環境、つまり公開Internet Computer ではなくローカル レプリカで作業している場合は、ICP 台帳にアクセスできません。ICP 台帳と統合するアプリケーションをローカルでテストするには、ローカル台帳canister をデプロイする必要があります。ただし、このローカル元帳canister には、ライブ ICP 元帳の履歴と残高はありません。
+
+以下の手順に従って、元帳のコピーcanister をローカル レプリカにデプロイします。
+
+### ステップ 1：[IC SDK](/developer-docs/setup/install/index.mdx) の最新バージョンを使用していることを確認してください。
+
+IC SDKがインストールされていない場合は、[IC SDKのインストール](/developer-docs/setup/install/index.mdx)セクションの指示に従ってインストールしてください。
+
+### ステップ2：コマンドで新しいdfxプロジェクトを作成します：
+
+    dfx new ledger-canister
+    cd ledger-canister
+
+### ステップ3：台帳ファイルの場所の決定
+
+[リリース概要に](https://dashboard.internetcomputer.org/releases)アクセスし、最新のレプリカ・バイナリー・リビジョンをコピーします。この記事の執筆時点では、`a17247bd86c7aa4e87742bf74d108614580f216d` です。
+
+元帳WasmモジュールのURLは`https://download.dfinity.systems/ic/<REVISION>/canisters/ledger-canister.wasm.gz` ですので、上記のリビジョンでは`https://download.dfinity.systems/ic/a17247bd86c7aa4e87742bf74d108614580f216d/canisters/ledger-canister.wasm.gz` となります。
+
+ledger .didファイルのURLは`https://raw.githubusercontent.com/dfinity/ic/<REVISION>/rs/rosetta-api/icp_ledger/ledger.did` ですので、上記のリビジョンでは`https://raw.githubusercontent.com/dfinity/ic/a17247bd86c7aa4e87742bf74d108614580f216d/rs/rosetta-api/icp_ledger/ledger.did` となります。
+
+### ステップ 4: プロジェクトのディレクトリで`dfx.json` ファイルを開きます。既存のコンテンツを次のように置き換えます：
+
+``` json
+{
+  "canisters": {
+  "ledger-canister": {
+    "type": "custom",
+    "candid": "https://raw.githubusercontent.com/dfinity/ic/a17247bd86c7aa4e87742bf74d108614580f216d/rs/rosetta-api/icp_ledger/ledger.did",
+    "wasm": "https://download.dfinity.systems/ic/a17247bd86c7aa4e87742bf74d108614580f216d/canisters/ledger-canister.wasm.gz",
+    "remote": {
+      "id": {
+        "ic": "ryjl3-tyaaa-aaaaa-aaaba-cai"
+      }
+    }
+  }
+  },
+  "defaults":{
+    "replica": {
+      "subnet_type":"system"
+    }
+  }
+}
+```
+
+### ステップ5： ローカルレプリカを開始します。
+
+``` sh
+dfx start --background --clean
+```
+
+### ステップ6：発行アカウントとして機能する新しいIDを作成します：
+
+``` sh
+dfx identity new minter
+dfx identity use minter
+export MINT_ACC=$(dfx identity get-principal)
+dfx identity get-principal
+```
+
+このプリンシパルのアカウントIDも必要です。この値を取得するには、URL`https://icscan.io/principal/PRINCIPAL` に移動します。ここで、プリンシパルは前のコマンド`dfx identity get-principal` から返された値です。次に、「Accounts」の値をコピーし、コマンドを実行します：
+
+    export ACCOUNT_ID=ACCOUNTS_VALUE
+
+`ACCOUNTS_VALUE` をicscan.ioからコピーした値に置き換えてください。
+
+発行口座からの送金は`Mint` トランザクションを作成します。発行アカウントへの送金は、`Burn` トランザクションを作成します。
+
+### ステップ 7: デフォルトの ID に切り替え、その元帳アカウント識別子を記録します。
+
+``` sh
+dfx identity use default
+export LEDGER_ACC=$(dfx identity get-principal)
+```
+
+### ステップ 8：開発に使用する ID のプリンシパルを取得します。このプリンシパルがアーカイブcanisters のコントローラになります。
+
+``` sh
+dfx identity use default
+export ARCHIVE_CONTROLLER=$(dfx identity get-principal)
+```
+
+### ステップ9: アーカイブオプション付きの元帳canister をデプロイします：
+
+    dfx canister create ledger-canister
+    dfx canister install ledger-canister --argument "(variant {
+      Init = record {
+        minting_account = $ACCOUNT_ID;
+        icrc1_minting_account = opt record {
+          owner = principal $MINT_ACC;
+          subaccount = null;
+        };
+        initial_values = vec {
+          record {
+            $ACCOUNT_ID;
+            record {
+              e8s = 100000000 : nat64;
+            };
+          };
+        };
+        max_message_size_bytes = opt(2560000 : nat64);
+        transaction_window = opt record {
+          secs = 10 : nat64;
+          nanos = 0 : nat32;
+        };
+        archive_options = opt record {
+          trigger_threshold = 1000000 : nat64;
+          num_blocks_to_archive = 1000000 : nat64;
+          node_max_memory_size_bytes = null;
+          max_message_size_bytes = null;
+          controller_id = principal $ARCHIVE_CONTROLLER;
+          cycles_for_archive_creation = null;
+        };
+        send_whitelist = vec {
+          principal $LEDGER_ACC;
+        };
+        transfer_fee = opt record {
+          e8s = 1000000 : nat64;
+        };
+        token_symbol = opt \"SYB\";
+        token_name = opt \"NAME\";
+      }})";
+
+:::info
+以下のエラーが発生した場合は、手動で ファイルをダウンロードしてください：
+
+    Error: Failed to install wasm module to canister 'ledger-canister'.
+    Caused by: Failed to install wasm module to canister 'ledger-canister'.
+      Failed to read /Users/username/ledger/.dfx/local/canisters/ledger-canister/ledger-canister.wasm.gz.
+        No such file or directory (os error 2)
+
+上記の URL から`ledger-canister.wasm.gz` ファイルを手動でダウンロードし、ファイルパス`/Users/username/ledger/.dfx/local/canisters/ledger-canister/` に移動します。
+::：
+
+このコマンドの出力は以下のようになります：
+
+    Installing code for canister ledger-canister, with canister ID bkyz2-fmaaa-aaaaa-qaaaq-cai
+    2023-08-24 14:56:33.610532 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ledger] init(): minting account is c8a8d79abce38016657a51824ca978dc34f3366db4c46abec0589ee3cc40c65d
+    2023-08-24 14:56:33.610532 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ledger] init(): using maximum message size: 2560000
+
+canister IDに注意してください。
+
+`trigger_threshold` と`num_blocks_to_archive` のオプションを低い値（例えば10と5）に設定し、数ブロック後にアーカイブ化をトリガーするとよいでしょう。
+
+### ステップ10：canister を配置します。
+
+canister をデプロイするには、コマンドを実行してください：
+
+    dfx deploy
+
+このコマンドの出力は以下のようになります：
+
+    Deployed canisters.
+    URLs:
+      Backend canister via Candid interface:
+        ledger-canister: http://127.0.0.1:8080/?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&id=bkyz2-fmaaa-aaaaa-qaaaq-cai
+
+### ステップ11:canister と対話する .
+
+次のようなCLIコマンドを実行して、canister と対話できます：
+
+```
+dfx canister call ledger-canister icrc1_name 
+```
+
+このコマンドはトークンの名前を返します：
+
+    ("NAME")
+
+または、canister がデプロイされたときに提供された URL に移動して、Candid UI を使用して対話することもできます：
+
+    http://127.0.0.1:8080/?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&id=bkyz2-fmaaa-aaaaa-qaaaq-cai
+
+ウェブブラウザでこのURLに移動すると、Candid UIは以下のようになります：
+
+![Candid UI](../_attachments/CandidUI.png)
+
+ローカルのICP台帳canister 。これで、元帳と通信する必要がある他のcanisters をデプロイできます。canister 。
+
+<!---
 # Ledger local setup
 
 ## Overview
@@ -196,3 +380,5 @@ After navigating to this URL in a web browser, the Candid UI will resemble the f
 ![Candid UI](../_attachments/CandidUI.png)
 
 Your local ICP ledger canister is up and running. You can now deploy other canisters that need to communicate with the ledger canister.
+
+-->

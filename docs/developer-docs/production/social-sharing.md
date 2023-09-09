@@ -1,3 +1,89 @@
+# リンクの共有dapps
+
+## 概要
+
+サービスワーカーはすべての設定（特にモバイル）でサポートされているわけではないので、
+異なるプラットフォーム（LinkedIn や Twitter/Xなど）でリンクを共有する場合は、`raw` リンク（例：[oa7fk-maaaa-aaaam-abgka-cai.raw.icp0.io](https://oa7fk-maaaa-aaaam-abgka-cai.raw.icp0.io)）
+を使用することが重要です。このガイド
+では、必要な背景を説明し、アセット
+canister を正しく設定する方法を説明します。これにより、支障なくdapp へのリンクを共有することができます。
+
+## コンテキスト
+
+ブラウザでInternet Computer にホストされているdapps に直接アクセスするには、
+HTTP ゲートウェイが必要です。このゲートウェイはブラウザの HTTP リクエストを
+APIcanister 呼び出しに変換します。現在、このHTTPゲートウェイには2つのインスタンスがあり、
+、ブラウザからIC上のdapps にアクセスする2つの方法をユーザーに提供しています：
+
+1.  `non-raw`最初のdapp アクセス時に、サービスワーカーが
+    ユーザーのブラウザにロードされ、ローカルで翻訳を実行します。`non-raw` は、`<canister_id>.icp0.io` ドメイン（例：[oa7fk-maaaa-aaaam-abgka-cai.icp0.io](https://oa7fk-maaaa-aaaam-abgka-cai.raw.icp0.io)）
+    またはカスタムドメイン（例：[internetcomputer.org](https://internetcomputer.org)）を通して
+    利用できます。
+
+2.  `raw`
+     `raw` アクセスは ドメイン (例:`<canister_id>.raw.icp0.io`
+    [oa7fk-maaaa-aaaam-abgka-cai.raw.icp0.io](https://oa7fk-maaaa-aaaam-abgka-cai.raw.icp0.io))から可能です。
+
+サービスワーカーは、特にモバイルデバイスにおいて、普遍的にサポートされているわけではありません。
+In-App Web-Views、Firefox プライバシーモード、Google 翻訳などは、サービスワーカーでは機能しないため、`non-raw` dapp アクセスをサポートしません。
+
+これは、dapp リンクを
+LinkedIn や Twitter などの他のプラットフォームで共有する場合に関連します。例えば、LinkedIndapp 内の
+から`non-raw` リンクを開こうとすると、アプリ内ウェブビューで開かれ、
+サービスワーカーをサポートしていないため、単にエラーメッセージが表示されます。
+
+:::caution
+カスタムドメインの場合、`raw` に相当するものはありません。リンクを共有したい場合は、
+対応する`<canister_id>.raw.icp0.io` ドメインを使用する必要があります。
+::：
+
+## 解決方法
+
+共有リンクを通じてユニバーサルなdapp アクセスを可能にするには、`raw` バージョン（すなわち、`<canister_id>.raw.icp0.io` ）を共有し、
+サービスワーカーをバイパスすることが不可欠です。
+
+ただし、2つの重要な点に注意が必要です：
+
+1.  dfx バージョン`0.13.1` から`0.14.3` までの間、アセットcanisters はデフォルトで`raw` のリクエストを
+    `non-raw` にリダイレクトします。このリダイレクトを無効にしないと、`raw` のリンクはどこにも使えません。
+2.  ユーザーが同じプリンシパルで`non-raw` と`raw` バージョンの両方にシームレスにログインできるように、
+    Internet Identity の代替フロントエンドオリジンとして`raw` ドメインを登録する必要があります。
+
+### `raw` 自動リダイレクトの無効化
+
+dfx バージョン`0.13.1` から`0.14.3` を使用している場合、アセットcanister は自動的に
+すべての`raw` リクエストを`non-raw` にリダイレクトし、サービスワーカーのバイパスを防止します。
+
+dfx のバージョンをアップグレードするか、raw アクセスを明示的に有効にすることができます：
+
+#### dfx のアップグレード (推奨)
+
+次のコマンドを実行するだけです：
+
+    dfx upgrade
+
+#### `raw` アクセスの有効化
+
+raw アクセスを有効にするには、`.ic-assets.json` ファイルに以下のスニペットを追加します：
+
+    [
+        {
+            "match": "**/*",
+            "allow_raw_access": true
+        }
+    ]
+
+このファイルは、
+アセットcanister のソースディレクトリに存在する必要があります。`dfx.json`
+
+### Internet Identity 代替フロントエンドの起源
+
+`non-raw` と`raw` の両方でシームレスなユーザーアカウントアクセスを実現するために、
+ドメインをインターネット
+Identity の代替フロントエンドオリジンとして登録します。代替オリジンを設定するには、以下の手順に従ってください。
+[代替オリジンの設定](../integrations/internet-identity/alternative-origins.md)
+
+<!---
 # Sharing links to dapps
 
 ## Overview
@@ -90,3 +176,5 @@ To facilitate seamless user account access across both `non-raw` and `raw`,
 register the domains as alternative frontend origins for Internet
 Identity. Follow these instructions to configure alternative origins:
 [Configuring alternative origins](../integrations/internet-identity/alternative-origins.md)
+
+-->

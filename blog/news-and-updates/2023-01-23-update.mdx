@@ -1,4 +1,5 @@
 ---
+
 title: Motoko update January 23, 2023
 description: Today we'll be talking about package management and code blocks in Motoko.
 tags: [Devs]
@@ -6,6 +7,124 @@ image: /img/blog/moonshot.png
 authors:
   - name: Kento Sugama
 ---
+# Motoko 更新日：2023年1月23日
+
+![Header image](../_assets/moonshot.png)
+
+Motoko 開発者の皆さん、こんにちは、
+
+Motoko チームからの最後の更新投稿を見逃した方は、[こちら](https://forum.dfinity.org/t/timers-and-base-library-weekly-motoko-updates/18063)
+をご覧ください。この投稿には、Motoko タイマー言語の新機能に関する更新
+と、基本ライブラリのドキュメント化とテスト作業の継続が含まれています。
+
+今週は言語チームからの更新は少なめです！
+
+## Motoko パッケージ管理計画
+
+![Header image](../_assets/motoko-cubed.png)
+
+現在、Vessel や
+[MOPS](https://mops.one/) のようなコミュニティが使用している他のパッケージ管理ツールに関して、Motoko パッケージ管理の将来がどのようになるかについて議論されています。
+@icme が最近この問題について語った素敵な投稿があり、
+こちらで見ることができます: https://forum.dfinity.org/t/developer-feedback-opportunity-motoko-package-manager-improvements-redesign/18137
+
+Motoko 開発者エクスペリエンスのこの側面に今後変更が加えられることが予想されますので、
+ Motoko のパッケージ管理に関するあなたの考えをスレッドにコメントしてください！
+
+## でのブロックの使用Motoko
+
+![Header image](../_assets/code-blocks.png)
+
+これは新機能の更新ではありませんが、今日は軽い週なので、新しい開発者にはあまり知られていないかもしれない既存の
+言語機能をいくつか取り上げるのが役に立つかもしれないと思いました。経験豊富なMotoko ユーザーで、これが
+の古いニュースである場合は申し訳ありません :)
+
+Motoko には「ブロック」という概念があります（多くの言語にあります）。これは一連の文（代入、宣言、関数呼び出しなど
+）と考えることができます。ブロックを見つける最も一般的な場所は、`if` 式の2つの
+本体、`while` ループの本体、または関数の本体です。
+
+    while (x < 3) {
+      // this is a block
+    }
+
+このことは多くの人にとってニュースではないと思います。
+
+この構成について注意すべき興味深い点は、Motoko のブロックは（
+ステートメントのシーケンスであることに加えて）式として考えることもできるということです。ステートメントとは、（
+関数の呼び出しや変数の宣言のように）何らかの効果をもたらす言語構成要素ですが、式とは、（"2"
+や "2 + 3"、"foo()" のように）何らかの値に評価できる構成要素です。`do` ブロックの場合、ブロック式はブロック内の最後の式に評価されます。
+つまり、`do` ブロックを変数にバインドすることができます！
+
+    let x = do {
+      foo();
+      bar();
+      3
+    };
+    // the value of x here is 3
+
+また、`if` 式にバインドすることもできます。
+
+    let x = 
+      if (y < 0) {
+        foo();
+        2
+      } else {
+        bar();
+        3
+      };
+    // the value of x here is either 2 or 3, and either foo() or bar() was called depending on y
+
+変数を`while` ループにバインドすることもできますが、whileループのボディは型シス テムによって
+、常にunitで評価されるように強制され るため、あまり役に立ちません。
+
+    let x = 
+      while (y < 0) {
+        foo();
+      };
+    // x always evaluates to ()
+
+関数本体もブロックであることは前述しました。つまり、関数を早期に終了させたい場合を除き、`return`
+キーワードを使用して関数を終了させる必要はありません。
+
+    func foo() : Nat {
+      bar1();
+      bar2();
+      3 // the function returns 3 because the value of the block gets evaluated to the value 3
+    }
+
+また、`do` ブロックに`?` を追加して、オプション型を扱うこともできます。
+
+    let x : ?Nat = foo(); // x is an option type who may or may not be null
+    let y = 
+      do ? {
+        x! + 3
+      };
+
+`x` が NULL だった場合、`x` が`!` 演算子によって調べられると、`do ? {}` ブロック全体が NULL と評価されます。したがって、`y`
+もnullになります。し か し 、`x` に Nat 値があ っ た と き は、 その値は 3 に加算 さ れてオプシ ョ ン型に ラ ッ プ さ れ、
+から`y` へ代入 さ れます！
+
+こ れは、
+オプシ ョ ン型の中間値を含む可能性のある副次的効果を実行するために、`ignore` キーワー ド と 組み合わせて も 有用です。
+
+    ignore do ? {
+      let x = foo()!;
+      let y = bar(x)!;
+      Debug.print(baz(z)!);
+    };
+
+`foo()` 、`bar()` 、`baz()` はすべて、成功または失敗を知らせるオプション型を返すと仮定すると、これらの
+関数を連鎖させ、個々の関数のどれかがアボートするとすぐにブロック全体をアボートさせることができます。
+ `do ? {}` ブロックで何が起こっても、ブロックが評価した値は無視され、プログラ ムは続行されます。
+
+## それではまた次回！
+
+それではまた来週！
+
+\-DFINITY 言語チーム
+
+<!---
+
 
 # Motoko update: January 23, 2023
 ![Header image](../_assets/moonshot.png)
@@ -135,3 +254,5 @@ the `do ? {}` block, the value that the block evaluates to is ignored, and the p
 See you guys next week!
 
 – DFINITY Languages team
+
+-->

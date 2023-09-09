@@ -1,9 +1,63 @@
 ---
+
 title: Blockchain Protocol Upgrade
 abstract:
 # shareImage: /img/how-it-works/protocol-updates.webp
 slug: upgrades
 ---
+# ブロックチェーンプロトコルのアップグレード
+
+どんなソフトウェアでも、市場での競争力を維持するために定期的なアップデートが必要です。バグの修正、新機能の追加、アルゴリズムの変更、基盤技術の変更などです。ブロックチェーンプロトコルも同じです。コミュニティとして、私たちは問題を解決するためのより良い方法を学び続け、それに応じてブロックチェーンプロトコルをアップグレードしたいと考えています。例えば、イーサリアムは最近「マージ」というアップグレードを行い、プロトコルをプルーフ・オブ・ワークからプルーフ・オブ・ステークにアップグレードしました。ビットコインは「Taproot」アップグレードを行い、署名検証を改善しました。
+
+ブロックチェーンのプロトコルをアップグレードすることは、その成功のために非常に重要ですが、ビットコインやイーサリアムを含むほとんどのブロックチェーンは、そのように設計されていません。これは主に、ブロックチェーンが単一の権威によって管理されていないためです。すべてのアップグレード提案はコミュニティによって評価されなければなりません。しかし、コミュニティは通常、提案について意見が分かれています。決定を確定し、新機能を構築するための迅速かつ正式な枠組みがないのです。プロトコルのアップグレードはネットワークのフォークを引き起こす可能性があります。その結果、ブロックチェーンのプロトコルをアップグレードするには、コミュニティによる何年もの共同作業が必要になります。イーサリアムは[7年半の間に18回しかプロトコルをアップグレードして](https://ethereum.org/en/history/)いません。
+
+Internet Computer は、アップグレードのたびにコミュニティのコンセンサスを必要としながらも、ユーザーが感じるダウンタイムを最小限に抑え、フォークすることなく簡単にアップグレードできるように設計されたユニークなブロックチェーンです。創設から1年半の間に、Internet Computer は何度もアップグレードされ、決定論的タイムスライス、ビットコイン統合、サービス・ナーバス・システム（SNS）、HTTPSアウトコール、チェーンキーECDSA署名（閾値ECDSAに基づく）、増加した安定メモリなどの重要な機能が追加されました。
+
+プロトコルのアップグレード」機能は、以下の目標で設計されています：(1)Internet Computer Protocol への任意の変更を許可する、(2) アップグレード間のステート保持、(3) ダウンタイムの最小化、(4) アップグレードの自律的な展開。
+
+プロトコルのアップグレードは、Network Nervous System (NNS)と呼ばれるブロックチェーン・ガバナンス・システムにより実現可能です。NNSには「レジストリ」と呼ばれるコンポーネントがあり、Internet Computer のすべてのコンフィギュレーションを保存します。コンフィギュレーションにはバージョン管理システムが実装されています。コンフィギュレーションに変異が起こるたびに、レジストリの新しいバージョンとして表示されます。レジストリには各サブネットのレコードがあり、これにはプロトコルのバージョン、サブネット内のノードのリスト、サブネットで使用される暗号キーの素材などが含まれます。レジストリは希望するコンフィギュレーションを保存することに注意してください。サブネットは実際には古いコンフィギュレーションのいずれかを実行しているかもしれません。
+
+<figure>
+<img src="/img/how-it-works/registry-versions.png" alt="Registry implements versioning mechanism" title="Registry implements versioning mechanism" align="center" style="width:700px">
+</figure>
+
+プロトコルのアップグレードを開始するには、レジストリの設定を変更する*提案を*NNSに提出する必要があります。この提案は、ICPトークンをステークした人なら誰でも投票できます。投票者の過半数が提案を受け入れれば、レジストリはそれに応じて変更されます。
+
+<figure>
+<img src="/img/how-it-works/upgrade-proposal.png" alt="Proposal to upgrade a subnet to a new replica version" title="Proposal to upgrade a subnet to a new replica version" align="center" style="width:700px">
+<figcaption align="left">
+Proposal to upgrade a subnet to a new replica version. The status of all proposals can be viewed at https://dashboard.internetcomputer.org/governance.
+</figcaption>
+</figure>
+
+次に、レジストリのバージョンを変更すると、Internet Computer がどのようにアップグレードされるかを説明します。プロトコルのアップグレードはサブネット単位で行われます。各サブネットは多数のノードによって実行されます。各ノードは2つのプロセス、(1)レプリカと(2)オーケストレーターを実行します。レプリカはブロックチェーンを維持する4層のソフトウェアスタックで構成されています。オーケストレーターはレプリカのソフトウェアをダウンロードして管理します。オーケストレーターは定期的にNNSレジストリの更新を問い合わせます。新しいレジストリのバージョンがあれば、オーケストレーターは対応するレプリカソフトウェアをダウンロードし、レプリカに通知します。
+
+各コンセンサスラウンドでは、サブネット内のノードの1つ（*ブロックメーカーと*呼ばれる）がブロックを提案します。ブロックメーカーはすべてのブロックに、レジストリからダウンロードした最新のレジストリ・バージョンを含めます。他のノードは、参照されたレジストリが利用可能な場合にのみブロックを公証します。
+
+サブネット内のすべてのノードがレジストリの最新バージョンにコンセンサスで合意したら、次のステップは新しいバージョンに切り替えることです。フォークを避けるには、すべてのノードが同じブロックの高さでバージョンを調整し、切り替えることが重要です。これを実現するために、コンセンサスプロトコルはエポックに分割されます。各エポックは数百コンセンサスラウンドです（レジストリで設定できます）。エポック期間中、サブネット内のすべてのレプリカは、新しいレプリカのバージョンがレジストリで見つかりブロックに含まれていても、同じレプリカのバージョンを実行します。プロトコルのアップグレードはエポック境界でのみ行われます。
+
+<figure>
+<img src="/img/how-it-works/protocol-transition.png" alt="Protocol upgrads happens at epoch boundaries" title="Protocol upgrads happens at epoch boundaries" align="center" style="width:700px">
+</figure>
+
+各エポックの最初のブロックは*サマリ・ブロックで*、そのエポックで使用される設定情報（レジストリのバージョンと暗号鍵の材料を含む）で構成されます。エポック*xの*サマリーブロックは、エポック*x*全体で使用されるレジストリのバージョンと、エポック*x+1*全体で使用されるレジストリのバージョンの両方を指定します。したがって、すべてのノードは、エポックが始まるずっと前に、エポックに使用するレジストリのバージョンに合意します。
+
+サブネットのプロトコルのアップグレードがエポック*xの*最初に行われることになっているとします。その後、ノードは新しいメッセージの処理を停止しますが、サマリー・ブロックが確定して実行され、完全な複製ステートが認証されるまで、一連の空のブロックを生成します。その後、すべてのノードが*キャッチアップパッケージ（CUP*）を作成します。CUPには、古いレプリカソフトウェアから新しいレプリカソフトウェアに転送する必要がある関連情報が含まれています。CUPは、新しいレプリカソフトウェアがコンセンサスを再開するのに十分なコンテキストを提供します。レプリカはCUPをオーケストレータに送信します。オーケストレーターは、CUPを入力として新しいレプリカソフトウェアを実行します。ホワイトペーパーのセクション8では、サマリーブロックとキャッチアップパッケージの内容について詳しく説明しています。
+
+<figure>
+<img src="/img/how-it-works/handing-cup.png" alt="Catch Up Package is handed over to new replica version" title="Catch Up Package is handed over to new replica version" align="center" style="width:700px">
+</figure>
+
+[アップグレードInternet Computer Protocol](https://medium.com/dfinity/upgrading-the-internet-computer-protocol-45bf6424b268)
+
+[ホワイトペーパーのセクション8](https://internetcomputer.org/whitepaper.pdf)
+
+[![Watch youtube video](https://i.ytimg.com/vi/mPjiO2bk2lI/maxresdefault.jpg)](https://www.youtube.com/watch?v=mPjiO2bk2lI)
+
+[![Watch youtube video](https://i.ytimg.com/vi/oEEPLJVX5DE/maxresdefault.jpg)](https://www.youtube.com/watch?v=oEEPLJVX5DE)
+
+<!---
+
 
 # Blockchain Protocol Upgrade
 
@@ -55,3 +109,5 @@ Suppose a protocol upgrade of the subnet is supposed to be done at the beginning
 [![Watch youtube video](https://i.ytimg.com/vi/mPjiO2bk2lI/maxresdefault.jpg)](https://www.youtube.com/watch?v=mPjiO2bk2lI)
 
 [![Watch youtube video](https://i.ytimg.com/vi/oEEPLJVX5DE/maxresdefault.jpg)](https://www.youtube.com/watch?v=oEEPLJVX5DE)
+
+-->

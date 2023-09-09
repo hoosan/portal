@@ -1,3 +1,60 @@
+# 6: アップグレードcanisters
+
+## 概要
+
+canister をアップグレードすると、デプロイされたcanister の既存のステート を維持しながら、コードを変更することができます。この機能は、Internet Computer の主要機能の一部であり、canister スマートコントラクトのステートを、従来のデータベースの代わりにWasmメモリとグローバルを使用して永続化します。この保存のステートは**直交持続と**呼ばれます。
+
+Motoko は、安定ストレージとして知られる機能を通じて、 の安定メモリを使用して のステートを保持するための高レベルサポートを提供します。この機能は、 コンパイラとアプリケーション・データの両方の変更に対応するように設計されています。Internet Computer canister Motoko 
+
+次の例を考えてみましょう。dapp があり、職業プロフィールとソーシャルコネクションを管理しているとします。dapp に新機能を追加するためには、canister のコードを、以前に保存したデータを失うことなく更新できる必要があります。canister アップグレードを使用すると、プログラムの状態を失うことなく、プログラムの変更に伴って既存のcanister 識別子を更新することができます。
+
+Motoko で記述されたcanister をアップグレードするときにステー トを保持するには、stable キーワードを使用して、保持したい変数を特定 してください。Motoko での変数状態の保持の詳細については、[安定変数とアップグレード](https://internetcomputer.org/docs/current/motoko/main/upgrades)方法を参照してください。
+
+## 前提条件
+
+作業を始める前に、[開発者環境ガイドの](./dev-env.md)説明に従って開発者環境をセットアップしていることを確 認してください。
+
+## アップグレードの互換性の確認
+
+アップグレードの前にcanister のアップグレード互換性を確認するには、[このドキュメントを](../../../motoko/main/compatibility)ご覧ください。
+
+## アップグレードcanister
+
+canister をアップグレードするには、まず、新しいターミナルを開き、プロジェ クト・ディレクトリに移動します。
+
+次に、ローカルのcanister 実行環境をコマンドで起動します：
+
+    dfx start --clean --background
+
+:::info
+ canisters を IC ブロックチェーンなどのリモート実行環境で実行するように登録する場合は、--network コマンドラインオプションを指定し、このパラメータで指定された環境でタスクを実行します。
+::：
+
+次に、アップグレードしたいcanister のcanister 識別子を取得します。そのためには、以下のコマンドを使用します：
+
+    dfx canister id [canister-name]
+
+次に、アップデートに含めたいcanister のコードに変更を加えます。
+
+:::info
+プログラムは、変数宣言で stable キーワードを使用して、ステー トを維持する変数を特定する必要があることに注意してください。
+
+安定変数の宣言に関する詳細は、[安定変数の宣言のセクションを](https://internetcomputer.org/docs/current/motoko/main/upgrades#declaring-stable-variables)参照してください。
+::：
+
+すべてのcanisters をアップグレードするには、次のコマンドを使用します：
+
+    dfx canister install --all --mode upgrade
+
+単一のcanister をアップグレードするには、次のコマンドを使用します：
+
+    dfx canister install [canister-id] --mode upgrade
+
+## 次のステップ
+
+次に、[canister 間の呼び出しを見て](intercanister-calls.md)みましょう。
+
+<!---
 # 6: Upgrading canisters
 
 ## Overview
@@ -62,3 +119,5 @@ dfx canister install [canister-id] --mode upgrade
 ## Next steps
 
 Next, let's take a look at [inter-canister calls](intercanister-calls.md).
+
+-->

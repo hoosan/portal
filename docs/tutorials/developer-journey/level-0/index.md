@@ -1,3 +1,114 @@
+# レベル0：飛行前の操作
+
+- [0.1:Internet Computer](01-ic-overview.md) の[概要](01-ic-overview.md): IC 上でdapps を開発する方法を理解するために、開発者の旅の第一歩は IC のアーキテクチャとその機能を見ることです。このモジュールでは、以下を取り上げます：
+  
+  - の概要Internet Computer Protocol
+    - プロトコル・スタック
+      - ピアツーピア層
+      - コンセンサス層
+      - メッセージ・ルーティング層
+      - 実行層
+  - 連鎖鍵暗号の概要
+    - 閾値署名スキーム。
+  - canisters とスマートコントラクトの概要。
+  - トークンの概要：
+    - ICP。
+    - Cycles.
+  - ガバナンスの概要：
+    - Network Nervous System.
+    - サービス神経系.
+  - インターネット・アイデンティティの概要.
+
+- 0\.[2:Internet Computer 用語](02-ic-terms.md)このページでは、Internet Computer で構築するときに開発者が知っておくべき、よく使われる用語を紹介します。 このモジュールでは、以下の用語を扱います：
+  
+  - 概念：
+    - Actor.
+    - エージェント。
+    - 認証変数。
+    - 連鎖鍵暗号。
+    - Cycles.
+    - 分散型アプリケーション (dapp).
+    - 分散型自律組織（DAO）。
+    - 実行。
+    - ICP。
+    - プリンシパル。
+    - 提案。
+    - メッセージ。
+    - レプリカ。
+    - サブネット。
+    - トランザクション。
+  - Canister 用語：
+    - スマートコントラクト。
+    - Canisters.
+    - Canister 開発キット（CDK）。
+    - Canister 識別子。
+    - Canister ステート。
+    - コントローラー。
+    - アイデンティティ。
+    - クエリ。
+    - ステート変更。
+    - システムcanister.
+    - 財布。
+  - ツールと製品：
+    - `dfx`.
+    - インターネットアイデンティティ。
+    - 台帳.
+    - Motoko.
+
+- 0\.[3: 開発者環境のセットアップ](03-dev-env.md)開発者の旅を始める前に、開発者環境をセットアップする必要があります。開発者環境は、コード・プロジェクトの開発に必要なツールとパッケージで構成されます。このモジュールでは、以下の内容を学びます：
+  
+  - 開発者環境のセットアップ
+    - インターネット接続の確認
+    - CLI へのアクセスの確認。
+      - Windows ユーザーのためのオプション
+    - IC SDKのダウンロードとインストール
+    - IDEのダウンロードとインストール
+    - gitのダウンロードとインストール
+    - Node.jsのダウンロードとインストール。
+    - すべてのパッケージとツールが最新バージョンにアップデートされていることを確認します。
+
+- 0\.[4:canisters](04-intro-canisters.md) の[紹介](04-intro-canisters.md)：このページでは、canisters 、そのアーキテクチャを紹介し、開発できるcanisters のさまざまなタイプについて説明します。このモジュールがカバーするもの
+  
+  - アーキテクチャ：
+    - 言語。
+    - Actors.
+    - なぜコードはWebAssembly にコンパイルされるのですか？
+  - canisters の種類：
+    - バックエンドcanisters.
+    - フロントエンドcanisters.
+    - カスタムcanisters 。
+  - 単一または複数のcanister アーキテクチャの使用。
+  - Canister 通信。
+  - Canister コントローラ。
+  - Cycles およびリソース課金。
+
+- 0\.[5: 言語の紹介](05-intro-languages.md)：このページでは、dapps の開発に使用できるさまざまな言語について説明し、主にサポートされている 2 つの言語、Motoko と Rust について基本レベルの紹介をします。このモジュールでは
+  
+  - Motoko.
+    - Motokoの属性について説明します。
+  - Rust の属性。
+    - Rust の属性。
+  - Candid.
+  - コミュニティが開発したCDK：
+    - Python。
+    - TypeScript。
+    - Solidity。
+    - C++.
+
+- 0\.[6: dfx入門](06-intro-dfx.md):`dfx` はIC SDKのためのDFINITY コマンドライン実行環境です。Internet Computer 上でdapps を作成、管理、デプロイするために使用される主要ツールです：
+  
+  - 基本的な使い方と構文
+    - サブコマンド
+    - フラグ
+    - オプション
+  - `dfx` の最新バージョンへのアップグレード。
+  - `dfx` の特定バージョンのインストール .
+  - `dfx` での新規プロジェクトの作成 .
+  - デフォルトのプロジェクト構造の確認
+  - デフォルトの構成の確認
+  - デフォルトのプログラム・コードの確認
+
+<!---
 # Level 0: Pre-flight operations 
 
 - [0.1: Overview of the Internet Computer](01-ic-overview.md): In order to understand how to develop dapps on the IC, the first step in the developer journey is to take a look at the architecture of the IC and how it functions. This module covers:
@@ -102,3 +213,5 @@
     - Reviewing the default configuration.
     - Reviewing the default program code.
 
+
+-->

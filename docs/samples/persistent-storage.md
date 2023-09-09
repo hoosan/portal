@@ -1,3 +1,138 @@
+# 永続ストレージ
+
+## 概要
+
+dapp の例では、Motoko にシンプルなdapp を構築する方法を示しています。dapp は単純なカウンタで、カウンタをインクリメントし、カウンタ値を取得し、バックエンド関数を呼び出してカウンタ値をリセットします。関数はCandidインターフェースを通して公開されます。
+
+この例dapp の目的は、dapp が変更され、再デプロイされた後でもカウンタ値が持続する、シンプルなカウンタdapp を構築することです。
+
+この例では次のことを説明します：
+
+- Motoko を使用して新しいcanister スマートコントラクトを作成します。
+- カウンターのバックエンド関数を追加します（インクリメント、カウントの取得、カウントのリセット）。
+- canister スマートコントラクトをローカルにデプロイします。
+- `dfx` を使って Candid UI とコマンドラインでバックエンドをテストします。
+
+## インストール
+
+このサンプルプロジェクトは、学習とテストの目的で、クローン、インストール、ローカルへのデプロイが可能です。手順は、macOSまたはLinuxのいずれかでサンプルを実行することに基づいていますが、Windows上でWSL2を使用する場合、手順は同じになります。
+
+### 前提条件
+
+この例では、以下のインストールが必要です：
+
+- \[x\][IC SDKを](https://internetcomputer.org/docs/current/developer-docs/setup/install/index.mdx)インストールします。
+- \[[git を](https://git-scm.com/downloads)ダウンロードし、インストールしてください。
+- \[https://github.com/dfinity/examples/ 以下のプロジェクトファイルをGitHubからダウンロードしてください。
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ1：プロジェクトのファイルがあるフォルダに移動し、Internet Computer のローカルインスタンスをコマンドで起動します：
+
+    cd examples/motoko/persistent-storage
+    dfx start --background
+
+### ステップ 2:canister をビルドしてデプロイします：
+
+    dfx deploy
+
+### ステップ 3: コマンドの使用法：`dfx canister call <project>  <function>`
+
+    dfx canister call persistent_storage increment
+
+出力：
+
+    (1 : Nat)
+
+    dfx canister call persistent_storage get
+
+出力：
+
+    (1 : Nat)
+
+    dfx canister call persistent_storage reset
+
+出力: 出力: 出力: 出力: 出力: 出力: 出力: 出力
+
+    (0 : Nat)
+
+保存された値の永続性は、`increment` 関数を再度呼び出し、値がゼロより大きいことを確認することでテストできます。次に、Motoko コードに変更を加えます。関数名`get` を`getCount` に変更するなど、どんな些細な変更でもかまいません。その後、プロジェクトを再デプロイし、`getCount` 関数を呼び出して、カウンタ値が初期値（0）に戻らなかったことを確認します。
+
+``` bash
+$ dfx canister call persistent_storage increment
+(1 : Nat)
+// Make code change
+$ dfx deploy
+$ dfx canister call persistent_storage getCount
+(1 : Nat)
+```
+
+## アーキテクチャ
+
+dapp の例の2つの主要な部分は、バックエンドとキャンディド・インターフェイスです。このサンプルプロジェクトにはフロントエンドはありません。
+
+### Motoko バックエンド
+
+バックエンド関数は`src/persistent_storage/main.mo` Motoko ファイルにあります。バックエンドはカウンタ値を保存し、カウンタ値を取得、インクリメント、リセットする関数を持っています。さらに、バックエンドはカウンタ値がdapp のアップグレード後も持続することを保証します。
+
+#### カウンタ変数
+
+現在のカウンタ値は、actor に数値として格納されます。
+
+``` javascript
+actor {
+    stable var counter : Nat = 0;
+}
+```
+
+#### インクリメント()
+
+`increment()` 関数はカウンタ変数をインクリメントします。
+
+``` javascript
+public func increment() : async Nat {
+    counter += 1;
+    return counter;
+};
+```
+
+この関数は、インクリメントされたカウンタ変数を返します。
+
+#### get()
+
+`get()` 関数は、現在のカウンタ値を返します。
+
+``` javascript
+public query func get() : async Nat {
+    return counter;
+};
+```
+
+#### reset()
+
+`reset()` 関数は、カウンタ値を 0 にリセットし、その値を返します。
+
+``` javascript
+public func reset() : async Nat {
+    counter := 0;
+    return counter;
+};
+```
+
+### Candid インターフェース
+
+Candid UIは、バックエンドをテストするための簡単で使いやすいインターフェースを提供します。UI は自動的に生成され、canister ID は`dfx canister id <canister_name>` コマンドを使用して見つけることができます：
+
+``` bash
+$ dfx canister id __Candid_UI
+r7inp-6aaaa-aaaaa-aaabq-cai
+$ dfx canister id persistent_storage
+rrkah-fqaaa-aaaaa-aaaaq-cai
+```
+
+**http://\<candid\_canister\_id\>.localhost:4943/?id=\<backend\_canister\_id\> を使用することで見つけることができます。**
+
+<!---
 # Persistent storage
 
 ## Overview
@@ -139,3 +274,5 @@ rrkah-fqaaa-aaaaa-aaaaq-cai
 
 **http://<candid_canister_id>.localhost:4943/?id=<backend_canister_id>**
 
+
+-->

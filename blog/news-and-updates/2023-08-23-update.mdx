@@ -1,9 +1,67 @@
 ---
+
 title: Developer weekly update August 23, 2023
 description: In this issue, we're excited to announce a new developer video series, along with providing some information about the upcoming proposal that would enable the 1-proposal SNS feature, plus how to enter the Internet Computer Devpost hackathon.
 tags: [Devs]
 image: /img/blog/dev-update-blog-aug-23.jpg
 ---
+# 開発者ウィークリー・アップデート 2023年8月23日
+
+![August 23 2023](../../static/img/blog/dev-update-blog-aug-23.jpg)
+
+今週の開発者ウィークリー・アップデートへようこそ！今号では、新しい開発者向けビデオシリーズを発表するほか、1 プロポーザル SNS 機能を実現する近日中のプロポーザルに関する情報、Internet Computer Devpost ハッカソンへの参加方法をお伝えします。さあ、飛び込みましょう！
+
+## Internet Computer 開発者ワークショップシリーズ
+
+本日は、新しいビデオシリーズ「Building on the Future // Workshop Series」をご紹介します。このシリーズの最新ビデオでは、DFINITY のソフトウェア・エンジニアである David Dal Busco が、Juno を使ってInternet Computer dapp を構築する方法を紹介します。このワークショップビデオでは、dapp に認証を実装する方法、画像やその他のデータをオンチェーンに保存する方法、そしてバックエンドのコードを1行も書くことなく最初のスマートコントラクトをIC上に起動する方法を開発者に教えています！
+
+始めたいですか？ビデオチュートリアルは[こちらから](https://www.youtube.com/watch?v=mr_9XArcG9Y)。
+
+## 1-提案SNS初期化機能提案
+
+8月25日（金）、NNSチームは、採用された場合、1-proposal SNS初期化機能を導入するアップグレード提案を提出します。このSNSの新機能は、OpenChatなど過去のSNSの立ち上げ時に、SNSの立ち上げプロセスを簡略化するよう要望が寄せられたフィードバックをもとに開発されました。特に、SNSの立ち上げプロセスのいくつかのステップを1つのプロセスに統合し、SNSのプロポーザル提出をトリガーとすることが提案されました。
+
+この新しい1プロポーザル初期化機能は、SNS準備の全ステップを1つのプロセスに統合し、SNSの立ち上げと検証を容易にします。1提案SNS初期化の詳細については、こちらの[フォーラム投稿を](https://forum.dfinity.org/t/enhancement-of-the-sns-launch-process-one-proposal/19548)ご覧ください。また、この機能のNNS提案に関する追加情報は[こちらを](https://forum.dfinity.org/t/nns-sns-update-august-25-2023/22303)ご覧ください。
+
+## Devpostハッカソン
+
+すべての開発者を募集しています！Devpost 'Fully On-Chain with ICP' ハッカソンが開催中です！9月25日まで、IC上でプロジェクトを開発し、多くの賞品を獲得するために参加することができます。
+
+このハッカソンには3つのトラックがあります：
+
+### トラック1：素晴らしいICPトラック
+
+このトラックでは、ICPのユニークな機能を紹介し、活用するdapp 。素晴らしいdapps の例としては、ソーシャルメディアとのやりとりがオンチェーンに反映され、ユーザーが自分のデータをすべて所有できる SocialFidapps 、分散型 AIdapps 、DAO ツール、マルチチェーンインフラdapps などがあります。
+
+### トラック2：ビットコイン構築トラック
+
+このトラックでは、ICのネイティブBitcoin統合を使用して、Bitcoinを次のレベルに引き上げる方法を紹介します。1:1のビットコインに裏打ちされたICネイティブトークンであるckBTCを使用して、ビットコインの可能性を最大限に引き出すプロジェクトを開発してください。例dapps には、安全なログイン、直接的な API 呼び出し、コミュニティが管理するcanisters などの機能が含まれます。
+
+### トラック3ゲームファイ
+
+3つ目の最後のトラックでは、次世代のWeb3ゲームを提供するdapp を開発し、分散型ゲームの未来がどのようなものかを実証するのに役立てることができます。Dapps 、人気のあるゲームエンジンとのウォレット統合、タワーディフェンスやバトルロイヤルのような人気のあるゲームフォーマット、またはゲーム内経済機能を含むものはすべて、私たちが応募に求めているものです！
+
+詳細は[こちらの](https://awesomeicp.devpost.com/?utm_source=devpost&utm_medium=twitter&utm_campaign=onchainwicp)Devpostウェブサイトをご覧ください。
+
+## Agent-JS v0.19.0リリース
+
+今週、agent-jsの新バージョン`v0.19.0` をリリースしました。
+
+このリリースでは、次のような機能と拡張があります：
+
+- HttpAgent はデフォルトホストとして`https://icp-api.io` を使用するようになりました。
+- `@noble/hash` が に置き換わりました。この変更により、パッケージのサイズが小さくなりました。`js-sha256`
+- 新しい crypto nonce のランダム性。
+- Nonce 生成に日付が使用されなくなりました。
+
+リリースノートの全文は、[こちらの](https://github.com/dfinity/agent-js/releases/tag/v0.19.0)変更履歴をご覧ください。
+
+これで今週は終わりです！それではまた来週！
+
+\-DFINITY
+
+<!---
+
 
 # Developer weekly update August 23, 2023
 
@@ -60,3 +118,5 @@ For the full release notes, check out the changelog [here](https://github.com/df
 That'll wrap things up for this week! We'll see you all next week!
 
 -DFINITY
+
+-->

@@ -1,3 +1,148 @@
+# トラブルシューティング
+
+## 概要
+
+このセクションでは、以下のタスクに関連する一般的な問題のトラブルシューティング、解決、または回避に役立つ情報を提供します：
+
+- IC SDK のダウンロードとインストール
+
+- canisters の作成、ビルド、またはデプロイ。
+
+- [IC SDK](../setup/install/index.mdx) の使用。
+
+- ローカルのcanister 実行環境の実行。
+
+## 既存のプロジェクトの移行
+
+現在のところ、旧バージョンの IC SDK を使用して作成したプロジェクトの自動移行や後方互換性はありません。最新バージョンにアップグレードした後、以前のバージョンのIC SDKで作成したプロジェクトをビルドまたはインストールしようとすると、エラーや失敗のメッセージが表示されることがあります。
+
+しかし、多くの場合、`dfx.json` 設定ファイルの`dfx` 設定を手動で変更し、現在インストールされている IC SDK のバージョンと互換性があるようにプロジェクトを再構築することで、以前のリリースのプロジェクトを引き続き使用できます。
+
+たとえば、IC SDK バージョン`0.8.0` で作成されたプロジェクトがある場合、`dfx.json` ファイルをテキストエディタで開き、`dfx` 設定を最新バージョンに変更するか、セクションを完全に削除します。
+
+## ローカルcanister 実行環境の再起動
+
+ローカルのcanister 実行環境を起動すると、ステート が古くなっているために失敗する場合があります。`dfx start` を実行してローカルのcanister 実行環境を起動する際に問題が発生した場合：
+
+- #### ステップ1：実行環境が使用するICエミュレーションを表示するターミナルで、Control-Cを押してローカルcanister 実行環境のプロセスを中断します。
+
+- #### ステップ2：以下のコマンドを実行して、ローカルcanister 実行環境を停止します：
+  
+  ```
+    dfx stop
+  ```
+
+- #### ステップ 3: 次のコマンドを実行して、ローカルのcanister 実行環境をクリーンなステートで再起動します：
+  
+  ```
+    dfx start --clean
+  ```
+  
+  `--clean` オプションはチェックポイントと古いステート情報をプロジェクトのキャッシュから削除するので、ローカルのcanister 実行環境と Web サーバープロセスをクリーンなステートで再起動できます。
+
+:::caution
+ただし、`dfx start --clean` を実行してステート情報をリセットした場合、既存のcanisters も削除されることに注意してください。
+::：
+
+- #### ステップ4：`dfx start --clean` を実行した後、以下のコマンドを実行してcanisters を再作成します：
+  
+  dfxcanister create --all
+  dfx build
+  dfxcanister install --all
+
+## canisters ディレクトリの削除
+
+IC への接続に成功し、canister 識別子を登録した後、canisters のビルドまたはデプロイに問題が発生した場合は、canisters の再構築または再デプロイを試みる前に、`canisters` ディレクトリを削除する必要があります。
+
+プロジェクトのルート・ディレクトリで次のコマンドを実行すると、プロジェクトの`canisters` ディレクトリを削除できます：
+
+    rm -rf ./.dfx/* canisters/*
+
+## dfx の再インストール
+
+遭遇する可能性のあるバグの多くは、IC SDKをアンインストールして再インストールすることで対処できます。ここでは、IC SDKを再インストールする方法をいくつか紹介します。
+
+開発環境にIC SDKが1つのバージョンしかインストールされていない場合は、通常、以下のコマンドを実行することで、最新バージョンのIC SDKをアンインストールして再インストールすることができます：
+
+    ~/.cache/dfinity/uninstall.sh && sh -ci "$(curl -sSL https://internetcomputer.org/install.sh)"
+
+IC SDK のバイナリの場所を変更した場合（バイナリのタイトルは`dfx` ）、次のコマンドを実行して、PATH にあるバージョンの IC SDK をアンインストールし、最新バージョンの IC SDK を再インストールします：
+
+    rm -rf ~/.cache/dfinity && rm $(which dfx) && sh -ci "$(curl -sSL https://internetcomputer.org/install.sh)"
+
+## Xcode の前提条件
+
+IC SDKのいくつかのバージョンでは、macOSコンピュータで新しいプロジェクトを作成する際にXcodeをインストールするようプロンプトが表示されました。このプロンプトは削除され、`dfx new` コマンドは macOS 開発者ツールをインストールする必要はありません。ただし、プロジェクトの Git リポジトリを作成する場合は、**Developer Command Line Tools**をインストールする必要があります。
+
+開発者ツールがインストールされているかどうかは、`xcode-select -p` を実行して確認できます。開発者ツールをインストールするには、`xcode-select --install` を実行します。
+
+## Apple ARMシリコン
+
+Apple シリコンを搭載した Mac を使用していて問題がある場合 (`bad CPU type in executable: dfx` など)、Rosetta をインストールする必要があるかもしれません。
+
+``` shell
+softwareupdate --install-rosetta 
+```
+
+## VM使用時のビルド失敗
+
+UbuntuやCentOSの仮想マシンイメージを使用してIC SDKを実行している場合、`dfx build` コマンドを実行しようとすると、次のようなエラーメッセージが表示されることがあります：
+
+    Building hello...
+    An error occurred:
+    Io(
+        Os {
+            code: 2,
+            kind: NotFound,
+            message: "No such file or directory",
+        },
+    )
+
+## アドレス使用中エラーまたはオーファンプロセス
+
+ローカルでプロジェクトを開発している場合、ローカルのcanister 実行環境を別のターミナルまたはバックグラウンドで実行していることがよくあります。ローカル環境のプロセスが適切に終了されない場合、アドレスがすでに使用中であることを示すオペレーティング・システム・エラーが表示されたり、`dfx stop` コマンドを使用してプロセスを正常に停止できないことがあります。
+
+この問題に遭遇する可能性のあるシナリオはいくつかあります。たとえば、ローカルのプロジェクト・ディレクトリーで`dfx start` を実行した後、canister 実行環境のプロセスを停止せずに別のローカルのプロジェクト・ディレクトリーに変更すると、この問題が発生する可能性があります。
+
+アドレスが既に使用されている、またはバックグラウンドでプロセスが既に実行されているというメッセージが表示されたり、そのアドレスが既に使用されていると疑われる問題が発生した場合は、以下の手順を実行してください：
+
+- #### ステップ1：以下のコマンドを実行して、localhostへのデフォルトバインディングを使用している場合に4943ポートをリッスンしているプロセスを確認します：
+  
+  ```
+    lsof -i tcp:4943
+  ```
+
+- #### ステップ2：以下のコマンドを実行して、バックグラウンドで実行されているプロセスを終了します：
+  
+  ```
+    killall dfx replica
+  ```
+
+- #### ステップ3：現在のターミナルを閉じ、新しいターミナルウィンドウを開きます。
+
+- #### ステップ4：新しいターミナルで以下のコマンドを実行して、ローカルのcanister 実行環境をクリーンなステートで実行します：
+  
+  ```
+    dfx start --clean --background
+  ```
+
+## メモリーリーク
+
+メモリ・リークの修正は継続的なプロセスです。メモリリークに関連するエラーメッセージが表示された場合は、以下の手順を実行してください：
+
+- #### ステップ 1:`dfx stop` を実行して、現在実行中のプロセスを停止します。
+
+- #### ステップ2：さらなる劣化を防ぐためにIC SDKをアンインストールします。
+
+- #### ステップ3：IC SDKを再インストールします。
+
+- #### ステップ4：`dfx start` を実行して、レプリカプロセスを再起動します。
+
+または、`.cache/dfinity` ディレクトリを削除し、最新の IC SDK`dfx` バイナリを再インストールすることもできます。例えば
+
+    rm -rf ~/.cache/dfinity && sh -ci "$(curl -sSL https://internetcomputer.org/install.sh)"
+
+<!---
 # Troubleshooting resources
 
 ## Overview
@@ -130,3 +275,5 @@ Fixing memory leaks is an ongoing process. If you encounter any error messages r
 Alternatively, you can remove the `.cache/dfinity` directory and re-install the latest IC SDK `dfx` binary. For example:
 
     rm -rf ~/.cache/dfinity && sh -ci "$(curl -sSL https://internetcomputer.org/install.sh)"
+
+-->

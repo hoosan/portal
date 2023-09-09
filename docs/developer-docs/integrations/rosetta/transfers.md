@@ -1,40 +1,42 @@
-# スタンダードトークンを送金する
+# 定期的なトークン譲渡
 
-本ドキュメントは、Rosetta Construction API を使用した ICP 送金の方法について説明します。トランザクションの流れの概要については、[Construction API 概要](https://www.rosetta-api.org/docs/construction_api_introduction.html) を参照してください。
+## 概要
 
-## 送金手順
+このドキュメントでは、Rosetta構築APIを使用したICPの転送方法について説明します。トランザクションフローの概要については、コンストラクション[APIの概要を](https://www.rosetta-api.org/docs/construction_api_introduction.html)参照してください。
 
-送金額 `T` をアドレス `A` からアドレス `B` に転送するトランザクションは、3つのオペレーションを含むことになります：
+## 送金操作
 
--   `TRANSACTION` タイプの操作がアドレス `A` に `-T` の値で適用されます。
+金額`T` をアドレス`A` からアドレス`B` に転送するトランザクションには、3 つのオペレーションが必要です：
 
--   `TRANSACTION` タイプの操作がアドレス `B` に金額 `T` で適用されます。
+- アドレス`A` に金額`-T` で適用されるタイプ`TRANSACTION` の操作。
 
--   `FEE` タイプの操作が `/construction/metadata` エンドポイントによって提案された金額でアドレス `A` に適用されます（[ConstructionMetadataResponse](https://www.rosetta-api.org/docs/models/ConstructionMetadataResponse.html) タイプの `suggested_fee` フィールドを参照してください）。
+- アドレス`B` に金額`T` で適用されるタイプ`TRANSACTION` の操作。
 
-トランザクション内の操作の順序は関係ありません。
+- `FEE` `A` `/construction/metadata` （[ConstructionMetadataResponse](https://www.rosetta-api.org/docs/models/ConstructionMetadataResponse.html)型の フィールドを参照）。`suggested_fee` 
 
-1回のトランザクションで複数の送金を行うことはできません。そのような取引の結果は未定義です。
+トランザクション内の操作の順番は無関係。
 
-前提条件：
+単一トランザクション内での複数回の転送(fransfer)は許可されない。このようなトランザクションの結果は特定されません。
 
--   アドレス `A` は少なくとも `T` + `suggested_fee` の ICP を保持していること。
+## 前提条件
 
--   アドレス `A` は、サブアカウントがトランザクションの署名に使用した公開鍵に由来する Principal になっていること。
+- \[x\] アドレス`A` が少なくとも`T` +`suggested_fee` ICP を保持していること。
 
--   `FEE` オペレーションで指定する金額は `suggested_fee` と絶対値で等しくなっていること。
+- \[x\] アドレス`A` が、トランザクションの署名に使用する公開鍵から派生したプリンシパルのサブ アカウントであること。
+
+- \[x\]`FEE` の操作で指定された金額は、絶対値で`suggested_fee` と等しい。
 
 ### オプションのメタデータフィールド
 
-Rosetta ノードは [ConstructionPayloadRequest](https://www.rosetta-api.org/docs/models/ConstructionPayloadsRequest.html) で、以下のオプションのメタデータフィールドを認識します：
+Rosetta node は、[ConstructionPayloadRequest](https://www.rosetta-api.org/docs/models/ConstructionPayloadsRequest.html) の以下のオプションのメタデータフィールドを認識します：
 
--   `memo` はトランザクションに関連付けられた任意の64ビット符号なし整数です。これを使用して、データをトランザクションに関連付けることができます。例えば、データベースの行のキーに memo を設定することができます。`memo` フィールドに有効な値は `0` から `264 - 1` (`18446744073709551615`) までの範囲です。
+- `memo` は、トランザクションに関連付けられた任意の 64 ビット符号なし整数です。これを使用して、データをトランザクションに関連付けることができます。たとえば、メモをデータベースの行キーに設定できます。 フィールドの有効な値は、 から （ ）までです。`memo` `0` `2^64^ - 1``18446744073709551615`
 
--   `ingress_start`、`ingress_end` および `created_at_time` は 64 ビットの符号なし整数で、UTC タイムゾーンの UNIX エポックからナノ秒経ったかを表現しています。これらのフィールドを使って、あらかじめトランザクションを構築して署名しておき、後で署名付きトランザクションを提出することができます。署名されたトランザクションは `created_at_time`（デフォルトでは `/construction/payloads` エンドポイントを呼び出した時点）から 24 時間以内に送信することが可能です。
+- `ingress_start`,`ingress_end`, および`created_at_time` は、UTC タイムゾーンで UNIX エポックから経過したナノ秒数を表す 64 ビット符号なし整数です。これらのフィールドを使用して、事前にトランザクションを構築して署名し、後で署名付きトランザクショ ンをサブミットすることができます。署名付きトランザクションは、`created_at_time` （デフォルトでは、`/construction/payloads` エンドポイントを呼び出した時刻と同じ）から 24 時間以内に送信できます。
 
 ### 例
 
-以下は、アドレス `bdc4ee05d42cd0669786899f256c8fd7217fa71177bd1fa7b9534f568680a938` からアドレス `b64ec6f964d8597afa06d4209dbce2b2df9fe722e86aeda2351bd95500cf15f8` まで 1 ICP を譲渡したトランザクションのサンプルです。
+以下は、アドレス`bdc4ee05d42cd0669786899f256c8fd7217fa71177bd1fa7b9534f568680a938` からアドレス`b64ec6f964d8597afa06d4209dbce2b2df9fe722e86aeda2351bd95500cf15f8` に 1 ICP を転送するトランザクションの例です。
 
 ``` json
 {
@@ -112,7 +114,7 @@ Rosetta ノードは [ConstructionPayloadRequest](https://www.rosetta-api.org/do
 }
 ```
 
-<!--
+<!---
 # Regular token transfers
 
 ## Overview

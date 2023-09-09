@@ -1,3 +1,331 @@
+# 5: ライティングとデプロイcanisters
+
+## 概要
+
+このガイドでは、Motoko canisters の記述とデプロイの基本について説明します。Motoko の基礎についての詳細情報は、[Motoko の基礎の](infrastructure.md)ページをご覧ください。
+
+## 前提条件
+
+始める前に、[開発者環境ガイドの](./dev-env.md)指示に従って開発者環境をセットアップしていることを確認してください。
+
+## 新規プロジェクトの作成
+
+まだ開いていなければ、ローカル・コンピューターでターミナル・ウィンドウを開いてください。
+
+新しいプロジェクトを作成するには、コマンドを実行します：
+
+    dfx new explore_hello
+
+次に、コマンドでプロジェクトに移動します：
+
+    cd explore_hello
+
+## デフォルト設定の確認
+
+デフォルトでは、新しいプロジェクトを作成すると、プロジェクトディレクトリにいくつかのテンプレートファイルが追加されます。これらのテンプレートファイルを編集することで、プロジェクトのコンフィギュレーション設定をカスタマイズしたり、独自のコードをインクルードして開発をスピードアップしたりすることができますcycle 。
+
+`dfx.json` 設定ファイルをテキストエディタで開いて、デフォルトの設定を確認してください。
+
+このように見えるかもしれません：
+
+    {
+    "canisters": {
+        "explore_hello_backend": {
+        "main": "src/explore_hello_backend/main.mo",
+        "type": "motoko"
+        },
+        "explore_hello_frontend": {
+        "dependencies": [
+            "explore_hello_backend"
+        ],
+        "frontend": {
+            "entrypoint": "src/explore_hello_frontend/src/index.html"
+        },
+        "source": [
+            "src/explore_hello_frontend/assets",
+            "dist/explore_hello_frontend/"
+        ],
+        "type": "assets"
+        }
+    },
+    "defaults": {
+        "build": {
+        "args": "",
+        "packtool": ""
+        }
+    },
+    "output_env_file": ".env",
+    "version": 1
+    }
+
+デフォルト設定のいくつかを見てみましょう。
+
+- `settings` セクションでは、`explore_hello` プロジェクトのWebAssembly モジュール名を`explore_hello` と指定します。
+
+- `canisters.explore_hello` キーでは、コンパイルされるメイン・プログラムが`main` 設定で指定されたパス、この場合は`src/explore_hello/main.mo` にあることを指定し、`type` 設定では、これが`motoko` プログラムであることを示します。
+
+- `canisters.explore_hello_assets` キーには、このプロジェクトのフロントエンド資産に関する設定の詳細を指定します。今は省略しましょう。
+
+- `dfx` 設定は、プロジェクトの作成に使用されたソフトウェアのバージョンを特定するために使用されます。
+
+- `networks` セクションは、接続するネットワークに関する情報を指定します。デフォルトの設定では、ローカルのcanister 実行環境をローカルのホスト・アドレス`127.0.0.1` とポート`4943` にバインドします。
+
+他のInternet Computer ネットワーク・プロバイダーにアクセスできる場合は、`networks` セクションに、それらのプロバイダーに接続するためのネットワーク・エイリアスや URL を含めることができます。
+
+デフォルト設定のままでかまいません。
+
+続行するには、`dfx.json` ファイルを閉じます。
+
+## canister コードの記述
+
+新しいプロジェクトには、常に`main.mo` ソースコード・ファイルのテンプレートが含まれています。このファイルを編集して独自のコードを含めることで、開発をスピードアップできますcycle 。
+
+Motoko プログラミング言語を使用して簡単なdapp を作成するための出発点として、デフォルトの`main.mo` テンプレート・ファイルにあるサンプル・プログラムを見てみましょう。
+
+テキストエディタで`src/explore_hello_backend/main.mo` ファイルを開き、テンプレート内のコードを確認してください：
+
+    actor {
+        public func greet(name : Text) : async Text {
+            return "Hello, " # name # "!";
+        };
+    };
+
+このプログラムのいくつかの重要な要素を見てみましょう：
+
+- このサンプル・コードでは、`main` 関数ではなく`actor` 関数を定義しています。Motoko の場合、`main` 関数はファイル自体に暗黙的に含まれています。
+
+- 従来の「Hello, World！」プログラムは、`print` または`println` 関数を使って文字列を印刷する方法を示していますが、この従来のプログラムは、Internet Computer 上で実行されるMotoko dapps の典型的な使用例ではありません。
+
+- このサンプルプログラムでは、print 関数の代わりに、`name` 型の引数`Text` を受け取る public`greet` 関数で`actor` を定義します。
+
+- このプログラムでは、`async` キーワードを使用して、`"Hello, "` 、`#` 演算子、`name` 引数、`"!"` を使用して構築されたテキスト文字列を連結した非同期メッセージを返すことを示します。
+
+`actor` オブジェクトと非同期メッセージ処理を使用するコードについては、もう少し後で詳しく説明します。とりあえず、次のセクションに進んでください。
+
+続行するには、`main.mo` ファイルを閉じます。
+
+## ローカルのcanister 実行環境の開始
+
+デフォルトのプロジェクトをデプロイする前に、ローカルのcanister 実行環境か、Internet Computer ブロックチェーンメインネットに接続する必要があります。
+
+ローカルのcanister 実行環境を起動するには`dfx.json` ファイルが必要なので、プロジェクトのルートディレクトリにいることを確認してください。このガイドでは、ターミナルシェルを2つに分けて、1つのターミナルでネットワーク操作を開始して確認し、もう1つのターミナルでプロジェクトを管理できるようにします。
+
+ローカルのcanister 実行環境を起動するには、まずローカル・コンピューターで新しいターミナル・ウィンドウまたは新しいターミナル・タブを開きます。
+
+:::info
+\- これで、**2つのターミナルが開いて**いるはずです。
+\-**カレント作業ディレクトリとして** **プロジェクト・ディレクトリが**あるはずです。
+::：
+
+以下のコマンドを実行して、ローカルのcanister 実行環境を起動します：
+
+    dfx start
+
+プラットフォームとローカルのセキュリティ設定によっては、警告が表示されるかもしれません。受信ネットワーク接続の許可または拒否を求めるプロンプトが表示されたら、「**許可**」をクリックします。
+
+ローカルの実行環境（canister ）を起動すると、ネットワーク操作に関するメッセー ジを表示するターミナルと、プロジェクト関連のタスクを実行するターミナルが 1 つになります。
+
+ネットワーク操作を表示するターミナルは開いたままにしておき、新しいプロジェクトを作成したターミナルにフォーカスを切り替えます。
+
+## canister 識別子の登録
+
+ローカルの実行環境（canister ）に接続したら、ネットワークに登録し て、プロジェクトに固有のネットワーク**識別子（canister ）を**生成します。
+
+チュートリアル「[1.3: 最初の](/docs/tutorials/developer-journey/level-1/1.3-first-dapp.md)開発者の旅[ dapp の](/docs/tutorials/developer-journey/level-1/1.3-first-dapp.md) [デプロイ](/docs/tutorials/developer-journey/level-1/1.3-first-dapp.md)」では、この手順を`dfx deploy` コマンドのワークフローの一部として実行しました。このガイドでは、各操作を個別に実行する方法を示します。
+
+ローカル・ネットワーク用のcanister 識別子を登録するには、以下のコマンドを実行して、プロジェク ト内のcanisters に対して一意のcanister 識別子を登録します：
+
+    dfx canister create --all
+
+このコマンドを実行すると、`dfx.json` 構成ファイルに定義されているcanisters のネットワーク固有のcanister 識別子が表示されます。
+
+    Creating canister explore_hello_backend...
+    explore_hello_backend canister created with canister id: br5f7-7uaaa-aaaaa-qaaca-cai
+    Creating canister explore_hello_frontend...
+    explore_hello_frontend canister created with canister id: bw4dl-smaaa-aaaaa-qaacq-cai
+
+このコマンドを実行すると、canister 構成ファイルで定義されているcanister のネットワーク固有の`.dfx/local/canister_ids.json` 識別子が表示されます。 実行環境はローカルに接続されているため、これらの 識別子はローカルでのみ有効で、プロジェクトでは ファイルに保存されます。
+
+例えば
+
+    {
+    "explore_hello_backend": {
+        "local": "br5f7-7uaaa-aaaaa-qaaca-cai"
+    },
+    "explore_hello_frontend": {
+        "local": "bw4dl-smaaa-aaaaa-qaacq-cai"
+    }
+    }
+
+## をビルドします。dapp
+
+デフォルトの構成設定とプログラム・コードを調べ、ローカルのcanister 実行環境を起動したので、デフォルト・プログラムを実行可能なWebAssembly モジュールにコンパイルしてみましょう。
+
+ローカル・コンピューターのターミナル・ウィンドウで、`explore_hello` プロジェクト・ディレクトリーに移動します。
+
+以下のコマンドを実行して実行可能なcanister をビルドします：
+
+    dfx build
+
+以下のような出力が表示されるはずです：
+
+    Building canisters...
+    Building frontend...
+    WARN: Building canisters before generate for Motoko
+    Generating type declarations for canister explore_hello_frontend:
+    src/declarations/explore_hello_frontend/explore_hello_frontend.did.d.ts
+    src/declarations/explore_hello_frontend/explore_hello_frontend.did.js
+    src/declarations/explore_hello_frontend/explore_hello_frontend.did
+    Generating type declarations for canister explore_hello_backend:
+    src/declarations/explore_hello_backend/explore_hello_backend.did.d.ts
+    src/declarations/explore_hello_backend/explore_hello_backend.did.js
+    src/declarations/explore_hello_backend/explore_hello_backend.did
+
+ローカルのcanister 実行環境に接続しているため、`dfx build` コマンドにより、プロジェクトの`.dfx/local/` ディレクトリの下に`canisters` ディレクトリが追加されます。
+
+次のコマンドを実行して、`dfx build` コマンドによって作成された`.dfx/local/canisters/explore_hello_backend` ディレクトリにWebAssembly および関連するアプリケーション・ファイルが含まれていることを確認します。
+
+    ls -l .dfx/local/canisters/explore_hello_backend/
+
+例えば、このコマンドは以下のような出力を返します：
+
+    -rw-rw-rw-  1 pubs  staff      47 Jun 14 15:43 constructor.did
+    -rw-r--r--  1 pubs  staff      47 Jun 14 15:43 explore_hello_backend.did
+    -rw-r--r--  1 pubs  staff      32 Jun 14 15:43 explore_hello_backend.most
+    -rw-r--r--  1 pubs  staff  134640 Jun 14 15:43 explore_hello_backend.wasm
+    -rw-r--r--  1 pubs  staff    2057 Jun 14 15:43 index.js
+    -rw-rw-rw-  1 pubs  staff       2 Jun 14 15:43 init_args.txt
+    -rw-rw-rw-  1 pubs  staff      47 Jun 14 15:43 service.did
+    -rw-r--r--  1 pubs  staff     175 Jun 14 15:43 service.did.d.ts
+    -rw-r--r--  1 pubs  staff     174 Jun 14 15:43 service.did.js
+
+`canisters/explore_hello_backend` ディレクトリには、以下のキー・ファイルが含まれています：
+
+- `explore_hello_backend.did` ファイルには、メインのdapp のインターフェイス記述が含まれています。
+
+- `index.js` ファイルには、dapp の関数のcanister インタフェースの JavaScript 表現が含まれています。
+
+- `explore_hello_backend.wasm` ファイルには、プロジェクトで使用するアセットのコンパイルされたWebAssembly が含まれています。
+
+`canisters/explore_hello_frontend` ディレクトリには、プロジェクトに関連するフロントエンドアセットを記述する同様のファイルが含まれています。
+
+`canisters/explore_hello_backend` と`canisters/explore_hello_frontend` ディレクトリのファイルに加えて、`dfx build` コマンドは`idl` ディレクトリを作成します。
+
+新しいフォルダ`src/declarations` が作成されたことを確認してください。このフォルダには、wasm を除く`.dfx/local` のフォルダのコピーが含まれます。これらのファイルには秘密は含まれていませんので、残りのソースコードと一緒にコミットすることをお勧めします。
+
+## プロジェクトをローカルにデプロイ
+
+`dfx build` コマンドを実行すると、プロジェクトの`canisters` ディレクトリにいくつかの成果物が作成されます。WebAssembly モジュールと`canister_manifest.json` ファイルは、dapp をInternet Computer ネットワーク上にデプロイするために必要です。
+
+ローカル・コンピューターのターミナル・シェルで、`explore_hello` プロジェクト・ディレクトリーに移動します。
+
+次のコマンドを実行して、`explore_hello` プロジェクトをローカル・ネットワークにデプロイします：
+
+    dfx canister install --all
+
+次のような出力が表示されます：
+
+    Installing code for canister explore_hello_backend, with canister ID br5f7-7uaaa-aaaaa-qaaca-cai
+    Installing code for canister explore_hello_frontend, with canister ID bw4dl-smaaa-aaaaa-qaacq-cai
+    Uploading assets to asset canister...
+    Fetching properties for all assets in the canister.
+    Starting batch.
+
+`dfx canister call` コマンドを実行し、次のコマンドを実行して呼び出すdapp と関数を指定します：
+
+    dfx canister call explore_hello_backend greet '("everyone": text)'
+
+このコマンドは
+
+- `explore_hello` を指定します。 **canister**またはdapp 。
+
+- `greet` 呼び出したい特定の**メソッド**または関数。
+
+- `everyone` を 関数に渡す引数として指定します。`greet` 
+
+コマンドによって`greet` 関数の返り値が表示されることを確認します。
+
+例えば
+
+    ("Hello, everyone!")
+
+## デフォルトのフロントエンドを表示
+
+開発環境に`node.js` がインストールされている場合、プロジェクトには、ブラウザで`explore_hello` dapp にアクセスするためのテンプレート`index.js` JavaScript ファイルを使用する簡単なフロントエンドの例が含まれています。
+
+まだ開いていなければ、ローカルコンピュータでターミナルウィンドウを開き、`explore_hello` プロジェクトディレクトリに移動します。
+
+テキストエディタで`src/explore_hello_frontend/src/index.js` ファイルを開き、テンプレート・スクリプトのコードを確認します：
+
+    import { explore_hello } from "../../declarations/explore_hello_backend";
+    
+    document.getElementById("clickMeBtn").addEventListener("click", async () => {
+        const name = document.getElementById("name").value.toString();
+        // Interact with explore_hello actor, calling the greet method
+        const greeting = await explore_hello_backend.greet(name);
+    
+        document.getElementById("greeting").innerText = greeting;
+    });
+
+テンプレート`index.js` は、新しく作成した`declarations` ディレクトリから`explore_hello` エージェントをインポートします。このエージェントは、`Main.mo` で作成したインタフェースと対話するように自動的に設定され、ユーザが`greeting` ボタンをクリックすると、`AnonymousIdentity` を使用してcanister を呼び出します。
+
+このファイルは、`index.html` テンプレートファイルと連動して、`greet` 機能のための画像アセット、入力フィールド、ボタンを持つ HTML ページを表示します。
+
+続行するには、`index.js` ファイルを閉じます。
+
+以下のコマンドを実行して、プロジェクト用に作成されたフロントエンドアセットを表示します：
+
+    ls -l .dfx/local/canisters/explore_hello_frontend/
+
+コマンドは次のような出力を表示します：
+
+    -rw-r--r--  1 pubs  staff    6269 Dec 31  1969 assetstorage.did
+    -rw-r--r--  1 pubs  staff  432762 Jun 14 15:47 assetstorage.wasm.gz
+    -rw-rw-rw-  1 pubs  staff    6269 Dec 31  1969 constructor.did
+    -rw-r--r--  1 pubs  staff  432762 Jun 14 15:47 explore_hello_frontend.wasm.gz
+    -rw-r--r--  1 pubs  staff    2064 Jun 14 15:47 index.js
+    -rw-rw-rw-  1 pubs  staff       2 Jun 14 15:47 init_args.txt
+    -rw-rw-rw-  1 pubs  staff    6269 Jun 14 15:47 service.did
+    -rw-r--r--  1 pubs  staff    6582 Jun 14 15:47 service.did.d.ts
+    -rw-r--r--  1 pubs  staff    7918 Jun 14 15:47 service.did.js
+
+これらのファイルは、`dfx build` コマンドがノードモジュールとテンプレート`index.js` ファイルを使用して自動的に生成したものです。
+
+次に、`npm start` で開発サーバを起動します。
+
+出力は以下のようになるはずです：
+
+    > explore_hello_frontend@0.2.0 start
+    > webpack serve --mode development --env development
+    
+    <i> [webpack-dev-server] [HPM] Proxy created: /api  -> http://127.0.0.1:4943
+    <i> [webpack-dev-server] [HPM] Proxy rewrite rule created: "^/api" ~> "/api"
+    <i> [webpack-dev-server] Project is running at:
+    <i> [webpack-dev-server] Loopback: http://localhost:8083/
+    <i> [webpack-dev-server] On Your Network (IPv4): http://192.168.0.144:8083/
+    <i> [webpack-dev-server] On Your Network (IPv6): http://[fe80::1]:8083/
+
+ブラウザを開き、"Loopback "または "On Your Network (IPv4) "に移動します。URLアドレスに移動します。
+
+サンプル・アプリケーションの HTML ページが表示されていることを確認してください。
+
+例えば
+
+![Sample HTML entry page](_attachments/explore-hello.png)
+
+挨拶を入力し、**［Click Me**］をクリックして挨拶を返します。
+
+例
+
+![Return the name argument](_attachments/greeting.png)
+
+## 次のステップ
+
+canisters のデプロイ、削除、または管理の詳細については、[ canisters ](https://internetcomputer.org/docs/current/developer-docs/setup/manage-canisters) の管理を参照してください。
+
+このガイドの次のステップについては、[ canisters のアップグレード ガイドを](upgrading.md)参照してください。
+
+<!---
 # 5: Writing and deploying canisters
 
 ## Overview
@@ -364,3 +692,4 @@ For example:
 For more information on deploying, deleting or managing canisters, view the [managing canisters documentation](https://internetcomputer.org/docs/current/developer-docs/setup/manage-canisters).
 
 For the next step in this guide, check out the [upgrading canisters guide](upgrading.md)
+-->

@@ -1,3 +1,325 @@
+# 管理canisters
+
+## 概要
+
+このセクションのチュートリアルに従ったり、[examples](https://github.com/dfinity/examples)リポジトリからexamplesをクローンしたりして、IC SDKの使い方を試したことがある方は、すでにプログラムをビルドして **canisters**.このセクションでは、canister のライフcycle に関する追加情報と、canisters の管理方法について説明します。
+
+## canister 識別子の取得
+
+ご希望の開発ワークフローに応じて、canister の一意な識別子を、プログラムをコンパイルする前または後に取得することができます。たとえば、コードを記述する前にサブネット上のcanister に一意の識別子を確保したい場合は、`dfx canister create` コマンドを実行します。このコマンドは、基本的に空のcanister プレースホルダーを作成し、そこに後でコードをインストールすることができます。作成されたcanister には一意な識別子が付けられます。
+
+canister の一意な識別子を取得するには：
+
+- #### ステップ 1: コンピュータで新しいターミナル・ウィンドウまたはタブを開きます。
+
+- #### ステップ2：次のようなコマンドを実行して、作成する予定のcanister の新しいプロジェクトを作成します：
+  
+  ```
+    dfx new YOUR-PROJECT-NAME
+  ```
+  
+  プロジェクトに使用する名前は、デフォルトでcanister の名前としても使用されることに注意してください。
+
+- #### ステップ3：新しいプロジェクト・ディレクトリに移動します。
+
+- #### ステップ 4:`dfx.json` 設定ファイルを開き、使用するcanister 実行環境（IC ブロックチェーンなど）のホストとポートを設定します。
+  
+  ローカル・デプロイメントを使用している場合は、このステップを省略できます。
+  
+  また、コードをコンパイルする前に必要と思われる追加のcanisters の識別子を作成したい場合は、オプションでcanisters の名前を変更したり、canister の設定を設定ファイルに追加したりすることもできます。
+
+- #### ステップ5： 必要であれば、以下のコマンドを実行して、ローカルのcanister 実行環境を起動します：
+  
+  ```
+    dfx start --background
+  ```
+  
+  ほとんどの場合、このステップはcanisters をローカルで実行する場合にのみ必要です。
+  
+  ICブロックチェーンなどのリモート実行環境で実行するためにcanisters を登録する場合は、このパラメータで指定された環境でタスクを実行するために、`--network` コマンドラインオプションを含めることになります。
+
+- #### ステップ6：以下のコマンドを実行して、`dfx.json` で定義されたcanisters に一意な識別子を登録します：
+  
+  ```
+    dfx canister create --all
+  ```
+  
+  このコマンドにより、`.dfx/local` ディレクトリが作成され、プロジェクト用の`canister_ids.json` ファイルがそのディレクトリに追加されます。
+
+## ローカル識別子付きcanister のビルド
+
+プロジェクトのソースコードを書いたら、canister としてデプロイする前に、WebAssembly モジュールにコンパイルする必要があります。
+
+ローカルでデバッグするためだけにプロジェクトをコンパイルするのであれば、ローカルで定義された識別子を生成することができます。
+
+ローカルで定義された識別子を生成するには
+
+- #### ステップ 1: 必要に応じた構成設定とプログラム・ロジックでプロジェクトを作成します。
+
+- #### ステップ 2: 必要に応じて、ローカルのcanister 実行環境を起動します。
+  
+  ICブロックチェーンなどのリモート実行環境で実行するためにcanisters をコンパイルする場合は、このパラメータで指定された環境でタスクを実行するために、`--network` コマンドラインオプションを含めます。
+
+- #### ステップ3：以下のコマンドを実行して、`dfx.json` で定義されたcanisters に対してハードコードされたローカル識別子を生成します：
+  
+  ```
+    dfx build --check
+  ```
+  
+  ICブロックチェーンにプロジェクトをデプロイする前に、ローカルで定義した識別子を置き換える一意のcanister 識別子を登録する必要があることに注意してください。
+
+## デプロイcanisters
+
+プログラムをコンパイルした後、コンパイルしたコードをローカルcanister 実行環境または IC ブロックチェーン上で実行するcanister にインストールできます。
+
+事前またはビルドプロセス中に作成されたcanister 識別子が、デプロイ時にコードがインストールされる場所を決定します。
+
+コードを初めてデプロイするには
+
+- #### ステップ 1: 新しいターミナルを開き、プロジェクト・ディレクトリに移動します。
+
+- #### ステップ 2: 必要であれば、ローカルのcanister 実行環境を起動します。
+  
+  ほとんどの場合、このステップはcanisters をローカルで実行する場合にのみ必要です。
+  
+  ICブロックチェーンなどのリモート実行環境で実行するためにcanisters を登録する場合は、このパラメータで指定した環境でタスクを実行するために、`--network` コマンドラインオプションを指定します。
+
+- #### ステップ 3: デプロイしたいすべてのcanisters のcanister 識別子があることを確認します。
+
+- #### ステップ4：以下のコマンドを実行して、canisters をすべてデプロイします：
+  
+  ```
+    dfx canister install --all
+  ```
+
+## canister ID を検索します。
+
+すべてのcanisters には一意の識別子があります。canister例えば、dapp のフロントエンドcanister にアクセスしたり、Candid Web インターフェースを使用してサービスと対話したりする場合は、適切なcanister 識別子を指定する必要があります。
+
+識別子はcanisters がデプロイされる環境に固有であるため、情報を格納するために使用されるファイルは異なるディレクトリにあります。例えば、ローカルに配置されたcanister の識別子は、プロジェクトの`.dfx/local/canister_ids.json` ファイルにあります。
+
+`dfx canister id` コマンドを実行すると、特定のcanister のcanister 識別子を調べることができます。たとえば、ローカルのcanister 実行環境にデプロイされた`lookup` canister のcanister 識別子を調べるには、次のコマンドを実行します：
+
+    dfx canister id lookup
+
+`ic` エイリアスで指定された環境にデプロイされた同じcanister のcanister 識別子を調べるには、次のコマンドを実行します：
+
+    dfx canister --network=ic id lookup
+
+## 既存のウォレットの追加canisters
+
+ローカルで開発を行っている場合、新しいプロジェクトを作成すると、そのプロジェクトのcanisters で使用するデフォルトのウォレットが自動的に作成されます。以前作成したcanisters を使っているプロジェクトにウォレットを追加したい場合は、`dfx` にウォレットを生成させることができます。
+
+既存のcanister で使用するウォレットを追加するには：
+
+- #### ステップ 1: ターミナルを開き、プロジェクトディレクトリに移動します。
+
+- #### ステップ 2: 必要であれば、以下のコマンドを実行してローカルのcanister 実行環境を停止します：
+  
+  ```
+    dfx stop
+  ```
+
+- #### ステップ 3:`.dfx` ディレクトリを削除します。
+
+- #### ステップ 4: 次のコマンドを実行して、ローカルのcanister 実行環境ネットワークを起動します：
+  
+  ```
+    dfx start --clean
+  ```
+
+## を再インストールします。canister
+
+開発中にcycle をインストールし、デバッグや改良を行いながらプログラムを更新したい場 合があります。
+
+このような場合、登録したcanister 識別子を保持し、canister のコードやステー トは保持しないでください。たとえば、canister にはテスト・データしかなく、それを保持したくない場合や、プログラムを完全に変更することにした場合などです。このような場合、以前のプログラムのインストールに使用したcanister 識別子を使用して再インストールすることができます。
+
+canister を再インストールするには：
+
+- #### ステップ 1: 新しいターミナルを開き、プロジェクト・ディレクトリに移動します。
+
+- #### ステップ 2: 必要であれば、ローカルのcanister 実行環境を起動します。
+  
+  ほとんどの場合、このステップはcanisters をローカルで実行する場合にのみ必要です。
+  
+  ICブロックチェーンなどのリモート実行環境で実行するためにcanisters を登録する場合は、このパラメータで指定した環境でタスクを実行するために、`--network` コマンドラインオプションを指定します。
+
+- #### ステップ 3: 再デプロイするすべてのcanisters のcanister 識別子があることを確認します。
+
+- #### ステップ 4：canister ごとに以下のコマンドを実行して、canisters をすべて再デプロイします：
+  
+  ```
+    dfx canister install <canister id or name> --mode reinstall
+  ```
+
+canister にコードまたはステートに関連付けられているかどうかに関係なく、canister を置き換えるために`reinstall` モードを使用できることに注意してください。
+
+## を所有する ID を設定します。canister
+
+ほとんどの場合、`dfx canister create` コマンドを最初に実行すると、`default` ユーザ ID が自動的に作成されます。このデフォルトのIDは、ローカルのユーザーアカウント用に生成された公開鍵と秘密鍵のペアで構成されています。通常、この`default` IDは、作成するすべてのプロジェクトとデプロイするすべてのcanisters のデフォルトの所有者でもあります。ただし、`default` ユーザー ID が使用されないようにするために、選択した ID を積極的に作成して使用することができます。
+
+例として、`registered_owner` ID を作成し、`pubs` プロジェクトの登録、ビルド、デプロイ、呼び出しに使用するシナリオを示します。
+
+プロジェクトの ID を設定するには
+
+- #### ステップ 1: 以下のコマンドを実行して、新しいプロジェクトを作成します：
+  
+  ```
+    dfx new project
+  ```
+
+- #### ステップ 2: 以下のコマンドを実行して、プロジェクト・ディレクトリに移動します：
+  
+  ```
+    cd project
+  ```
+
+- #### ステップ 3: 以下のコマンドを実行して、バックグラウンドでローカルのcanister 実行環境を起動します：
+  
+  ```
+    dfx start --background
+  ```
+
+- #### ステップ4：次のコマンドを実行して、新しい`registered_owner` IDを作成します：
+  
+  ```
+    dfx identity new registered_owner
+  ```
+
+- #### ステップ 5: 次のコマンドを実行して、`registered_owner` ID を使用するようにアクティブ・ユーザー・コンテキストを設定します：
+  
+  ```
+    dfx identity use registered_owner
+  ```
+
+- #### ステップ 6: 以下のコマンドを実行して、プロジェクト用にcanisters を登録、ビルド、デプロイします：
+  
+  ```
+    dfx canister create --all
+    dfx build --all
+    dfx canister install --all
+  ```
+  
+  これらのコマンドは、`registered_owner` IDを使用して実行され、そのユーザがデプロイされたcanisters の所有者になります。
+
+- #### ステップ 7: 以下のコマンドを実行して、プロジェクトの \*`_backend` canister から`greet` 関数を呼び出し、デプロイが成功したことを確認します：
+  
+  ```
+    dfx canister call project_backend greet '("Sam")'
+  ```
+
+## の実行ステートを管理します。canister
+
+canister をデプロイすると、ユーザーや他のcanisters からのリクエストの受信と処理を開始できます。 リクエストの送信と返信の受信が可能なCanisters は、**実行**中ステートと見なされます。
+
+通常、canisters はデフォルトで Running 状態に置かれますが、canister を一時的または恒久的に停止したい場合もあります。例えば、canister をアップグレードする前に停止したい場合などです。canister を停止すると、進行中で完了まで実行するかロールバックする必要があるメッセー ジを適切に処理することができます。また、canister を削除する前提条件として、canister を停止してメッセージキューをきれいに消去しておきたい場合もあるでしょう。
+
+`dfx canister status` コマンドを実行すると、すべてのcanisters または指定したcanister の現在のステータスを確認できます。例えば、ローカルのcanister 実行環境で実行されているすべてのcanisters のステータスを確認するには、以下のコマンドを実行します：
+
+    dfx canister status --all
+
+このコマンドは、canisters が現在実行中の場合、以下のような出力を返します：
+
+    Canister status_check's status is Running.
+    Canister status_check_assets's status is Running.
+
+現在実行中のcanisters を停止するには、`dfx canister stop` コマンドを実行します。
+
+    dfx canister stop --all
+
+このコマンドは、次のような出力を表示します：
+
+    Stopping code for canister status_check, with canister_id 75hes-oqbaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q
+    Stopping code for canister status_check_assets, with canister_id cxeji-wacaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q
+
+`dfx canister status` コマンドを再実行すると、処理が必要な保留中のメッセージがないことを示すステー タス`Stopped` が表示されたり、処理が必要な飛行中のメッセージがあることを示すステー タス`Stopping` が表示されたりします。
+
+canister を再起動するには、例えばcanister のアップグレードが成功した後、`dfx canister start` コマンドを実行します。例えば、canisters をすべて再起動するには、以下のコマンドを実行します：
+
+    dfx canister start --all
+
+このコマンドは、次のような出力を表示します：
+
+    Starting code for canister status_check, with canister_id 75hes-oqbaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q
+    Starting code for canister status_check_assets, with canister_id cxeji-wacaa-aaaaa-aaaaa-aaaaa-aaaaa-aaaaa-q
+
+## アップグレードcanister
+
+canister 識別子は保持されますがステート は保持されないcanister 再インストールとは異なり、canister アップグレードでは、デプロイされたcanister の状態を保持し、コードを変更することができます。
+
+たとえば、プロフェッショナルなプロフィールとソーシャルなつながりを管理するdapp があるとします。dapp に新機能を追加したい場合、canister のコードを、以前に保存されたデータを失うことなく更新できる必要があります。canister アップグレードでは、プログラムのステートを失うことなく、プログラムの変更に合わせて既存のcanister 識別子を更新することができます。
+
+Motoko で記述されたcanister をアップグレードするときにステート を保持するには、必ず`stable` キーワードを使用して、保持したい変数を特定し ます。Motoko での変数のステート保持の詳細については、[安定変数とアップグレード](/motoko/main/upgrades.md)方法を参照してください。Rust で書かれたcanister をアップグレードする場合は、canister のアップグレード後にデータが適切に保存されるように、[Rust CDK の資産保存の](https://github.com/dfinity/cdk-rs/blob/master/examples/asset_storage/src/asset_storage_rs/lib.rs)例にあるように`pre_upgrade` と`post_upgrade` の関数を使用する必要があります。
+
+canister をアップグレードするには ：
+
+- #### ステップ 1: 新しいターミナルを開き、プロジェクトディレクトリに移動します。
+
+- #### ステップ 2: 必要であれば、ローカルのcanister 実行環境を起動します。
+  
+  ほとんどの場合、このステップはcanisters をローカルで実行している場合にのみ必要です。
+  
+  ICブロックチェーンなどのリモート実行環境で実行するためにcanisters を登録する場合は、このパラメータで指定した環境でタスクを実行するために、`--network` コマンドラインオプションを指定します。
+
+- #### ステップ 3: アップグレードしたいすべてのcanisters のcanister 識別子があることを確認します。
+  
+  プログラムでは、変数宣言で`stable` キーワードを使用して、ステー トを維持する変数を特定する必要があることに注意してください。
+  
+  安定変数の宣言の詳細については、[**Motoko のマニュアルを**](../../motoko/main/stablememory.md)参照してください。
+
+- #### ステップ 4: 以下のコマンドを実行して、canisters をすべてアップグレードします：
+  
+  ```
+    dfx canister install --all --mode upgrade
+  ```
+
+## を削除します。canister
+
+特定のデプロイメント(ローカルまたはリモートのいずれか)上の特定のプ ロジェクトの特定のcanister またはすべてのcanisters を完全に削除する場 合は、コマンドを実行します：
+
+    dfx canister delete <canister-name>
+
+canister を削除すると、canister 識別子、コード、ステート が削除されます。ただし、canister を削除する前に、canister を停止して、保留中のメッセージ要求または応答を消去する必要があります。
+
+## すべての削除canisters
+
+プロジェクトのすべてのcanisters を削除するには、以下の手順に従います：
+
+- #### ステップ 1: 新しいターミナルを開き、プロジェクト・ディレクトリに移動します。
+
+- #### ステップ 2: 必要に応じて、ローカルのcanister 実行環境を起動します。
+  
+  ほとんどの場合、このステップはcanisters をローカルで実行している場合にのみ必要です。
+  
+  IC ブロックチェーンなどのリモート実行環境で実行するためにcanisters を削除する場合は、このパラメータで指定した環境でタスクを実行するために`--network` コマンドラインオプションを指定します。
+
+- #### ステップ 3: 以下のコマンドを実行して、ローカルの実行環境canister で実行されているプロジェクトcanisters のステータスを確認します：
+  
+  ```
+    dfx canister status --all
+  ```
+
+- #### ステップ 4: 以下のコマンドを実行して、プロジェクトcanisters をすべて停止します：
+  
+  ```
+    dfx canister stop --all
+  ```
+
+- #### Step 5: 以下のコマンドを実行し、プロジェクトcanisters を全て削除します：
+  
+  ```
+    dfx canister delete --all
+  ```
+
+## リソース
+
+- [Building on the ICで](../../samples/overview.md)サンプルdapps 。
+
+- さまざまなICの概念とサービスについて学ぶための[概念](../../concepts/index.md)。
+
+- ICで使用される様々な用語の定義については、[IC用語集を](../../references/glossary.md)参照してください。
+
+<!---
 # Managing canisters
 
 ## Overview
@@ -282,3 +604,5 @@ To delete all canisters for a project:
 -   [Concepts](../../concepts/index.md) to learn about different IC concepts and services.  
 
 -   [IC glossary](../../references/glossary.md) to learn the definitions of various terms used within the IC. 
+
+-->

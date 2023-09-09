@@ -1,3 +1,70 @@
+# 機能統合
+
+## 概要
+
+これまでのセクションでは、IC上でcanisters の構築を開始する方法を説明しましたが、ここではdapp に様々な（時には高度な）追加機能を統合する方法を説明します。アイデンティティから台帳の統合、他のブロックチェーンとの統合、ICから外部への通信、さらにはdapp の制御の分散化まで、すべてここにあります。
+
+## ビットコインとの統合
+
+Bitcoinネットワークと直接統合することで、IC上のcanisters 、Bitcoinネットワーク上のトランザクションで直接、Bitcoinの受信、保有、送信を行うことができます。Canisters 、Bitcoinネットワーク上でBitcoinを保有する一般ユーザーとまったく同じように行動することができます。
+
+- [ビットコインの統合](./bitcoin/index.md)。
+- [どのように機能](./bitcoin/bitcoin-how-it-works.md)するか
+- [ローカル開発には](./bitcoin/local-development.md)、ローカルでの実験方法を示すチュートリアルが含まれています。
+- [Chain-key Bitcoin](./bitcoin/ckbtc.md)には、チェーンキービットコイン（ckBTC）の概要が記載されています。
+
+## HTTPS アウトコール
+
+IC上のHTTP(S)アウトコールは、canisters 、ブロックチェーンの外部にあるHTTP(S)サーバーに直接コールを行い、その応答をcanister のさらなる処理で使用することを可能にし、複製されたステートをそれらの入力を使用して安全にアップデートすることができます。ブロックチェーン史上初の試みであり、オラクルの必要性を軽減します。
+
+- [HTTPSアウトコールは](./https-outcalls/index.md)、ICが外の世界とどのように通信できるかの概要を示します。
+- また、オラクルとの比較も行っています[。](./https-outcalls/https-outcalls-how-it-works.md)
+
+## ICP台帳
+
+Internet Computer Protocol (ICP)は、台帳canister と呼ばれる専用のcanister を使ってICPの管理を実装しています。単一の台帳canister があり、NNSサブネット上の他の台帳canisters と共に動作します。台帳canister はアカウントとトランザクションを保持するスマートコントラクトです。
+
+- ICP元帳の基本を見るには、[元帳の概要を](./ledger/index.md)ご覧ください。
+- [Interactは](./ledger/interact-with-ledger.md)、ICP台帳とやり取りするためのコマンドとプロトコルフローを示します。
+- [ローカル・セットアップ](./ledger/ledger-local-setup.md)ローカル環境で台帳を試す方法を説明します。
+- [新しいトークンのデプロイ](./ledger/deploy-new-token.md)新しいトークンをデプロイしてRosettaに接続する方法を説明します。
+
+## インターネットID
+
+Internet Identity は、ユーザーが Web3 サービスやdapps とのセッションを作成し、従来のブロックチェーン取引に署名することを可能にします。
+
+- [Internet Identityでは](../../references/ii-spec.md)、Internet Identityの概要を説明します。
+
+## ロゼッタ
+
+RosettaはCoinbaseによって導入されたオープン規格で、取引所、ブロックエクスプローラー、ウォレットにおけるブロックチェーントークンの統合を簡素化します。このドキュメントは、CeFi取引所で取引可能なトークンをIC上に展開したい場合や、ブロックエクスプローラーやウォレットに取り組んでいる場合に役立つ可能性があります。
+
+- [Rosettaのページでは](./rosetta/index.md)、Rosettaノードのセットアップ方法とFAQについて説明しています。
+- [Transfers](./rosetta/transfers.md)では、Rosetta Construction API を使って ICP を送金する方法を詳しく説明しています。
+- [Neuron lifecycle s (IC asset allows controllers to participate the governance of the network by submitting and voting on proposals)の概要です。](./rosetta/neuron-lifecycle.md) neuron
+- [Staking support](./rosetta/staking-support.md)は、Rosetta API の拡張を指定し、資金のステーキングと IC 上のガバナンスneuronの管理を可能にします。
+- [ステーキングのチュートリアルでは](./rosetta/staking-tutorial.md)、neuron の作成プロセスを説明します。
+- [Hotkeys](./rosetta/hotkeys.md) neuron 管理用のホットキーの生成方法について説明します。
+
+## サービス・ナーバス・システム（SNS）
+
+NNS が IC をコントロールするオープントークン化された DAO であるのと同様に、SNS はアルゴリズム DAO であり、開発者がdapps のために分散化されたトークンベースのガバナンスシステムを作成することを可能にします。 このセクションでは[SNS ドキュメントの概要を](./sns/index.md)説明し、次に開発者向けのドキュメントを提供します。
+
+- [SNS の紹介。](./sns/introduction/sns-intro-high-level.md)
+- [SNS 立ち上げの準備方法の紹介。](./sns/tokenomics/index.md)
+- [SNS統合ドキュメント](./sns/integrating/index.md)
+- [SNSテストに関する文書](./sns/testing/testing-before-launch.md)
+- [SNS立ち上げの紹介](./sns/launching/launch-summary.md)
+- [SNSの管理方法に関する情報。](./sns/managing/manage-sns-intro.md)
+
+## 閾値ECDSA
+
+ブロックチェーン上の閾値ECDSA実装は、秘密鍵を安全に保管し、適格なエンティティの要求に応じて、そのエンティティのみに署名を発行するハードウェアセキュリティモジュール（HSM）のオンチェーンペンダントと見なすことができます。ECDSAベースの）ブロックチェーンとの直接統合を促進することが特に重要です。
+
+- [Threshold ECDSAでは](./t-ecdsa/index.md)、この機能で実現できることの概要を説明しています。
+- 詳細については、[How it worksを](./t-ecdsa/t-ecdsa-how-it-works.md)ご覧ください。
+
+<!---
 # Functionality integrations
 
 ## Overview
@@ -61,3 +128,5 @@ A threshold ECDSA implementation on a blockchain can be viewed as the on-chain p
 
 
 
+
+-->

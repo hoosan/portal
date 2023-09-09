@@ -1,3 +1,23 @@
+# motoko コンテンツの更新
+
+cd portal/
+git submodule update --init \# 必要であれば
+cd submodules/motoko
+ git checkout 0.7.6 \#あるいは好きな新しいタグ
+cd .../...
+git add submodules/motoko \# サブモジュールに変更を加える
+
+次に、motoko リリースページからダウンロードした static/moc-interpreter-0.7.3.js を static/moc\_interpreter-0.7.6.js に置き換えます。これがチェックインされていない方がいいのですが、今のところはチェックインされています。
+
+static/load\_moc.tsを編集して、正しいバージョンのインタプリタとベースライブラリを使うようにします。
+
+最後に、docs/motoko/version.mdを編集して、motoko の現在のバージョンを報告します。
+
+git add -u
+git commit -m "updatingmotoko doc"
+git push
+
+<!---
 # Updating motoko content
 
 cd portal/
@@ -17,3 +37,5 @@ git add -u
 git commit -m "updating motoko doc"
 git push
 
+
+-->

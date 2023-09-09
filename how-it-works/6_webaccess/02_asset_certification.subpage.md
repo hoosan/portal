@@ -1,9 +1,34 @@
 ---
+
 title: Asset certification
 abstract:
 shareImage: /img/how-it-works/asset-certification.jpg
 slug: asset-certification
 ---
+# 資産の認証
+
+Internet Computer とやりとりするユーザーは、受信したレスポンスが実際にInternet Computer から送られてきたものであり、改ざんされていないことを確認できる必要があります。従来、インターネットでは、この問題は公開鍵暗号を使って解決されてきました。サービスを実行するサーバーは秘密鍵を持っており、それを使ってすべてのレスポンスに署名します。その後、ユーザーはサーバーの公開鍵を使ってレスポンスの署名を検証することができます。
+
+Web2のウェブサーバーが公開鍵と秘密鍵のペアを保持するように、Internet Computer ブロックチェーン全体も公開鍵と秘密鍵のペアを保持します。さらに、Internet Computer の各サブネットも独自の公開鍵と秘密鍵のペアを維持します。新しいサブネットが形成されると、NNSはサブネットの証明書を発行します。この証明書には、サブネットの公開鍵とInternet Computer の公開鍵との署名が含まれています。サブネットがユーザのメッセージに応答すると、その応答には、サブネットの公開鍵による応答への署名と、NNSがサブネットに発行した証明書を含む証明書チェーンが含まれます。ユーザーは、Web2の証明書チェーンを検証するのと同様に、Internet Computer の公開鍵を使用して証明書チェーンを検証できます。
+
+各ブロックチェーンノードはサブネット秘密鍵の一部のみを共有します。その結果、各ノードは単独でメッセージに署名することはできません。しかし、サブネットのノードの少なくとも2/3がメッセージに同意すれば、そのノードは一緒に秘密鍵を組み合わせてメッセージに署名することができます。署名されたメッセージは、サブネットの公開鍵を使って簡単に検証することができます。検証が成功すれば、canister を実行しているブロックチェーンノードの少なくとも2/3がそのメッセージの配信に合意したことになります。Internet Computer 、秘密鍵共有の生成と維持、秘密鍵共有を使用したメッセージの署名に使用される技術は、[チェーンキー技術と](/how-it-works/chain-key-technology/)呼ばれています。
+
+Internet Computer は2種類のメッセージをサポートしています：クエリーコールとアップデートコールです。クエリーコールはHTTP`GET` リクエストに似ており、Internet Computer のステートを変更しない。クエリーコールはコンセンサスプロトコルを経由しない。ユーザーはサブネット内のどのブロックチェーンノードに対してもクエリーコールを行うことができ、その（悪意のある可能性のある）ブロックチェーンノードのみがクエリーに回答します。証明書の生成にはサブネットの少なくとも2/3のノードのコンセンサスが必要なため、Internet Computer 、クエリーコールに応答しても証明書は発行されません。
+
+効率上の理由から、canisters はクエリーコールを通じてウェブページをクライアントに配信します。しかし、クライアントは受信したコンテンツを検証する必要があるため、Internet Computer は[Certified Variables](/how-it-works/response-certification/) という概念を導入しています。一言で言えば、canister 、データの一部に対して事前に証明書を作成し、それをレプリケートされたステート内に格納することを選択できます。どのようなユーザでも、後でクエリーコールによって証明書とともにデータにアクセスすることができます。
+
+アプリのすべてのアセット（HTML、CSS、Javascriptファイル、画像、動画など）を事前に証明するために、証明された変数の概念を使用できます。アセット認証には2つの方法があります。1)canister の開発者は、すべてのアセットを管理および認証するコードを明示的に記述できます。2)canister の開発者は、canister を作成し、タイプを「asset」に設定し、すべてのアセットを含むフォルダを指定することで、「assetcanister 」を作成できます。アセットcanister は、すべてのアセットを管理し認証するための定型的なコードが用意されていることを除けば、通常のcanister です。
+
+canister が証明書とともにレスポンスを発行する場合、クライアントにレスポンスを渡す前に[HTTP ゲートウェイを](/how-it-works/smart-contracts-serve-the-web)使用して証明書を検証することができます。
+
+証明書の詳細については、[Certified Variablesを](/how-it-works/response-certification/)参照してください。
+
+[アセット認証 Wiki記事](https://wiki.internetcomputer.org/wiki/HTTP_asset_certification)
+
+[RustCanister 開発セキュリティのベストプラクティス](/docs/current/references/security/rust-canister-development-security-best-practices#asset-certification)
+
+<!---
+
 
 # Asset certification
 
@@ -26,3 +51,5 @@ For more information on certification, check [Certified Variables](/how-it-works
 [Asset Certification Wiki Article](https://wiki.internetcomputer.org/wiki/HTTP_asset_certification)
 
 [Rust Canister Development Security Best Practices](/docs/current/references/security/rust-canister-development-security-best-practices#asset-certification)
+
+-->

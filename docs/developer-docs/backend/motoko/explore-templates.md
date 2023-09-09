@@ -1,3 +1,141 @@
+# 2: プロジェクト組織
+
+## 概要
+
+チュートリアル「[0.6: Introduction to dfx](/docs/tutorials/developer-journey/level-0/06-intro-dfx.md)developer journey」から IC SDK の見学を始められた方は、Internet Computer 上で動作するdapps を作成するための基本的なワークフローをすでにご覧になったことでしょう。 では、新しいプロジェクトを作成するときにワークスペースに追加されるデフォルトのファイルとフォルダを調べながら、そのワークフローを詳しく見てみましょう。
+
+プレビューとして、次の図は、Internet Computer をコンピューター上でローカルに実行する場合の開発作業の流れを示しています。
+
+![Development work flow](_attachments/dev-workflow-explore.svg)
+
+Motoko プロジェクトのコード構成を調べるには、まず、次のコマンドを実行して新しいプロジェクトを作成します：
+
+    dfx new explore_hello
+
+`dfx new explore_hello` コマンドを実行すると、新しいプロジェクト名の下にデフォルトのプロジェクト・ディレクトリー構造と、プロジェクト用の新しい Git リポジトリーを含む、新しい`explore_hello` プロジェクトが作成されます。`node.js` がローカルにインストールされている場合、新しいプロジェクトを作成すると、フロントエンドのテンプレートコードと依存関係も追加されます。
+
+JavaScript、Motoko 、その他のコンテキストでプロジェクト名を使用する際に有効になるように、英数字とアンダースコアのみを使用してください。ダッシュや特殊文字を含めることはできません。
+
+以下のコマンドを実行して、デフォルトのディレクトリ構造を表示します：
+
+    ls -l explore_hello
+
+デフォルトでは、プロジェクトのディレクトリ構造には、少なくとも 1 つのソース・サブディレク トリ、テンプレート`README.md` ファイル、デフォルト`dfx.json` 設定ファイルが含まれています。
+
+`node.js` がインストールされているかどうかによって、プロジェクト・ディレクトリには以下のファイルの一部またはすべてが含まれるかもしれません：
+
+    explore_hello/
+    ├── README.md      # default project documentation
+    ├── dfx.json       # project configuration file
+    ├── node_modules   # libraries for frontend development
+    ├── package-lock.json
+    ├── package.json
+    ├── src            # source files directory
+    │   ├── explore_hello_backend
+    │   │   └── main.mo
+    │   ├── explore_hello_frontend
+    │       ├── assets
+    │       │   ├── logo.png
+    │       │   ├── main.css
+    │       │   └── sample-asset.txt
+    │       └── src
+    │           ├── index.html
+    │           └── index.js
+    └── webpack.config.js
+
+少なくとも、デフォルトのプロジェクト・ディレクトリには以下のフォルダとファイルが含まれます：
+
+- リポジトリでプロジェクトを文書化するためのデフォルトの`README` ファイル。
+
+- プロジェクトの設定可能なオプションを設定するためのデフォルトの`dfx.json` 設定ファイル。
+
+- dapp で必要なすべてのソースファイルを格納するデフォルトの`src` ディレクトリ。
+
+デフォルトの`src/explore_hello_backend/` ディレクトリにはテンプレート`main.mo` ファイルが含まれており、これを変更したり置き換えたりすることで、コア・プログラミング・ロジックを含めることができます。
+
+このガイドでは基本的な使い方を説明するため、`main.mo` ファイルのみを使用します。`node.js` がインストールされている場合、プロジェクトディレクトリにはdapp のフロントエンドインターフェースを定義するために使用できる追加のファイルとディレクトリが含まれています。フロントエンドの開発と`assets` フォルダ内のテンプレートファイルについては、少し後で説明します。
+
+## デフォルトの設定を確認
+
+デフォルトでは、新しいプロジェクトを作成すると、プロジェクトディレクトリにいくつかのテンプレートファイルが追加されます。これらのテンプレートファイルを編集することで、プロジェクトのコンフィギュレーション設定をカスタマイズしたり、開発スピードを上げるために独自のコードを含めることができますcycle 。
+
+プロジェクトのデフォルト設定ファイルを確認するには、`dfx.json` の設定ファイルをテキストエディタで開き、デフォルト設定を確認します。
+
+ファイルの内容は以下のようになっているはずです：
+
+```
+{
+  "canisters": {
+    "explore_hello_backend": {
+      "main": "src/explore_hello_backend/main.mo",
+      "type": "motoko"
+    },
+    "explore_hello_frontend": {
+      "dependencies": [
+        "dexplore_hello_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/explore_hello_frontend/src/index.html"
+      },
+      "source": [
+        "src/explore_hello_frontend/assets",
+        "dist/explore_hello_frontend/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}%        
+```
+
+デフォルト設定のいくつかを見てみましょう。
+
+- このファイルには、`explore_hello_frontend` と`explore_hello_backend` の2つのcanisters が定義されています。
+- `explore_hello_backend` canister には`main` 属性があり、プログラムのコア・ファイル`main.mo` のファイル・パスを指定します。
+- `explore_hello_backend` canister には`type` 'motoko\` があり、プログラミング言語を指定します。canister が Rust で書かれていた場合、この値は 'rust' となります。
+- `explore_hello_frontend` canister は`explore_hello_backend` canister に依存します。つまり、バックエンドcanister がデプロイされ、実行されていることに依存しています。
+- `explore_hello_frontend` canister のフロントエンドエンドポイントは`src/explore_hello_frontend/src/index.html` です。
+- `explore_hello_frontend` canister の追加アセットは`source` 設定で指定します。
+- 最後に、`explore_hello_frontend` canister は`type` に 'assets' を指定し、フロントエンドアセットcanister として設定します。
+
+## デフォルトのプログラムコードを確認
+
+新しいプロジェクトには常にテンプレート`main.mo` ソースコードファイルが含まれています。このファイルを編集して独自のコードを含めることで、開発をスピードアップできますcycle 。
+
+Motoko プログラミング言語を使ってシンプルなdapp を作成する出発点として、デフォルトの`main.mo` テンプレートファイルにあるサンプルプログラムを見てみましょう。
+
+プロジェクトのデフォルト・サンプル・プログラムを確認するには、テキストエディタで`src/explore_hello_backend/main.mo` ファイルを開き、テンプレート内のコードを確認します：
+
+    actor {
+      public query func greet(name : Text) : async Text {
+        return "Hello, " # name # "!";
+      };
+    };
+
+このプログラムのいくつかの重要な要素を見てみましょう：
+
+- このサンプル・コードでは、`main` 関数ではなく`actor` 関数を定義しています。Motoko の場合、`main` 関数はファイル自体に暗黙的に含まれています。
+
+- 従来の「Hello, World！」プログラムは、`print` または`println` 関数を使って文字列を印刷する方法を示していますが、この従来のプログラムは、Internet Computer 上で実行されるMotoko dapps の典型的な使用例ではありません。
+
+- このサンプルプログラムでは、print 関数の代わりに、`name` 型の引数`Text` を受け取る public`greet` 関数で`actor` を定義します。
+
+- このプログラムでは、`async` キーワードを使用して、`"Hello, "` 、`#` 演算子、`name` 引数、`"!"` を使用して構築されたテキスト文字列を連結した非同期メッセージを返すことを示します。
+
+`actor` オブジェクトと非同期メッセージ処理を使用するコードについては、もう少し後で詳しく説明します。とりあえず、次のセクションに進んでください。
+
+## 次のステップ
+
+次に、dapp をデプロイする前に、[開発者環境を](./dev-env.md)セットアップしましょう。
+
+<!---
 # 2: Project organization
 
 ## Overview
@@ -142,3 +280,5 @@ We’ll explore code that uses `actor` objects and asynchronous message handling
 ## Next steps
 
 Next, let's set up our [developer environment](./dev-env.md) before deploying the dapp. 
+
+-->

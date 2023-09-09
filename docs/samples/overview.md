@@ -1,3 +1,278 @@
+# 概要
+
+以下のサンプルdapps をご覧いただき、IC上でのビルドの可能性をご確認ください。すべてのサンプルとその他のプロジェクトは[samples repo](https://github.com/dfinity/examples) にあります。その他のリソースは、[素晴らしいDFINITY リポジトリ](https://github.com/dfinity/awesome-dfinity)（私たちのコミュニティからのオープンソースプロジェクトとサンプルのキュレーションセット）または[ハッカソンプロジェクトで](hackathon-projects)見つけることができます！
+
+## Hello, world！
+
+dapp 'Hello, World\!' に相当するもので、バックエンドとフロントエンドが分かれていますcanister ウェブページを提供します。
+
+- [ドキュメント](./hello)。
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/hello).
+- [Rust](https://github.com/dfinity/examples/tree/master/rust/hello).
+- [実行](https://6lqbm-ryaaa-aaaai-qibsa-cai.ic0.app/)例をご覧ください。
+
+## Actor クラス
+
+動的なactor (クラス) のインスタンス化を示すサンプルdapp です。
+
+- [ドキュメント](./actor-classes)。
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/classes).
+
+## Actor リファレンス
+
+actor (参照) として IC 管理canister をどのように使用するかを示す単純なdapp です。
+
+- [ドキュメント](./actor-reference)。
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/actor_reference).
+
+## 電卓
+
+このサンプルは基本的な電卓dapp を示します。直交永続セル変数を使用して、最新の計算結果を表す任意の精度の整数を格納します。
+
+- [ドキュメント](./calculator)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/calc).
+
+## 認定変数
+
+このdapp はフロントエンドとバックエンドを提供し、クライアント側の証明書検証を伴う、単純な認証済み変数（単一の 32 ビット数）を示します。
+
+- [ドキュメント](./cert-var)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/cert-var)
+
+## カウンタ
+
+基本的な (安定した) 変数のデモを表示するシンプルなdapp です。
+
+- [ドキュメント](./counter)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/counter)
+
+## 基本的な分散型自律組織(DAO)
+
+分散型ガバナンスはICのハイライトであり、基本的なDAOサンプルコードで説明されています。これは、アカウントと対応するトークンのセットを初期化する方法、アカウント所有者が他のアカウント所有者に投票するための提案を提出する方法、そして十分な賛成票があれば提案が実行される方法を示しています。
+
+- [ドキュメント](./dao)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/basic_dao).
+- [Rust](https://github.com/dfinity/examples/tree/master/rust/basic_dao).
+- [YouTubeチュートリアル](https://youtu.be/3IcYlieA-EE).
+
+## 基本的な分散型取引所（DEX）
+
+IC 上で DeFi アプリケーションを実現するには、canisters トークンcanisters と台帳canister とやり取りする必要があります。この例dapp は、取引所が資金を預かり、ユーザーが取引する際に内部残高帳簿を更新し、資金が引き出される際に預かりをユーザーに返す方法を示すことで、これらの相互作用を説明しています。
+
+- [ドキュメント](./dex)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/defi).
+- [Rust](https://github.com/dfinity/examples/tree/master/rust/defi).
+- [実行](https://gzz56-daaaa-aaaal-qai2a-cai.ic0.app/)例を参照してください。
+- [YouTubeチュートリアル](https://youtu.be/fLbaOmH24Gs)
+
+## 暗号化されたノート作成dapp
+
+[Internet Identity](../references/ii-spec)サービスとエンドツーエンドの暗号化を使用して、複数のデバイスから機密メモを作成、アクセス、変更できます。このサンプルコードでは、IC の**Web サービスと** **ストレージ機能に**依存し、2 つの主要な機能に注目しています：
+
+1.  クライアント側のエンドツーエンドの暗号化
+2.  マルチユーザーおよびマルチデバイスのサポート。
+
+<!-- end list -->
+
+- [ドキュメント](./encrypted-notes)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp/src/encrypted_notes_motoko).
+- [ラスト](https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp/src/encrypted_notes_rust)
+- [実行](https://cvhrw-2yaaa-aaaaj-aaiqa-cai.ic0.app/)例を見る
+- [YouTubeチュートリアル](https://youtu.be/DZQmtPSxvbs)
+
+## エコー
+
+このサンプルdapp は、基本的なクエリ関数のデモです。
+
+- [ドキュメント](./echo)。
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/echo).
+
+## Factorial
+
+このサンプルdapp は、基本的な factorial のデモを示します。
+
+- [ドキュメント](./factorial)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/factorial).
+
+## ゲーム・オブ・ライフ
+
+dapp Conway の[Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) をデモするサンプルで、Motoko canister で動作します。3つのバージョン間のアップグレードと安定変数を使用したステートマイグレーションをデモします。
+
+- [ドキュメント](./game-of-life)。
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/life).
+
+## HTTP カウンタ
+
+このサンプルは、dapp カウンターと HTTP インターフェースのデモです。これは基本的に、ネイティブの HTTP インタフェースを追加したカウンタcanister の繰り返しです。
+
+- [ドキュメント](./http-counter)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/http_counter).
+
+## 静的ウェブサイトのホスト
+
+このチュートリアルでは、静的なウェブサイトの構造を素早くセットアップし、コンテンツと基本的なスタイルを追加し、IC にデプロイする方法を示します。
+
+- [ドキュメント](./host-a-website)
+- [YouTube チュートリアル](https://www.youtube.com/watch?v=JAQ1dkFvfPI).
+
+## ウェブゲームのホスト
+
+サンプルコードは[samples repo](https://github.com/dfinity/examples/tree/master/hosting) にあります。
+
+- [サンプル](./host-a-webgame)コードは samples repo にあります。
+
+## ICP 転送
+
+このサンプルコードは、dapp 、最もアクティブなユーザーにICPを転送する方法を示しています。
+
+- [ドキュメントは](./token-transfer)こちら。
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/ledger-transfer).
+- [さび](https://github.com/dfinity/examples/tree/master/rust/tokens_transfer)。
+
+## インターネット・アイデンティティの統合
+
+- [ドキュメント](./internet-identity-sample).
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/internet_identity_integration).
+
+## インボイスcanister
+
+- [ドキュメンテーション](./invoice-canister).
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/invoice-canister).
+
+## 最小限のカウンターdapp
+
+例dapp は、バックエンドとフロントエンドの両方を持つ非常に基本的なdapp を構築する方法を示しています。バックエンドの機能にはMotoko を使用し、フロントエンドにはプレーンな HTML と JavaScript を使用しています。dapp はシンプルなカウンタで、フロントエンドのボタンをクリックするとカウンタがインクリメントされます。
+
+- [ドキュメントは](./minimal-counter-dapp)こちら。
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/minimal-counter-dapp).
+
+## NFT発行
+
+このNFT発行dapp は、ユーザーが作成したNFTを共有するのがいかに簡単かを紹介しています。このdapp は[DIP721](https://github.com/Psychedelic/DIP721)NFT規格を使用しています。
+
+- [ドキュメント](./nft)
+- [Rust](https://github.com/dfinity/examples/tree/master/rust/dip721-nft-container)。
+- [YouTubeチュートリアル](https://youtu.be/1po3udDADp4)
+
+## NFTウォレット
+
+Rustのdip721-nft-containerから発行されたNFTを使用するNFTウォレットのサンプルdapp 。このウォレットは、NFTの登録、NFTの送金、NFTの数の確認が可能です。このdapp には、インタラクション用のフロントエンドUIが含まれています。
+
+- [ドキュメント](./nft-wallet)
+- [Rust](https://github.com/dfinity/examples/tree/master/rust/nft-wallet)。
+
+## 定期タスク
+
+この例では、Internet Computer 上で周期的なタスクをスケジューリングするさまざまな方法（タイマーとハートビート）を紹介します。タイマーとハートビートです。この例ではこの2つの違いを示しており、どの方法が一番適しているかを判断するのに役立ちます。
+
+- [ドキュメント](./periodic-tasks.md)
+- [Rust](https://github.com/dfinity/examples/tree/master/rust/periodic_tasks)。
+
+## 永続ストレージ
+
+dapp の例では、Motoko でシンプルなdapp を構築する方法を示しています。dapp は単純なカウンタで、カウンタをインクリメントし、カウンタ値を取得し、バックエンド関数を呼び出してカウンタ値をリセットします。関数は、Candid インターフェースを通じて公開されます。
+
+- [ドキュメント](./persistent-storage)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/persistent-storage).
+
+## 電話帳
+
+このシンプルなdapp は、名前や電話番号などの関連情報の断片を保存するための CRUD ライクなデモサービスです。
+
+- [ドキュメント](./phonebook)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/phone-book).
+
+## PubSub
+
+このサンプルは、パブリッシャーとサブスクライバー間のcanister 呼び出しを持つ複数のcanisters を示しています。
+
+- [ドキュメント](./pub-sub)
+- [PubSub](https://github.com/dfinity/examples/tree/master/motoko/pub-sub).
+
+## クイックソート
+
+このサンプルでは，Motoko で配列をクイックソートで並べ替える方法を示します．
+
+- [ドキュメント](./quicksort)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/quicksort).
+
+## QR コード生成器
+
+この例では、Internet Computer dapp 、画像処理のような長時間の計算を1回のメッセージ実行で実行できることを示しています。これは、Deterministic Time Slicing (DTS)と呼ばれるユニークな機能によるもので、長い計算を複数のブロックにわたって実行される小さなスライスに自動的に分割します。
+
+- [ドキュメント](qr-code)
+- [Rust](https://github.com/dfinity/examples/tree/master/rust/qrcode)
+
+## ランダム迷路
+
+このサンプルはJavaScriptで簡単なフロントエンドを作成する方法を示しています。以前のサンプルではフロントエンドを提供していませんでしたが、このサンプルではフロントエンドとバックエンドの両方を提供しています。このサンプルでは、ICベースのランダム性を持つランダムな迷路を生成します。
+
+- [ドキュメント](./random-maze)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/random_maze).
+
+## 送信と受信cycles
+
+このサンプルdapp では、cycles の送受信と残高の確認方法を説明しています。
+
+- [ドキュメント](./sending-and-receiving-cycles).
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/hello_cycles).
+
+## シンプルなToDo
+
+このサンプルはCRUDのようなデモサービスで、フロントエンドはありません。
+
+- [ドキュメント](./simple-to-do)
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/simple-to-do).
+
+## スーパーヒーロー
+
+このサンプルはシンプルなCRUDdapp 。
+
+- [ドキュメント](./superheros).
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/superheroes).
+
+## 私は誰？
+
+このdapp は、呼び出し元のプリンシパルを報告するシンプルなcanister です。
+
+- [ドキュメント](./whoami).
+- [Motoko](https://github.com/dfinity/examples/tree/master/motoko/whoami).
+
+## その他のサンプルMotoko
+
+これは、Motoko で書かれたその他のコードサンプルへのレポリンク集です。ほとんどのサンプルは[Motoko プレイグラウンドでも](https://m7sm4-2iaaa-aaaab-qabra-cai.raw.ic0.app/)利用できます。プレイグラウンドは、SDKをダウンロードして使い方を学ぶことなく、純粋なMotoko サンプルを試すための最もシンプルな環境を提供しますが、フロントエンドでdapps をサポートしていません。
+
+### フルスタック
+
+これらのサンプルは、ReactとTypeScriptをベースにしたフロントエンドで、IC上でdapps 。
+
+- [Authクライアントのデモは](https://github.com/krpeacock/auth-client-demo)、Internet Identityを使ったシンプルな認証です。
+
+- [IC-avatarは](https://github.com/krpeacock/ic-avatar)フルスタックのMotoko + Reactで、より高度な認証、画像のアップロード、楽観的な更新が可能です。
+
+### 高度な
+
+コミュニティによって寄稿された大規模なサンプルで、必ずしも最新ではありません：
+
+- [認証されたアセットcanister](https://github.com/nomeata/motoko-certified-http)と[フォーラムの投稿は](https://forum.dfinity.org/t/certified-assets-from-motoko-poc-tutorial/7263)、Internet Computer 認証された変数の大規模なアプリケーションを示します。
+
+- [IC Vaultは](https://github.com/timohanke/icvault)エンドツーエンドのコンテンツ暗号化を実演。
+
+- [QRコードジェネレータと](https://github.com/enzoh/motoko-qr) [Mediumの記事](https://medium.com/@ehaussecker/my-first-microservice-on-dfinity-3ac5c142865b)。
+
+- [リバーシと](https://github.com/ninegua/reversi)それに付随する[ブログ](https://ninegua.github.io/reversi)記事
+
+## 構築のためのビデオガイドDapps
+
+[コミュニティ](https://www.youtube.com/playlist?list=PLuhDt1vhGcrez-f3I0_hvbwGZHZzkZ7Ng)会話シリーズからのこれらのビデオは、Rustでdapps を構築するための入門と、Rustでdapps を構築するためのベストプラクティスをカバーしています。
+
+- コミュニティでの会話[｜Rustでのdapp 構築の概要](https://www.youtube.com/watch?v=6wyIhzsFbKw)。
+
+- コミュニティでの会話｜Rustで[ canisters ](https://www.youtube.com/watch?v=36L33S_DYHY&ab_channel=DFINITY) 。
+
+その他の有用なビデオシリーズは、[coding with Kyleに](https://www.youtube.com/watch?v=M2XnywvwxFM&list=PLuhDt1vhGcrfQGLWqhUo9-DFD5JaHqCh1)あります。
+
+<!---
 # Overview
 
 Take a look at some sample dapps below and see the possibilities of building on the IC. All samples and further projects can be found in the [samples repo](https://github.com/dfinity/examples). Additional resources can be found in the [awesome DFINITY repo](https://github.com/dfinity/awesome-dfinity) (a curated set of open-source projects and examples from our community) or [Hackathon projects](hackathon-projects)!
@@ -243,3 +518,5 @@ These videos from the [community conversations](https://www.youtube.com/playlist
 -   [Community conversations | best practices for canisters in Rust](https://www.youtube.com/watch?v=36L33S_DYHY&ab_channel=DFINITY).
 
 Additional useful video series can be found at [coding with Kyle](https://www.youtube.com/watch?v=M2XnywvwxFM&list=PLuhDt1vhGcrfQGLWqhUo9-DFD5JaHqCh1).
+
+-->

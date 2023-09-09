@@ -1,3 +1,670 @@
+# 元帳canister {\#\_the\_ledger\_canister}.
+
+## 概要
+
+このドキュメントは、台帳canister のパブリック・インターフェースの仕様です。機能の概要を提供し、いくつかの内部的な側面を詳述し、一般に利用可能なメソッドを文書化しています。また、抽象度はやや高いものの、canister によって実装されるメソッドの期待される動作を正確にする抽象的な数学モデルも提供します。
+
+:::info
+ canister インターフェイスの一部は内部でのみ使用されるため、この仕様の一部ではありません。
+::：
+
+簡単に説明すると、台帳canister は IC プリンシパルが所有するアカウントのセットを管理します。アカウント所有者は、自分が管理するアカウントから他の台帳アカウントへのトークン移動を開始できます。すべての送金操作は、追記型トランザクション台帳に記録されます。元帳のインターフェイス（canister ）では、トークンの発行やバーンも可能で、これはトランザクション元帳に記録される追加トランザクションです。
+
+## 用語
+
+### トークン {\#\_tokens}
+
+IC には一度に複数のユーティリティ・**トークンが**存在できます。IC ガバナンスで使用される**ユーティリティトークンは**、Internet Computer Protocol トークン（ICP）です。トークンの最小不可分単位は「e8」で、1 e8 は 10^-8^ トークンです。
+
+### アカウント {\#\_accounts}
+
+元帳canister は**アカウントを**追跡します：
+
+- すべてのアカウントはICプリンシパルに属しています（そしてICプリンシパルが管理しています）。
+
+- 各アカウントの所有者は一人です (つまり「共同アカウント」はありません)。
+
+- プリンシパルは複数の口座を管理できます。同じプリンシパルの異なるアカウントを、（32バイト文字列の）サブアカウント識別子で区別します。つまり、論理的には、各帳簿アカウントは、`(account_owner, subaccount_identifier)` のペアに対応します。
+
+- このようなペアに対応する口座識別子は、以下のように計算される32バイト文字列です：
+  
+      account_identifier(principal,subaccount_identifier) = CRC32(h) || h
+
+  となります：
+  
+      h = sha224(“\x0Aaccount-id” || principal || subaccount_identifier)
+
+つまり、プリンシパルとサブアカウント識別子に対応するアカウントを取得するには、2つのステップがあります：
+
+- まず、ドメインセパレータ`\x0Aaccount-id` 、プリンシパル、サブアカウント識別子を連結したものをSHA224でハッシュ化します。ドメインセパレータは、文字列（ここでは "account-id"）の前に、文字列の長さに等しい 1 バイト（ここでは "account-id"）を付加したものです（ここでは "account-id "の前に "account-id "を付加したもの）。
+
+- 次に、結果のハッシュ値の(ビッグエンディアン表現の)CRC32をプリペンドします。
+
+#### デフォルト口座{\#\_default\_account}。
+
+どのプリンシパルでも、all-0のサブアカウント識別子に対応するアカウントを、そのプリンシパルの**デフォルトアカウントと**呼びます。ガバナンスのデフォルトアカウントcanister はトークンの発行/ミンティングにおいて重要な役割を果たし（後述）、`minting_account_id` と呼びます。
+
+### オペレーション、トランザクション、ブロック、トランザクション台帳 {\#\_operations\_transactions\_blocks\_transaction\_ledger}。
+
+口座残高は3つの操作の1つの結果として変化します：
+
+- あるアカウントから別のアカウントへのトークンの送信。
+- アカウントへのトークンの発行。
+- アカウントからのトークンのバーン。
+
+各操作は元帳canister への呼び出しによってトリガーされ、トランザクションとして記録されます。トランザクションには、操作の詳細に加えて、ユーザーが提供する`memo` フィールド（64 ビット番号）と、トランザクションが作成された時刻を示すシステムが提供するタイムスタンプが含まれます。
+
+各トランザクションはブロックに含まれ（1ブロックにつき1つのトランザクションのみ）、ブロックは各ブロックに前のブロックのハッシュを含むことで「連鎖」します（ブロックがどのようにシリアライズされるかの詳細は後述します）。台帳におけるブロックの位置は、ブロックインデックス（またはブロックの高さ）と呼ばれます。ブロックのカウントは0から始まります。
+
+これらの概念を表すために使用されるデータ型を、Candid構文で以下に示します。
+
+#### 基本的なデータ型
+
+    type Tokens = record {
+         e8s : nat64;
+    };
+    
+    
+    
+    // Account identifier  is a 32-byte array.
+    // The first 4 bytes is big-endian encoding of a CRC32 checksum of the last 28 bytes
+    type AccountIdentifier = blob;
+    
+    
+    //There are three types of operations: minting tokens, burning tokens & transferring tokens
+    type Transfer = variant {
+        Mint: record {
+            to: AccountIdentifier;
+            amount: Tokens;
+        };
+        Burn: record {
+             from: AccountIdentifier;
+             amount: Tokens;
+       };
+        Send: record {
+            from: AccountIdentifier;
+            to: AccountIdentifier;
+            amount: Tokens;
+        };
+    };
+    
+    type Memo = u64;
+    
+    // Timestamps are represented as nanoseconds from the UNIX epoch in UTC timezone
+    type TimeStamp = record {
+        timestamp_nanos: nat64;
+    };
+    
+    Transaction = record {
+        transfer: Transfer;
+        memo: Memo;
+        created_at_time: Timestamp;
+    };
+    
+    Block = record {
+        parent_hash: Hash;
+        transaction: Transaction;
+        timestamp: Timestamp;
+    };
+    
+    type BlockIndex = nat64;
+    
+    //The ledger is a list of blocks
+    type Ledger = vec Block
+
+## メソッド {\#\_methods}
+
+元帳canister は以下の**メソッドを**実装しています：
+
+- ICPをある口座から別の口座に移動します。
+
+- 元帳アカウントの残高を取得します。
+
+### トークンの転送 {\#\_transferring\_tokens} トークンを転送することができます。
+
+アカウントの所有者は、`transfer` メソッドを使用して、そのアカウントから他のアカウントに**トークンを転送**できます。このメソッドへの入力は以下の通りです：
+
+- `amount`転送するトークンの量。
+
+- `fee`転送に支払われる手数料。
+
+- `from_subaccount`ICPが発信者のどのアカウントから行われるかを指定するサブアカウント識別子。このパラメータはオプションであり、発呼側で指定されない場合、すべて0のベクタに設定されます。
+
+- `to`トークンの転送先のアカウント識別子。
+
+- `memo`これは、特定の転送を識別するなど、さまざまな方法で使用できます。
+
+- `created_at_time`呼び出し元が指定しない場合は、現在のIC時刻が設定されます。
+
+元帳canister は`transfer` コールを以下のように実行します：
+
+- #### ステップ1：宛先が整形式の口座識別子であることをチェック。
+
+- #### ステップ2： トランザクションが以下のものであることをチェックします：
+  
+  - 十分に新しい（過去24時間以内に作成された）こと。
+  - 未来」でない（つまり、`created_at_time` が、IC 内のパラメータ（現在は 60 秒に設定）で指定された許容時間ドリフトを超えて未来にないことをチェックします）。
+
+- #### ステップ 3: (プリンシパルと`from_subaccount` を使用して)ソース口座を計算し、それが amount+fee ICP 以上を保持していることをチェックします。
+
+- #### ステップ4：`fee` が`standard_fee` と一致することをチェックします（現在、標準手数料は 10^-4^ ICP に設定された固定定数です。）
+
+- #### ステップ5：過去24時間以内に同一のトランザクションが提出されていないことをチェック。
+
+- #### ステップ6：いずれかのチェックに失敗した場合、適切なエラーを返します。
+  
+  そうでなければ、トランザクションは
+  
+  - 送金元口座から金額＋手数料を差し引きます。
+  
+  - 金額を送金先口座に追加します。
+  
+  - 元帳にトランザクション（`(Transfer(from, to, amount, fee), memo, created_at_time)` ）を追加します：
+    
+    - トランザクションを含むブロックを作成し、ブロック内の`parent_hash` を`last_hash` （基本的に、元帳の最後のブロックのハッシュ）に設定し、ブロック内の`timestamp` をシステムタイムスタンプに設定します。
+    
+    - 新しく作成されたブロックのエンコーディングのハッシュとして`last_hash` を計算します（エンコーディングの計算方法は後述）。
+    
+    - ブロックを元帳に追加し、その高さを返します。
+
+### 元帳ブロックのチェーン化 {\#\_chaining\_ledger\_blocks} 元帳ブロックのチェーン化について説明しました。
+
+上で説明したように、元帳に含まれるブロックは、前のブロックのハッシュをブロックに含めることで連結されます。これにより、最後のブロックに署名するだけで、元帳全体を認証できるようになります。
+
+このセクションでは、ブロックがハッシュ化される前にどのようにシリアライズされるかを指定することで、チェーン化の詳細を説明します。
+
+高レベルでは、ブロックはprotobufを使ってシリアライズされます。しかし、protobufのエンコーディングは必ずしも決定論的ではありません（また、固定であることも保証されていません）ので、ここでは、変更されないことが保証されている、使用される特定のエンコーディングを提供します。
+
+以下の定義は再帰的です。バイト文字列の連結を表すために`.` を使用し、ここでは定義していませんが、よく知られている2つの関数を使用します。バイト文字列の長さを表すために`len(x)` と書き、`x` と書きます。また、整数`s` の可変長エンコードには`varint(s)` と書きます。この関数の正確な定義は[protobufのドキュメントに](https://developers.google.com/protocol-buffers/docs/encoding#varints)あります。
+
+    encoded_block(Block{parent_hash, timestamp, transaction}) :=
+        let encoded_transaction = encode_transaction(transaction)
+        in encode_hash(parent_hash) .
+           12 0a 08 . varint(timestamp) .
+           1a . len(encoded_transaction) . encoded_transaction
+    
+    encode_hash(Nil) := Nil
+    encode_hash(hash) := 0a 22 0a 20 . hash
+    
+    encode_transaction(Transaction{operation, memo, created_at_time}) :=
+        let encoded_operation = encode_operation(operation)
+            encoded_memo = encode_memo(memo)
+            encoded_timestamp = encode_timestamp(created_at_time)
+        in encoded_operation .
+           22 . len(encoded_memo) . encoded_memo .
+           32 . len(encoded_timestamp) . encoded_timestamp
+    
+    encode_memo(Nil) := Nil
+    encode_memo(Memo{memo}) := 08 . varint(memo)
+    
+    encode_timestamp(Timestamp{timestamp_nanos}) := 08. varint(timestamp_nanos)
+    
+    encode_operation(Burn{AccountIdentifier{from}, Tokens{amount}}) :=
+        // identifiers can be 28 or 32 bytes (4 bytes checksum + 28 bytes hash)
+        let encoded_account_identifier = 0a . len(from) . varint(from)
+            encoded_amount = 08 . varint(amount)
+            encoded_burn = 0a . len(encoded_account_identifier) . encoded_account_identifier .
+                           1a . len(encoded_amount) . encoded_amount
+        in 0a . len(encoded_burn) . encoded_burn
+    
+    encode_operation(Mint{AccountIdentifier{to}, Tokens{amount}}) :=
+        // identifiers can be 28 or 32 bytes (4 bytes checksum + 28 bytes hash)
+        let encoded_account_identifier = 0a . len(to) . to
+            encoded_amount = 08 . varint(amount)
+            encoded_mint = 12 . len(encoded_account_identifier) . encoded_account_identifier .
+                           1a . len(encoded_amount) . encoded_amount
+        in 12 . len(encoded_mint) . encoded_mint
+    
+    encode_operation(Transfer{AccountIdentifier{from},
+                               AccountIdentifier{to},
+                               Tokens{amount},
+                               Tokens{fee}}) :=
+        let encoded_from = 0a . len(from) . from
+            encoded_to = 0a . len(to) . to
+            encoded_amount = 08 . varint(amount)
+            encoded_fee = 08 . varint(fee)
+            encoded_transfer = 0a . len(encoded_from) . encoded_from .
+                               12 . len(encoded_to) . encoded_to .
+                               1a . len(encoded_amount) . encoded_amount .
+                               22 . len(encoded_fee) . encoded_fee
+        in 1a . len(encoded_transfer) . encoded_transfer
+
+### トークンの発行とバーン {\#\_burning\_and\_minting\_tokens}.
+
+典型的な転送は、あるアカウントから別のアカウントへICPを移動します。重要な例外は、転送元または転送先のいずれかが特別な`minting_account_id` である場合です。
+
+#### トークンのバーン {\#\_burning\_tokens}.
+
+発行アカウントへの転送の効果は、トークンが発行元アカウントから削除されるだけで、どこにも入金されないことです。バーン取引は元帳に`(Burn(from,amount))` として記録されます。`from` はトークンがバーンされた口座です。バーン転送の取引手数料は0ですが（つまり、これは呼び出しで明示的に指定された手数料で なければなりません）、バーンされるトークンの量は転送のための`standard_fee` を超えていなければなりません。
+
+#### トークンの発行 {\#\_minting\_tokens}.
+
+`minting_account_id` アカウントからの転送の効果は、トークンが転送先アカウントに追加されることです。トークンが鋳造されます。呼び出されると、取引台帳に取引`(Mint(to,amount))` が追加されます。トークンの発行はこのcanister にのみ利用可能な特権的操作であり、`minting_account_id` はガバナンスcanister によって制御されていることに注意。
+
+### Candidインターフェース {\#\_candid\_interface}
+
+`transfer` メソッドのCandidシグネチャと、追加で必要なデータ型を以下に示します。
+
+追加のデータ型とcanister メソッド：
+
+    // Arguments for the `transfer` call.
+    type TransferArgs = record {
+        // Transaction memo.
+        // See comments for the `Memo` type.
+        memo: Memo;
+        // The amount that the caller wants to transfer to the destination address.
+        amount: Tokens;
+        // The amount that the caller pays for the transaction.
+        // Must be 10000 e8s.
+        fee: Tokens;
+        // The subaccount from which the caller wants to transfer funds.
+        // If null, the ledger uses the default (all zeros) subaccount to compute the source address.
+        // See comments for the `SubAccount` type.
+        from_subaccount: opt SubAccount;
+        // The destination account.
+        // If the transfer is successful, the balance of this address increases by `amount`.
+        to: AccountIdentifier;
+        // The point in time when the caller created this request.
+        // If null, the ledger uses current IC time as the timestamp.
+        created_at_time: opt TimeStamp;
+    };
+    
+    type TransferError = variant {
+        // The fee that the caller specified in the transfer request was not the one that ledger expects.
+        // The caller can change the transfer fee to the `expected_fee` and retry the request.
+        BadFee : record { expected_fee : Tokens; };
+        // The account specified by the caller doesn't have enough funds.
+        InsufficientFunds : record { balance: Tokens; };
+        // The request is too old.
+        // The ledger only accepts requests created within 24 hours window.
+        // This is a non-recoverable error.
+        TxTooOld : record { allowed_window_nanos: nat64 };
+        // The caller specified `created_at_time` that is too far in future.
+        // The caller can retry the request later.
+        TxCreatedInFuture : null;
+        // The ledger has already executed the request.
+        // `duplicate_of` field is equal to the index of the block containing the original transaction.
+        TxDuplicate : record { duplicate_of: BlockIndex; }
+    };
+    
+    type TransferResult = variant {
+        Ok : BlockIndex;
+        Err : TransferError;
+    };
+    
+    
+    service : {
+      transfer : (TransferArgs) -> (TransferResult);
+    }
+
+### 元帳ブロックの取得{\#\_getting\_ledger\_blocks}。
+
+スケーラビリティのため、元帳canister はトランザクション元帳全体を保存しません。その代わり、台帳canister は、最新のブロックからなる台帳の接尾辞を保持します。残りのブロックはすべてアーカイブcanisters に格納されます。
+
+元帳のブロックは、元帳から（指定した範囲の）ブロックを取得できるメソッド`query_blocks` を使って取得できます。返されるのは、ブロックのリスト (元帳にまだ存在canister) と、アーカイブcanister から残りのブロックを取得する方法に関する情報です。
+
+このメソッドはさらに2つの情報を返します。トランザクション台帳の最後のブロックのインデックスと証明書です。証明書は、Internet Computer によって生成された、トランザクション台帳の最後のブロックのハッシュに対する署名です。取引台帳のブロックは連鎖しているので（そのため最後のブロックのハッシュは取引台帳全体にコミットする）、証明書を使って取引台帳が本物であることを検証できます。重要なのは、証明書が利用できるのはメソッドが**複製されていない**クエリーコールとして呼び出された場合のみで、メソッドが複製されたコールとして呼び出された場合は、証明書はリプライに含まれません（ステート証明書は複製された実行では利用できないため）。
+
+詳細は、`query_blocks` メソッドへの入力：
+
+- 取得する範囲の最初のブロックを示すインデックス`from` 。
+
+- 返されるべきブロックの数を示す長さ`len` 。
+
+リプライは以下から構成されます：
+
+- `length`呼び出しが実行された時点のトランザクション元帳全体の長さ。
+
+- `certificate`オプションの証明書。これは、元帳の最後のブロックのハッシュに対する IC の署名です。この証明書は、メソッドが複製されないクエリーコールとして呼び出された場合にのみ返されます。
+
+- `blocks`要求されたブロックの（部分的な）リスト。返されるブロックの範囲が制限されているのは、a) ブロックの一部はすでにアーカイブに保存されている可能性があり、b) 1 回の呼び出しで返せるブロックの数に上限があるためです。具体的には、元帳canister は、元帳に存在するブロックのうち、リプライのサイズに収まる要求された範囲のプレフィックスを返します。現在、返信のサイズは2000ブロックに制限されています。
+
+- `start_index`これは、元帳canister に格納されている最初のブロックのインデックスです。
+
+- `archived_blocks`アーカイブされたブロックの場所に関する情報。各アーカイビングcanister 、この情報には、アーカイブされたブロックの範囲（開始ブロックインデックス、保存されたチェーンの長さ）と、canister （および呼び出すメソッド）のIDに関する情報が指定されています。
+
+たとえば、ある時点で元帳を形成するブロックが`n` canisters に格納され、canister `i` にブロックの範囲`(li,ri)` が格納されているとします。元帳canister 自体は、範囲`(l~,r~)` を格納します。入力パラメータ`(l,len)` で`query_blocks` を呼び出すと、次のようになります：
+
+- `length` は 。`rn+1`
+
+- `blocks` は 最初の2000ブロックに制限されます。`(l,l+len) ∩ (ln,rn)` 
+
+- `start_index` は 。`l`
+
+- `archived_blocks` はリスト で、 は対応するブロックを取得するために呼び出すコールバックです：`((li,ri) ∩ (l,l+len),callbacki)i=1..n-1` `callbacki` 
+  
+      type GetBlocksArgs = record {
+          // The index of the first block to fetch.
+          start : BlockIndex;
+          // Max number of blocks to fetch.
+          length : nat64;
+      };
+      
+      / A prefix of the block range specified in the [GetBlocksArgs] request.
+      type BlockRange = record {
+          // A prefix of the requested block range.
+          // The index of the first block is equal to [GetBlocksArgs.from].
+          //
+          // Note that the number of blocks might be less than the requested
+          // [GetBlocksArgs.len] for various reasons, for example:
+          //
+          // 1. The query might have hit the replica with an outdated state
+          //    that doesn't have the full block range yet.
+          // 2. The requested range is too large to fit into a single reply.
+          //
+          // NOTE: the list of blocks can be empty if:
+          // 1. [GetBlocksArgs.len] was zero.
+          // 2. [GetBlocksArgs.from] was larger than the last block known to the canister.
+          blocks : vec Block;
+      };
+      
+      // A function that is used for fetching archived ledger blocks.
+      type QueryArchiveFn = func (GetBlocksArgs) -> (QueryArchiveResult) query;
+      
+      // The result of a "query_blocks" call.
+      //
+      // The structure of the result is somewhat complicated because the main ledger canister might
+      // not have all the blocks that the caller requested: One or more "archive" canisters might
+      // store some of the requested blocks.
+      //
+      // Note: as of Q4 2021 when this interface is authored, the IC doesn't support making nested
+      // query calls within a query call.
+      type QueryBlocksResponse = record {
+          // The total number of blocks in the chain.
+          // If the chain length is positive, the index of the last block is `chain_len - 1`.
+          chain_length : nat64;
+      
+          // System certificate for the hash of the latest block in the chain.
+          // Only present if `query_blocks` is called in a non-replicated query context.
+          certificate : opt blob;
+      
+          // List of blocks that were available in the ledger when it processed the call.
+          //
+          // The blocks form a contiguous range, with the first block having index
+          // [first_block_index] (see below), and the last block having index
+          // [first_block_index] + len(blocks) - 1.
+          //
+          // The block range can be an arbitrary sub-range of the originally requested range.
+          blocks : vec Block;
+      
+          // The index of the first block in "blocks".
+          // If the blocks vector is empty, the exact value of this field is not specified.
+          first_block_index : BlockIndex;
+      
+          // Encoding of instructions for fetching archived blocks whose indices fall into the
+          // requested range.
+          //
+          // For each entry `e` in [archived_blocks], `[e.from, e.from + len)` is a sub-range
+          // of the originally requested block range.
+          archived_blocks : vec record {
+              // The index of the first archived block that can be fetched using the callback.
+              start : BlockIndex;
+      
+              // The number of blocks that can be fetched using the callback.
+              length : nat64;
+      
+              // The function that should be called to fetch the archived blocks.
+              // The range of the blocks accessible using this function is given by [from]
+              // and [len] fields above.
+              callback : QueryArchiveFn;
+          };
+      };
+      
+      type Archive = record {
+          canister_id: principal;
+      };
+      
+      type Archives = record {
+          archives: vec Archive;
+      };
+      
+      service : {
+      // Queries blocks in the specified range.
+      query_blocks : (GetBlocksArgs) -> (QueryBlocksResponse) query;
+      
+      // Returns the existing archive canisters information.
+      archives : () -> (Archives) query;
+      
+      }
+
+### 残高 {\#\_balance}
+
+取引台帳は、自然な方法ですべての口座の**残高を**追跡します（より正式な定義については、以下の**セマンティクスの**セクションを参照してください）。
+
+どのプリンシパルも、`account_balance` メソッドで任意の口座の残高を取得できます。口座識別子`minting_account_id` を持つ口座の残高は常に0です。 その他の口座の残高は明白な方法で計算されます。
+
+    type AccountBalanceArgs = record {
+        account: AccountIdentifier;
+    };
+    
+    service : {
+      // Get the amount of ICP on the specified account.
+      account_balance : (AccountBalanceArgs) -> (Tokens) query;
+    }
+
+## セマンティクス {\#\_semantics}
+
+このセクションでは、元帳が公開するパブリックメソッドのセマンティクスを説明します。上で紹介した記法に近い、ややアドホックな数学的記法を使用します。リストの連結は" - "で表します。Lがリストの場合、リストLの長さを｜L｜、Lのi番目の要素をL\[i\]と書きます。
+
+### 基本型{\#\_basic\_types}。
+
+    Operation =
+      Transfer = {
+        from: AccountIdentifier;
+        to: AccountIdentifier;
+        amount: Tokens;
+        fee: Tokens;
+      } |
+      Mint = {
+        to: AccountIdentifier;
+        amount: Tokens;
+      } |
+      Burn = {
+        from: AccountIdentifier;
+        amount: Tokens;
+      }
+    }
+    
+    Block = {
+       operation: Operation;
+       memo: Memo;
+       created_at_time: Timestamp;
+       hash: Hash;
+      }
+    
+    Ledger = List(Block)
+
+### 元帳のステート{\#\_ledger\_state}。
+
+元帳のステートcanister ：
+
+- トランザクション元帳（トランザクションを含むブロックの連鎖リスト）。
+
+- グローバル変数：
+  
+  - `last_hash`元帳にブロックが存在しない場合は None に設定されます。
+  
+  - `last_archived_block`:Nat；
+
+- 位置：Nat Ȗ Nat；
+
+- Last\_archive：Nat；
+  
+  ステート = {
+  ledger：Ledger;
+  last\_hash：Hash | None;
+  }；
+
+初期状態では、ledgerは空リストに設定され、`last_hash` はNoneに設定されます：
+
+```
+ {
+   ledger = [];
+   last_hash = None;
+   (forall i) S.location(i) = undefined;
+   S.last_archive = 0;
+   S.last_archived_block = -1;
+}
+```
+
+### 残高 {\#\_balances}
+
+取引元帳が与えられたら、元帳アカウントにICP残高を関連付ける`balance` 関数を定義します。
+
+    balance: Ledger x AccountIdentifier -> Nat
+
+この関数は再帰的に以下のように定義されます：
+
+    balance([],account_id) = 0
+    
+    if (B = Block{Transfer{from,to,amount, fee}, memo, time, hash}) and (to = account_id)) |
+       (B = Block{Mint{to, amount}, memo, time}) and (to = account_id)) then
+       then
+       balance(OlderBlocks · [B] , account_id) = balance(OlderBlocks, account_id) + amount,
+    
+    if (B = Block{Transfer{from,to,amount,fee},memo,time}} and (from = account_id)
+        then
+        balance(OlderBlocks · [B], account_id) = balance(OlderBlocks,account_id) - (amount+fee)
+    
+    if (B = Block{Burn{from,amount}) and (from = account_id)
+       then
+       balance(OlderBlocks · [B], account_id) = balance(OlderBlocks,account_id) - amount
+    
+    otherwise
+      balance(OlderBlocks · [B], account_id) = balance(OlderBlocks, account_id)
+
+ledger メソッドのセマンティクスを、ledger ステートと呼び出し引数を入力として受け取り、（潜在的に）新しいステー トと応答を返す関数として説明します。関数の説明では、システムが提供する情報を反映する追加関数をいくつか使用します。これには、メソッドを呼び出したプリンシパルを返す`caller()` 、IC時刻を返す`now()` 、IC時刻と外部時刻の間の許容可能な時間ドリフトを示す定数`drift` 。また、入力が整形式口座識別子（つまり、最初の4バイトが残りの28バイトのCRC32と等しい）であることをチェックするブーリアン値関数として、`well_formed(.)` 。
+
+### 元帳メソッド： `transfer` {\#\_ledger\_method\_transfer} です。
+
+以下、all-0ベクトルについて`default_subaccount` 。
+
+#### ステートと引数：
+
+    S
+    A = {
+      memo: Memo;
+      amount: Tokens;
+      fee: Tokens;
+      from_subaccount: opt SubAccount;
+      to: AccountIdentifier;
+      created_at_time: opt TimeStamp;
+      }
+
+#### 結果のステートとリプライ：
+
+    output (S',R) calculated as follows:
+    
+    if created_at_time = None then created_at_time = now();
+    if timestamp > now() + drift then (S',R) = (S, Err);
+    if now() - timestamp > 24h then (S',R) = (S, Err);
+    if not(well_formed(to)) then (S',R) = (S, Err);
+    
+    if to = `minting_account_id` and (fee ≠ 0 or amount < standard_fee) then (S',R) = (S, Err);
+    
+    if from_subaccount = None then from_subaccount = default_subaccount;
+    from = account_identifier(caller(),from_subaccount)
+    
+     if from = `minting_account_id' then B = Block{Mint{to, amount}, memo, timestamp, S.last_hash}
+          else
+            if to = `minting_account_id` then B = Block{Burn{from, amount}, memo, timestamp, S.last_hash}
+                else B = Block{Transfer{from, to, amount, fee}, memo, timestamp, S.last_hash};
+      if exists i (ledger[i].operation, ledger[i].memo, ledger[i].timestamp) = (B.operation,B.memo,B.timestamp) then (S',R)=(S,Err)
+      else
+        (S'.ledger = [B] · S.ledger);
+        (S'.lasthash = hash(B));
+         R = |S'.ledger|-1;
+
+### 元帳メソッド： `balance_of` 状態 & 引数: {\#\_ledger\_method\_balance\_of}.
+
+#### ステートと引数：
+
+    S
+    A = {
+        account_id: AccountIdentifier
+    }
+
+#### 結果ステートと応答：
+
+    output (S',R) calculated as follows
+    
+    S' = S
+    if account_id = `minting_account_id`
+       then R = 0
+       else R = balance(S.ledger,account_id))
+
+### アーカイブ {\#\_archiving}
+
+元帳canister は、保持しているブロックの一部を定期的にアーカイブします。実装では、このロジックはシステム内部にあります。この抽象化では、非決定論的にトリガーできる2つのトランジションでこれをモデル化します。1つは新しいアーカイブcanisters を作成するトランジション、もう1つは台帳canister に保持されているいくつかのブロックをアーカイブするトランジションです。
+
+#### 元帳メソッド： `new_archive` {新しいアーカイブを作成します。｝
+
+最初のトランジションは新しいアーカイブを作成しますcanister 。
+
+#### ステートと引数：
+
+```
+S
+```
+
+#### 結果ステートとリプライ：
+
+    (S', R) calculated as follows
+    
+    S'.last_archive = S.last_archive+1
+    R = ()
+
+#### 元帳メソッド： `archive` 結果状態 & 応答: {\#\_ledger\_method\_archive} .
+
+2つ目は、`len` 個までのブロックの場所を、最後に作成されたアーカイブcanister に変更します。
+
+#### ステートと引数：
+
+    S
+    A = {
+       len: Nat
+    }
+
+#### 結果のステートとリプライ：
+
+    (S', R) calculated as follows
+    
+    S'.location = S.location
+    to_archive = min(len, |S.ledger|- S.last_archived_block+1)
+    for i = 1 to to_archive
+       S'.location(last_archived_block+i) = S'.last_archive
+    S'.last_archived_block = S.last_archived_block + to_archive
+    
+    R = ()
+
+#### 元帳メソッド： `query_blocks` {\#\_ledger\_method\_query\_blocks} です。
+
+ブロックのリスト`L=(B0,B1,…​,Bn)` が与えられたら、ブロックのリスト`(Bindex, Bindex+1,…​,Bindex+len)` に対して`Blocks(index,len)` と書きます。また、リスト`L` の最初のブロック`len` への制限、つまり`(B0,B1,…​,Blen-1)` に対しては`Restrict(L,len)` と書きます。以下の説明では、台帳canister が`query_blocks` に応答して返せるブロック数の上限を指定する、不特定の定数`bound` を想定しています。また、台帳の最後のブロックの（エンコーディング）に対する IC による署名である`certificate` が存在することも想定しています。しかし、この抽象レベルでは、この証明書のプロパティは指定しません。また、異なるブロックの位置が具体的にどのように提供されるかの詳細にも立ち入りません。
+
+#### ステートと引数：
+
+    S
+    A = {
+       index: Nat;
+       len: Nat;
+    }
+
+#### ステートと応答：
+
+    (S',R) calculated as follows
+    
+    S'=S
+    
+    local_blocks = Blocks(S.last_archived_block+1,|S.ledger|-S.last_archived_block+1)
+    R = {
+       length = |S.ledger|,
+       cert = certificate,
+       start_index = S.last_archived_block+1,
+       blocks = Restrict(Blocks(index,len) ∩ local_blocks, bound),
+       location = S.location
+    }
+
+<!---
 # Ledger canister {#_the_ledger_canister}
 
 ## Overview
@@ -655,3 +1322,5 @@ Given a list of blocks `L=(B0,B1,…​,Bn)` we write `Blocks(index,len)` for th
        blocks = Restrict(Blocks(index,len) ∩ local_blocks, bound),
        location = S.location
     }
+
+-->

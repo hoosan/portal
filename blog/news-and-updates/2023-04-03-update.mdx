@@ -1,4 +1,5 @@
 ---
+
 title: Motoko update April 3, 2023
 description: Today, we’re excited to discuss Motoko’s new Stable Regions and a new IC Certification library! If you want to weigh in on the direction of stable memory developments in Motoko or checkout a new certification library, then keep reading.
 tags: [New features]
@@ -6,6 +7,40 @@ image: https://lh6.googleusercontent.com/oXZMmHoSuaIlOCVxpJZROCnpevVBA57VY9lKjl5
 authors:
   - name: Kento Sugama
 ---
+# Motoko 更新日：2023年4月3日
+
+![|624x477](https://lh6.googleusercontent.com/oXZMmHoSuaIlOCVxpJZROCnpevVBA57VY9lKjl59bixEvpNtNJm_D0ZszNsam2dcAgI_cb2E9_jbcNQ2ZNZjKoWBlsG3z3wII0-abpK1x36pvl2tg4P0g0ovGZG-toDY3QVnmuk2FNpWyAdQzrOezWI)
+
+Motoko 開発者の皆さん、こんにちは！👋
+
+Motoko 最新アップデートの投稿へようこそ！
+もしあなたが前回のアップデートを見逃してしまったのであれば、[こちらで](https://forum.dfinity.org/t/motoko-update-part-9-threshold-canister-benchmark-insights/19040)その投稿を見ることができます。前回はMotoko の性能ベンチマークと最近リリースされたしきい値canister について説明しました。
+今日はMotokoの新しい安定領域と新しい IC 認証ライブラリについて説明します！Motoko の安定したメモリ開発の方向性について意見を述べたり、新しい認証ライブラリをチェックアウトしたい方は、このまま読み進めてください。
+
+![|624x416](https://lh4.googleusercontent.com/Vbnd4HtSiYn0O7WBhOa59ids6A9e6wkrWtvwuuET2gw_wQAsop88oZDaE5Lt74JzhugaGkNND-DE4aZrKnuMy7o4AeU5mUXR7J7uJM9nPiHgMpbhisoe1P3nSaNmPBvTqSQpNOSOD1lf2y1ajd09xXA)
+
+## ページアロケータの刷新：安定領域！
+
+言語チームの @matthewhammer はMotoko の安定領域と呼ばれる新機能に懸命に取り組んでいます。このアイデア（以前はページアロケータと呼ばれていました）の背景にあるのは、ユーザーが互いに隔離された安定したメモリの領域へのアクセスをリクエストできるようにすることです。この機能は確かに多くのユースケースを解き放つでしょうが、これによる明らかな影響のひとつは、安定したメモリにデータを保存するMotoko で安定したデータ構造を作成できるようになることです（安定したマップ、バッファなどを考えてみてください）。
+
+詳細はマシューのフォーラム投稿をご覧ください[。](https://forum.dfinity.org/t/motoko-stable-regions/19182)また、この機能の設計について質問があればコメントで教えてください！
+
+![|274x356](https://lh6.googleusercontent.com/xYdDzoqUt6opykk-gimH-1hbBx11BOJE0ZpciwcZHljpQ9dsow8F3h_DXgiC1GKVCC71l1H2eLhAFFffPyF-6US9tqWVcSsWG3zrKEU6c9sIQfsd4YKUHK1MyOSjxmHI0VP2FIDoqNFIThJjmJ4clkA)
+
+## `ic-certification`新しい認証ライブラリMotoko
+
+nomeataのおかげで、新しい認証ライブラリができました。 [`ic-certification`](https://mops.one/ic-certification)
+ `ic-certification` Motoko ライブラリはInternet Computerの「認証ツリー」データ構造を実装しています。これはcanisters からの HTTP レスポンスを検証し、悪意のあるノードから保護するために使用される、認証済みアセットメカニズムの基盤となっています。また、canister シグネチャメカニズムの基礎となるもので、Internet Identity などのcanisters がInternet Computer へのリクエストに署名するために使用され、クエリ応答のアプリケーション固有の認証を実装するために使用できます。
+この開発は icdevs.org のバグバウンティによって資金提供されました。
+上の mops リンクからライブラリをチェックして、フィードバックがあれば @nomeata に送ってください！
+
+## それではまた次回！
+
+また2週間後にお会いしましょう！
+\-DFINITY 言語チーム
+
+<!---
+
 
 # Motoko update: April 3, 2023
 ![|624x477](https://lh6.googleusercontent.com/oXZMmHoSuaIlOCVxpJZROCnpevVBA57VY9lKjl59bixEvpNtNJm_D0ZszNsam2dcAgI_cb2E9_jbcNQ2ZNZjKoWBlsG3z3wII0-abpK1x36pvl2tg4P0g0ovGZG-toDY3QVnmuk2FNpWyAdQzrOezWI)
@@ -36,3 +71,5 @@ Check out the library at the mops link above, and send over any feedback you mig
 
 Keep exploring, and see you guys in two weeks!
 – DFINITY Languages team
+
+-->

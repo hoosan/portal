@@ -1,3 +1,265 @@
+# カスタムドメイン
+
+## 概要
+
+デフォルトでは、Internet Computer 上のすべてのcanisters は、`icp0.io`
+とそのcanister ID からアクセスできます。このデフォルトドメインに加えて、カスタムドメインで
+canister をホストすることもできます。このガイドではその方法を説明します。
+
+カスタムドメインでcanister をホストするには、基本的に2つの方法があります：
+
+- [境界ノードにドメインを登録](#custom-domains-on-the-boundary-nodes)します。
+- [独自のインフラストラクチャで](#custom-domains-using-your-own-infrastructure)ドメインをホストする方法。
+
+どちらの方法でも、お好きなレジストラでドメインを取得する必要があります。
+
+この2つのアプローチは、使いやすさと設定のしやすさが異なります。
+ドメインをバウンダリノードに登録する場合、
+カスタムドメインの DNS レコードを設定するだけで、バウンダリノードが証明書の取得、
+証明書の期限切れ前の更新、SEO、サービスワーカーの提供を行います。
+ドメインを独自のインフラストラクチャでホスティングする場合、証明書の取得と更新を行い、サービスワーカーを提供する独自のインフラストラクチャを用意する必要があります。
+ただし、ドメインの設定方法はより柔軟になります（例、
+カスタムサービスワーカーを提供することもできます)。
+
+:::info
+ `HttpAgent` は、`icp0.io` や`ic0.app` のように自動的にホストを推測することができないため、カスタムドメインを使用する場合は、フロントエンドのコードで`host` を指定する必要があるかもしれません。エージェントを設定するには、以下のようになります：
+
+``` ts
+// Point to icp-api for the mainnet. Leaving host undefined will work for localhost
+const host = isProduction ? 'https://icp-api.io' : undefined;
+const agent = new HttpAgent({ host });
+```
+
+:::
+
+## バウンダリノードのカスタムドメイン
+
+以下では、まず
+カスタムドメインをバウンダリノードに登録するために必要なすべての手順を示します。次に、どのように登録を更新し、
+削除するかを説明します。
+
+### 最初の登録
+
+以下の手順に従って、バウンダリノードを使用して、カスタムドメイン
+の下にcanister をホストすることができます。まず、必要な手順を説明します。次に、
+[具体的な例でこれらの手順を](#concrete-example)説明し、
+[トラブルシューティングの](#troubleshooting)手順を説明します。
+
+- #### ステップ1：ドメインのDNSレコードを設定します（`CUSTOM_DOMAIN` で表します）。
+
+`icp1.io` を指すドメインの`CNAME` エントリを追加し、ドメイン宛てのトラフィックがすべてバウンダリ ノードにリダイレクトされるようにします。
+ canister ID を含む`TXT` エントリを、ドメインの`_canister-id`-サブドメイン（たとえば、`_canister-id.CUSTOM_DOMAIN` ）に追加します。
+ `_acme-challenge` -サブドメイン（たとえば、`_acme-challenge.CUSTOM_DOMAIN` ）の`CNAME` エントリを追加し、バウンダリ ノードが証明書を取得するために、`_acme-challenge.CUSTOM_DOMAIN.icp2.io` を指します。
+
+:::info
+多くの場合、ドメインの先頭であるApexレコードに`CNAME` レコードを設定することはできません。この場合、DNSプロバイダーは、いわゆる`CNAME` フラット化をサポートします。このため、これらのDNSプロバイダーは、`CNAME` ～`icp1.io`.
+::の代わりに使用できる、`ANAME` や`ALIAS` レコードなどのフラット化レコードタイプを提供しています：
+
+-----
+
+- #### ステップ2：カスタムドメインを含む`.well-known` の下のcanister に、`ic-domains` という名前のファイルを作成します。
+
+デフォルトでは、`dfx` は、名前が`.` で始まるすべてのファイルとディレクトリをアセットcanister から除外します。したがって、`ic-domains` ファイルを含めるには、`.ic-assets.json` という追加のファイルを作成する必要があります。
+ `dfx.json` の`sources` にリストされているディレクトリ内に、`.ic-assets.json` という名前の新しいファイルを作成します。
+
+1つのcanister で複数のカスタム・ドメインとそのサブドメインを使用するには、`ic-domains`-ファイル内の改行で各ドメインをリストするだけです：
+
+``` sh
+custom-domain1.com
+subdomain1.custom-domain1.com
+subdomain2.custom-domain1.com
+custom-domain2.com
+subdomain1.custom-domain3.com
+custom-domain4.com
+```
+
+上記の例では、`subdomain1` は、例えば、`www` を表します。
+
+`.ic-assets.json`-ファイルに以下の設定を記述して、`.well-known` ディレクトリを含めるように設定します：
+
+    [
+        {
+            "match": ".well-known",
+            "ignore": false
+        }
+    ]
+
+更新されたcanister をデプロイします。
+
+-----
+
+- #### ステップ3：以下のコマンドを実行し、`CUSTOM_DOMAIN` をカスタムドメインに置き換えて、ドメインをバウンダリノードに登録します。
+
+<!-- end list -->
+
+``` sh
+curl -sLv -X POST \
+    -H 'Content-Type: application/json' \
+    https://icp0.io/registrations \
+    --data @- <<EOF
+{
+    "name": "CUSTOM_DOMAIN"
+}
+EOF
+```
+
+クエリーコールが成功した場合、本文にリクエストIDを含むJSONレスポンスが返されます：
+
+    {"id":"REQUEST_ID"}
+
+呼び出しに失敗した場合は、失敗の理由を示すエラーメッセージが表示されます：
+
+- **DNS CNAMEレコードがありません**:`_acme-challenge`-サブドメインの`CNAME` エントリがありません。
+- **既存のDNS TXTチャレンジレコード**：DNSレコードに`_acme-challenge`-サブドメインの`TXT` エントリがすでに含まれています。これを削除して再試行してください。
+- **DNS TXT レコードが見つかりません**:`_canister-id`-サブドメインの`TXT` エントリが見つかりません。
+- **無効な DNS TXT レコード**:`TXT` エントリの内容が有効なcanister ID ではありません。
+- 複数の DNS**TXT** レコード:`_canister-id`-サブドメインの`TXT` エントリが複数あります。これらを削除し、1つだけを残してください。
+- **既知のドメインの取得に失敗**しました:`ic-domains`- ファイルは`.well-known/ic-domains` でアクセスできません。
+- 既知のドメインの**リストからドメインが**見つかりません:`ic-domains`-ファイルからカスタムドメインが見つかりません。
+- **頂点ドメインのレート制限を超えました**: 頂点ドメインの登録要求が多すぎます。後で再試行してください。1つのapexドメインおよび1時間あたり、最大5件の登録リクエストを送信できます。
+
+-----
+
+- #### ステップ4：登録処理には数分かかることがあります。
+
+次のコマンドを実行し、`REQUEST_ID` を前のステップで受信した ID に置き換えて、登録リクエストの進行状況を追跡します。
+
+``` sh
+curl -sLv -X GET \
+    https://icp0.io/registrations/REQUEST_ID
+```
+
+ステータスは以下のいずれかになります：
+
+- `PendingOrder`登録要求が提出され、受け取り待ちです。
+- `PendingChallengeResponse`証明書が発注されました。
+- `PendingAcmeApproval`チャレンジが完了しました。
+- `Available`登録リクエストは正常に処理されました。
+- `Failed`登録申請が失敗しました。
+
+-----
+
+- #### ステップ5：登録要求が`available` 、すべてのバウンダリ・ノードで証明書が利用可能になるまで数分待ちます。
+
+その後、カスタムドメインを使用してcanister にアクセスできるようになります。
+
+## 具体例
+
+canister のドメイン`foo.bar.com` をcanister ID`hwvjt-wqaaa-aaaam-qadra-cai` で登録したいとします。
+
+### DNSコンフィギュレーション
+
+| レコードタイプ | ホスト | 値 |
+| --- | --- | --- |
+| `CNAME` | foo.bar.com | icp1.io |
+| `TXT` | canister-id.foo.bar.com | hwvjt-wqaaa-aaaam-qadra-cai |
+| `CNAME` | \_acme-challenge.foo.bar.com。 | \_acme-challenge.foo.bar.com.icp2.io。 |
+
+:::info
+DNSプロバイダーによっては、メインドメインを指定する必要がありません。たとえば、`foo.bar.com` の代わりに`foo` を、`_canister-id.foo.bar.com` の代わりに`_canister-id.foo` を、`_acme-challenge.foo.bar.com` の代わりに`_acme-challenge.foo` を指定するだけです。
+::：
+
+### `.well-known/ic-domains`
+
+- #### ステップ1：`.well-known` ディレクトリに、以下の内容の`ic-domains` ファイルを作成します：
+      foo.bar.com
+- #### ステップ 2:canister ソースのルートに`.ic-assets.json` ファイルを作成します：
+
+<!-- end list -->
+
+    [
+        {
+            "match": ".well-known",
+            "ignore": false
+        }
+    ]
+
+- #### ステップ 3: 更新されたcanister をデプロイします。
+
+### 登録プロセスの開始
+
+``` sh
+curl -sLv -X POST \
+    -H 'Content-Type: application/json' \
+    https://icp0.io/registrations \
+    --data @- <<EOF
+{
+    "name": "foo.bar.com"
+}
+EOF
+```
+
+:::info
+[以下の文書では](dns-setup.md)、人気のある2つのドメインレジストラを例に、DNS
+レコードを設定する詳細な手順を説明します。
+::：
+
+### トラブルシューティング
+
+カスタムドメインを登録しようとして問題に遭遇した場合、
+以下のチェックを行ってください：
+
+- のようなツールを使用してDNS設定を確認します。 [`dig`](https://linux.die.net/man/1/dig)または [`nslookup`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/nslookup).例えば、canister IDを持つ`TXT` レコードを確認するには、`dig TXT _canister-id.CUSTOM_DOMAIN` を実行します。特に、余分なエントリ（たとえば、`_canister-id`-サブドメインのための複数の`TXT` レコード）がないことを確認してください。
+- `_acme-challenge`-サブドメインに`TXT` レコードがないことを確認します（`dig TXT _acme-challenge.CUSTOM_DOMAIN` など）。`TXT` レコードがある場合は、ドメインプロバイダーが過去に ACME チャレンジを行った際に残ったものである可能性が高いです。これらのレコードはドメイン管理ダッシュボードに表示されないことが多いので注意してください。これらのレコードを削除するには、ドメインプロバイダーから提供されているすべてのTLS/SSL証明書を無効にしてみてください。
+- canister （ブラウザで`CANISTER_ID.icp0.io/.well-known/ic-domains` を開くか、ターミナルで`curl CANISTER_ID.icp0.io/.well-known/ic-domains` を使用するなど）から直接ダウンロードして、`ic-domains` ファイルを確認します。
+
+## カスタムドメインの更新
+
+ドメインを更新して別のcanister 、まず
+、ドメインのDNSレコードを更新し、バウンダリノードに通知する必要があります：
+
+- #### ステップ1：`TXT` エントリを更新し、ドメインのサブドメイン（例：`_canister-id` ）の新しいcanister IDを含めます（`_canister-id.CUSTOM_DOMAIN` ）。
+- #### ステップ2：PUTリクエストと登録のID（`REQUEST_ID` ）を使用して、境界ノードに変更を通知します。
+
+<!-- end list -->
+
+``` sh
+curl -sLv -X PUT \
+    https://icp0.io/registrations/REQUEST_ID
+```
+
+:::info
+登録の ID を忘れた場合は、ドメインの登録
+リクエストを再度送信するだけで、境界ノードが対応する ID を返します。
+::：
+
+### カスタムドメインの削除
+
+ドメインを削除したい場合は、DNSレコード
+を削除し、バウンダリノードに通知するだけです：
+
+- #### ステップ 1:`_canister-id`-subdomain (例:`_canister-id.CUSTOM_DOMAIN`) のcanister ID を含む`TXT` エントリと`_acme-challenge`-subdomain (例:`_acme-challenge.CUSTOM_DOMAIN`) の`CNAME` エントリを削除します。
+- #### ステップ2: DELETEリクエストを使用して、削除をバウンダリノードに通知。
+
+<!-- end list -->
+
+``` sh
+curl -sLv -X DELETE \
+    https://icp0.io/registrations/REQUEST_ID
+```
+
+:::info
+万が一、登録の ID を忘れてしまった場合は、ドメインに対して別の登録
+リクエストを送信すれば、境界ノードが対応する ID を返します。
+::：
+
+## 独自のインフラを使用したカスタムドメイン
+
+- #### ステップ1:canister をICにデプロイし、canister IDを記録します。
+- #### ステップ 2:[公式 IC リポジトリを](https://github.com/dfinity/ic)クローンし、`ic/typescript/service-worker` の下にある[service worker フォルダに](https://github.com/dfinity/ic/tree/master/typescript/service-worker)移動します。
+- #### canister `hostnameCanisterIdMap` ステップ 3:canister ID にドメインをマッピングします。 [`service-worker/src/sw/domains/static.ts`](https://github.com/dfinity/ic/blob/master/typescript/service-worker/src/sw/domains/static.ts).
+- #### ステップ 4:`service-worker/README.md` の指示に従ってサービス ワーカーをビルドします。出力は次のようになります：
+  - `index.html` 、
+  - 最小化された`.js` ファイル
+  - `.map` ファイルです。
+- #### ステップ 5: サーバーまたは CDN からアセット（`index.html` 、`.js` 、`.map` ファイル）をホストし、カスタムドメイン名をこのサーバーに指定します。
+- #### ステップ6：テスト
+
+:::caution
+Internet Identity（II）を使用してユーザーを認証するウェブサイトの場合：IIによって提供されるプリンシパルは、ログイン要求が開始されたドメインに依存します。そのため、canister URLを通じてユーザーを認証している場合に、カスタムドメインに切り替えようとすると、ユーザーは同じプリンシパルを持つことができなくなります。これを防ぐには、[Alternative Originsを](../../integrations/internet-identity/alternative-origins.md)設定してください。
+::：
+
+<!---
 # Custom domains
 
 ## Overview
@@ -246,3 +508,5 @@ request for your domain and the boundary node will return the corresponding ID.
 :::caution
 For websites that use Internet Identity (II) to authenticate users: The principals provided by II depend on the domain from which the login request was started. So if you authenticate your users through the canister URL and want to switch over to a custom domain, users will not have the same principals anymore. You can prevent this by setting up [Alternative Origins](../../integrations/internet-identity/alternative-origins.md).
 :::
+
+-->

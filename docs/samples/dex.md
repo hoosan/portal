@@ -1,3 +1,157 @@
+# 分散型取引所（DEX）のサンプル
+
+## 概要
+
+IC上でDeFiアプリケーションを実現するには、canisters 、トークンcanisters および台帳canister とやり取りする必要があります。このサンプルdapp は、これらのやり取りを促進する方法を示しています。[YouTubeで](https://youtu.be/fLbaOmH24Gs)簡単に紹介されています。
+
+このサンプルは [Motoko](https://github.com/dfinity/examples/tree/master/motoko/defi)と[Rustで](https://github.com/dfinity/examples/tree/master/rust/defi)実装されており、[IC上で実行されている](https://gzz56-daaaa-aaaal-qai2a-cai.ic0.app/)のを見ることができます。
+
+## アーキテクチャ
+
+ICの設計は、より複雑なオンチェーン計算を可能にします。安価なストレージと組み合わせることで、オンチェーンでのオーダーブックが可能になります。このサンプル・コードはこれらの機能を利用し、ユーザーの残高と注文を取引所canister 内に保存します。取引所のサンプル機能は以下のステップに集約できます：
+
+- 取引所が資金を預かります（トークンと ICP では仕組みが異なります。）
+
+- 取引所が内部残高帳簿を更新。
+
+- ユーザーは取引所で取引を行い、取引所は内部残高帳簿を更新します。
+
+- 取引所から資金を引き出すと、保管はユーザーに戻ります。
+
+### インターフェース
+
+取引所からユーザー固有の元帳口座識別子を要求します。この一意の口座識別子は、取引所の元帳口座のユーザー固有のサブ口座を表し、ユーザーの預金を区別できるようにします。
+
+    getDepositAddress: () -> (blob);
+
+取引所へのユーザー預金を開始します。ユーザーが ICP を入金したい場合、取引所はユーザー固有の入金アドレスからそのデフォルトのサブアド レスへ資金を移動し、DEX 上のユーザーの ICP 残高を調整します。ユーザーが DIP トークンの入金を希望する場合、取引所は承認された資金をトークン口座に移動し、ユーザーの残高を調整しようとします。
+
+    deposit: (Token) -> (DepositReceipt);
+
+取引所への引き出し要求。ユーザーが十分な残高を持っている場合、取引所はユーザーに資金を送り返します。
+
+    withdraw: (Token, nat, principal) -> (WithdrawReceipt);
+
+取引所に新規注文を出します。注文が既存の注文と一致した場合、その注文は執行されます。
+
+    placeOrder: (Token, nat, Token, nat) -> (OrderPlacementReceipt);
+
+ユーザーは発注した注文をキャンセルできます。
+
+    cancelOrder: (OrderId) -> (CancelOrderReceipt);
+
+特定のトークンの取引所におけるユーザー残高を要求します。
+
+    getBalance: (Token) -> (nat) query;
+
+### 手数料
+
+取引から手数料を差し引くのは取引所の責任です。これは、取引所が引き出しと内部転送の手数料を支払う必要があるため重要です。
+
+## トークン取引所のウォークスルー
+
+このセクションには、中核となる取引所の機能の詳細なウォークスルーが含まれています。ほとんどのやり取りは複数のステップを必要とし、提供されるフロントエンドを使用することで簡素化されます。取引所canister の機能は公開されているため、上級ユーザーは`dfx` を使用して取引所とやり取りすることができます。
+
+### ICP の入金
+
+元帳canister は独自のインターフェースを提供しているため、ICP とのやり取りは個別に解決する必要があります。
+
+- ユーザーは`getDepositAddress` 関数を呼び出します。応答には、取引所が管理するユーザー固有のサブアカウントを表す一意のアカウント識別子が含まれます。取引所は、このアドレスを通じて入金担当ユーザーを識別できます。
+
+- ユーザーは、取得した入金アドレスに ICP を転送し、転送が完了するのを待ちます。
+
+- 取引所に通知するために、ユーザーは ICP トークンのプリンシパルで`deposit` に電話をかけます。取引所はユーザーのサブアカウントを調べ、取引所におけるユーザーの残高を調整します。第二段階として、取引所はユーザーのサブアカウントからデフォルトのサブアカウントに資金を移します。
+
+### トークンの入金
+
+開発中のトークン規格は多数あります（IS20、DFT、DRC20 など）。
+
+- ユーザーはトークンcanister の`approve` 関数を呼び出します。これにより、取引所はユーザーに代わって自分自身に資金を送金できるようになります。
+
+- ICP 入金と同様に、ユーザーは取引所の`deposit` 関数を呼び出します。その後、取引所は承認されたトークンの資金を自分自身に送金し、ユーザーの取引所残高を調整します。
+
+### 注文の発注
+
+取引所に資金を入金した後、ユーザーは注文を出すことができます。注文は`from: (Token1, amount1)` と`to: (Token2, amount2)` の 2 つのタプルで構成されます。これらの注文は取引所に追加されます。これらの注文に何が起こるかは、取引所の実装に固有です。このサンプルでは、完全に一致する注文のみを実行する単純な取引所を提供します。これは単なるおもちゃの取引所であり、取引所の機能は完全性のためのものであることに注意してください。
+
+### 資金の引き出し
+
+資金の預け入れに比べ、資金の引き出しは簡単です。取引所は資金を保管しているため、`withdraw` の要求に応じて取引所は資金をユーザーに送り返します。取引所の内部残高はそれに応じて調整されます。
+
+## 前提条件
+
+- \[x\][IC SDK](../developer-docs/setup/install/index.mdx) をインストールします。
+- \[[cmake](https://cmake.org/) をダウンロードします。
+- \[x\][npm](https://nodejs.org/en/download/) をダウンロードします。
+- \[x\] Rustバージョンをデプロイする場合は、ターゲットとしてWasmを追加してください：
+  `rustup target add wasm32-unknown-unknown`
+
+### ステップ 1: プロジェクトの GitHub リポジトリをダウンロードし、依存関係をインストールします：
+
+    git clone --recurse-submodules --shallow-submodules https://github.com/dfinity/examples.git
+    # for the rust implementation examples/rust/defi
+    cd examples/motoko/defi
+    make install
+
+インストールスクリプトは、取引所のフロントエンドにアクセスするためのURLを出力します：
+
+    ===== VISIT DEFI FRONTEND =====
+    http://127.0.0.1:4943?canisterId=by6od-j4aaa-aaaaa-qaadq-cai
+    ===== VISIT DEFI FRONTEND =====
+
+または、URL "http://127.0.0.1:4943?canisterId=$(dfxcanister id frontend) "を再生成することもできます。この URL をウェブブラウザで開きます。
+
+### ステップ 2：取引所とやり取りするには、ログインボタンをクリックして、ローカルのインターネット ID を作成します。
+
+:::caution
+このサンプルプロジェクトでは、ローカルのテストバージョンの Internet Identity を使用します。メインネットの Internet Identity を使用**しないで**ください。このテストネットの Internet Identity はメインネットでは機能しません。
+::：
+
+![DEX II Login](./_attachments/dex-ii.png)
+
+### ステップ 3: プロンプトが表示されたら、「**Create Internet Identity**」を選択します。
+
+![II Step 1](./_attachments/II1.png)
+
+### ステップ4: 次に「**Create Passkey**」を選択します。
+
+![II Step 2](./_attachments/II2.png)
+
+### ステップ 5: CAPTCHAを完了します。
+
+![II Step 3](./_attachments/II3.png)
+
+### ステップ6： II番号を保存し、「**I saved it, continue**」をクリックします。
+
+![II Step 4](./_attachments/II4.png)
+
+### ステップ7： 取引所のフロントエンドウェブページにリダイレクトされます。
+
+![II Step 5](./_attachments/II5.png)
+
+### ステップ8： フロントエンドからコピーできるIIプリンシパルで初期化スクリプトを実行することで、トークンとICPを自分に付与できます。
+
+![II Principal](./_attachments/II-principal.png)
+
+### ステップ 9: 次に、以下のコマンドを実行します：
+
+`make init-local II_PRINCIPAL=<YOUR II PRINCIPAL>`
+
+### ステップ 10ウェブブラウザを更新して、トークンが入金されたことを確認します。
+
+![II Deposit](./_attachments/II-deposit.png)
+
+自分自身とトークンを取引するには、2つ目のシークレットブラウザウィンドウを開きます。
+
+## よくある間違いとトラブルシューティング
+
+- 同時実行：canister 関数に`await` ステートメントがある場合、実行がインターリーブされる可能性があります。バグを回避するためには、データ構造の更新の配置を注意深く検討し、ダブルスペンド攻撃を防ぐ必要があります。
+
+- 浮動小数点: より高度な交換では、浮動小数点に注意し、小数を制限する必要があります。
+
+- 待機後にパニックを発生させない：パニックが発生すると、ステートがロールバックされます。これは、交換の正しさに問題を引き起こす可能性があります。
+
+<!---
 # Decentralized exchange (DEX) sample
 
 ## Overview
@@ -154,3 +308,5 @@ To trade tokens with yourself, you can open a second incognito browser window.
 -   Floating points: more advanced exchanges should take care of floating points and make sure to limit decimals.
 
 -   No panics after await: when a panic happens, the state gets rolled back. This can cause issues with the correctness of the exchange.
+
+-->

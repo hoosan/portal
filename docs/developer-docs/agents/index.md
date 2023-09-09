@@ -1,3 +1,87 @@
+# 外部エージェントとICの統合
+
+## 概要
+
+Internet Computer エコシステムでは、IC のパブリックインタフェースを呼び出すために使用されるライブラリを**エージェントと**呼びます。エージェントにはいくつかの重要な責務があり、選択した言語で作業するのに便利です。
+
+canister をローカルマシンまたはInternet Computer 上で稼働させている場合、canister スマートコントラクトと対話する2つの主な方法があります。
+インターフェース仕様に従った**エージェントを**使用して、v2 API を使用してcanister と対話することも、canister の HTTP インターフェースを使用することもできます。
+
+## 利用可能なエージェント
+
+このセクションでは、言語順に以下のエージェントについて説明します：
+
+- JavaScript / TypeScript
+  - [JavaScript/TypeScriptエージェントDFINITY](./javascript-intro.md)
+- Rust
+  - [による Rust エージェントDFINITY](./ic-agent-dfinity.md)
+
+これらに加えて、コミュニティがサポートしているエージェントがいくつかあります：
+
+- .NET
+  - [`ICP.NET` Gekctek](https://github.com/Gekctek/ICP.NET)
+- Dart
+  - [`agent_dart` ](https://github.com/AstroxNetwork/agent_dart)by[AstroX](https://github.com/AstroxNetwork/agent_dart)(Flutterによるモバイル開発をサポート)
+  - [`ic_dart_tools` Levi Feldmanによる](https://github.com/levifeldman/ic_tools_dart)
+- Go
+  - [`IC-Go` ミックスラボ](https://github.com/mix-labs/IC-Go)
+  - [`agent-go` Aviate Labsによる](https://github.com/aviate-labs/agent-go)
+- Java
+  - [`ic4j-agent` IC4J](https://github.com/ic4j/ic4j-agent)(Androidをサポート)
+- Python
+  - [`ic-py` ロックラボ](https://github.com/rocklabs-io/ic-py)
+- C
+  - [`agent-c` Zondax](https://github.com/Zondax/icp-client-cpp)(IC Rust AgentのCラッパー)
+- Ruby
+  - [`ic_agent` Terry.Tu](https://github.com/tuminfei/ic_agent)
+
+他の言語でのエージェント作成に興味がある方は、<https://dfinity.org/grants> までご連絡ください。
+
+## エージェントが行うこと
+
+### データの構造化
+
+Internet Computer に対する`call` は、`update` または`query` の2つの一般的な形式を取ることができます。**エージェントは**、`/api/v2/canister/<effective_canister_id>/call` に`POST` リクエストを送信し、以下のコンポーネントを含みます：
+
+- `request_type`
+- 認証
+  - `sender` `nonce` `ingress_expiry`
+- `canister_id`
+- `method_name`
+- `request_id` - `update` リクエストタイプの呼び出しに必要
+- `arg` - 残りのペイロード
+
+canister の Candid インターフェースを知ることで、**エージェントは** `"arg"` をクライアントアプリケーションからのデータでアセンブルします。上記のすべてのコンポーネントは、次に証明書にアセンブルされ、CBORエンコードされたバッファに変換されます。
+
+更新リクエストの場合、エージェントは残りのフィールドもハッシュし、一意の`request_id` として渡します。この`request_id` は、ICが更新に関するコンセンサスを得る間のポーリングに使用されます。
+
+**エージェントは**CBORエンコードされた証明書を受け取り、`POST` リクエストのボディに添付します。canister はそのリクエストに対して非同期に動作し、canister レスポンスの準備ができるまで、**エージェントは** `read_state` リクエストでポーリングを開始できます。
+
+### データのデコード
+
+ICからデータが返されると、**エージェントは**ペイロードから証明書を取り出し、それを検証します。証明書はNNSサブネットのパブリック`rootKey` を使って本物であることを確認できます。ネットワークはCBORエンコードされたバッファで応答し、**エージェントは**それをデコードし、意味言語固有の型を使用して有用な構造に変換することができます。例えば、canister から返された型が`text` の場合、JavaScript の`string` に変換されます。
+
+### 認証の管理
+
+Internet Computer への呼び出しには、常に暗号化されたIDが必要です。そのIDは**匿名か**、暗号署名を使用して**認証さ**れます。IDは必須であるため、canisters 、呼に付加されたIDを使用して、 その呼にどのように応答するかを決定することができます。これにより、コントラクトはそのIDを他の目的に使用することができ るようになります。
+
+#### 受け入れ可能なID
+
+ICは、以下の種類の署名をIDに使用した呼を受け付けます：
+
+- Ed25519およびECDSA署名。
+  - Ed25519署名とECDSA署名。
+- Ed25519または曲線P-256上のECDSA（secp256r1としても知られる）。
+  - ハッシュ関数として SHA-256 を使用。
+  - secp256k1のKoblitz曲線を使用。
+
+これらの ID を`principal` としてエンコードする場合、エージェントは、ID が自己認証か匿名かを示すサフィックスバイトを付加します。
+
+上記のいずれかの曲線を使用する自己認証 ID のサフィックスは 2 である。
+
+匿名IDは1バイトの4.テキストエンコーディングでは`"2vxsx-fae"` に解決されます。
+
+<!---
 # Integrating external agents with the IC
 
 ## Overview
@@ -80,3 +164,5 @@ When encoding these identities as a `principal`, agents attach a suffix byte, in
 A self-authenticating identity using one of the above curves will have a suffix of 2.
 
 While the anonymous identity is a single byte 4. It resolves to `"2vxsx-fae"`, in its textual encoding.
+
+-->

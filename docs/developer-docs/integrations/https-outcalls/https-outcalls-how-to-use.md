@@ -1,3 +1,63 @@
+# HTTPアウトコールの使い方イントロダクション
+
+このガイドでは、ICの[HTTPSアウトコール](../index.md)機能の使い方を説明します。この機能により、スマートコントラクトはブロックチェーンの外部にあるHTTP(S)サーバーに直接呼び出しを行い、その応答をスマートコントラクトのさらなる処理で使用することができます。
+
+## キーコンセプト
+
+### サポートされるメソッド
+
+この機能は現在、HTTPリクエストの`GET` 、`HEAD` 、`POST` メソッドをサポートしています。
+
+### IC管理canister
+
+- [IC 管理Canister](https://internetcomputer.org/docs/current/references/ic-interface-spec#ic-management-canister)-canister が HTTPS アウトコールを使用するには、IC のシステム API を呼び出す必要があります。Canisters は、**IC 管理Canister** にメッセージを送信することで、システム API を呼び出すことができます。この意図は、システムAPIを他のcanister のように簡単に使用できるようにすることです。管理canister は、識別子`"aaaaa-aa"` を使用して呼び出されます。
+
+:::info
+IC管理canister は単なるファサードであり、実際にはcanister （分離ステート、Wasmコードなどを持つ）としては存在しません。
+::：
+
+### Cycles
+
+- [Cycles](../../gas-cost.md)つまり、(たとえば、canister 通話間のように)発呼側の残高から暗黙的に差し引かれることはありません。
+
+## HTTPアウトコールを送信するためのAPI
+
+[Internet Computer インターフェイス仕様の](https://internetcomputer.org/docs/current/references/ic-interface-spec)とおり、canister は、[以下の構造によって](https://internetcomputer.org/docs/current/references/ic-interface-spec#ic-http_request) `http_request` メソッドを使用できます：
+
+### リクエスト
+
+リクエストには以下のパラメータを指定します：
+
+- `url`要求されたURL。要求されるURL URLはhttps://www.ietf.org/rfc/rfc3986.txt\[RFC-3986\]に従って有効でなければならず、その長さは`8192` を超えてはなりません。URLはカスタムポート番号を指定できます。
+
+- `max_response_bytes`レスポンスの最大サイズをバイト数で指定します。指定する場合、その値は`2MB` (`2,000,000B`) を超えてはなりません。呼はこのパラメータに基づいて課金されます。指定しない場合、`2MB` の最大値が使用されます。
+
+- `method`: 現在のところ、`GET` 、`HEAD` 、`POST` のみがサポートされています。
+
+- `headers`HTTP リクエストヘッダーとそれに対応する値のリスト。
+
+- `body`リクエストボディの内容。
+
+- `transform`生の応答をサニタイズされた応答に変換するオプションの関数と、サニタイズされる応答とともに、呼び出し時に関数に提供されるバイトエンコードされたコンテキスト。提供される場合、呼び出すcanister 自身がこの関数をエクスポートしなければなりません。
+
+### 応答
+
+返される応答(および指定された場合、`transform` 関数に提供される応答)は、以下のフィールドを含みます：
+
+- `status`レスポンス・ステータス (200, 404 など)。
+
+- `headers`HTTP レスポンス・ヘッダとそれに対応する値のリスト。
+
+- `body`レスポンスの本文。
+
+## サンプルコード
+
+Motoko と Rust で`GET` と`POST`リクエストを行う具体的な例は、以下を参照してください：
+
+- [ `GET` リクエストの最小サンプルコード](./https-outcalls-get.md)
+- [ `POST` リクエストの最小サンプルコード](./https-outcalls-post.md)
+
+<!---
 # How to use HTTP outcalls: Intro
 
 This guide shoes how to use the [HTTPS outcalls](../index.md) feature of the IC. This feature allows smart contracts to directly make calls to HTTP(S) servers external to the blockchain and use the response in the further processing of the smart contract, without the need of oracles.
@@ -55,3 +115,5 @@ To see concrete examples of making `GET` and `POST`requests in Motoko and Rust s
 * [Minimal sample code of making a `GET` request](./https-outcalls-get.md)
 * [Minimal sample code of making a `POST` request](./https-outcalls-post.md)
 
+
+-->

@@ -1,3 +1,109 @@
+# canister への補充と補給cycles
+
+## 概要
+
+canister が、canister の使用済みリソースを支払うために、cycles を追加で入金する必要がある場合、このプロセスはcanister の「上乗せ」として知られています。canisters の上乗せ、特に一貫してcycles を使用するプロダクションcanisters の上乗せは、定期的なメンテナンスです。
+
+## 基本ルール
+
+Internet Computer にデプロイされたcanister は誰でもトップアップできます。canister の作者やコントローラである必要はありません。
+
+`dfx` 、[NNSフロントエンドdapp](https://nns.ic0.app) 、[サードパーティサービス](/docs/developer-docs/setup/cycles/cycles_management_services.md)(例: https://cycleops.dev)など、canisters をトップアップする方法はいくつかあります。必要なのはcanister のプリンシパルだけです。
+
+以下の例では、canister `jqylk-byaaa-aaaal-qbymq-cai` を100万cycles (1000000)でトップアップしてみます。これらの指示は、canister どのプリンシパルでも、cycles どの金額でも機能します。
+
+### の数cycles
+
+使いやすいように、以下のcycles の金額をコピー・ペーストできます：
+
+| Cycles | 数 |
+| --- | --- |
+| 1 百万 | 1000000 |
+| 1000万 | 10000000 |
+| 1億 | 100000000 |
+| 10億 | 1000000000 |
+| 100億 | 10000000000 |
+| 1000億 | 100000000000 |
+| 1兆 | 1000000000000 |
+| 10兆 | 10000000000000 |
+| 100兆 | 100000000000000 |
+
+### のcycles 残高の確認canister
+
+Canister cycles デフォルトでは、残高は公開されていません。canister のコントローラである場合にのみ、残高を見ることができます。`jqylk-byaaa-aaaal-qbymq-cai` を例にすると、クエリーをコールすることができます：
+
+``` bash
+dfx canister --network ic status jqylk-byaaa-aaaal-qbymq-cai
+```
+
+出力は以下のようになります：
+
+``` bash
+Canister status call result for jqylk-byaaa-aaaal-qbymq-cai.
+Status: Running
+Controllers: mto6d-zfnut-rlsxr-ogdeg-apo53-evpob-ljgnp-ma2x3-6yf3b-t4rd5-qqe t5j57-vyaaa-aaaal-qatsq-cai
+Memory allocation: 0
+Compute allocation: 0
+Freezing threshold: 2_592_000
+Memory Size: Nat(2471918)
+Balance: 9_811_813_913_485 Cycles
+Module hash: 0xe7866e1949e3688a78d8d29bd63e1c13cd6bfb8fbe29444fa606a20e0b1e33f0
+```
+
+### オプション1: アカウントにICPがある場合
+
+`dfx` IDに関連付けられたアカウントにICPがある場合、元帳canister に、そのICPの一部を受け取り、cycles に変換して、任意のcanister に渡すように指示できます：`dfx ledger [OPTIONS] top-up --amount <AMOUNT> <DESTINATION>`
+
+    dfx ledger --network ic top-up --amount 0.1 jqylk-byaaa-aaaal-qbymq-cai
+
+``` bash
+dfx ledger account-id
+dfx ledger --network ic balance
+dfx ledger --network ic top-up --amount 0.1 jqylk-byaaa-aaaal-qbymq-cai
+```
+
+- `dfx ledger account-id` は、現在使用されている`dfx` ID の元帳アカウント ID を返します。
+- `--network ic` は に、ネットワークとしてメインネット IC を使用するよう指示します（たとえばローカルなものは使用しない）。`dfx` 
+- `dfx ledger --network ic balance` コマンドは、現在使用されている`dfx` ID に関連付けられた`account` の残高を確認します。
+- `top-up --amount 0.1 jqylk-byaaa-aaaal-qbymq-cai` コマンドは0.1 ICPを に変換し、  への補充に使用します。cycles canister `jqylk-byaaa-aaaal-qbymq-cai`
+
+### オプション 2:cycles ウォレットにcycles がある場合
+
+dfx を使ってcycles ウォレットを管理している場合、cycles ウォレットからcycles をcanister に送ることができます:`dfx canister deposit-cycles <AMOUNT> <DESTINATION>` 。
+
+``` bash
+dfx wallet --network ic balance
+dfx canister --network ic deposit-cycles 1000000 jqylk-byaaa-aaaal-qbymq-cai 
+```
+
+- `wallet --network ic balance` はメインネット上のcycles ウォレットのcycles 残高をチェックします。
+- `canister deposit-cycles` はcycles ウォレットからcycles を受け取り、希望のcanister に渡します。
+
+### 特別なケース: 別のcycles ウォレットへのトッピング
+
+Cycles ウォレットは他のウォレットと同様に です。dfx を使って ウォレットを管理している場合、 ウォレットから を に送信するオプションもあります。canisters `dfx wallet send [OPTIONS] <DESTINATION> <AMOUNT>` cycles cycles cycles canister 
+
+この例では、`dfds-sddds-aaaal-qbsms-cai` をプリンシパルとするcycles ウォレットにcycles を送るとします。
+
+``` bash
+dfx wallet --network ic balance
+dfx wallet --network ic send 1000000 dfds-sddds-aaaal-qbsms-cai 
+```
+
+- `wallet --network ic balance` はメインネット上のcycles ウォレットのcycles 残高をチェックします。
+- `wallet --network ic send 1000000 dfds-sddds-aaaal-qbsms-cai` はcycles ウォレットから 1000000cycles を取り出し、cycles ウォレット`dfds-sddds-aaaal-qbsms-cai` に送ります。
+
+## NNS フロントエンドを使ったcanister のトップアップdapp
+
+[NNS フロントエンドdapp](https://nns.ic0.app) を使ってcanister をトップアップすることもできます：
+
+- #### ステップ 1:dapp の**マイCanisters**セクションに移動します。
+- #### ステップ 2:**リンクCanister** をクリックします。
+- #### ステップ3：canister プリンシパルを追加します（ユーザーが実際にcanister を操作する必要はありません）。
+- #### ステップ 4:canister が追加されたら、そのcanister をクリックします。
+- #### ステップ5：`add cycles` をクリックし、NNSフロントエンドのICPdapp を使用してcycles を追加します。
+
+<!---
 # Topping up & refilling a canister with cycles
 
 ## Overview 
@@ -104,3 +210,5 @@ You can also top up any canister via the [NNS frontend dapp](https://nns.ic0.app
 - #### Step 3: Add a canister principal (it is not necessary for the user to actually control said canister).
 - #### Step 4: Once canister is added, click on that canister.
 - #### Step 5: Click `add cycles` to add cycles using the ICP in your NNS frontend dapp.
+
+-->

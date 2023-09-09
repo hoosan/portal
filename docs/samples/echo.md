@@ -1,3 +1,38 @@
+# エコー
+
+## 概要
+
+この例では、アプリケーションが受信したデータを送り返す、単純なエコー効果を示します。
+
+これはMotoko の例で、現在のところ Rust のバリエーションはありません。
+
+## 前提条件
+
+このサンプルには、以下のインストールが必要です：
+
+- \[x\][IC SDKを](../developer-docs/setup/install/index.mdx)インストールしてください。
+- \[x\] GitHubから以下のプロジェクトファイルをダウンロードしてください。https://github.com/dfinity/examples/
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ 1: プロジェクト・ファイルのあるフォルダに移動し、Internet Computer のローカル・インスタンスをコマンドで起動します：
+
+    cd examples/motoko/echo
+    `dfx start --background
+
+### ステップ 2:canisters `Map` と`Test` をデプロイします：
+
+    dfx deploy
+
+### ステップ 3: say メソッドを起動します：
+
+    dfx canister call echo say '("This is a test.")'
+
+以下の出力が返されます：
+
+    ("This is a test.")
+
+<!---
 # Echo
 
 ## Overview
@@ -40,3 +75,4 @@ The following output will be returned:
 ```
 ("This is a test.")
 ```
+-->

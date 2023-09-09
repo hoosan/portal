@@ -1,3 +1,58 @@
+# ランダム迷路
+
+## 概要
+
+この例題では、暗号的なランダム性を使用してランダムな迷路を生成します。
+
+この例題では
+
+- 暗号化ランダム性を使用するためのライブラリ Random のインポート。
+- 共有関数`Random.blob()` を使用したエントロピーの非同期リクエスト。
+- ヘルパークラス`Random.Finite(entropy: blob)` を使用した境界付き離散乱数の生成。このクラスの各インスタンス f は、さまざまな分布からサンプリングするために呼び出されると、最初に与えられたエントロピーを消費します。例えば`f.coin()` への呼び出しが失敗すると、`null` が返され、`f` を破棄して、`Random.blob()` （例えば`f := Finite(await Random.blob())` ）への新しい呼び出しから得られる新鮮なエントロピーの塊から構築された Finite クラスの新しいインスタンスを使用する必要があります。
+
+アプリケーションは、以下のMotoko ソースコードファイルから構築されます：
+
+- `main.mo` actor の定義と、この によって公開されるメソッドが含まれています。canister
+
+このactor は、Motoko の Random ライブラリを使用して、ユーザが指定したサイズの暗号化されたランダムな迷路を生成します。
+
+関数 generate は、ライブラリ関数`Random.blob()` を非同期に呼び出し、Internet Computer から 256 ビットの生のエントロピー (32 バイトとして 256 個のランダムビット) を取得します。これらのblobのビットは、ライブラリRandom.moの他のクラスや関数を使用して、さまざまな離散分布からサンプルを生成するために消費されます。
+
+これはMotoko の例で、現在のところ Rust バリアントはありません。
+
+## 前提条件
+
+この例題には以下のインストールが必要です：
+
+- \[x\][IC SDKを](../developer-docs/setup/install/index.mdx)インストールしてください。
+- https://github.com/dfinity/examples/ \[x\] GitHubから以下のプロジェクトファイルをダウンロードしてください。
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ1：プロジェクトのファイルを含むフォルダに移動し、Internet Computer のローカルインスタンスをコマンドで起動します：
+
+    cd examples/motoko/random_maze
+    dfx start --background
+
+### ステップ 2: フロントエンドの依存関係をインストールします：
+
+    npm install
+
+### ステップ 3:canister をデプロイします：
+
+    dfx deploy
+
+### ステップ 4: ユーザーインターフェイスにアクセスできる URL をメモします。
+
+    echo "http://127.0.0.1:4943/?canisterId=$(dfx canister id random_maze_assets)"
+
+![Maze interface](./_attachments/maze1.png)
+
+迷路のサイズを入力し、**生成！を**選択します。迷路は以下のように表示されます。
+
+![Random maze](./_attachments/maze2.png)
+
+<!---
 # Random maze
 
 ## Overview
@@ -58,3 +113,5 @@ echo "http://127.0.0.1:4943/?canisterId=$(dfx canister id random_maze_assets)"
 Enter a size for the maze, then select **Generate!**. The maze will be displayed below.
 
 ![Random maze](./_attachments/maze2.png)
+
+-->

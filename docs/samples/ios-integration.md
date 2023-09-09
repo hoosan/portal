@@ -1,3 +1,118 @@
+# IOS統合
+
+## 概要
+
+[IOS 統合](https://github.com/dfinity/examples/tree/master/motoko/ios-notifications)は、Internet Computer でホストされているdapp を複数のプラットフォームと統合するための可能なソリューションを紹介する、ネイティブアプリ統合の実験的なdapp です。この例では、iOSアプリを作成しました。
+
+純粋に IC 上で実行され、[Internet Identity](/docs/current/references/ii-spec)を使用しているdapp と、認証やプッシュ通知の受信など、ネイティブの感覚をユーザーに提供できる iOS ネイティブアプリとの簡単な統合の例を作成することを目的としました。
+
+## アーキテクチャ
+
+IOS 統合の基本機能は、4 つの主要コンポーネントで構成されています：
+
+- まず、[Internet Identity](/docs/current/references/ii-spec)と統合され、基本的なルーティング機能を持つdapp を作成しました。ユーザーが認証されていない間は、ログインページのみが表示され、認証されるとアバウトページとホームページ間をナビゲートできます。
+
+- 次に、dapp のラッパーとして機能する新しい IOS ネイティブアプリケーショ ンを作成し、ユーザーにネイティブな操作感を提供しました。
+
+- 第三に、dapp にプロキシ・ページを追加し、[Internet Identity](/docs/current/references/ii-spec)を使用してユーザーを安全に認証できるようにし、認証されたセッションを有効期限が切れるまでウェブビューに保持します。
+
+- 第 4 に、dapp は、システムからのプッシュ通知を受信し、指定した URL を開くように構成されています。これにより、dapp の特定のセクションにディープリンクするメカニズムとして、通知を送信することができます。
+
+## 前提条件
+
+- \[x\][IC SDK](../developer-docs/setup/install/index.mdx) をインストールします。
+- https://github.com/dfinity/examples/ \[x\] GitHubから以下のプロジェクトファイルをダウンロードしてください。
+- \[x\][Node.jsを](https://nodejs.org/en/download/)インストールします。
+- \[x\][xcodeを](https://apps.apple.com/us/app/xcode/id497799835)インストールします。
+
+### ステップ1：ローカル開発。
+
+はじめに、`dfx` のローカル開発環境を以下の手順で起動します：
+
+``` bash
+cd examples/motoko/ios-notifications/dapp-demo
+dfx start --background --clean
+```
+
+### ステップ 2: 依存パッケージをインストールします：
+
+    npm install
+
+### ステップ 3:canisters をデプロイします：
+
+    dfx deploy
+
+### ステップ 4: フロントエンドを開始します：
+
+    npm start
+
+これで、dapp にアクセスできるようになります。`http://localhost:4943/?canisterId={YOUR_LOCAL_CANISTER_ID}`.
+
+> `YOUR_LOCAL_CANISTER_ID` は、 コマンドの出力で利用できるようになります。`dfx deploy` 
+
+### ステップ5: Internet Identityの使用。
+
+このdapp を[インターネットIDと](https://internetcomputer.org/docs/current/developer-docs/integrations/internet-identity/integrate-identity)統合することで、認証が可能になります。IOS統合をサポートするために、ブラウザIndexedDBで利用可能な`delegation` および`key` を使用します。
+
+IOS認証の手順は以下のとおり：
+
+1.  ユーザーが認証するためにクリックします(これにより、`window.open` が呼び出されます)。
+2.  dapp がリクエストをインターセプトし、新しい[ASWebAuthenticationSession](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession) を開きます。
+    - 確認ダイアログが表示され、dapp がインターネット ID ドメインを使用して認証することをユーザーに通知します。
+3.  認証が完了すると、[ユニバーサルリンクを](https://developer.apple.com/documentation/xcode/supporting-universal-links-in-your-app)持つデバイス内でのみ発生するローカル コールバックが作成されます。
+4.  dapp はこのコールバックを受信し、`delegation` と`key` をローカルの[WKWebView](https://developer.apple.com/documentation/webkit/wkwebview) に注入します。
+5.  ウェブビューはリロードされ、ユーザーは認証されます。認証はIndexedDBを使用するため、ユーザーがdapp （セッションの有効期限は保持され、最大で30日間です）を閉じた後も動作し続けます。
+
+#### これがどのように処理されるかの例です：
+
+``` ts
+async handleMultiPlatformLogin(): Promise<void> {
+    const key = await this.storage.get(KEY_STORAGE_KEY) ?? undefined;
+    const delegation = await this.storage.get(KEY_STORAGE_DELEGATION) ?? undefined;
+    const identityParam: IdentityParam = { key, delegation };
+    const preloadParam = Buffer.from(JSON.stringify(identityParam), "ascii").toString("base64");
+    const url = Auth.currentURL();
+
+    switch(this.loginType()) {
+        case AuthLoginType.Ios:
+            const iosCallback = new URL(url.searchParams.get(AuthLoginType.Ios) ?? "");
+            iosCallback.searchParams.append(Auth.identityPreloadProp, preloadParam);
+            // the redirect here triggers the app universal link
+            // such as dappexample://auth?_identity=...
+            // and this is what the app intercepts and handles
+            window.location.href = iosCallback.toString();
+            break;
+        default:
+            // desktop is enabled by default and doesn't need a special condition
+            break;
+    }
+}
+```
+
+### ステップ6：通知
+
+IOSアプリは、リモートAPNサーバーからの通知を受信できるように準備されています。この例の範囲では、独自の通知サーバーをセットアップしていません。代わりに、`send-notification.sh` スクリプトを使用して、独自のアップル開発者キーで通知をトリガーすることができます。
+
+以下は、IOS通知を表示する手順です：
+
+1.  アプリが起動したら、UNUserNotificationCenterを使ってユーザーにプッシュ通知の許可を要求します。
+2.  権限が付与されると、リモート通知の登録要求が行われます。
+3.  リモート呼び出しでデバイスIDが利用可能になります。
+    - 開発目的のために、この値を xcode コンソールに出力します。
+4.  正しい`env` 変数で`send-notification.sh` スクリプトを実行すると、通知がデバイスに表示されます。
+    - シミュレータはリモートで登録できないので、このステップには物理的なIOSデバイスが必要です。
+5.  通知をクリックすると、dapp 、aboutページが開きます。
+
+## セキュリティに関する考慮事項
+
+- Internet Identity と統合する場合は、必ずユニバーサルリンクをセットアップして使用してください。カスタムアプリのスキームなど、委任を渡す他の形式には、他人があなたのdapp になりすますことができるなど、セキュリティ上のリスクがあることが知られています。
+- この例では、ネイティブアプリでキーペアを生成していますが、リクエストの署名はdapp で行われるため、秘密鍵はまだそこで利用可能です。本番アプリケーションでは、この鍵がネイティブアプリで生成され、[安全なエンクレーブに](https://developer.apple.com/documentation/security/certificate_key_and_trust_services/keys/protecting_keys_with_the_secure_enclave)保存されていることを確認し、webkit を介してdapp に`sign` メソッドを公開します。これにより、dapp が秘密鍵にアクセスできないようにします。
+
+## 参考文献
+
+詳細については、[README ファイルを](https://github.com/dfinity/examples/blob/master/motoko/ios-notifications/README.md)参照してください。
+
+<!---
 # IOS integration
 
 ## Overview
@@ -115,3 +230,5 @@ These are the steps to show an IOS notification:
 ## References
 
 For further details, please refer to the [README file](https://github.com/dfinity/examples/blob/master/motoko/ios-notifications/README.md).
+
+-->

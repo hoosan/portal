@@ -1,145 +1,310 @@
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+<img src="https://user-images.githubusercontent.com/15371828/158857061-8fa8d079-d33f-4ed2-88aa-56d452d238d8.svg" align="right" alt="DFINITY logo" width="270">
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors)
+# Internet Computer 開発者ポータル
 
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+IC開発者ポータルには、開発者が
+Internet Computer を構築するために必要なすべてのリソースが集まっています。
 
-# （非公式） Dfinity ドキュメント翻訳プロジェクト
+https://internetcomputer.org
 
-https://dfinityjp.netlify.app
+[![Netlify Status](https://api.netlify.com/api/v1/badges/0ef9e793-aa30-446a-ae7a-a18ac304db58/deploy-status)](https://app.netlify.com/sites/icportal/deploys) [![CD](https://github.com/dfinity/portal/actions/workflows/cd.yml/badge.svg)](https://github.com/dfinity/portal/actions/workflows/cd.yml)
 
-## 翻訳手順
+## 貢献
 
-翻訳の状況は、[翻訳の概要と進捗状況](https://github.com/Japan-DfinityInfoHub/portal/issues/1)の issues を確認してください。
+IC 開発者ポータルは[Docusaurus](https://docusaurus.io/docs) を使用しています。
 
-### 必要な環境
+## 書式とスタイルのガイドライン
 
-- Node v16
+開発者ドキュメントを投稿するには、提供されているスタイルガイドに従わなければなりません：
 
-### 手順 1: 翻訳を始める準備
+[開発者ドキュメントのスタイルガイド](style-guide.md)
 
-まずは、このリポジトリを右上から Fork してください。
+### ローカル開発
 
-そして、リポジトリをクローンします。`your` には、あなたの GitHub のユーザーネームを入れてください。
+#### 必要条件
 
-```
-$ git clone https://github.com/your/portal
-$ cd docs
-```
+- [Node v16](https://nodejs.org/en/blog/release/v16.16.0) **(v18は推奨しません)**。
 
-翻訳作業を行うためのブランチを作成します。
-どのファイルを翻訳するかは、[翻訳の概要と進捗状況](https://github.com/Japan-DfinityInfoHub/portal/issues/1)の翻訳ページ一覧を確認して、翻訳したい箇所をコメントしてください。
+#### ローカルでのインストールと実行
 
-ここでは、例として `introduction/pages/welcome.md` を翻訳するためのブランチを作成します。
+リポジトリ内のドキュメントを変更する際、以下の
+コマンドを実行することで、ローカルで変更をプレビューすることができます。
 
-```
-$ git checkout -b introduction/pages/welcome.md
-```
-
-これで、翻訳を始める準備は完了です。エディタを使って、翻訳箇所のファイルを編集します。
-
-### 手順 2: 翻訳
-
-[スタイルガイド](https://github.com/Japan-DfinityInfoHub/portal/blob/master/styleguide.md)に目を通してください。
-わからないことがあれば [Discord](https://discord.gg/ewAxzfTURX) の#ドキュメント翻訳チャネルで質問してください。
-
-エディタとしては [VSCode](https://azure.microsoft.com/ja-jp/products/visual-studio-code/) を推奨します。
-
-### 手順 3: 翻訳内容の確認
-
-翻訳した文章を確認します。
-
-```
+``` bash
+cd portal/
 git submodule update --init
 npm install
 npm start
 ```
 
-のコマンドを叩くと、http://localhost:3000 でドキュメントを確認することができます。
+開発者ポータルのフロントエンドがブラウザの http://localhost:3000 に表示されるはずです。
 
-### 手順 4: 翻訳内容のプルリクを出す
+国際化貢献のコンテキストで特定のロケールをプレビューするには、次の
+コマンドでドキュメントを起動してください：
 
-翻訳が終わったら、ローカルリポジトリにコミットしたあと、自分のリモートリポジトリにプッシュします。
-コミットが複数になった場合、なるべく[１つのコミットにまとめて](https://dev.classmethod.jp/articles/git-rebase-fixup/)いただければありがたいですが、難しければそのままでも OK です。
-
-```
-$ git add modules/introduction/pages/welcome.md
-$ git commit -m "translated: introduction/pages/welcome.md"
-$ git push origin introduction/pages/welcome.md
+``` bash
+npm start -- --locale <locale>
 ```
 
-最後に、Github から[プルリクを出します](https://qiita.com/samurai_runner/items/7442521bce2d6ac9330b)。
-このとき、出し先が Japan-DfinityInfoHub/portal になるようにします。
+### ドキュメントの追加
 
-間違えて本家の dfinity/docs に出してしまわないように気をつけてください。
+ドキュソーラスは非常に使いやすく、ドキュメントの作成が容易です。
+開発者ポータルでは、[ドキュソーラスが提供する機能拡張により](https://docusaurus.io/docs/markdown-features)、デフォルトフォーマットとしてMarkdown
+を使用しています。
 
-以上です！メンテナーがレビューをして問題なければマージされます。
+ドキュメントを作成するには、`/docs` フォルダに移動し、任意のディレクトリに Markdown ファイルを作成します。ドキュメントの内容は開発者ドキュメントのスタイルガイドに従ってください：
 
-## adoc ファイルから md ファイルへの変換
+開発[者ドキュメントのスタイルガイド](style-guide.md)
 
-以前のドキュメントは adoc ファイルで作成されており、すでに翻訳した内容を新しいドキュメントに移行するために markdown 形式への変換が必要な場合は以下の手順に従います。
+以下はdocsサブディレクトリの例です：
 
-1. ローカルの docs リポジトリを最新にする
+    developer-docs/
+        developer-docs/
+            home.mdx
+            quickstart/
+                ...
+        references/
+            ...
 
-以前のドキュメント(adoc ファイル)は
+### ロードマップの変更
 
-https://github.com/Japan-DfinityInfoHub/docs
+ロードマップの項目は
+[roadmap](https://github.com/dfinity/portal/tree/master/roadmap)ディレクトリの中にマークダウンファイルとして保存されます。
 
-で管理されています。
-`git clone` するか、すでにしてある場合は `git pull` コマンド等を用いて、ローカルリポジトリを最新にします。
+項目はドメインとステータスによってグループ化されます。
+
+    roadmap
+    ├── 1_core-protocol
+    │   ├── deployed
+    │   │   ├── network_performance.md
+    │   │   └── nodes_can_be_reassigned.md
+    │   ├── in-progress
+    │   │   ├── 1_btc-integration.md
+    │   │   ├── 2_tecdsa.md
+    │   │   ├── 3_https-outcalls.md
+    │   │   ├── 4_high-replication-subnets.md
+    │   │   └── 5_deterministic-time-slicing.md
+    │   ├── index.md
+    │   └── pending
+    │       └── eth-integration.md
+    ├── 2_boundary_nodes
+    │   ├── deployed
+    │   │   └── icos-nodes.md
+    │   ├── in-progress
+    │   │   ├── 1_seo_and_streaming.md
+    │   │   ├── 2_asset_canister_caching.md
+    ...
+
+- アイテムのタイトル、リンク、ETAを変更するには、それぞれのマークダウンドキュメントの一番上にあるメタデータセクションを編集してください。
+- アイテムのステータスを変更するには、例えば、`in-progress` から`deployed` に、ファイルを`deployed` ディレクトリに移動してください。
+- アイテムはファイル名のアルファベット順に表示されます。アイテム間の順序を強制するには、
+  ファイル名の前に数字を付けてください。
+- アイテムをコミュニティリクエストとしてマークするには、アイテムのメタデータで`is_community: true` を設定します。
+
+各ドメインフォルダには、タイトル、説明、カバー画像などのメタデータを追加する`index.md` ファイルが含まれています。
+
+### 仕組み」コンテンツの変更
+
+how it worksページカードとサブページは、
+[how-it-works](https://github.com/dfinity/portal/tree/master/how-it-works)ディレクトリ内にマークダウンファイルとして保存されます。
+
+    how-it-works
+    ├── 1_about
+    │   ├── 01-overview-of-the-internet-computer.card.md
+    │   ├── 01-overview-of-the-internet-computer.subpage.md
+    │   ├── canister-lifecycle.card.md
+    │   ├── canister-lifecycle.subpage.md
+    │   └── index.md
+    ├── 2_featured
+    │   ├── direct-integration-with-bitcoin.card.md
+    │   ├── direct-integration-with-bitcoin.subpage.md
+    │   ├── index.md
+    │   ├── sns.card.md
+    │   ├── threshold-ecdsa-signing.card.md
+    │   ├── threshold-ecdsa-signing.subpage.md
+
+このディレクトリには`.card.md` と`.subpage.md` で終わるマークダウン・ファイルがあります。
+
+`.card.md` ファイルは、`/how-it-works page` の一部として、それらがグループ化されているセクションの下に表示されます（例:
+Featured）。
+
+`.subpage.md` ファイルは、ファイルのメタデータとコンテンツに基づいて、それぞれ`/how-it-works/` の下にサブページを生成します：
+
+- `slug` パラメータは最終的な URL を決定します。例えば、スラッグ`canister-lifecycle` は
+  ページ`/how-it-works/canister-lifecycle` を生成します。
+- `title` 、`abstract` (オプション)、`coverImage` は、ソーシャルメディアで共有されたときにページがどのように見えるかを決定します。
+
+**YouTubeの動画を埋め込む方法：**
+
+YouTubeの動画を埋め込むには、動画のカバー画像を追加し、その画像を動画自体へのリンクにします（
+例）：
+
+    [![Watch youtube video](https://i.ytimg.com/vi/YWHTNr8RZHg/maxresdefault.jpg)](https://www.youtube.com/watch?v=YWHTNr8RZHg)
+
+例：YouTubeのカバー画像にYouTubeのアイコンを追加することで、YouTubeの動画を埋め込むことができます。
+
+以下の URL に動画 ID を代入すると、動画のカバー画像を取得できます：
+
+    https://i.ytimg.com/vi/INSERT_VIDEO_ID_HERE/0.jpg
+
+出来上がった画像が低画質な場合、`https://i.ytimg.com/vi/INSERT_VIDEO_ID_HERE/maxresdefault.jpg` 、試してみることができますが、
+必ず存在するとは限りません。
+
+### ⚠️ 投稿のマスト
+
+- ファイルが [`.github/CODEOWNERS`](https://github.com/dfinity/portal/blob/master/.github/CODEOWNERS)ファイルが
+  あなたが追加した新しいドキュメントで満たされていることを確認してください。こうすることで、将来のPull Requestが適切な
+  人によってレビューされることを保証できます。
+- ドキュメントを作成するときは、
+  に登録する必要があります。 [`/sidebars.js`](https://github.com/dfinity/portal/blob/master/sidebars.js)に登録する必要があります。そうしないと、
+  サイドナビゲーションバーに表示されません。
+- すべての文書は、提供されている[Developer docs スタイルガイドに従って](style-guide.md)ください。
+
+> ドキュメントの作成に関する詳細は、[ドキュザウルスのドキュメントを](https://docusaurus.io/docs/create-doc)参照してください。
+
+### デプロイププレビュー
+
+リポジトリにプルリクエストが作成されると、CIジョブが表示され、Netlifyにプレビューがデプロイされます。これにより、
+のレビュアーがエンドユーザーと同じように変更を簡単に確認することができます。
+
+プレビューにアクセスするには、プルリクエストの一番下にあるデプロイのリストにアクセスしてください。
+ジョブが終了すると、"Preview Netlify" デプロイがアクティブになっているはずです。
+
+<img width="800" alt="Screenshot 2022-03-17 at 11 45 25" src="https://user-images.githubusercontent.com/15371828/158793201-bb41f003-3d8d-4f95-9f91-8798613bc695.png">
+
+そして、"View deployment "ボタンを押すだけで、新しいNetlifyのプレビューが表示されます。
+
+### コントリビューションワークフロー
+
+開発者ポータルへのコントリビューションの流れを説明します：
+
+1.  貢献者はフォーク/ブランチを作成し、そこで変更を行います。
+2.  このブランチから`master` にプルリクエスト(PR)が作成されます。プレビューが生成され、レビュアーはプレビューウェブサイト
+    を直接チェックすることができます。
+3.  プルリクエストが master にマージされた後、CI/CD がその内容を IC にデプロイします。変更内容は
+    ウェブページの "Current" というドロップダウンのバージョンの下に表示されます。
+4.  オプションです：リポジトリメンテナが master 上のコミットに $TAG というタグを付けると、CI/CD はその内容を IC にデプロイします。
+    ウェブページのデフォルトは新しい "$TAG" バージョンになり、バージョンのドロップダウンに表示され、ユーザーはそのタグにピン留めされた
+    の内容を見ることができます。
+
+### ベストプラクティス
+
+ポータルリポジトリでは、git サブモジュールを使用して複数のリポジトリにコンテンツのオーサリングを分散させています。これは、他のリポジトリの古いコンテンツを参照しているドキュメントを更新したい場合に、
+困難であることがわかります。`portal` に貢献する際に役立つベストプラクティス
+をいくつか紹介します。
+
+1.  `submodules` に変更をコミットしない
+    a. ステージアップした変更をチェックし、`submodules` ディレクトリに入れ子になっているファイルがないか確認してください。
+    それらの変更は対応するサブモジュールリポジトリに移動する必要があります。
+2.  
+    a.`submodules` のコンテンツに変更を加える場合は、まず
+    のリポジトリに変更をマージする必要があります。
+    b. 変更がマージされたら、`portal` の参照先をそのリポジトリに更新する必要があります。そのためには
+    を実行してください。`git submodule update --remote --merge`
+3.  
+    a. 変更をプッシュする前に`npm run build` をローカルで実行しておくと、頭痛の種から解放されます。
+    ビルドがローカルで失敗すると、CI でもほぼ間違いなく失敗します。
+    b. 私たちの CI では、PR をマージする前に一連のチェックが通過する必要があります。そのうちの一つは、コードが
+     canister にデプロイできるかどうかをチェックするものです。canister をローカルにデプロイする必要はありませんが、少なくとも`npm run build`
+     はパスする必要があります。
+
+## コミュニティが作成したエージェントと CDK
+
+[エージェントと](https://internetcomputer.org/docs/current/developer-docs/build/agents) [CDK の](https://internetcomputer.org/docs/current/developer-docs/build/cdks)セクションは、DFINITY- 作成されたエージェントと CDK のドキュメント
+を含むだけではいけません。
+そのため、私たちは他のプロジェクトに次のことを推奨します：
+
+- それぞれのインデックスページに、自分たちのエージェントや CDK をリンクしてください (編集するファイルは`docs/developer-docs/build/agents/index.md` または`docs/developer-docs/backend/choosing-language.md` の
+  です)。
+- `Agents` または`CDKs` のフォルダに、独自のドキュメントを追加してください。
+
+## コミュニティが作成した開発者ツール
+
+`src/components/Common/toolingItems.ts` の`communityToolingItems`
+配列にエントリを追加することで、開発[者](https://internetcomputer.org/tooling)ツールを
+[開発者ツール](https://internetcomputer.org/tooling)ページに追加できます。
+
+他の開発者がツールを発見しやすいように、適切なタグを追加してください。
+可能であれば、新しいタグの導入は避けてください。
+
+## コミュニティが作成したサンプルプロジェクト
+
+[サンプル](https://internetcomputer.org/samples)ページに表示するサンプルプロジェクトを投稿することができます。
+
+投稿を[コミュニティプロジェクトファイルに](/community/communityProjects.ts)追加し、プルリクエストを開いてください。
+TypeScript をサポートしたエディタを使って、
+[スキーマに従って](/src/components/Common/sampleItems.ts)いることを確認してください。
+
+## ショーケースの投稿ガイドライン
+
+*免責事項: ショーケースとして紹介する製品は、canister 。私たちのチームがPRを確認し、
+。ご質問がある場合は、devcomms@dfinity.org までご連絡ください。*
+
+プロジェクトを [`showcase.json`](/showcase.json).
+の必須フィールドについては、以下のオブジェクトスキーマを参照してください。
+
+ユニークなプロジェクトIDを作成してください。例えば、あなたのプロジェクトが`Awesome ICP Project!` と呼ばれる場合、プロジェクトIDは
+のように`awesome-icp-project` となります。
+
+ロゴ／ビデオ／スクリーンショットのファイルには、プロジェクトIDを先頭に付け、`/static/img/showcase`
+フォルダに置いてください。例えば、プロジェクトIDが`awesome-icp-project` の場合、ロゴファイルは
+に`awesome-icp-project_logo.webp` という名前を付けて、`/static/img/showcase` フォルダに置きます。
+
+[エコシステム・ヘルパーは](https://mvw4g-yiaaa-aaaam-abnva-cai.icp0.io/)、internetcomputer.orgへのプロジェクト提出を支援するオンチェーンツールです。画像変換、サイズ変更、ウェブサイト全体で使用されるプロジェクトカードのプレビューを支援し、使用可能な有効なJSONドキュメントを作成します。フォームに記入し、アセットバンドルをzipファイルでダウンロードしてください。
+
+### アセットガイドライン
+
+| アセット |  | 必要条件 | フォーマット | 注意事項 |
+| --- | --- | --- | --- | --- |
+| ロゴ | 必須 | 112x112px | webp/svg/png | 現在表示されているサイズ 56x56px |
+| スクリーンショット | 任意 | 1024x576px | webp/jpg | スキーマは複数のファイルをサポートしますが、最初のファイルのみが表示されます。 |
+| ビデオ | 任意 | 最大10MB | webm/mp4 | ビデオファイルが指定された場合、スクリーンショットの代わりに表示されます。 |
+
+### タグ
+
+タグのリストは最終的なものではなく、プロジェクトの発展とともに更新されます。現在のところ、以下のタグが利用可能です：
+
+- `Wallet`
+- `Bitcoin`
+- `NFT`
+- `SocialFi`
+- `DeFi`
+- `Games`
+- `DAO`
+- `Metaverse`
+- `Tools / Infrastructure`
+
+### オブジェクトスキーマ
 
 ```
-git pull
+  {
+    id: string,
+    name: string,
+    oneLiner: string, // short description of the project
+    website: string, // URL starting with `https://`
+
+    tags: ('Wallet' | 'Bitcoin' | 'NFT' | 'SocialFi' | 'DeFi' | 'Games' | 'DAO' | 'Metaverse' | 'Tools / Infrastructure')[],
+    description: string, // description of the project
+    stats: string, // eg. "10,000 users"
+    logo: string, // url to logo file, eg. /img/showcase/awesome-icp-project_logo.webp
+    
+    usesInternetIdentity: boolean,
+    authOrigins?: string[]; // optional additional (URL) origins that can be utilized for signing in to your dapp
+
+    github?: string, // full URL to github repo, if available
+    youtube?: string, // full URL to a YouTube video or channel, if available
+    twitter?: string, // full URL to a twitter account, if available
+
+    screenshots?: string[], // optional array of urls to screenshot files
+
+    video?: string, // optional url to video file, eg. /img/showcase/awesome-icp-project_video.webm
+    videoContentType?: 'video/webm' | 'video/mp4', // to feed into the type attribute of the video/source element
+
+    submittableId?: string, // optional id of the submittable form
+  },
 ```
 
-2. 変換スクリプトを実行する
-
-`convert.sh` という変換スクリプトがリポジトリのルートディレクトリに含まれていますので、以下のようにファイルを変換します。
-ここでは例として、`modules/quickstart/pages/1-quickstart.adoc` を md ファイルに変換します。
-
-```
-bash convert.sh modules/quickstart/pages/1-quickstart.adoc
-```
-
-変換前のファイルと同じディレクトリに `modules/quickstart/pages/1-quickstart.md` が作成されます。
-ここまでが docs リポジトリ側での準備です。
-
-3. 翻訳したいドキュメントを修正する。
-
-次に、portal リポジトリ側で、対応する md ファイルを開きます。
-変換スクリプトではコメントアウトされた文章は削除されてしまうので、[スタイルガイド](https://github.com/Japan-DfinityInfoHub/portal/blob/master/styleguide.md) に従って原文を `<!--` と `-->` で囲んでコメントアウトしてください（原文に更新があった場合に変更箇所を参照できるように、原文のコメントアウトがされていることは重要です）。
-
-原文をコメントアウトしたら、先ほど変換した md ファイルの中身をコピーして貼り付けてください。
-
-原文を確認し、翻訳後の日本語が原文と対応していることをご確認ください。
-
-### 注意点
-
-変換スクリプトは、テーブルの変換先が html になってしまいますので、原文に合わせて md のテーブル書式に直してください。
-
-## Contributors ✨
-
-Special thanks to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/hoosan"><img src="https://avatars.githubusercontent.com/u/40290137?v=4" width="100px;" alt=""/><br /><sub><b>hoosan</b></sub></a></td>
-    <td align="center"><a href="https://github.com/tokuryoo"><img src="https://avatars.githubusercontent.com/u/92770268?v=4" width="100px;" alt=""/><br /><sub><b>tokuryoo</b></sub></a></td>
-    <td align="center"><a href="https://github.com/gelgoog999"><img src="https://avatars.githubusercontent.com/u/84751541?v=4" width="100px;" alt=""/><br /><sub><b>gelgoog999</b></sub></a></td>
-    <td align="center"><a href="https://github.com/pontagon333"><img src="https://avatars.githubusercontent.com/u/87188356?v=4" width="100px;" alt=""/><br /><sub><b>pontagon333</b></sub></a></td>
-    <td align="center"><a href="https://github.com/numtet"><img src="https://avatars.githubusercontent.com/u/11040952?v=4" width="100px;" alt=""/><br /><sub><b>numtet</b></sub></a></td>
-    <td align="center"><a href="https://github.com/hokosugi"><img src="https://avatars.githubusercontent.com/u/38212038?v=4" width="100px;" alt=""/><br /><sub><b>hokosugi</b></sub></a></td>
-  </tr>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
+<!---
 <img src="https://user-images.githubusercontent.com/15371828/158857061-8fa8d079-d33f-4ed2-88aa-56d452d238d8.svg" align="right" alt="DFINITY logo" width="270">
 
 # Internet Computer developer portal
@@ -456,3 +621,5 @@ The list of tags is not final, and will be updated as the project evolves. For n
     submittableId?: string, // optional id of the submittable form
   },
 ```
+
+-->

@@ -1,6 +1,146 @@
 ---
+
 sidebar_position: 5
 ---
+# SNSの報酬
+
+各 SNS は、特に
+どのように報酬を使用して、ガバナンス参加者
+とdapp ユーザーに特定の行動を奨励するかを定義するパラメータで個別に設定できます。
+
+## 報酬の概要
+
+この記事の目的は、SNSの報酬スキームの設計を説明することです。
+
+トークン化の可能性は、トークン化されたオープン・ガバナンス・システム（
+）によって解き放たれます。トークンを賭けて投票に参加することができます。ステークされたトークン
+を持つ人は誰でも、dapp のガバナンス提案を提出し、投票することができます。
+
+ガバナンスに参加することで、開発者、ユーザー、その他の投資家は
+SNS が管理するdapp に実装されるべき新機能を一括して決定することができます。
+トークンがステークされると、トークンの将来の価値
+とdapp を考慮して投票するインセンティブが与えられます。 これは
+SNS の報酬に関する初のシンプルなスキームです。開発者とコミュニティからの収集された経験に基づいて、この
+は将来的に強化することができます。
+
+報酬には2つのカテゴリがあります：
+
+- ユーザーが SNS ガバナンスに参加するインセンティブを与える**投票**報酬。
+
+- SNS が管理するdapp のアーリーアダプターやアクティブユーザーになるよう、dapp ユーザーにインセンティブを与えるための**ユーザー報酬**。
+
+報酬スキームは、
+[Network Nervous System （NNS](https://medium.com/dfinity/the-network-nervous-system-governing-the-internet-computer-1d176605d66a#:~:text=Network%20Nervous%20System%20overview,how%20to%20update%20this%20information.)）で使用されている投票報酬に基づいています。
+ただし、各SNSによって柔軟に設定することができます。
+
+## NNSの投票報酬のまとめ
+
+Internet Computer
+[NNS](/tokenomics/nns/nns-intro.md)内では、投票報酬は定期的に（現在は毎日）支払われます。 その期間の全体的な報酬プールに基づいています。 各 は、 が投票した議決権 と、 が参加したプロポーザルの数に応じて、そのプールの比例配分額を受け取ります。より正確には、 これは以下のように機能します：
+ neuron neuron
+ neuron
+
+- 総報酬プールの決定：
+  
+  - G（発生時間）とG+8yの間の時間tについて、総供給量に占める年率換算された報酬の割合は、R(t) = 5% + 5% \[(G + 8y - t)/8y\]² です。
+  - G+8yの後の時間tでは、R(t) = 5%となります。
+  - ある日の投票報酬の総プールは、ICP供給量（その日のICPトークンの総供給量）\* R(t) / 365.25として計算されます。
+
+- neuronsの投票権：
+  
+  - 溶解遅延が6ヶ月以上のneuronsのみが投票対象となります。解散遅延の上限は8年。
+  - neuron の議決権は以下のように計算されます。`neuron_stake * dissolve_delay_bonus * age_bonus`
+  - 特に溶解遅延ボーナスと年齢ボーナスは累積されます。
+  - 解散遅延ボーナス(ddb)は、ddb<sub>min</sub> =1 と ddb<sub>max</sub>=2 の間の値で、解散遅延の一次関数です(上限は8年)。
+  - 年齢ボーナス(ab)は、ab<sub>min</sub>=1とab<sub>max</sub>=1.25の間の値で、neuron (上限は4年)の年齢の一次関数です。neuron は、ロックステートに入るとエージングを開始。neuron が解散ステートに入ると老化は 0 にリセットされます。
+  - 投票権は投票時ではなく、提案が行われたときに計算されます。
+
+- neurons への報酬プールの割り当て：
+  
+  - 報酬プールは、この日に決済された提案の投票力に、該当する提案カテゴリの報酬ウェイトを乗じた値に比例して割り当てられます。
+    - この報酬期間(通常は1日)に含まれるプロポーザルの集合を決定します: これらは、投票報酬に関してまだ決着しておらず、もはや投票のために開かれていないプロポーザルです。
+    - 投票資格のあるneurons による総投票力が合計されます。
+    - 各neuron には、これらのプロポーザルに貢献した投票力に、該当するプロポーザルのカテゴリの報酬ウェイトを掛けたものに比例して報酬が与えられます。
+  - neuron が投票に対して報酬を受けると、この報酬はneuron の満期と呼ばれる属性に記録されます。この属性は取引可能な資産ではありません。neuron 成熟度から収入を得たい場合、ユーザは成熟度をバーンして新しいICPを作成する必要があります。
+
+## SNS報酬の設計
+
+### 投票報酬
+
+上記の背景のセクションで強調したように、SNSはNNSの投票報酬スキーム
+、スキームを柔軟に構成することができます。
+特にステートメントがない限り、アプローチと方式は NNS と同じです。
+NNS と同様に、SNS ガバナンス提案によって SNS の構成を変更することが可能です。
+
+#### 総報酬プールの決定
+
+- 報酬関数のパラメータを変更した場合の影響は、この[ツールで](https://docs.google.com/spreadsheets/d/1cTqgjGcG5rEQ5kRGprpdLvBL7ZdTqUDCuCi0QjClbgk/edit#gid=0)シミュレーションできます。
+
+![](./_attachments/graph_rewards_total_supply.png)
+
+- 報酬最小値 r<sub>min</sub>: 0 以上の有理数値。デフォルト値：0.00。
+- 報酬最大値 r<sub>max</sub>: r<sub>min</sub> 以上の有理数値。デフォルト値：0.00。
+- 報酬の支払い開始時間 t<sub>start</sub>: SNSの発生時間以上のタイムスタンプ。報酬計算がオンになると、開始時刻は現在の時刻に設定されます。
+- 時間長 t<sub>delta</sub>: 0以上で、r<sub>max</sub> と r<sub>min</sub> の間の時間遷移の長さを決定します。デフォルト値：0年。
+- t<sub>start</sub> と t<sub>start</sub>+t<sub>delta</sub> の間の時間 t について、総供給量に対する年率化された報酬のパーセンテージは、R(t) = r<sub>min</sub>+ (r<sub>max</sub>-r<sub>min</sub>) \[ (t<sub>start</sub>+ t<sub>delta</sub> - t) / t<sub>delta</sub> \]² です。
+- t<sub>start</sub>+t<sub>delta</sub> の後の時間 t については、R(t) = r<sub>min となります。</sub>
+- 特別な場合 r<sub>max</sub> = r<sub>min</sub> 報酬関数は一定、すなわちR(t)=r<sub>min。</sub>
+- ある日の投票報酬の総プールは、SNS 供給量 (SNS トークンの総供給量) \* R(t) / 365.25 として計算されます。
+- 投票報酬は発行されます。つまり、満期がSNSトークンに変換されると、新たな供給が発生します。SNSがt<sub>start</sub>+t<sub>delta</sub> の後にトークン供給の増加を止めたい場合、SNSはr<sub>min</sub>=0を設定する必要があります。
+
+#### neuronの投票力 s
+
+- 投票に必要な最小溶解遅延 dd<sub>min</sub>: 0 以上の整数値。デフォルト値：6ヶ月。
+- 最大解散遅延 dd<sub>max</sub>: dd<sub>min</sub> 以上の整数値。デフォルト値：8年。
+- 最大ディゾルブ遅延ボーナス：
+  - ddb<sub>max</sub> 1以上の有理数値。デフォルト値：2。
+  - 特別な場合 ddb<sub>max</sub>=1 ディゾルブ遅延ボーナスは発生しません。
+- 最大年齢 a<sub>max</sub>: 0 以上の整数値。 デフォルト値：4歳。
+- 最大年齢ボーナス
+  - ab<sub>max</sub> 1 以上の有理数値。デフォルト値：1.25。
+  - 特殊ケース ab<sub>max</sub>=1 の場合、年齢ボーナスはありません。
+
+#### 報酬プールの配分
+
+- 報酬プールは、その日に決着した議案の議決権に比例して配分されます (NNS と同じ)。
+- 特定の日に提案が提出されなかった場合、報酬は翌日に持ち越されます。
+- NNSでは、提案の種類に応じて報酬のウェイトが設定されています。SNS報酬スキームの最初のバージョンでは、この機能はまだ利用できません。
+
+投票報酬の計算と分配を有効にするフラグがあります。SNSは、投票報酬なしで、あるいは投票報酬なしで、立ち上がり期間を過ごすことを選択するかもしれません。
+
+### 投票報酬パラメータの設定
+
+投票報酬パラメータは、SNSガバナンス（canister ）で定義され、提案によって変更することができます。実装で使用するデータ構造**VotingRewardsParametersの**詳細は[こちら](https://github.com/dfinity/ic/blob/master/rs/sns/governance/proto/ic_sns_governance/pb/v1/governance.proto#L726)。
+
+以下の表では、**VotingRewardsParametersの**関連するすべてのパラメータの概要を、この記事の表記と実装で使用される正式名称をリンクして示します。
+
+| パラメータ | *VotingRewardsParameters*における正式名称 |
+| --- | --- |
+| r<sub>min</sub> | *初期報酬ポイント数* |
+| r<sub>最大</sub> | *最終的な報酬率* |
+| t<sub>start</sub> | *開始タイムスタンプ秒数* |
+| t<sub>デルタ</sub> | *報酬レート遷移時間秒数* |
+
+**VotingRewardsParametersが**入力されていない場合、投票報酬は無効になります。
+
+以下に、投票権の決定に関連するパラメータの概要を示します。
+
+| パラメータ | *VotingRewardsParameters*内の正式名称 |
+| --- | --- |
+| dd<sub>min</sub> | *neuron最小投票遅延時間(\_minimum\_dissolve\_delay\_to\_vote\_seconds)* |
+| dd<sub>max</sub> | *最大ディゾルブ遅延秒数* |
+| ddb<sub>最大</sub> | 実装後、追加予定 |
+| a<sub>最大</sub> | *最大\_neuron\_age\_for\_age\_bonus* |
+| ab<sub>最大</sub> | 実施後、追加予定。 |
+
+### ユーザー報酬
+
+- ユーザー報酬の目的は、SNSの早期導入と積極的な利用を促進することです。利用状況やそれに応じたユーザー報酬の意味は、個々の SNS によって大きく異なる可能性があるため、最初は非常にシンプルな設定にしています。
+- トークンの一部（ユーザー報酬用に予約）は、SNS が管理するアカウント（canister ）に保管できます。このcanister は、報酬がいつ誰に支払われるかを成文化できます。
+- このソリューションでは、（新規発行ではなく）既存のトークンを支払うことができます。ユーザーの報酬が発行のトリガーになることが必要な場合は、後のフェーズで追加できます。
+
+<!---
+
 # SNS rewards
 
 Each SNS can be individually configured with parameters that define, among other things,
@@ -130,3 +270,5 @@ In the following we provide an overview of the relevant parameters for the deter
 * The purpose of user rewards is to foster early adoption and active usage of the SNS. Given that the meaning of usage and the according user rewards can vary greatly across individual SNSs we have a very simple set-up at start.
 * Some tokens (reserved for user rewards) can be held in an account that is owned by an SNS-controlled canister. This canister can then codify when the rewards are paid out and to whom.
 * This solution allows paying out existing (not newly minted) tokens. If it is required that user rewards trigger minting, this could be added in a later phase.
+
+-->

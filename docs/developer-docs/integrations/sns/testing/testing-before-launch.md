@@ -1,6 +1,50 @@
 ---
+
 sidebar_position: 1
 ---
+# ローンチ前のSNSテスト
+
+SNSを立ち上げる前に、徹底的にテストすることをお勧めします。
+
+## SNSの分散化をテストするには、主に以下の2つの方法があります。
+
+### ローカルマシン
+
+開発者は**[ローカル](./testing-locally.md)**マシンでテストできます。開発者を支援するために、DFINITY は`sns-testing` リポジトリを作成しました。このリポジトリには、開発者が SNS プロセスをテストするのに役立つスクリプトがあります。開発者はInternet Computer のローカルバージョンをローカルマシンで実行し、dapp をローカルにデプロイし、dapp を分散化する[段階を](../launching/launch-summary.md)実行することができます。
+
+** `sns-testing` リポジトリの主な目的は、開発者が実際にdapp を分散化するプロセスをテストすることです。**
+
+特に、開発者は`sns-testing` リポジトリを以下のことに利用できます：
+
+- プロポーザルの開始
+- プロポーザルの通過
+- 分散スワップの開始
+- DAO 投票によるdapp のアップグレード。
+
+:::info
+`sns-testing` は、ローカルで SNS プロセスをテストする一つの形態に過ぎません。開発者は自由に他のものを使ったり、`sns-testing` をフォーク/修正したり、独自のものを作ったりしてください。
+::：
+
+### メインネットで
+
+開発者がSNSのプロセスをテストしたら、** [メイン](./testing-on-mainnet.md)**ネット**上で「SNSテストフライト**」を行うことを強くお勧めします。SNS testflightとは、開発者がdapp を（メインネットに）デプロイし、その制御を（メインネット上の）模擬SNSに渡すことです。
+
+**SNS testflight を行う主な目的は、dapp が分散化された*後に*どのように動作するかを開発者が体験することであり、開発者はdapp が分散化に対応していることを確認することができます。分散化の実際のプロセスをテストするものではありません。**
+
+:::info
+テストフライトはレポやツールのセットではなく、*アクティビティ*（デプロイし、dapp 、そのコントロールを模擬SNSに渡す）です。そのため、[メインネット上でのテストの](./testing-on-mainnet.md)指示は様々なツールを利用していますが、開発者はもちろん好きなツールを使うことができます。
+::：
+
+とりわけ、SNSテストフライトを実行した後に開発者が発見した問題の例をいくつか紹介します：
+
+- 開発者は、dapp を更新する提案を作成するための、よりよいパイプラインが必要であることに気づきます。
+- 開発者は、分散化が時期尚早であることに気づき、いくつかの点を修正する必要があることに気づきます。
+- 開発者は、分散化する前に、より良いモニタリングが必要であることに気づきます。
+
+dappSNS**testflightで**使われるモックSNSは、dapp の分散化後のライフcycle がどのように見えるかを開発者に提供します。
+
+<!---
+
 
 # SNS testing before launch
 
@@ -41,3 +85,5 @@ Among other things, here are some examples of issues developers find after runni
 * Developers notice they may need better monitoring before decentralizing.
 
 The mock SNS used in a SNS testflight gives developers the ability to see how post-decentralization lifecycle of a dapp looks like, but still provides a way for a developer to keep control of their dapp. **Therefore, developers are encouraged to run and perform an SNS testflight on the mainnet, potentially for multiple days or weeks, to ensure that all aspects have been covered.**
+
+-->

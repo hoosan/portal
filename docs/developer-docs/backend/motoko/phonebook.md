@@ -1,3 +1,174 @@
+# 9: ライブラリモジュールのインポート
+
+## 概要
+
+このガイドでは、電話番号の保存と検索を可能にする簡単なdapp を作成します。このガイドでは、いくつかの基本的なMotoko ライブラリ関数をインポートして使用する方法を説明します。
+
+このガイドでは、Motoko 基本ライブラリ関数は、`List` と`AssocList` モジュールで定義されており、リンクされたキーと値のペアとしてリストを扱うことができます。この例では、**キーは** `name` で、**値は**その名前に関連付けられた`phone` テキスト文字列です。
+
+このdapp は以下の関数呼び出しをサポートしています：
+
+- `insert` 関数は、`book` 変数に格納された入力として、`name` と`phone` キーと値のペアを受け入れます。
+
+- `lookup` 関数は、指定された`name` キーを入力として使用し、関連する電話番号を検索するクエリです。
+
+## 前提条件
+
+始める前に、[開発者環境ガイドの](./dev-env.md)指示に従って開発者環境をセットアップしていることを確認してください。
+
+## 新規プロジェクトの作成
+
+ローカル・コンピューターでターミナル・ウィンドウを開いてください。
+
+そして、以下のコマンドを実行して新しいプロジェクトを作成します：
+
+    dfx new phonebook
+
+以下のコマンドを実行して、プロジェクト・ディレクトリに移動します：
+
+    cd phonebook
+
+## デフォルトを変更dapp
+
+このガイドでは、単純な電話番号検索用の新しい`main.mo` ファイルdapp を作成します。
+
+デフォルトのテンプレートを変更するには、`src/phonebook_backend/main.mo` ファイルをテキストエディタで開き、既存のコンテンツを削除します。
+
+次のコードをコピーして、`main.mo` ファイルに貼り付けます：
+
+    // Import standard library functions for lists
+    
+    import L "mo:base/List";
+    import A "mo:base/AssocList";
+    
+    // The PhoneBook actor.
+    actor {
+    
+        // Type aliases make the rest of the code easier to read.
+        public type Name = Text;
+        public type Phone = Text;
+    
+        // The actor maps names to phone numbers.
+        flexible var book: A.AssocList<Name, Phone> = L.nil<(Name, Phone)>();
+    
+        // An auxiliary function checks whether two names are equal.
+        func nameEq(l: Name, r: Name): Bool {
+            return l == r;
+        };
+    
+        // A shared invokable function that inserts a new entry
+        // into the phone book or replaces the previous one.
+        public func insert(name: Name, phone: Phone): async () {
+            let (newBook, _) = A.replace<Name, Phone>(book, name, nameEq, ?phone);
+            book := newBook;
+        };
+    
+        // A shared read-only query function that returns the (optional)
+        // phone number corresponding to the person with the given name.
+        public query func lookup(name: Name): async ?Phone {
+            return A.find<Name, Phone>(book, name, nameEq);
+        };
+    };
+
+このサンプルdapp を見ると、以下の重要な要素に気づくかもしれません：
+
+- このコードでは、`Name` と`Phone` をカスタム・テキスト型として定義しています。ユーザー定義型を作成すると、コードの可読性が向上します。
+
+- `insert` 関数はアップデートコールで、`lookup` 関数はクエリーコールです。
+
+- `Phone` 型は、`?Phone` 構文を使用することで、オプション値として識別されます。
+
+## ローカルcanister 実行環境の起動
+
+開発目的のために、`dfx` はローカルのcanister 実行環境を提供します。これには`dfx.json` ファイルが必要なので、プロジェクトのルート・ディレクトリにいることを確認してください。このガイドでは、ターミナル・シェルを2つに分けて、1つのターミナルでローカルのcanister 実行環境を起動して出力を確認し、もう1つのターミナルでプロジェクトを管理できるようにします。
+
+ローカルのcanister 実行環境を起動するには、ローカル・コンピューターで新しいターミナル・ウィンドウまたはタブを開きます。
+
+必要に応じて、プロジェクトのルート・ディレクトリに移動します。
+
+:::info
+
+- これで**2つのターミナルが**開くはずです。
+- **プロジェクト・ディレクトリが** **現在の作業ディレクトリになって**いるはずです。
+  ::：
+
+以下のコマンドを実行して、ローカルコンピューターでcanister 実行環境を起動します：
+
+    dfx start --clean
+
+:::info
+このガイドでは、`--clean` オプションを使って、ローカルのcanister 実行環境をクリーンなステートで起動します。
+
+このオプションは、通常のオペレーションを中断させる可能性のあるオーファンのバックグラウンド・プロセスやcanister 識別子を削除します。例えば、プロジェクト間を移動する際に`dfx stop` を発行し忘れた場合、バックグラウンドや別のターミナルでプロセスが実行されている可能性があります。`--clean` オプションを使用すると、実行中のプロセスを手動で見つけて終了させることなく、ローカルのcanister 実行環境を起動して次のステップに進むことができます。
+::：
+
+ローカルのcanister 実行環境の出力を表示するターミナルを開いたままにしておき、新しいプロジェクトを作成した元のターミナルにフォーカスを切り替えます。
+
+## を登録、ビルド、デプロイします。dapp
+
+ローカルのcanister 実行環境が開発環境で稼働したら、dapp を登録、ビルド、デプロイできます。
+
+dapp をローカルにデプロイするには、プロジェクトのディレクトリで次のコマンドを実行します：
+
+    dfx deploy
+
+`dfx.json` ファイルは、dapp バックエンドcanister とフロントエンドcanister を作成するためのデフォルト設定を提供します。
+
+このガイドでは、`dfx deploy phonebook_backend` コマンドを使用して phonebook\_backendcanister のみをデプロイできます。なぜなら、このプロジェクトにはフロントエンドのアセットが含まれておらず、ターミナルから操作するからです。
+
+このガイドでは、フロントエンドのコンパイルを省略する方法を説明しますcanister が、後で[example](https://github.com/dfinity/examples)リポジトリの[phonebook](https://github.com/dfinity/examples/tree/master/motoko/phone-book)プロジェクトを調べることで、このdapp にシンプルなユーザーインターフェイスを追加できます。
+
+## プロジェクトとの対話canister
+
+これで、dapp が **canister**canister としてデプロイされ、`dfx canister call` コマンドを使ってdapp をテストできるようになりました。
+
+デプロイしたdapp をテストするには：
+
+`dfx canister call` コマンドを使ってcanister `phonebook` を呼び出し、`insert` 関数を使って名前と電話番号を渡します：
+
+    dfx canister call phonebook_backend insert '("Chris Lynn", "01 415 792 1333")'
+
+次のコマンドを実行して、2つ目の名前と電話番号のペアを追加します：
+
+    dfx canister call phonebook_backend insert '("Maya Garcia", "01 408 395 7276")'
+
+次のコマンドを実行して、2つ目の名前と電話番号のペアを追加します。次のコマンドを実行して、コマンドが`lookup` 関数を使用して「Chris Lynn」に関連付けられた番号を返すことを確認します：
+
+    dfx canister call phonebook_backend lookup '("Chris Lynn")'
+
+コマンドは以下のような出力を返します：
+
+    (opt "01 415 792 1333")
+
+次のコマンドを実行して、"Maya Garcia "に関連付けられた番号で`lookup` 関数を呼び出してみてください：
+
+    dfx canister call phonebook_backend lookup '("01 408 395 7276")'
+
+この場合、電話番号は「Maya Garcia」の名前エントリに関連付けられているキーではないため、コマンドは`(null)` を返します。
+
+次のコマンドを実行して、"Maya Garcia "と "Chris Lynn "の両方の電話番号を返すために、`lookup` 関数をもう一度呼び出してみてください：
+
+    dfx canister call phonebook_backend lookup '("Maya Garcia","Chris Lynn")'
+
+dapp は1つのキーに対して1つの値を返すように書かれているため、コマンドは最初のキーに関連する情報、この例では`Maya Garcia` の電話番号のみを返します。
+
+## Candid UI を使用してコードをテストします。
+
+コードをテストするには、[こちらの](candid-ui.md)指示に従ってください。
+
+![Phonebook functions](_attachments/candid-phonebook.png)
+
+## のソースコードを修正します。dapp
+
+このガイドで学んだことを拡張するために、異なる結果を返すようにソースコードを修正してみるとよいでしょう。
+
+たとえば、現在のキーと値（名前と電話）のペアを挿入して検索するdapp の代わりに、主キーが複数のフィールドに関連付けられているデータベースの「レコード」に似た連絡先情報を保存するdapp を作成するようにソースコードを変更することができます。この例では、dapp 、ユーザーまたは別のdapp 、自宅の電話番号、携帯電話番号、電子メールアドレス、住所などの情報を追加し、すべてのフィールド値または特定のフィールド値を選択的に返すことができます。
+
+## 次のステップ
+
+次に、[電卓関数での整数の使い方](calculator.md)を見てみましょう。
+
+<!---
 # 9: Importing library modules
 
 ## Overview
@@ -188,3 +359,5 @@ For example, you might want to change the source code so that instead of a dapp 
 ## Next steps
 
 Next, let's take a look at [using integers in calculator functions](calculator.md)
+
+-->

@@ -1,3 +1,236 @@
+# 認定変数
+
+## 概要
+
+この例では、Internet Computer でサポートされている、単一の暗号化認証済み変数の使用を示します。
+
+簡単に言うと、このサンプルコードは、単一の32ビット変数を保持するcanister に対する「レスポンス認証」を示します。これには2つの側面があります：
+
+- Motoko （main.mo）のバックエンド（BE）canister ロジック。
+- JS（index.js）内のフロントエンド（FE）ロジック。
+
+FEとICの中間にいる攻撃者と、そこで実行されている "真の "BEcanister を検出するには、以下のいずれかを実行する必要があります：
+
+- フルコンセンサス」を使用するアップデートコールの実行（および ~2 秒の待機）。
+- ICとそこで実行されている私たちのcanister の調整を使用して、私たちクライアントが証明する応答を持つ（高速な）クエリーコールを実行します。
+
+FEとBEのコードは、最小限の設定で2番目のアプローチを示しています。BE は 32 ビットの数値として 1 つの認証済み変数を保持し、FE コードはこの数値の「現在の証 明書」を照会して認証します。この証明書は、特別なシステム機能を使用して IC 全体によって署名されます。
+
+FEは、見かけ上のBEからのレスポンス（canister ）を信頼し、その真正性を確認する 前に、4つのチェックを行います：
+
+- システム証明書の検証。
+- システム証明書のタイムスタンプが「古すぎない」ことを確認。
+- システム証明書のcanister ID を確認。
+- レスポンスが証人と一致することを確認。
+
+ステップ 2、3、4 では、FE は証明書（Blob）のデータにアクセスします。
+
+`agent-js` ライブラリの`Certificate` クラスは、ファイルシステムのようにパスを使用してこれらのアイテムにアクセスする方法を提供します。
+
+時間と私たちのデータの場合、エンコーディングはそれぞれ Candid です。IC仕様ではLEB128エンコーディングを使って時間を表現し、認証データではリトルエンディアンを使っています。
+
+これらの数値をデコードするには、適切なライブラリを使うのが理想的です。余分な依存関係を避けるために、NatとNat32のCandid値のエンコーディングが偶然にも同じ表現を使っているという事実を利用します。
+
+我々のデータは、Candidの32ビットNat（リトルエンディアン -- 詳細はMotoko canister を参照）と同じエンコードを選択します。
+
+特に、canister に1つの数値よりも多くのデータがある例や、より複雑なクエリインターフェイスでは、一般的に各クエリ応答を認証するために多くの作業を行うことになります：
+
+- ハッシュを再計算するために証人を使用する（ここでは証人もハッシュも必要ありません。）
+- クエリパラメータが証人と一致するかチェック（パラメータがないので、ここでは些細なことです。）
+- 上記の理由から、ここではどちらのステップも必要ありません。
+
+これはMotoko の例で、現在のところ Rust バリアントはありません。
+
+## 前提条件
+
+この例では、以下のインストールが必要です：
+
+- \[x\][IC SDKを](../developer-docs/setup/install/index.mdx)インストールします。
+- \[x\][npmを](https://nodejs.org/en/download/)ダウンロードしてください。
+- \[x\] GitHubから以下のプロジェクトファイルをダウンロードします: https://github.com/dfinity/examples/
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ1: プロジェクトのファイルを含むフォルダに移動し、Internet Computer のローカルインスタンスをコマンドで起動します：
+
+    cd examples/motoko/cert-var
+    dfx start --background
+
+### ステップ 2: フロントエンドの依存関係をインストールします：
+
+    npm install
+
+### ステップ 3:canister をデプロイします：
+
+    dfx deploy
+
+### ステップ 4: 次に、`webpack.config.js` ファイルを開き、内容を以下のように置き換えます：
+
+    const path = require("path");
+    const webpack = require("webpack");
+    const HtmlWebpackPlugin = require("html-webpack-plugin");
+    const TerserPlugin = require("terser-webpack-plugin");
+    
+    let localCanisters, prodCanisters, canisters;
+    
+    try {
+      localCanisters = require(path.resolve(".dfx", "local", "canister_ids.json"));
+    } catch (error) {
+      console.log("No local canister_ids.json found. Continuing production");
+    }
+    
+    function initCanisterIds() {
+      try {
+        prodCanisters = require(path.resolve("canister_ids.json"));
+      } catch (error) {
+        console.log("No production canister_ids.json found. Continuing with local");
+      }
+    
+      const network =
+        process.env.DFX_NETWORK ||
+        (process.env.NODE_ENV === "production" ? "ic" : "local");
+    
+      canisters = network === "local" ? localCanisters : prodCanisters;
+    
+      for (const canister in canisters) {
+        process.env[canister.toUpperCase() + "_CANISTER_ID"] =
+          canisters[canister][network];
+      }
+    }
+    initCanisterIds();
+    
+    const isDevelopment = process.env.NODE_ENV !== "production";
+    const asset_entry = path.join(
+      "src",
+      "cert_var_assets",
+      "src",
+      "index.html"
+    );
+    
+    module.exports = {
+      target: "web",
+      mode: isDevelopment ? "development" : "production",
+      entry: {
+        // The frontend.entrypoint points to the HTML file for this build, so we need
+        // to replace the extension to `.js`.
+        index: path.join(__dirname, asset_entry).replace(/\.html$/, ".js"),
+      },
+      devtool: isDevelopment ? "source-map" : false,
+      optimization: {
+        minimize: !isDevelopment,
+        minimizer: [new TerserPlugin()],
+      },
+      resolve: {
+        extensions: [".js", ".ts", ".jsx", ".tsx"],
+        fallback: {
+          assert: require.resolve("assert/"),
+          buffer: require.resolve("buffer/"),
+          events: require.resolve("events/"),
+          stream: require.resolve("stream-browserify/"),
+          util: require.resolve("util/"),
+        },
+      },
+      output: {
+        filename: "index.js",
+        path: path.join(__dirname, "dist", "cert_var_assets"),
+      },
+    
+      // Depending in the language or framework you are using for
+      // front-end development, add module loaders to the default
+      // webpack configuration. For example, if you are using React
+      // modules and CSS as described in the "Adding a stylesheet"
+      // tutorial, uncomment the following lines:
+      // module: {
+      //  rules: [
+      //    { test: /\.(ts|tsx|jsx)$/, loader: "ts-loader" },
+      //    { test: /\.css$/, use: ['style-loader','css-loader'] }
+      //  ]
+      // },
+      plugins: [
+        new HtmlWebpackPlugin({
+          template: path.join(__dirname, asset_entry),
+          cache: false
+        }),
+        new webpack.EnvironmentPlugin({
+          NODE_ENV: 'development',
+          CERT_VAR_CANISTER_ID: canisters["cert_var"]
+        }),
+        new webpack.ProvidePlugin({
+          Buffer: [require.resolve("buffer/"), "Buffer"],
+          process: require.resolve("process/browser"),
+        }),
+      ],
+      // proxy /api to port 4943 during development
+      devServer: {
+        proxy: {
+          "/api": {
+    	static: './',
+            target: "http://localhost:4943",
+            changeOrigin: true,
+            pathRewrite: {
+              "^/api": "/api",
+            },
+          },
+        },
+        hot: true,
+      },
+    };
+
+### ステップ 5:`server.js` という新しいファイルを以下の内容で作成します：
+
+    var express = require('express');
+    var app = express();
+    
+    app.get('/', function (req, res) {
+      res.send('Hello World!'); // This will serve your request to '/'.
+    });
+    
+    app.listen(4943, function () {
+      console.log('Example app listening on port 4943!');
+     });
+
+### ステップ6：`src/cert_var_assets/src/index.html` の内容を以下の内容に置き換えます：
+
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Certified Variables</title>
+        <base href="/">
+    
+        <link type="text/css" rel="stylesheet" href="main.css" />
+    </head>
+    <body style="background-color:powderblue; text-align:center;">
+      <div>
+        <img src="https://global.discourse-cdn.com/business4/uploads/dfn/original/1X/a6d6c5b4e246cd075a009424601bc981b3086fb4.png" alt="DFINITY logo" />
+          <div> <label for="name">New value of variable</label>
+            <input id="newValue" alt="New Value" type="number" />
+            <button id="setBtn">Set and get!</button>
+          </div>
+          <pre id="var" style="line-height:1;"></pre>
+        </div>
+       </div>
+    </body>
+    </html>
+
+### ステップ 7: フロントエンドをホストするローカルのウェブサーバを起動します。
+
+    npm start
+
+### ステップ8: フロントエンドにアクセスし、そこでデモと対話します：
+
+    http://localhost:4943/?canisterId=$CANISTER_ID
+
+すると、"New value of variable "のエントリと、"Set and get\!"のボタンが表示されるはずです。
+
+数値を入力し、ボタンをクリックしてください。
+
+[認証された変数](./_attachments/cert-var.png)
+
+canister は証明書を更新し、フロントエンドはそれをチェックします。開発者コンソールには、各ステップに関する追加コメントが表示されます。
+
+<!---
 # Certified variables
 
 ## Overview
@@ -248,3 +481,5 @@ The canister updates its certificate, and the frontend checks it. The developer 
 
 
 
+
+-->

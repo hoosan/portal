@@ -1,6 +1,554 @@
 ---
+
 sidebar_position: 2
 ---
+# スタイルシートの追加
+
+## 概要
+
+カスケーディングスタイルシートはフロントエンドのユーザーインターフェイスの重要な部分です。デフォルトのスターターは、編集可能な`main.css` ファイルをインポートするように設定されていますが、スタイルシートをJavaScriptファイルにインポートしたり、Syntactically Awesome Style Sheets、別名SCSSのような別の形式を使用することを好むかもしれません。このガイドでは、スタイルシートをインポートするようにwebpackを設定する方法を、contactdapp の構築を通して説明します。すでにwebpackベースのプロジェクトにカスケーディングスタイルシート（CSS）を追加する方法を知っている場合は、このガイドをスキップすることができます。
+
+このガイドでは、Reactフレームワークを使用してフロントエンドのDOM（Document Object Model）を管理する方法を説明します。Reactには独自のカスタムDOM構文があるため、JSXで記述されたフロントエンドコードをコンパイルするためにwebpackの設定を変更する必要があります。React と JSX の使用方法の詳細については、[React の Web サイト](https://reactjs.org/)で[始めるを](https://react.dev/learn)参照してください。
+
+## 前提条件
+
+ガイドを始める前に、以下を確認してください：
+
+- \[x\] フロントエンド開発用に`node.js` がインストールされており、プロジェクトで`npm install` を使用してパッケージをインストールできること。ローカルのオペレーティングシステムとパッケージマネージャにnodeをインストールする方法については、[Nodeの](https://nodejs.org/en/)ウェブサイトを参照してください。
+
+- \[x\][ダウンロードとインストールの](/developer-docs/setup/install/index.mdx)ページで説明されているように、IC SDK パッケージをダウンロードしてインストールしました。
+
+:::info
+このガイドでは、IC SDK バージョン`0.8.0` 以降を使用する必要があります。
+::：
+
+- \[x\] IDEとしてVisual Studio Codeを使用している場合、[VS Code extensions for IC development](/developer-docs/setup/vs-code.md)の説明に従って、Motoko のVisual Studio Codeプラグインをインストールしました。
+
+- \[x\] ローカルコンピュータで実行されているローカルcanister 実行環境プロセスを停止しました。
+
+## 新規プロジェクトの作成
+
+カスタムフロントエンド用の新しいプロジェクトディレクトリを作成するにはdapp ：
+
+- #### ステップ 1: まだ開いていない場合は、ローカルコンピュータでターミナルシェルを開きます。
+
+- #### ステップ2:Internet Computer プロジェクトに使用しているフォルダがあれば、そこに移動します。
+
+- #### ステップ 3: 必要であれば、`node.js` がローカルにインストールされていることを確認します。
+
+- #### ステップ4：次のコマンドを実行して、新しいプロジェクトを作成します：
+  
+  ```
+    dfx new contacts
+  ```
+
+- #### ステップ 5: 以下のコマンドを実行して、プロジェクト・ディレクトリに移動します：
+  
+  ```
+    cd contacts
+  ```
+
+## Reactフレームワークのインストール
+
+Reactを使用したことがない場合は、フロントエンドのコードを編集する前に、[React入門](https://reactjs.org/tutorial/tutorial.html)チュートリアルまたは[Reactウェブサイトを](https://reactjs.org/)調べるとよいでしょう。
+
+必要なフレームワークモジュールをインストールします：
+
+- #### ステップ1: 以下のコマンドを実行してReactモジュールをインストールします：
+  
+  ```
+    npm install --save react react-dom
+  ```
+
+- #### ステップ2: 次のコマンドを実行して、必要なTypeScript言語コンパイラーローダーをインストールします：
+  
+  ```
+    npm install --save-dev typescript ts-loader
+  ```
+
+- #### ステップ 3: 次のコマンドを実行して、必要なスタイル・ローダーをインストールします：
+  
+  ```
+    npm install --save-dev style-loader css-loader
+  ```
+  
+  `npm install` 、脆弱性が報告された場合は、`npm audit fix` 、報告された脆弱性の修正を試みてください。
+  
+  これらのモジュールをインストールする代わりに、デフォルトの`package.json` ファイルを編集して、プロジェクトの依存関係を追加することもできます。例えば、このようにします：
+
+<!-- end list -->
+
+```
+    {
+        "name": "contacts_assets",
+        "version": "0.1.0",
+        "description": "",
+        "keywords": [],
+        "scripts": {
+        "build": "webpack"
+        },
+        "devDependencies": {
+        "assert": "2.0.0",
+        "buffer": "6.0.3",
+        "css-loader": "^5.2.1",
+        "events": "3.3.0",
+        "html-webpack-plugin": "5.3.1",
+        "process": "0.11.10",
+        "stream-browserify": "3.0.0",
+        "style-loader": "^2.0.0",
+        "terser-webpack-plugin": "5.1.1",
+        "ts-loader": "^8.1.0",
+        "typescript": "^4.2.4",
+        "util": "0.12.3",
+        "webpack-cli": "4.5.0",
+        "webpack": "5.24.4"
+        },
+        "dependencies": {
+        "@dfinity/agent": "0.10.0",
+        "@dfinity/candid": "0.10.0",
+        "@dfinity/principal": "0.10.0",
+        "react-dom": "^17.0.2",
+        "react": "^17.0.2"
+        }
+    }
+```
+
+    The version of the JavaScript agent in this example `package.json` file is `0.10.0`. In most cases, however, you would want to use the latest version of the agent available. When you create a new project, the `dfx new` command automatically retrieves the latest version of the JavaScript agent for you. You can also manually retrieve the latest version after creating a project by running the `npm install --save @dfinity/agent` command.
+
+## デフォルトのプログラムを修正
+
+このガイドでは、連絡先情報を保存して検索できるようにするコードをメイン・プログラムに追加します。
+
+デフォルト・プログラムを変更するには
+
+- #### ステップ 1:`src/contacts_backend/main.mo` ファイルをテキストエディタで開き、既存の内容を削除します。
+
+- #### ステップ2: このコードをコピーして、ファイルに貼り付けます：
+
+<!-- end list -->
+
+    import List "mo:base/List";
+    import AssocList "mo:base/AssocList";
+    
+    actor Contact {
+    
+      var contacts : ContactsMap = List.nil();
+    
+      type Name = Text;
+      type Phone = Nat;
+    
+      type Entry = {
+        name : Name;
+        address1 : Text;
+        address2 : Text;
+        email : Text;
+        phone : Phone;
+      };
+    
+      type ContactsMap = AssocList.AssocList<Name, Entry>;
+    
+      func nameEq(lhs : Name, rhs : Name) : Bool {
+        return lhs == rhs;
+      };
+    
+      public func insert(name : Name, address1 : Text, address2 : Text, email : Text, phone : Phone) : async () {
+         let newEntry : Entry = {
+           name;
+           address1;
+           address2;
+           email;
+           phone;
+         };
+    
+         let (newContacts, _) = AssocList.replace(
+           contacts,
+           name,
+           func(n: Name, m: Name) : Bool { n == m },
+           ?newEntry
+         );
+         contacts := newContacts;
+      };
+    
+      public query func lookup(name : Name) : async ?Entry {
+        return AssocList.find(contacts, name, nameEq);
+      };
+    };
+
+- #### ステップ 3: 変更を保存し、`main.mo` ファイルを閉じます。
+
+## フロントエンドファイルの修正
+
+これで、プログラムの新しいフロントエンドを作成する準備ができました。
+
+- #### ステップ1: webpackの設定ファイル(`webpack.config.js`)をテキストエディタで開きます。
+
+- #### ステップ 2: フロントエンドのエントリを修正して、デフォルトの index.html を index.jsx に置き換えます。
+  
+  ```
+    entry: {
+      // The frontend.entrypoint points to the HTML file for this build, so we need
+      // to replace the extension to `.js`.
+      index: path.join(__dirname, frontend_entry).replace(/\.html$/, ".jsx"),
+    },
+  ```
+
+- #### ステップ3:`plugins` セクションの上にある`module` キーのコメント例を探し、次の行のコメントを外します：
+  
+  ```
+    module: {
+      rules: [
+        { test: /\.(js|ts)x?$/, loader: "ts-loader" },
+        { test: /\.css$/, use: ['style-loader','css-loader'] }
+      ]
+    },
+  ```
+  
+  これらの設定により、プログラムが`ts-loader` コンパイラを使用し、CSS ファイルをインポートできるようになります。
+
+:::info
+注意:`.scss` または`.sass` ファイルのサポートを追加したい場合は、`sass-loader` をインストールする必要があります：
+
+```
+    npm install --save react react-dom
+
+and then add this additional rule beneath the `css-loader` rule in `webpack.config.js`:
+
+    module: {
+      rules: [
+        // ...
+        {
+          test: /\.s[ac]ss$/i,
+          use: [
+            // Creates `style` nodes from JS strings
+            "style-loader",
+            // Translates CSS into CommonJS
+            "css-loader",
+            // Compiles Sass to CSS
+            "sass-loader",
+          ],
+        },
+      ]
+    },
+```
+
+:::
+
+- #### ステップ 4: 変更を保存し、`webpack.config.js` ファイルを閉じて続行します。
+
+- #### ステップ 5: プロジェクトのルート・ディレクトリに`tsconfig.json` という名前の新しいファイルを作成します。
+
+- #### ステップ6：`tsconfig.json` ファイルをテキストエディタで開き、このコードをコピーしてファイルに貼り付けます：
+
+<!-- end list -->
+
+    {
+        "compilerOptions": {
+          "target": "es2018",        /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */
+          "lib": ["ES2018", "DOM"],  /* Specify library files to be included in the compilation. */
+          "allowJs": true,           /* Allow javascript files to be compiled. */
+          "jsx": "react",            /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
+        },
+        "include": ["src/**/*"],
+    }
+
+- #### ステップ 7: 変更を保存して、`tsconfig.json` ファイルを閉じます。
+
+## プロジェクトにスタイルシートを追加
+
+これで、新しいカスケーディング・スタイルシートを作成し、プロジェクトに追加する準備ができました。
+
+スタイルシートを追加するには
+
+- #### ステップ 1:`src/contacts_frontend/assets` ディレクトリに移動します。
+  
+  ```
+    cd src/contacts_frontend/assets/
+  ```
+
+- #### ステップ2：`main.css` ファイルをテキストエディタで開き、既存の内容を削除します。
+
+- #### ステップ3: フロントエンドのスタイルプロパティを定義します。
+  
+  既存のコードを以下のように置き換えてください：
+
+<!-- end list -->
+
+    html {
+    background-color: bisque;
+    }
+    
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        display: block;
+        margin: 10px;
+    }
+    
+    h1 {
+        color: darkblue;
+        font-size: 32px;
+    }
+    
+    div.new-entry {
+        margin: 30px 20px 30px 20px;
+    }
+    
+    .new-entry > div {
+        margin-bottom: 15px;
+    }
+    
+    table {
+        margin-top: 12px;
+        border-top: 1px solid darkblue;
+        border-bottom: 1px solid darkblue;
+    }
+    
+    #form {
+        margin: 30px 0 30px 20px;
+    }
+    
+    button {
+        line-height: 20px;
+    }
+    
+    #lookupName {
+        margin-right: 12px;
+    }
+
+- #### ステップ 4: 変更を保存し、`main.css` ファイルを閉じます。
+
+- #### ステップ 5:`src/contacts_frontend/src` ディレクトリに移動します。
+
+- #### ステップ 6: デフォルトの`index.js` ファイルをテキストエディタで開き、既存の内容を削除します。
+
+- #### ステップ7：このコードをコピーして、`index.js` ファイルに貼り付けます：
+
+<!-- end list -->
+
+    import * as React from "react";
+    import { render } from "react-dom";
+    import { contacts } from "../../declarations/contacts_backend";
+    import "../assets/main.css";
+    
+    const Contact = () => {
+      async function doInsert() {
+        let name = document.getElementById("newEntryName").value;
+        let add1 = document.getElementById("newEntryAddress1").value;
+        let add2 = document.getElementById("newEntryAddress2").value;
+        let email = document.getElementById("newEntryEmail").value;
+        let phone = document.getElementById("newEntryPhone").value;
+        contacts_backend.insert(name, add1, add2, email, parseInt(phone, 10));
+      }
+    
+      async function lookup() {
+        let name = document.getElementById("lookupName").value;
+        contacts_backend.lookup(name).then((opt_entry) => {
+          let entry;
+    
+          if (opt_entry.length == 0) {
+            entry = { name: "", description: "", phone: "" };
+          } else {
+            entry = opt_entry[0];
+          }
+    
+          document.getElementById("newEntryName").value = entry.name;
+          document.getElementById("newEntryAddress1").value = entry.address1;
+          document.getElementById("newEntryAddress2").value = entry.address2;
+          document.getElementById("newEntryEmail").value = entry.email;
+          document.getElementById("newEntryPhone").value = entry.phone.toString();
+        });
+      }
+    
+      return (
+        <div className="new-entry">
+          <h1>My Contacts</h1>
+          <div>
+            Add or update contact information:
+            <form id="contact">
+              <table>
+                <tbody>
+                  <tr>
+                    <td>Name:</td>
+                    <td>
+                      <input id="newEntryName"></input>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Address 1 (street):</td>
+                    <td>
+                      <input id="newEntryAddress1"></input>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Address 2 (city and state):</td>
+                    <td>
+                      <input id="newEntryAddress2"></input>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Email:</td>
+                    <td>
+                      <input id="newEntryEmail"></input>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Phone:</td>
+                    <td>
+                      <input id="newEntryPhone" type="number"></input>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </div>
+          <div>
+            <button onClick={() => doInsert()}>Add Contact</button>
+          </div>
+          <div>
+            Lookup name:{" "}
+            <input id="lookupName" style=$$$${{ lineHeight: "20px" }}></input>
+            <button onClick={() => lookup()}>Lookup</button>
+          </div>
+        </div>
+      );
+    };
+    
+    document.title = "DFINITY CONTACT EXAMPLE";
+    
+    render(<Contact />, document.getElementById("contacts"));
+
+- #### ステップ8：以下のコマンドを実行して、変更した`index.js` ファイルの名前を`index.jsx` に変更します：
+  
+  ```
+    mv index.js index.jsx
+  ```
+
+- #### ステップ 9: デフォルトの`src/contacts_assets/src/index.html` ファイルをテキストエディタで開き、`main.css` のリンクを削除して、`body` の内容を`<div id="contacts"></div>` で更新します。
+  
+  例えば
+  
+  ```
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>contacts</title>
+        <base href="/" />
+      </head>
+      <body>
+        <main>
+          <div id="contacts"></div>
+        </main>
+      </body>
+    </html>
+  ```
+
+- #### ステップ10：プロジェクト・ディレクトリのルートに戻ります。
+
+## ローカルネットワークの開始
+
+`contacts` プロジェクトを構築する前に、ローカルのcanister 実行環境に接続する必要があります。
+
+ローカルで環境を起動するには
+
+- #### ステップ 1: ローカル・コンピューターで新しいターミナル・ウィンドウまたはタブを開きます。
+
+- #### ステップ 2: 以下のコマンドを実行して、ローカル・コンピューター上でローカルのcanister 実行環境を起動します：
+  
+  ```
+    dfx start --background
+  ```
+  
+  環境が起動操作を完了したら、次の手順に進みます。
+
+## を登録、ビルド、デプロイします。dapp
+
+開発環境のローカルcanister 実行環境に接続したら、テスト用にdapp を登録、ビルド、デプロイできます。
+
+dapp をデプロイするには：
+
+- #### ステップ 1: 必要に応じて、プロジェクトのルート・ディレクトリにいることを確認します。
+
+- #### ステップ 2: 次のコマンドを実行して、dapp を登録、ビルド、デプロイします：
+  
+  ```
+    dfx deploy
+  ```
+  
+  `dfx deploy` コマンドの出力には、実行した操作に関する情報が表示されます。
+  
+  canister 実行環境をローカルで実行しているため、`dfx deploy` コマンドを実行したときに表示される識別子はあなたのマシンでのみ有効であることに注意してください。
+  
+  canisters を IC 上にデプロイするには、`--network` コマンドラインオプションを使用して、ローカル環境ではなくInternet Computer にデプロイすることを指定する必要があります：
+  
+  ```
+    dfx deploy --network=ic
+  ```
+
+- #### ステップ 3: Webpack 開発サーバーを起動します：
+  
+  ```
+    npm start
+  ```
+
+## フロントエンドの表示
+
+`contacts` dapp のフロントエンドにアクセスできます。
+
+フロントエンドを表示するには
+
+- #### ステップ 1: ブラウザーを開き、`http://localhost:8080` に移動します。
+
+- #### ステップ 2: "My Contacts" フォームが表示されることを確認します。
+  
+  例えば
+  
+  ![Sample frontend](_attachments/mycontacts-form.png)
+
+- #### ステップ3： 「名前」、「住所」、「Eメール」の入力フィールドにテキストを入力し、「電話番号」の入力フィールドに番号を入力して、「**連絡先の追加**」をクリックして、1つまたは複数のテストレコードを作成します。
+
+- #### ステップ4: フォームフィールドをクリアし、\[検索名\]フィールドに連絡先名を入力し、\[**検索\]**をクリックして保存された連絡先情報を確認します。
+  
+  入力する**検索**名は、追加した連絡先の名前と完全に一致する必要があることに注意してください。
+
+## スタイルシートの変更とテスト
+
+連絡先\]dapp を表示した後、いくつかの変更を加えることができます。
+
+スタイルシートのプロパティを変更するには
+
+- #### ステップ1:`src/contacts_assets/assets/mycontacts.css` ファイルをテキストエディタで開き、スタイル設定を変更します。
+  
+  たとえば、背景色を変更したり、入力フォームのスタイルを変更したりします。
+  
+  開いているブラウザウィンドウで、変更内容がすぐに更新されるはずです。
+
+## フロントエンドまたはバックエンドのコードの変更
+
+さらに詳しく調べたい場合は、このガイドのフロントエンドまたはバックエンドのコードを変更して試してみるとよいでしょう。例えば、以下のようにガイドを変更してみてください：
+
+- 例えば、`onClick` イベントの一部として、新しいコンタクトを追加した後に入力フィールドをクリアするようにフロントエンドのコードを変更します。
+
+- `Name` フィールドで文字列の完全一致ではなく部分一致を行うようにMotoko プログラム関数を変更します。(`dfx deploy` を実行して、ローカル環境で変更をテストする必要があります）。
+
+- Motoko プログラムを変更して、別のフィールドに基づいて検索できるようにします。
+
+## ローカルのcanister 実行環境を停止します。
+
+プログラムの実験が終わったら、ローカル環境を停止して、バックグラウンドで実行し続けないようにすることができます。
+
+ローカルの開発環境を停止するには
+
+- #### ステップ1: webpack開発サーバーが表示されているターミナルで、Control-Cを押して開発サーバーを中断します。
+
+- #### ステップ 2: 次のコマンドを実行してInternet Computer ネットワークを停止します：
+  
+  ```
+    dfx stop
+  ```
+
+<!---
+
 
 # Adding a stylesheet
 
@@ -512,3 +1060,5 @@ To stop the local development environment:
 - #### Step 2:  Stop the Internet Computer network by running the following command:
 
         dfx stop
+
+-->

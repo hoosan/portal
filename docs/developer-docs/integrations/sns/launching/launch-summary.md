@@ -1,3 +1,539 @@
+# SNS立ち上げの段階 - レガシーフロー
+
+:::caution
+このページでは、レガシーなSNSの立ち上げフローを紹介します。これは現時点ではまだサポートされていますが、今後廃止される可能性があります。新しいSNS起動フローを使用することをお勧めします。
+::：
+
+## 概要
+
+dapp SNSの立ち上げでは、dapp がNNSに引き渡され、NNSは
+がSNScanisters を作成し、SNSと
+を分散化するための分散化スワップを開始します。
+
+## SNSの立ち上げ段階
+
+新しく作成されたSNSへのdapp'の制御の引き渡しは、以下の高レベルの
+ステージで進行します。
+NNSコミュニティの承認は、2つのステージ（ステージ3、7、9）で関連することに注意してください。
+
+### 1\. Dapp 開発者は、SNSの初期パラメータを選択します。dapp
+
+これらのパラメータは、トークン名だけでなく、トークノミクスやガバナンスの方法
+も定義するため、通常は多くの準備とコミュニティの関与が必要です。
+ （詳細は[こちら](../tokenomics/sns-checklist.md)）。
+
+:::info
+
+これらのパラメータは、SNSガバナンスcanister
+ がインストールされる初期neurons も定義します。
+立ち上げステージ 5 と 6 では、*立ち上げプロセス中、*つまり SNS が完全に立ち上げられる前に、*SNS 提案
+* を提出し、採択する必要があります。
+フロントエンドの中には、例えば NNS フロントエンドdapp のように、
+が完全に立ち上がっていない SNS のneurons を表示しないものがあることに注意してください。Neuron
+NNSフロントエンドのdapp プリンシパルによって制御されるSNSの
+sは、ローンチが成功した後にのみ表示されます。 したがって、初期neuronsは、ローンチプロセス中に十分な
+sを操作できるように、注意深くセットアップされなければなりません。
+これは、ローンチ中にすでに使用できる他のSNSプロポーザル、例えばdapp canister (s)をアップグレードしたり、そのDAOのカスタムプロポーザルを登録したりする場合にも関連します。
+
+:::
+
+現段階で持っているもの
+
+#### 表1Canisters
+
+<table>
+  <tr>
+    <th>Canisters</th>
+    <th>Subnet</th>
+    <th>Controlled by</th>
+    <th>State</th>
+  </tr>
+
+  <tr>
+    <td>a dapp canister(s)</td>
+    <td>application subnet</td>
+    <td>dapp developer principal</td>
+    <td>operational</td>
+  </tr>
+</table>
+
+#### 表 2: NNS 提案
+
+<table>
+  <tr>
+    <th>NNS proposal</th>
+    <th>State</th>
+  </tr>
+   <tr>
+    <td class="light-green-text">NNS proposal #1</td>
+    <td class="light-green-text">Not created yet</td>
+  </tr>
+   <tr>
+    <td class="light-green-text">SNS Proposal #1</td>
+    <td class="light-green-text">Not created yet</td>
+  </tr>
+   <tr>
+    <td class="light-green-text">NNS Proposal #2</td>
+    <td class="light-green-text">Not created yet</td>
+  </tr>
+</table>
+
+### 2\. Dapp 開発者は NNS 提案を提出し、SNS サブネットにデプロイできるようにします。
+
+悪意のあるパーティがSNSサブネットを承認されていないSNSで単純に埋め尽くすことができないように、SNSのデプロイを担当する[SNS-W](../introduction/sns-architecture.md#SNS-W)
+canister には、デプロイを許可するプリンシパルのリストが含まれています。したがって、SNSを立ち上げる開発者は、このリストに追加されるために、NNSコミュニティに承認を求める必要があります。この提案が採用された場合、定義されたプリンシパルは正確に1つのSNSをインストールすることができます。
+
+現段階での内容
+
+#### 表1Canisters
+
+<table>
+  <tr>
+    <th>Canisters</th>
+    <th>Subnet</th>
+    <th>Controlled by</th>
+    <th>State</th>
+  </tr>
+  <tr>
+    <td>dapp canisters</td>
+    <td>application subnet</td>
+    <td>dapp developer principal</td>
+    <td>operational</td>
+  </tr>
+</table>
+
+#### 表2：NNSの提案
+
+<table>
+  <tr>
+    <th>NNS proposals</th>
+    <th>State</th>
+  </tr>
+   <tr>
+    <td>NNS proposal #1</td>
+    <td class="light-orange-text">Submitted</td>
+  </tr>
+   <tr>
+    <td>SNS Proposal #1</td>
+    <td>Not created yet</td>
+  </tr>
+   <tr>
+    <td>NNS Proposal #2</td>
+    <td>Not created yet</td>
+  </tr>
+</table>
+
+### 3.第1号議案（全3議案中）の採否
+
+これは、**3つの提案のうち、**成功裏に通過する必要がある**最初の**提案です。
+
+この NNS プロポーザルが通過し、開発者のプリンシパルが SNS
+サブネットにデプロイできるプリンシパルのリストに追加されても、次の段階の残りの部分が完了する保証は**ありません**。
+
+提案が成功裏に採用された場合、このステップの終わりには次のようになります：
+
+#### 表1Canisters
+
+<table>
+  <tr>
+    <th>Canisters</th>
+    <th>Subnet</th>
+    <th>Controlled by</th>
+    <th>State</th>
+  </tr>
+
+  <tr>
+    <td>a dapp canister(s)</td>
+    <td>application subnet</td>
+    <td>dapp developer principal</td>
+    <td>operational</td>
+  </tr>
+</table>
+
+#### 表2: NNSの提案
+
+<table>
+  <tr>
+    <th>NNS proposals</th>
+    <th>State</th>
+  </tr>
+   <tr>
+    <td>NNS proposal #1</td>
+    <td class="light-orange-text">Adopted</td>
+  </tr>
+   <tr>
+    <td>SNS proposal #1</td>
+    <td>Not created yet</td>
+  </tr>
+   <tr>
+    <td>NNS proposal #2</td>
+    <td>Not created yet</td>
+  </tr>
+</table>
+
+#### 表3：オブジェクト
+
+<table>
+  <tr>
+    <th>Objects in the SNS subnet</th>
+    <th>Controlled by</th>
+    <th>State</th>
+  </tr>
+  <tr>
+    <td>a principal that can deploy to SNS subnet</td>
+    <td>dapp developer principal</td>
+    <td class="light-orange-text">ready for 1-time use</td>
+  </tr>
+</table>
+
+### 4\. Dapp 開発者は、SNSサブネット上に作成されるSNScanisters をトリガーします。
+
+すべての初期パラメータが指定され、NNSがSNSの起動を採用した場合、
+SNScanisters は、[SNS-Wへの](../introduction/sns-architecture.md#SNS-W)手動呼び出しによって作成することができます。
+これは、SNScanisters の作成を開始し、[ステップ](#SNS-launch-step-preparation)1で選択した
+、それらの初期パラメータを設定します。
+
+**SNScanisters は、事前分散スワップ・モードで作成されます。**
+
+SNScanister の作成後、canisters は存在しますが、まだ完全には機能していません。
+
+この時点で、SNSの元帳には2つの勘定科目があります：
+
+- SNSガバナンス（canister ）が所有し、SNSコミュニティの希望に応じて将来使用できる**国庫**。
+- 最初の分散化スワップで使用される、事前に割り当てられたトークン。
+
+トークンを移転して配布したり、トークン市場を早期に開始したりすることができないよう、残りの初期トークンはすべてneurons にロックされます。
+さらに、分散化スワップ前のモードでは、初期neurons は SNS を変更したり、トレジャリートークンを移転したりすることはできません。
+
+成功した場合、ステージ終了時に以下のように変更されます：
+
+#### 表 3: オブジェクト
+
+<table>
+  <tr>
+    <th>Objects in the SNS subnet</th>
+    <th>Subnet</th>
+    <th>Controlled by</th>
+    <th>State</th>
+  </tr>
+  <tr>
+    <td>a principal that can deploy to SNS subnet</td>
+    <th>SNS subnet</th>
+    <td>NA</td>
+    <td class="light-orange-text">revoked because it is 1-time use</td>
+  </tr>
+  <tr>
+    <td class="light-green-text">SNS root on the SNS subnet</td>
+    <th>SNS subnet</th>
+    <td class="light-green-text">initial developer neurons</td>
+    <td class="light-green-text">pre-decentralization swap mode</td>
+
+  </tr>
+  <tr>
+    <td class="light-green-text">initial developer neurons</td>
+    <th>SNS subnet</th>
+    <td class="light-green-text">dapp developer principal</td>
+    <td class="light-green-text">pre-decentralization swap mode</td>
+  </tr>
+  <tr>
+    <td class="light-green-text">treasury account on the SNS Ledger</td>
+    <th>SNS subnet</th>
+    <td class="light-green-text">SNS governance</td>
+    <td class="light-green-text">pre-decentralization swap mode</td>
+  </tr>
+  <tr>
+    <td class="light-green-text">swap account on the SNS Ledger</td>
+    <th>SNS subnet</th>
+    <td class="light-green-text">SNS swap</td>
+    <td class="light-green-text">pre-decentralization swap mode</td>
+  </tr>
+</table>
+
+### 5\. Dapp 開発者は自分のdapp の制御を SNS に引き渡すために SNS 提案を提出します。
+
+分散化スワップの前に、開発者はdapp の制御を SNS に引き渡します。
+
+これには、SNSのルートcanister をdapp のコントローラとして追加することと、
+ dapp を SNS に「登録」して、SNS
+のルートがcanisters を制御していることを認識させることが含まれます。
+
+登録は**SNSプロポーザルによって**行われます。
+
+すでに初期neuronが存在するため、この
+やdapp への潜在的なアップグレードは、SNS の提案と、初期neuronの
+過半数が賛成票を投じることで実現できます。
+SNS ガバナンスcanister がまだ
+分散化スワップ前モードであるため、初期neuronは SNS パラメータの変更
+など他のことはできません。
+
+成功した場合、ステージの終わりには、以下のように変更されています：
+
+#### 表1：NNSの提案
+
+<table>
+  <tr>
+    <th>NNS proposals</th>
+    <th>State</th>
+  </tr>
+  <tr>
+  </tr>
+   <tr>
+    <td >NNS proposal #1</td>
+    <td>Approved</td>
+  </tr>
+   <tr>
+    <td>SNS Proposal #1</td>
+    <td class="light-orange-text">Submitted</td>
+  </tr>
+   <tr>
+    <td>NNS proposal #2</td>
+    <td>Not created yet</td>
+  </tr>
+</table>
+
+### 6.提案2（3つのうち）は採用または却下
+
+初期SNS開発者neuronsは、初期パラメータで宣言され、SNSインストール時に利用可能です。
+
+成功した場合、ステージ終了時に以下のように変更されます：
+
+#### 表1Canisters
+
+<table>
+  <tr>
+    <th>Canisters</th>
+    <th>Subnet</th>
+    <th>Controlled by</th>
+    <th>State</th>
+
+  </tr>
+  <tr>
+    <td>dapp canisters</td>
+    <th>application Subnet</th>
+    <td>operational</td>
+    <td class="light-orange-text">SNS root</td>
+  </tr>
+</table>
+
+#### 表2：NNSの提案
+
+<table>
+  <tr>
+    <th>NNS proposals</th>
+    <th>State</th>
+  </tr>
+  <tr>
+    <td>Decentralization swap state</td>
+    <td>Pending</td>
+  </tr>
+   <tr>
+    <td>NNS Proposal #1</td>
+    <td>Approved</td>
+  </tr>
+   <tr>
+    <td>SNS Proposal #1</td>
+    <td class="light-orange-text">Approved</td>
+  </tr>
+   <tr>
+    <td>NNS proposal #2</td>
+    <td>Not created yet</td>
+  </tr>
+</table>
+
+### 7.分散スワップ開始提案
+
+この提案では、分散化スワップの条件（例えば、最低でも最大でも何ICPトークンを集めるべきか）を定義します。
+
+:::info
+
+このような提案はNNSに一度に一つしかないことに注意してください。
+::：
+
+成功した場合、ステージ終了時に以下のように変更されます：
+
+#### 表1: NNSの提案
+
+<table>
+  <tr>
+    <th>NNS proposals</th>
+    <th>State</th>
+  </tr>
+  <tr>
+    <td>Decentralization swap state</td>
+    <td>Pending</td>
+  </tr>
+   <tr>
+    <td>NNS Proposal #1</td>
+    <td>Approved</td>
+  </tr>
+   <tr>
+    <td>SNS Proposal #1</td>
+    <td>Approved</td>
+  </tr>
+   <tr>
+    <td>NNS Proposal #2</td>
+    <td class="light-orange-text">Submitted</td>
+  </tr>
+</table>
+
+### 8.第3提案（3つのうち）の採用・不採用
+
+これは、プロセスを継続するために成功裏に通過する必要がある**3つの**提案**の最後の**ものです。
+
+このプロポーザルに投票する際、NNSの投票者は、プロポーザルで設定されているスワップ・パラメータと同様に、すでに
+、既存のSNScanisters のパラメータを確認することができます。
+
+- NNS提案が採用された場合、指定された遅延時間後にスワップが開始されます。
+- NNS の提案が却下された場合、SNS の立ち上げは中止され、dapp’s の制御は
+  の元の開発者に引き渡されますdapp 。
+
+成功した場合、ステージ終了時に以下のように変更されています：
+
+#### 表1
+
+#### 表1：NNS提案
+
+<table>
+  <tr>
+    <th>NNS proposals</th>
+    <th>State</th>
+  </tr>
+  <tr>
+    <td>Decentralization swap state</td>
+    <td>Pending</td>
+  </tr>
+   <tr>
+    <td>NNS proposal #1</td>
+    <td>Approved</td>
+  </tr>
+   <tr>
+    <td>SNS proposal #1</td>
+    <td>Approved</td>
+  </tr>
+   <tr>
+    <td>NNS proposal #2</td>
+    <td class="light-orange-text">Adopted</td>
+  </tr>
+</table>
+
+### 9.SNS参加者が分散スワップに参加
+
+スワップが開始されると、スワップcanister は指定された SNS トークンの数
+を保持します。エンドユーザーは
+ICP トークンを
+スワップcanister に送金することで、分散スワップに参加することができます。
+
+### 10.SNScanisters が SNS DAO になります。
+
+分散化スワップが終了すると、まず
+が成功したかどうか、例えば十分な ICP が集まったかどうかが確認されます。スワップが成功した場合、
+交換レートが決定され、すべての SNS トークンが
+neuron s でスワップ参加者に渡されます。
+
+現在のところ、このプロセスは、誰でも
+できるスワップcanister への呼び出しによってトリガーされる必要があります。
+
+すべてのneurons が作成されると、SNS は分散制御
+の下に置かれ、分散化前のスワップ・モードに戻ります。
+このようにして、ガバナンスcanister は完全に機能するように設定されます。
+スワップが成功しなかった場合、分散化の試みは失敗し、dapp’s コントロール
+がdapp の元の開発者に引き渡され、
+収集された ICP がスワップ参加者に返金されるなど、すべて
+が SNS 立ち上げ試行前のステートへ戻されます。
+
+成功した場合、ステージの終わりには、次のようになります：
+
+#### 表2
+
+<table>
+  <tr>
+    <th>Objects in an app subnet</th>
+    <th>State</th>
+    <th>Controlled by</th>
+  </tr>
+  <tr>
+    <td>A dapp</td>
+    <td>operational</td>
+    <td class="light-orange-text">SNS DAO</td>
+  </tr>
+</table>
+
+#### 表1：オブジェクト
+
+<table>
+  <tr>
+    <th>Objects in the SNS subnet</th>
+    <th>Subnet</th>
+    <th>Controlled by</th>
+    <th>State</th>
+  </tr>
+  <tr>
+    <td>a principal that can deploy to SNS subnet</td>
+    <td>NA</td>
+    <td>NA</td>
+    <td>revoked because it is 1-time use</td>
+  </tr>
+  <tr>
+    <td>SNS root</td>
+    <td>NA</td>
+    <td class="light-orange-text">SNS DAO</td>
+    <td>normal mode</td>
+  </tr>
+  <tr>
+    <td>initial developer neurons</td>
+    <td>SNS subnet</td>
+    <td>dapp developer principal</td>
+    <td>normal mode</td>
+
+  </tr>
+  <tr>
+    <td>treasury account on the SNS Ledger</td>
+    <td>SNS subnet</td>
+    <td class="light-orange-text">SNS DAO</td>
+    <td>normal mode</td>
+
+  </tr>
+  <tr>
+    <td>swap account on the SNS Ledger</td>
+    <td>SNS subnet</td>
+    <td class="light-orange-text">SNS DAO</td>
+    <td>empty</td>
+  </tr>
+  <tr>
+    <td class="light-green-text">SNS neurons</td>
+    <td>SNS subnet</td>
+    <td class="light-green-text">swap participant principals</td>
+    <td class="light-green-text">normal mode</td>
+
+  </tr>
+</table>
+
+#### 表2：NNSの提案
+
+<table>
+  <tr>
+    <th>NNS proposals</th>
+    <th>State</th>
+  </tr>
+  <tr>
+    <td>Decentralization swap state</td>
+    <td>Pending</td>
+  </tr>
+   <tr>
+    <td>NNS proposal #1</td>
+    <td>Approved</td>
+  </tr>
+   <tr>
+    <td>SNS proposal #1</td>
+    <td>Approved</td>
+  </tr>
+   <tr>
+    <td>NNS proposal #2</td>
+    <td >Approved</td>
+  </tr>
+</table>
+
+<!---
 # Stages of an SNS launch - legacy flow
 
 :::caution
@@ -15,26 +551,28 @@ Handing over a dapp's control to a newly created SNS proceeds in the following h
 stages.
 Note that the NNS community's approval is relevant in two stages (stages 3, 7, and 9).
 
-### 1. Dapp developers choose the initial parameters of the SNS for a dapp.
+### 1. Dapp developers choose the initial parameters of the SNS for a dapp
   As these parameters define not only the token name but also the tokenomics and how the governance
   will work, this usually requires a lot of preparation and community engagement already
   (see [here](../tokenomics/sns-checklist.md) for more information).
 
-:::info 
-These parameters also define the initial neurons with which the SNS governance canister will
-be installed.
-The launch stages 5 and 6 require submitting and adopting an _SNS proposal
-during the launch process_, and thus before the SNS is fully launched. 
-Note that some frontends, for example the NNS frontend dapp, do not show neurons of SNSs that are not 
-fully launched. Neurons that are controlled by NNS frontend dapp principals will only be
-visible after a successful launch. 
-Therefore, the initial neurons must be carefully setup in a way so that enough of them can be 
-operated already during the launch process.
-This is also relevant for other SNS proposals that can already be used during the launch, for example to
-upgrade the dapp canister(s) or registering custom proposals for that DAO.
-:::
+  :::info 
+
+  These parameters also define the initial neurons with which the SNS governance canister will
+  be installed.
+  The launch stages 5 and 6 require submitting and adopting an _SNS proposal
+  during the launch process_, and thus before the SNS is fully launched. 
+  Note that some frontends, for example the NNS frontend dapp, do not show neurons of SNSs that are not 
+  fully launched. Neurons that are controlled by NNS frontend dapp principals will only be
+  visible after a successful launch. 
+  Therefore, the initial neurons must be carefully setup in a way so that enough of them can be 
+  operated already during the launch process.
+  This is also relevant for other SNS proposals that can already be used during the launch, for example to
+  upgrade the dapp canister(s) or registering custom proposals for that DAO.
+
+  :::
   
-What we have at this stage:
+  What we have at this stage:
 
 #### Table 1: Canisters
 
@@ -77,7 +615,7 @@ What we have at this stage:
 
 
 
-### 2. Dapp developers submit NNS proposal so they can deploy to the SNS subnet.
+### 2. Dapp developers submit NNS proposal so they can deploy to the SNS subnet
 
 To ensure that malicious parties cannot simply fill the SNS subnet with un-approved SNSs, the
 canister which is responsible for deploying SNSs, [SNS-W](../introduction/sns-architecture.md#SNS-W), 
@@ -125,7 +663,7 @@ What we have at this stage:
 
 
 
-### 3. Proposal #1 (of 3) is adopted or rejected.
+### 3. Proposal #1 (of 3) is adopted or rejected
 
 This is the **first of three** proposals that need to successfully pass.
 
@@ -191,7 +729,7 @@ If the proposal is adopted successfully, at the end of this step, we have:
 </table>
   
 
-### 4. Dapp developers trigger the SNS canisters to be created on SNS subnet.
+### 4. Dapp developers trigger the SNS canisters to be created on SNS subnet
 
 When all initial parameters are specified and the NNS adopted the SNS launch,
 the SNS canisters can be created by a manual call to [SNS-W](../introduction/sns-architecture.md#SNS-W).
@@ -256,7 +794,7 @@ If successful, at the end of stage, we the following has changed:
   </tr>
 </table>
 
-### 5. Dapp developers submit an SNS proposal to handover control of their dapp to the SNS.
+### 5. Dapp developers submit an SNS proposal to handover control of their dapp to the SNS
   Before the decentralization swap, the developers hand over the control of the dapp to the SNS.
 
   This includes adding the SNS root canister as the controller of the dapp and
@@ -297,7 +835,7 @@ If successful, at the end of stage, we the following has changed:
   </tr>
 </table>
 
-### 6. Proposal #2 (of 3) is adopter or rejected.
+### 6. Proposal #2 (of 3) is adopter or rejected
 
 The initial SNS developer neurons are declared in the initial parameters and available at SNS installation.
 
@@ -346,7 +884,7 @@ If successful, at the end of stage, we the following has changed:
   </tr>
 </table>
 
-### 7. Proposal to start the decentralization swap.
+### 7. Proposal to start the decentralization swap
   
 This proposal defines the conditions for the decentralization swap (e.g. how many ICP tokens should at least and at most be collected).
 
@@ -382,7 +920,7 @@ If successful, at the end of stage, we the following has changed:
   </tr>
 </table>
 
-### 8. Proposal #3 (of 3) is adopted or rejected.
+### 8. Proposal #3 (of 3) is adopted or rejected
 
 This is the **last of three** proposals that need to successfully pass for the process to continue. 
 
@@ -423,7 +961,7 @@ If successful, at the end of stage, the following has changed:
   </tr>
 </table>
 
-### 9. SNS participants participate in the decentralization swap.
+### 9. SNS participants participate in the decentralization swap
 
   When the swap starts, the swap canister holds the number
   of SNS tokens that were specified. End users can
@@ -431,7 +969,7 @@ If successful, at the end of stage, the following has changed:
   swap canister.
   
 
-### 10. SNS canisters become SNS DAO.
+### 10. SNS canisters become SNS DAO
   
   When the decentralization swap ends, it is first established whether
   it was successful, e.g., enough ICP have been collected. If the swap was successful,
@@ -543,3 +1081,5 @@ If successful, at the end of stage, we have:
     <td >Approved</td>
   </tr>
 </table>
+
+-->

@@ -1,3 +1,249 @@
+# ロゼッタ
+
+## 概要
+
+[Rosettaは](https://www.rosetta-api.org/)Coinbaseによって導入されたオープン規格で、取引所、ブロックエクスプローラー、ウォレットにおけるブロックチェーンベーストークンの統合を簡素化します。
+このドキュメントは、CeFi取引所で取引可能なトークンをIC上にデプロイしたい場合、またはブロックエクスプローラーやウォレットに取り組んでいる場合に役立つ可能性があります。
+
+## Rosettaノードのセットアップ
+
+Internet Computer と対話し、Internet Computer Protocol (ICP) トークンを交換するために、Rosetta API 準拠のノードをセットアップすることができます。
+説明をシンプルにするために、Rosetta API との統合を作成するために Docker イメージを使用します。
+ソースコードを使用してバイナリをビルドして実行することもできます。
+
+[Dockerが](https://docs.docker.com/get-docker/)まだインストールされていない場合は、最新版をダウンロードしてインストールしてください。
+
+Rosettaノード(テストネットに接続する)をセットアップします：
+
+### ステップ1:[Dockerをインストール](https://docs.docker.com/get-docker/)し、[Dockerデーモンを起動](https://docs.docker.com/config/daemon/)します。
+
+コンピュータを再起動すると、Dockerデーモン(`dockerd`)が自動的に起動するはずです。Dockerデーモンを手動で起動する場合は、ローカルのオペレーティング・システムによって手順が異なります。
+
+### ステップ2: 次のコマンドを実行して、Docker Hubから最新の`dfinity/rosetta-api` イメージを取り出します：
+
+``` bash
+docker pull dfinity/rosetta-api
+```
+
+### ステップ3: 以下のコマンドを実行して、統合ソフトウェアを起動します：
+
+``` bash
+docker run \
+    --interactive \
+    --tty \
+    --publish 8080:8080 \
+    --rm \
+    dfinity/rosetta-api
+```
+
+このコマンドはローカルホスト上でソフトウェアを起動し、以下のような出力を表示します：
+
+    Listening on 0.0.0.0:8080
+    Starting Rosetta API server
+
+デフォルトでは、ソフトウェアはtestnetに接続します。
+ Internet Computer ブロックチェーンメインネット上で稼働している台帳canister には接続**しません**。
+
+テストネットワークと対応する台帳canister 識別子が割り当てられている場合、追加の引数`canister` を指定することで、そのネットワークに対してコマンドを実行できます。
+たとえば、次のコマンドでは、引数`canister` を`2xh5f-viaaa-aaaab-aae3q-cai` に設定することで、テストネットワーク上の台帳canister に接続しています。
+
+``` bash
+docker run \
+    --interactive \
+    --tty \
+    --publish 8080:8080 \
+    --rm \
+    dfinity/rosetta-api \
+    --canister 2xh5f-viaaa-aaaab-aae3q-cai
+```
+
+:::info
+コマンドを初めて実行した場合、ノードがチェーンの現在のリンクに追いつくまでに時間がかかることがあります。
+ノードが追いつくと、次のような出力が表示されます：
+
+ブロックの高さ109
+:: まで追いつきました：
+
+このステップの完了後、ノードはブロック作成に参加しない**パッシブ・ノードとして**実行し続けます。
+
+### ステップ4：新しいターミナルウィンドウまたはタブを開き、`ps` コマンドを実行してサービスの状態を確認します。
+
+サービスを停止する必要がある場合は、<kbd>Ctrl-C</kbd> を押します。例えば、使用しているcanister 識別子を変更するために、この操作を行いたい場合があります。
+
+ノードをセットアップした後、統合をテストするには、プリンシパルが取引を送信したり、口座残高を調べたりするのをシミュレートするプログラムを作成する必要があります。
+
+### 本番環境でのRosettaノードの実行
+
+テストが終了したら、`--interactive` 、`--tty` 、`--rm` コマンドラインオプションを指定せずに、本番モードで Docker イメージを実行する必要があります。
+これらのコマンドラインオプションは、対話型のターミナルセッションをアタッチし、コンテナを削除するために使用され、主にテストを目的としています。
+本番環境でソフトウェアを実行するには、`--detach` オプションを使用して Docker イメージを起動し、バックグラウンドでコンテナを実行し、オプションで、ブロックを保存するための`--volume` コマンドを指定します。
+
+Rosettaノードインスタンスをメインネットに接続するには、`--mainnet` と`--not-whitelisted` のフラグを追加します。
+
+Dockerコマンドラインオプションの詳細については、[Dockerリファレンスドキュメントを](https://docs.docker.com/engine/reference/commandline/run/)参照してください。
+
+### 要件と制限
+
+Dockerイメージで提供される統合ソフトウェアには、標準Rosetta API仕様にはない要件が1つあります。
+
+ICPトークンを含むトランザクションの場合、署名なしトランザクションはネットワークが署名付きトランザクションを受信する24時間未満に作成されなければなりません。
+その理由は、各トランザクションの`created_at` フィールドが既存のトランザクション（基本的にトランザクション作成時にローカルで利用可能な`last_index` ）を参照するためです。
+あまりに古いトランザクションを参照する送信済みトランザクションは、運用効率を維持するために拒否されます。
+
+この要件以外では、Rosetta API 統合ソフトウェアは、Rosetta の標準エンドポイントに完全に準拠し、`rosetta-cli` のテストにすべて合格しています。
+このソフトウェアは、有効な Rosetta リクエストを受け付けることができます。
+例えば、このソフトウェアはRosettaのUTXO機能を実装していないため、ソフトウェアの応答にUTXOメッセージは含まれません。
+
+## よくある質問
+
+以下の質問は、Rosetta とInternet Computer の統合に関して、開発者コミュニティから最も多く報告された質問とブロッカーです。
+
+### Rosetta ノード
+
+- #### Rosettaノードのインスタンスを実行するには？
+
+簡単な方法は [`dfinity/rosetta-api`](https://hub.docker.com/r/dfinity/rosetta-api/tags?page=1&ordering=last_updated)
+ノードが初期化され、すべてのブロックが同期されると、ノード上でRosetta APIを呼び出してクエリを実行したり、トランザクションをサブミットしたりすることができます。
+ノードは`8080` ポートでリッスンします。
+
+- #### Rosettaノードをメインネットに接続するには？
+
+フラグ`--mainnet` と`--not-whitelisted`
+
+- #### Rosettaノードをメインネットに接続するには？
+
+フラグ`--mainnet` と`--not-whitelisted`
+
+- #### ノードがテストネットに追いついたかどうかを知るには？
+
+`Starting Rosetta API server` の起動ログを検索してください。`You are all caught up to block XX`.
+このメッセージは、すべてのブロックに追いついたことを確認するものです。
+
+- #### 同期したブロック・データを永続化するには？
+
+`/data` ディレクトリを[ボリュームとして](https://docs.docker.com/storage/volumes/)マウントしてください。
+
+``` bash
+docker volume create rosetta
+```
+
+``` bash
+docker run \
+    --volume rosetta:/data \
+    --interactive \
+    --tty \
+    --publish 8080:8080 \
+    --rm \
+   dfinity/rosetta-api
+```
+
+- #### Rosettaノードはバージョン管理されていますか？
+
+はい、[DockerHubで](https://hub.docker.com/r/dfinity/rosetta-api/tags)定期的に新しいバージョンを公開しています。
+本番環境では、特定のバージョンを使用することを推奨します。例えば、`dfinity/rosetta-api:v1.7.0`
+実行中のrosettaノードのバージョンは、`/network/options` エンドポイントを使用して問い合わせることができます。
+
+``` console
+$ curl -s -q -H 'Content-Type: application/json' -d '{"network_identifier": {"blockchain": "Internet Computer", "network": "00000000000000020101"}}' -X POST http://localhost:8080/network/options | jq '.version.node_version'
+
+"1.7.0"
+```
+
+### ICP固有のRosetta API詳細
+
+- #### アカウントはどのように生成・認証されますか？
+
+アカウントの生成と検証は、以下の手順で行います：
+
+- ED25519キーペアを生成します。
+
+- 秘密鍵は、トランザクションの署名に使用されます。
+
+- 公開鍵は、自己認証プリンシパルIDの生成に使用されます。詳細については、[インタフェース仕様のプリンシパルのセクションを](/references/ic-interface-spec.md#principals)参照。
+
+- プリンシパル ID は、アカウント・アドレスを生成するためにハッシュ化されます。
+
+- #### 公開鍵を使用してアカウント・アドレスを生成するには？
+
+エンドポイントを呼び出すには [`/construction/derive`](https://www.rosetta-api.org/docs/ConstructionApi.html#constructionderive)を呼び出すか、JavaScript SDK の`pub_key_to_address` 関数を使用してください。
+
+- #### アカウントアドレスのチェックサムを確認する方法は？
+
+16進デコード後、最初の4バイトはアドレスの残りの部分のビッグエンディアンCRC32チェックサムです。次に、JavaScript SDKで [`address_from_hex`](https://github.com/dfinity/rosetta-client#working-with-account-addresses)を呼び出します。チェックサムが一致しない場合はエラーを返します。
+[](https://gist.github.com/TerrorJack/d6c79b33e5b5d0f5d52f3a2c5cdacc60)アドレス検証ロジックのJava実装です。
+
+- #### ED25519の`signature_type` 、`curve_type` とは何ですか？
+
+`signature_type` は`"ed25519"` で、`curve_type` は`"edwards25519"`
+
+- #### ブロックに出現するトランザクションの種類とその意味は？
+
+エンドポイントから照会される各ブロックには [`/block`](https://www.rosetta-api.org/docs/BlockApi.html#block)エンドポイントから照会される各ブロックには、正確に1つのトランザクションが含まれます。`burn` のように、Rosetta API 呼び出しではサポートされていない操作もあることに注意してください。
+
+    Transfer:
+      - Operation 0: type `"TRANSACTION"`, subtracts the transfer amount from the source account.
+      - Operation 1: type `"TRANSACTION"`, adds the same transfer amount to the destination account.
+      - Operation 2: type `"FEE"`, subtracts the fee from the source account.
+      
+    Mint:
+      - Operation 0: type `"MINT"`, adds the minted amount to the destination account.
+    
+    Burn:
+      - Operation 0: type `"BURN"`, subtract the burned amount from the source account.
+    
+    `"status"` is always `"COMPLETED"`.
+      - Failed transactions do not appear on the ledger.
+
+:::info
+
+`/construction/payloads`
+代わりに、トランザクションのタイプと金額記号をチェックする必要があります。
+
+:::
+
+- #### どのような手数料が必要ですか？手数料をカスタマイズできますか？
+
+を呼び出します。 [`/construction/metadata`](https://www.rosetta-api.org/docs/ConstructionApi.html#constructionmetadata)を呼び出すと、`suggested_fee` を取得できます。現時点では、`suggested_fee` は定数であり、送金で指定する手数料はこれと等しくなければなりません。手数料はMintまたはバーン操作には適用されません。
+
+- #### 送信されたトランザクションがチェーンにヒットしたかどうかは、どうすればわかりますか？
+
+Rosettaサーバーは、`/construction/submit` を呼び出した後、しばらく待機します。トランザクションがチェーンにヒットすると、サーバーはブロックハッシュを返します。元帳からエラーが出た場合は、`/construction/submit` の結果でエラー情報を見ることができます。`/construction/submit`
+最新のブロックをポーリングして、トランザクションハッシュを検索することができます。 [`/search/transactions`](https://www.rosetta-api.org/docs/SearchApi.html#searchtransactions)
+5分は最悪の場合のタイムアウトです。`mempool` APIを使用しないでください。私たちの実装は空のスタブです。
+
+- #### Rosetta API を呼び出すと、どのようなエラーが発生しますか？
+
+`200`
+失敗した場合は、 レスポンスステータスコードが表示され、JSONペイロードに詳細情報が含まれます。`500` 
+
+Rosettaのエラーコードとその説明は、呼び出し結果の [`/network/options`](https://www.rosetta-api.org/docs/NetworkApi.html#networkoptions)を参照してください。
+
+- #### Mint やバーントランザクションはどのように発行するのですか？
+
+現時点では、Rosetta APIコールによるバーンはサポートしていません。
+
+- #### 同じ署名付きトランザクションが複数回送信された場合はどうなりますか？
+
+元帳は重複トランザクションを拒否します。
+最初のトランザクションだけがチェーンに登録されます。 [`/construction/submit`](https://www.rosetta-api.org/docs/ConstructionApi.html#constructionsubmit)の呼び出しは失敗します。
+
+- #### Rosetta API を呼び出さずにトランザクションに署名するには？
+
+JavaScript SDK には、オフライン署名ロジックの[実装が](https://github.com/dfinity/rosetta-client/blob/master/lib/construction_combine.js)含まれています。
+この機能は、内部実装の詳細と連動しているため不安定です。 [`/construction/combine`](https://www.rosetta-api.org/docs/ConstructionApi.html#constructioncombine)を呼び出してトランザクションに署名することを強くお勧めします。
+
+- #### イングレス期間を設定する方法は？
+
+`/construction/payloads` 呼び出しで、`ingress_start` /`ingress_end` フィールドの1つまたはすべてを追加して、イングレス時間帯を指定できます。
+これらはUnixエポックからのナノ秒であり、今後24時間以内でなければなりません。
+ `ingress_start` /`ingress_end` フィールドを追加すると、トランザクションの生成と署名が可能になりますが、送信は後の時間に延期されます。
+
+- #### 署名済みトランザクションをデシリアライズするには？
+
+ロゼッタ・ネットワークの [`/construction/parse`](https://www.rosetta-api.org/docs/ConstructionApi.html#constructionparse)
+この機能はオフラインモードでも使用できます。
+
+<!---
 # Rosetta
 
 ## Overview
@@ -221,3 +467,4 @@ Adding `ingress_start`/`ingress_end` fields enables generating & signing of a tr
 - #### How to deserialize a signed transaction?
 Use the [`/construction/parse`](https://www.rosetta-api.org/docs/ConstructionApi.html#constructionparse) endpoint of a Rosetta Node.
 This functionality is also available in offline mode.
+-->

@@ -1,6 +1,48 @@
---- 
+---
+ 
 hide_table_of_contents: true
 ---
+# DAOとトークノミクス
+
+canister スマートコントラクト開発を[始める](/tutorials/index.mdx)方法、\[進捗\]/developer-docs/build/index.md)、\[デプロイ\]/developer-docs/production/index.md)、アプリの更新と管理方法。cycles 、計算におけるその使い方、そしてICの\[様々な機能の統合\]/developer-docs/integrations/index.md)についての発言もありました。しかし、なぜかまだドキュメントに何かが欠けているように感じました。IC上での構築はコードだけではありません。
+
+分散型アプリケーションは本質的に、新しい考え方やコーディングの方法だけでなく、相互作用、制御、資金調達、計画の方法にも心を開く必要があります。このドキュメントのカテゴリーは、よりオープンなインターネットへの移行において生じるであろう、より*起業家的な*考察を捉えることを目的としています。dappsこれは、開発者、構築者、創設者だけでなく、dapps の利用者によってもなされるべき考慮事項を記すことを通して行われます。
+
+DAOドキュメントへようこそ。もし、ここに特に見たいものがあれば、オープンですので、遠慮なく投稿してください。
+
+## Network Nervous System (NNS)
+
+NNSはICをコントロールするオープントークナイズされたDAOです。分散化が進むにつれ、コミュニティ・ガバナンスを促進するICの構成要素について学ぶことは非常に重要です。NNSは、ユーザーがトークンをステークし、投票する（または投票を委任する - リキッド民主主義ftw）ことによってICのガバナンスに参加し、時間の経過とともに報酬を得ることを可能にします。
+
+- NNSの詳細については、[こちらを](./nns/nns-intro.md)ご覧ください。
+- 提案、投票、[報酬については](./nns/nns-staking-voting-rewards.md)、ダッシュボードの[ガバナンスセクションを](https://dashboard.internetcomputer.org/governance)ご覧ください。
+- neurons' fundについては[こちらを](./nns/neurons-fund.md)ご覧ください。
+- NNSアプリへの参加は、[NNSイントロダクションを](token-holders/nns-app-quickstart.md)ご覧ください。
+
+## サービス・ナーバス・システム（SNS）
+
+NNSがICであるように、SNSはIC上で動作するサービスです。dapp のガバナンスをトークン化し、分散化したい開発者や創設者は、ここから始めましょう。サービスやdapp のガバナンスは、SNS を取得することで分散化された方法で運用することができます。
+
+- [SNSとDAOに飛び込みましょう](/developer-docs/integrations/sns/tokenomics/index.md)
+- [DAOのトークノミクスを](/developer-docs/integrations/sns/tokenomics/tokenomics-intro.md)見る
+- SNS を取得する場合、[考慮すべき](/developer-docs/integrations/sns/tokenomics//predeployment-considerations.md)数多くの事項について考えてみましょう。
+
+## アイデンティティと認証
+
+Internet Computer 上でアプリを構築する利点の 1 つは、ユーザーがトークンを保持する必要なく対話および認証できることです。これは、Internet Identityによって容易になります。
+
+- [インターネットアイデンティティとは](https://internetcomputer.org/internet-identity)
+- [Internet Identityの始め方](https://internetidentity.zendesk.com/hc/en-us/articles/15430677359124-How-Do-I-Create-an-Internet-Identity-on-My-Mobile-Device-)
+
+## トークン保有者
+
+トークンを取得するには、取引所経由で購入する、ノードプロバイダとして稼ぐ、友人から受け取る、またはその他の方法があります。トークンを保有する方法の選択肢と、自己管理を設定する方法について説明します。クイックスタートに従ってトークンを管理してください。
+
+- [カストディのオプション](token-holders/custody-options-intro.md)
+- [自己カストディのクイックスタート](token-holders/self-custody-quickstart.md)
+
+<!---
+
 
 # DAOs and Tokenomics
 
@@ -34,3 +76,4 @@ One of the advantages of building apps on the Internet Computer is that users ca
 There are multiple ways to obtain token; purchasing via an exchange, earning as a node provider, receiving from a friend, or otherwise. Learn about some options for how to hold tokens, and how you can set up self-custody. Follow the quickstart to take control of your tokens. 
 - [Custody Options](token-holders/custody-options-intro.md)
 - [Self Custody Quickstart](token-holders/self-custody-quickstart.md)
+-->

@@ -1,3 +1,182 @@
+# 11: 自然数のインクリメント
+
+## 概要
+
+このガイドでは、actor を 1 つ作成し、カウンタをインクリメントして値の永続性を示すいくつかの基本関数を提供するプログラムを記述します。
+
+この例では、actor に`Counter` という名前を付けます。このプログラムでは、`currentValue` 変数を使用して、カウンタの現在値を表す自然 数を格納します。このプログラムは、以下の関数呼び出しをサポートしています：
+
+- `increment` 関数コールは、現在値を 1 ずつインクリメントしてアップデートします（戻り値はありません）。
+
+- `get` 関数コールは、カウンタの現在値をクエリーして返します。
+
+- `set` 関数コールは、現在値を引数として指定した任意の数値にアップデートします。
+
+このガイドでは、配置されたcanister で関数を呼び出してカウンタをインクリメントする簡単な例を示します。カウンタの値をインクリメントしてクエリーコールする関数を複数回呼び出すことで、変数のステート、つまり呼び出しの間の変数の値が存在することを確認できます。
+
+## 前提条件
+
+始める前に、[開発者環境ガイドの](./dev-env.md)指示に従って開発者環境をセットアップしていることを確認してください。
+
+## 新規プロジェクトの作成
+
+まだ開いていなければ、ローカル・コンピューターでターミナル・シェルを開いてください。
+
+以下のコマンドを実行して新しいプロジェクトを作成します：
+
+    dfx new my_counter
+
+このコマンドにより、プロジェクト用の新しい`my_counter` プロジェクトが作成されます。
+
+次のコマンドを実行して、プロジェクト・ディレクトリに移動します：
+
+    cd my_counter
+
+## デフォルト設定の変更
+
+新しいプロジェクトを作成すると、デフォルトの`dfx.json` 設定ファイルがプロジェクトディレクトリに追加されることはすでにおわかりでしょう。このガイドでは、デフォルトの設定を変更して、プロジェクトのメイン・プログラムの名前を変更します。
+
+`dfx.json` 設定ファイルを変更するには、テキストエディタで`dfx.json` 設定ファイルを開き、デフォルトの`main` 設定を`main.mo` から`increment_counter.mo` に変更します。
+
+例えば
+
+    "main": "src/my_counter_backend/increment_counter.mo",
+
+このガイドでは、ソース・ファイルの名前を`main.mo` から`increment_counter.mo` に変更することで、`dfx.json` 構成ファイルの設定がコンパイルするソース・ファイルを決定する方法を簡単に説明します。
+
+より複雑なdapp では、依存関係を持つ複数のソース・ファイルがあり、`dfx.json` 構成ファ イルの設定を使用して管理する必要があるかもしれません。このようなシナリオでは、canisters と`dfx.json` ファイルに定義されたプログラムが複数あるため、`main.mo` という名前のファイルが複数あると混乱する可能性があります。
+
+残りのデフォルト設定はそのままにしておいてもかまいません。
+
+変更を保存し、`dfx.json` ファイルを閉じて続行します。
+
+以下のコマンドを実行して、ソース・コード・ディレクトリ`src` のメイン・プログラム・ファイルの名前を、`dfx.json` 構成ファイルで指定された名前と一致するように変更します：
+
+    mv src/my_counter_backend/main.mo src/my_counter_backend/increment_counter.mo
+
+## デフォルト・プログラムの変更
+
+ここまでは、プロジェクトのメイン・プログラムの名前を変更しただけです。次のステップでは、`Counter` という名前のactor を定義し、`increment` 、`get` 、`set` 関数を実装するために、`src/my_counter_backend/increment_counter.mo` ファイル内のコードを変更します。
+
+デフォルト・テンプレートのソース・コードを修正するには、`src/my_counter_backend/increment_counter.mo` ファイルをテキスト・エディターで開き、既存の内容を削除します。
+
+このコードをコピーして、`increment_counter.mo` ファイルに貼り付けます：
+
+    // Create a simple Counter actor.
+    actor Counter {
+    stable var currentValue : Nat = 0;
+    
+    // Increment the counter with the increment function.
+    public func increment() : async () {
+    currentValue += 1;
+    };
+    
+    // Read the counter value with a get function.
+    public query func get() : async Nat {
+    currentValue
+    };
+    
+    // Write an arbitrary value with a set function.
+    public func set(n: Nat) : async () {
+    currentValue := n;
+    };
+    }
+
+このサンプル・プログラムを詳しく見てみましょう：
+
+- この例の`currentValue` 変数宣言には、`stable` キーワードが含まれており、ステート（設定、インクリメント、取得が可能な値）が存在することを示しています。
+
+このキーワードは、プログラムがアップグレードされても変数の値が変更されな いことを保証します。
+
+- `currentValue` 変数の宣言では、その型が自然数 (`Nat`) であることも指定されています。
+
+- このプログラムには、2 つのパブリック更新メソッド（`increment` 関数と`set` 関数）、1 つのクエリ・メソッド（`get` 関数）があります。
+
+安定変数と柔軟変数の詳細については、[**Motoko プログラミング言語ガイドの**](/motoko/main/about-this-guide.md) [安定変数とアップグレードメソッドを](/motoko/main/upgrades.md)参照してください。
+
+クエリーとアップデートの違いについては、[canisters ](/concepts/canisters-code.md#canister-state) の[クエリーおよびアップデート・メソッドに](/concepts/canisters-code.md#query-update) [プログラムとステートの両方が](/concepts/canisters-code.md#canister-state)含まれるを参照してください。
+
+変更を保存し、ファイルを閉じて続行します。
+
+## ローカルのcanister 実行環境の開始
+
+`my_counter` プロジェクトをビルドする前に、Internet Computer ブロックチェーンをシミュレートするローカルcanister 実行環境か、Internet Computer ブロックチェーンメインネットに接続する必要があります。
+
+ローカルのcanister 実行環境を起動するには`dfx.json` ファイルが必要なので、プロジェクトのルート・ディレクトリにいることを確認してください。このガイドでは、ターミナル・シェルを2つに分けて、1つのターミナルでネットワーク操作を開始して確認し、もう1つのターミナルでプロジェクトを管理できるようにします。
+
+ローカルのcanister 実行環境を起動するには、ローカル・コンピューターで新しいターミナル・ウィンドウまたはタブを開きます。
+
+:::info
+
+- これで**2つのターミナルが**開くはずです。
+- **プロジェクト・ディレクトリが** **現在の作業ディレクトリになって**いるはずです。
+  ::：
+
+以下のコマンドを実行して、あなたのコンピューターでローカルcanister 実行環境を起動します：
+
+    dfx start
+
+ローカルのcanister 実行環境を起動すると、ターミナルにネットワーク操作に関するメッセー ジが表示されます。
+
+ネットワーク操作を表示するターミナルは開いたままにしておき、新しいプロジェクトを作成した元のターミナルにフォーカスを切り替えます。
+
+## を登録、ビルド、およびデプロイします。dapp
+
+開発環境で実行されているローカルのcanister 実行環境に接続したら、dapp をローカルに登録、ビルド、デプロイできます。
+
+プロジェクトのディレクトリで次のコマンドを実行して、dapp を登録、ビルド、デプロイします：
+
+    dfx deploy
+
+`dfx deploy` コマンドの出力には、実行した操作に関する情報が表示されます。
+
+## デプロイされたメソッドの呼び出しcanister
+
+canister のデプロイに成功したら、canister によって提供されるメソッドを呼び出すエンドユーザーをシミュレートできます。このガイドでは、カウンターの値をクエリーする`get` メソッド、呼び出されるたびにカウンターをインクリメントする`increment` メソッド、およびカウンターを指定した任意の値に更新する引数を渡す`set` メソッドを呼び出します。
+
+次のコマンドを実行して`get` 関数を呼び出し、デプロイされたcanister 上の`currentValue` 変数の現在値を読み取ります：
+
+    dfx canister call my_counter_backend get
+
+このコマンドは、`currentValue` 変数の現在値をゼロとして返します：
+
+    (0 : nat)
+
+次のコマンドを実行して`increment` 関数を呼び出し、デプロイされたcanister 上の`currentValue` 変数の値を 1 つインクリメントします：
+
+    dfx canister call my_counter_backend increment
+
+このコマンドは変数の値をインクリメントしてステートを変更しますが、結果は返しません。
+
+次のコマンドを再実行して、デプロイされたcanister 上の`currentValue` 変数の現在の値を取得します：
+
+    dfx canister call my_counter_backend get
+
+コマンドは更新された`currentValue` 変数の値を 1 として返します：
+
+    (1 : nat)
+
+他のコマンドを実行して、他のメソッドの呼び出しや異なる値の使用を試してください。たとえば、以下のようなコマンドを実行して、カウンターの値を設定したり返したりしてみてください：
+
+    dfx canister call my_counter_backend set '(987)'
+    dfx canister call my_counter_backend get
+
+これにより、`currentValue` の更新値が 987 になります。追加コマンドを実行すると
+
+    dfx canister call my_counter_backend increment
+    dfx canister call my_counter_backend get
+
+を実行すると、インクリメントされた`currentValue` の 988 が返されます。
+
+## Candid UI を使用してコードをテストしてください。
+
+コードをテストするには、[こちらの](candid-ui.md)指示に従ってください。
+
+## 次のステップ
+
+次のガイドでは、[ canister にテキスト引数を渡す](hello-location.md)方法について説明します。
+
+<!---
 # 11: Incrementing a natural number
 
 ## Overview
@@ -202,3 +381,4 @@ To test your code, follow the instructions [here](candid-ui.md).
 ## Next steps
 
 In the next guide, we'll cover [passing text arguments to a canister](hello-location.md).
+-->

@@ -1,3 +1,66 @@
+# 開発者の旅
+
+## 概要
+
+Internet Computer での開発を始める準備はできているけれど、何から始めたらいいかわからないという方はいらっしゃいませんか？
+
+開発者の旅は、新規開発者と既存開発者の双方に、Internet Computer で開発を行うための明確な学習パスを提供するように設計されています。レベル 0 では、Internet Computer の紹介、用語、開発者環境のセットアップから始まり、複雑なdapps を構築する詳細なレベル 5 に至るまで、開発者の旅にはあらゆるスキルレベルの開発者にとって不可欠な情報が含まれています。
+
+## レベル 0: 飛行前の操作
+
+- [0.1:Internet Computer](level-0/01-ic-overview.md) の[概要](level-0/01-ic-overview.md)。
+- 0.2[:Internet Computer の用語](level-0/02-ic-terms.md)。
+- 0.3:[開発者環境のセットアップ](level-0/03-dev-env.md)。
+- 0.4:[ canisters の](level-0/04-intro-canisters.md)[紹介](level-0/04-intro-canisters.md)。
+- 0.5:[言語](level-0/05-intro-languages.md)紹介.
+- 0.6:[dfx](level-0/06-intro-dfx.md)入門。
+
+## レベル1: スペースカデット
+
+- [1.1:ライブデモの探索](level-1/1.1-live-demo.md)。
+- 1\.[2:Motoko: レベル1](level-1/1.2-motoko-lvl1.md)。
+- 1\.[3: 最初のdapp](level-1/1.3-first-dapp.md) 。
+- [1.4:cycles](level-1/1.4-using-cycles.md) の[取得と使用](level-1/1.4-using-cycles.md)。
+- 1.5:[ canisters の](level-1/1.5-deploying-canisters.md)[デプロイ](level-1/1.5-deploying-canisters.md).
+- 1.6:[ canisters の](level-1/1.6-managing-canisters.md)[管理](level-1/1.6-managing-canisters.md).
+
+## レベル2：スペースエクスプローラ
+
+- 2.1:ストレージと永続性。
+- 2.2:サードパーティの使用canisters.
+- 2.3:高度なcanister 呼び出し。
+- 2.4: Candidの紹介。
+- 2.5: ユニットテストと統合。
+- 2.6:Motoko: レベル2。
+
+## レベル3：スペースエンジニア
+
+- 3.1:MOPSでライブラリを使用します。
+- 3.2:HTTPSアウトコールの使用
+- 3.3:認証変数の使用
+- 3.4:エージェントの紹介
+- 3.5: Quill の使用
+- 3.6:Motoko: レベル3。
+
+## レベル4：スペースパイロット
+
+- 4.1:アイデンティティと認証
+- 4.2:ICP台帳の使用。
+- 4.3: ICRC-1トークン。
+- 4.4: ckBTCとビットコインの統合。
+- 4.5: NNSガバナンスとステーキング。
+- 4.6:Motoko: レベル4。
+
+## レベル5:Internet Computer 宇宙飛行士
+
+- 5.1:vetKD による暗号化紙幣dapp の開発。
+- 5.2:IC Ethereumインテグレーションを使用したdapp 。
+- 5.3:DEXの作成。
+- 5.4:IC上でのNFTの作成
+- 5.5: SNSの作成。
+- 5.6: 次のステップ
+
+<!---
 # Developer journey
 
 ## Overview
@@ -61,3 +124,5 @@ The developer journey is designed to give both new and existing developers a cle
 - 5.4: Creating NFTs on the IC.
 - 5.5: Creating an SNS.
 - 5.6: Next steps.
+
+-->

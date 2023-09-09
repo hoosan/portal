@@ -1,3 +1,160 @@
+# 7: アップグレードcanister
+
+## 概要
+
+canister 識別子は保持されますがステートは保持されないcanister 再インストールとは異なり、canister アップグレードでは、デプロイされたcanister のステートを保持し、コードを変更することができます。
+
+たとえば、プロフェッショナルなプロフィールとソーシャルなつながりを管理するdapp があるとします。dapp に新機能を追加したい場合、canister のコードを、以前に保存されたデータを失うことなく更新できる必要があります。canister アップグレードを使用すると、プログラムのステート を失うことなく、プログラムの変更に合わせて既存のcanister 識別子を更新できます。
+
+## Canister アップグレード
+
+canister をアップグレードする必要がある場合、以下のワークフローが使用されます：
+
+- canister フックが定義されている場合、システムは`pre_upgrade` フックを呼び出します。
+- システムはcanister のメモリーを破棄し、新しいバージョンのWebAssembly モジュールをインスタンス化します。システムは安定したメモリを保持し、新しいバージョンで使用できるようにします。
+- canister が定義されている場合、システムは新しく作成されたインスタンスで`post_upgrade` フックを呼び出します。`init` 関数は実行されません。
+- 上記のいずれかのステップでcanister がトラップ (回復不能なエラーを投げる) した場合、システムはcanister をアップグレード前のステートに戻します。
+
+### 安定したメモリーのバージョン管理
+
+安定したメモリは、canister の古いバージョンと新しいバージョンの間の通信チャネルと見なすことができます。グッドプラクティスとして、通信プロトコルはバージョン管理されるべきです。場合によっては、開発者はcanister のシリアライズ形式や安定したデータレイアウトのようなものを根本的に変更したいと思うかもしれません。このプロセスを簡単にするために、安定メモリのバージョニングを計画すべきです。これは、canister の安定化メモリの最初のバイトをバージョン番号に使用すると宣言するのと同じくらい簡単なことです。
+
+### アップグレードフックのテスト
+
+アップグレードを適用する前にテストするのがベストプラクティスです。アップグレードをテストするには、シェルスクリプトや bash スクリプト、Rust テストスクリプトなど、いくつかの異なるワークフローやアプローチを使用できます。以下の擬似コードでは、アップグレードテストのステート検証を実行するステップを追加した、Rust によるアップグレードの例を示しています。
+
+    let canister_id = install_canister(WASM);
+    populate_data(canister_id);
+    if should_upgrade { upgrade_canister(canister_id, WASM); }
+    let data = query_canister(canister_id);
+    assert_eq!(data, expected_value);
+
+そして、テストを 2 つの異なるシナリオで 2 回実行します：
+
+- アップグレードのないシナリオでは、アップグレードを実行しなくてもテストが正常に実行されることを確認します。
+- アップグレードのないシナリオでは、アップグレードを実行せずにテストが正常に実行されることを確認します。アップグレードのあるシナリオでは、アップグレードを実行しながらテストが正常に実行されることを確認します。
+  次に、異なるモードでテストを 2 回実行します：
+
+これらのテストを両方実行することで、開発者は、アップグレードがcanister に適用されても、canister のステー トは保持されるという確信を得ることができます。
+
+:::caution
+ `pre_upgrade` フック内でトラップすることは推奨されません。`pre_upgrade` と`post_upgrade` のフックは対称のように見えますが、そうではないからです。
+
+`pre_upgrade` フックが成功しても`post_upgrade` フックがトラップした場合、canister をデバッグして別のバージョンをビルドすることができます。しかし、`pre_upgrade` フックがトラップした場合、それについてできることはあまりありません。`pre_upgrade` フックが壊れていると、canister の動作を変更することができません。
+::：
+
+### 安定したメモリを主記憶として使用
+
+canister がアップグレードされるとき、そのアップグレード中にcanister がバーンできるcycles の数には制限があります。canister がその制限を超えると、システムによってアップグレードはキャンセルされ、canister のステートも元に戻ります。つまり、canister'のステート全体を`pre_upgrade` フックの安定したメモリにシリアライズし、そのステートが非常に大きくなった場合、canister は再びアップグレードできなくなる可能性があります。
+
+これを防ぐ1つの方法は、canister ステートを最初からシリアライズしないことです。安定したメモリをcanister の主記憶として使用し、各アップグレード呼び出しを格納できるようにします。この方法を使えば、`pre_upgrade` フックは必要なくなるかもしれませんし、`post_upgrade` フックは、cycles のバーンを少なくするでしょう。
+
+:::caution
+この方法は、ワークフローによっては便利かもしれませんが、いくつかの欠点があります：
+
+- 特に、複数の相互接続されたデータ構造からなる複雑なステート（canister ）の場合、安定したストレージのフラットなアドレス空間をデータ構造に整理するのは困難です。[ic-stable-structures](https://crates.io/crates/ic-stable-structures)パッケージと[ic-stable-memory](https://crates.io/crates/ic-stable-memory)パッケージは、安定したメモリでデータを整理するのに役立つツールを提供します。
+- canister のデータレイアウトを変更することは、非生産的で実行不可能かもしれません。
+- canister のデータ構造に後方互換性を持たせる必要があるかもしれません。canister の新しいバージョンは、以前のバージョンで書かれたデータを読む必要があるかもしれません。
+  ::：
+
+全体として、canister ステートデータをギガバイト単位で保存し、コードをアップグレードする予定があるのであれば、アプローチの欠点はあるにせよ、主記憶に安定したメモリを使うことを検討する価値はあるかもしれません。
+
+## アップグレードcanister
+
+### 前提条件
+
+作業を始める前に、[開発者環境ガイドの](./3-dev-env.md)指示に従って開発者環境をセットアップしていることを確認してください。
+
+このガイドでは、アップグレードしたい既存のcanister があることを前提にしています。既存のcanister をアップグレードするには、このセクションの前のドキュメントページをご覧ください。
+
+Rust で書かれたcanister をアップグレードするには、`pre_upgrade` と`post_upgrade` 関数を使用して、canister のアップグレード後にデータが適切に保存されるようにする必要があります：
+
+``` rust
+use ic_cdk::{
+    api::call::ManualReply, export::Principal, init, post_upgrade, pre_upgrade, query, storage,
+    update,
+};
+use std::cell::RefCell;
+use std::collections::{BTreeMap, BTreeSet};
+
+type Users = BTreeSet<Principal>;
+type Store = BTreeMap<String, Vec<u8>>;
+
+thread_local! {
+    static USERS: RefCell<Users> = RefCell::default();
+    static STORE: RefCell<Store> = RefCell::default();
+}
+
+#[init]
+fn init() {
+    USERS.with(|users| users.borrow_mut().insert(ic_cdk::api::caller()));
+}
+
+fn is_user() -> Result<(), String> {
+    if USERS.with(|users| users.borrow().contains(&ic_cdk::api::caller())) {
+        Ok(())
+    } else {
+        Err("Store can only be set by the owner of the asset canister.".to_string())
+    }
+}
+
+#[update(guard = "is_user")]
+fn store(path: String, contents: Vec<u8>) {
+    STORE.with(|store| store.borrow_mut().insert(path, contents));
+}
+
+#[query(manual_reply = true)]
+fn retrieve(path: String) -> ManualReply<Vec<u8>> {
+    STORE.with(|store| match store.borrow().get(&path) {
+        Some(content) => ManualReply::one(content),
+        None => panic!("Path {} not found.", path),
+    })
+}
+
+#[update(guard = "is_user")]
+fn add_user(principal: Principal) {
+    USERS.with(|users| users.borrow_mut().insert(principal));
+}
+
+#[pre_upgrade]
+fn pre_upgrade() {
+    USERS.with(|users| storage::stable_save((users,)).unwrap());
+}
+
+#[post_upgrade]
+fn post_upgrade() {
+    let (old_users,): (BTreeSet<Principal>,) = storage::stable_restore().unwrap();
+    USERS.with(|users| *users.borrow_mut() = old_users);
+}
+```
+
+このコードは、参考のために[Rust CDK 資産保存の](https://github.com/dfinity/cdk-rs/blob/main/examples/asset_storage/src/asset_storage_rs/lib.rs)例に表示されています。
+
+canister をアップグレードするには、必要に応じて新しいターミナルウィンドウを開き、プロジェクトのディレクトリに移動します。
+
+次に、コマンドでローカルのcanister 環境を起動します：
+
+    dfx start --clean --background
+
+次に、アップグレードしたいcanister のcanister 識別子を取得します。そのためには、次のコマンドを使います：
+
+    dfx canister id [canister-name]
+
+次に、canister のコードに、アップデートに含めたい変更を加えます。これらの変更には、`pre_upgrade` と`post_upgrade` 関数の追加が含まれます。
+
+すべてのcanisters をアップグレードするには、次のコマンドを使います：
+
+    dfx canister install --all --mode upgrade
+
+単一のcanister をアップグレードするには、次のコマンドを使います：
+
+    dfx canister install [canister-id] --mode upgrade
+
+## 次のステップ
+
+次に、[ canisters を](./8-optimizing.md) [最適化して](./8-optimizing.md)みましょう。
+
+<!---
 # 7: Upgrading a canister
 
 ## Overview
@@ -159,3 +316,5 @@ dfx canister install [canister-id] --mode upgrade
 ## Next steps
 
 Next, let's take a look at [optimizing canisters](./8-optimizing.md).
+
+-->

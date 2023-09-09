@@ -1,3 +1,76 @@
+# トークンとcycles
+
+## 概要
+
+Internet Computer エコシステム内では、Internet Computer Protocol トークン（ICP トークン）は、オープンマー ケットで価値が決定されるネイティブなユーティリティ・トークンです。ICP トークンは、Internet Computer のガバナンスと経済の両方において重要な役割を果たします。
+
+## ICPトークンの入手方法
+
+ICP トークンを取得する方法はいくつかあります。例えば
+
+- 取引可能な ICP トークンを掲載している取引所を通じて ICP トークンを直接購入。
+
+- ICPトークンのガバナンスへの参加に対する報酬としてトークンを受け取る方法。Internet Computer
+
+- Internet Computer 協会（ICA）またはDFINITY 財団を通じてトークンの交付を受けること。
+
+- ノードプロバイダーとしてコンピューティング能力を提供することに対する報酬としてトークンを受け取ります。
+
+## ICPトークンの使用方法
+
+ICP トークンを持っているが、その使い方がよくわからない場合、次の図に最も一般的な 3 つのシナリオを簡略化して示します。
+
+![icp tokens how to use](_attachments/icp-tokens-how-to-use.svg)
+
+この図が示すように、ICP トークンをどのように使用するかは、主にトークンを取得する目的によって異なります。例えば、あなたが開発者や創設者であれば、ICP トークンを **cycles**Cycles canisters を運営するための支払いに使用することができます。ガバナンスに参加し、 の方向性に影響を与えることに関心のあるコミュニティのメンバーであれば、 と呼ばれるステークに ICP トークンをロックアップし、提案の提出や投票ができるようにすることができます。Internet Computer neuron
+
+:::info
+取引手数料については、**取引送信**者があらゆる取引手数料を負担する責任があります。
+::：
+
+## cycles の仕組み
+
+開発者にとって ICP トークンは重要です。ICP トークンはcycles に変換することができ、変換されたトークンはリソースの消費に対する支払いに使用されます。
+
+例として、給湯器、キッチンストーブ、乾燥機、スペースヒーターにプロパンを使用している家があるとします。これらの電化製品を使用すると、手持ちのガスが枯渇するため、定期的にプロバイダーに連絡してガスを補充してもらい、電化製品を中断することなく使い続けられるようにします。これはcanisters と似ていますが、canister はcycles のアカウントを持ち、canisterのアプリケーションが消費する通信、計算、ストレージの料金を支払う必要があります。
+
+cycles の詳細と使用方法については、[こちらを](/docs/developer-docs/setup/cycles/converting_icp_tokens_into_cycles.md)ご覧ください。
+
+## 計算コスト
+
+Cycles 物理的ハードウェア、ラックスペース、エネルギー、ストレージデバイス、帯域幅などのリソースを含む、 ブロックチェーンでホストされるアプリケーションの運用にかかる実際のコストを反映します。Internet Computer 
+
+Canister cycles スマートコントラクトは、完全な実行（オール・オア・ナッシング）に対して支払うことができなければなりませんが、プラットフォームは、悪意のあるコードがリソースを消耗するのを防ぐために、 が保持および消費できる数に制限を設けています。canister 
+
+運用コストが比較的安定しているため、例えば100万件のメッセージを処理するのに必要なcycles を予測しやすくなっています。
+
+通信、計算、ストレージに関連するコストは、時間とともに増加するよりも減少する可能性の方が高いです。例えば、ディスクスペースが安くなり、ハードウェアが効率的になるため、Internet Computer protocol 。
+
+Cycles 特に を トークンの形で価値に戻すことはできませんが、 間で転送することで が操作の代金を支払うことができます。cycles Internet Computer Protocol canisters canisters 
+
+正確なコストについては、[計算コストと保管](/developer-docs/gas-cost.md)コストの表を参照してください。
+
+## トークンの価値とボラティリティ
+
+トークン（ICP）はInternet Computer ブロックチェーンの価値を反映し、変動する可能性があります。トークンの価値がcanister が処理できるメッセージ数に影響するのを防ぐため、トークンはリソースの支払いに直接使用されません。
+
+トークンはトークン保有者間で交換したり、ガバナンス・システムの一部として議決権を確保するために**neuronに保管したりすることができます。**
+
+トークンは、計算能力を提供するノード・プロバイダーや、投票や提案の提出によってInternet Computer のガバナンスに参加するneuron ホルダーへの報酬として使用されます。
+
+## ノード・プロバイダへの支払い
+
+このモデルにより、Internet Computer ブロックチェーンは、必要なときに必要な場所でリソースが利用できるように、計算能力の予測可能な経済モデルをノードプロバイダに提供します。ノードプロバイダは、Internet Computer ブロックチェーンが通常のトラフィックとワークロードの急増の両方に対応できる能力を持つように、アクティブノードとスペアノードの両方に対して報酬を受け取ります。
+
+Internet Computer 経済モデルは、キャパシティを管理する権限と責任の多くをガバナンス・システム（Network Nervous System ）に負わせます。報酬とサービス・レベル要件に関する具体的な詳細は、本文書の範囲外です。
+
+## リソース
+
+トークンとcycles に関する詳細情報をお探しの場合は、以下の関連リソースをご覧ください：
+
+- [トークン経済の概要（ビデオ）](https://www.youtube.com/watch?v=H2p5q0PR2pc)。
+
+<!---
 # Tokens and cycles
 
 ## Overview 
@@ -68,3 +141,5 @@ The Internet Computer economic model places much of the power and responsibility
 If you are looking for more information about tokens and cycles, check out the following related resources:
 
 -   [Overview of token economics (video)](https://www.youtube.com/watch?v=H2p5q0PR2pc).
+
+-->

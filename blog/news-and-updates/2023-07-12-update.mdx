@@ -1,9 +1,110 @@
 ---
+
 title: Developer weekly update July 12, 2023
 description: This week, we’re going to talk about the new vetKeys feature that was showcased in a community conversation this week, plus a new dfx release and a new optimization feature packaged with dfx.
 tags: [Devs]
 image: /img/blog/dev-update-blog-jul-12.jpeg
 ---
+# デベロッパーウィークリー - 2023年7月12日号
+
+![July 12 2023](../../static/img/blog/dev-update-blog-jul-12.jpeg)
+
+開発者の皆さん、こんにちは！今週は、今週コミュニティの会話で紹介されたvetKeysの新機能と、dfxの新リリース、そしてdfxにパッケージされた新機能canister の最適化についてお話します！
+
+さあ、飛び込みましょう！
+
+## vetKeys
+
+今週、vetKeysという新機能がコミュニティの会話を通じて紹介されました！
+
+Verifiable Encrypted Threshold Keys（略称：vetKeys）は、Internet Computer 。 vetKeysの目的は、開発者がIC上でセキュリティやプライバシーのツールを使用する際に直面する課題を軽減することです。デバイス上でローカルに情報を暗号化し、ブロックチェーンに保存することは、暗号化の秘密鍵の値が公開されず、ローカルデバイスに残っている限り、簡単です。ユーザーが暗号化された情報を別のデバイスから取り出したり、別のユーザーと共有したりしたい場合、安全である簡単な方法はありません。
+
+vetKeysは、ICのネイティブ署名スキームであり、暗号解読キーとして使用できるBLS署名を活用することで、この課題の解決に努めます。BLS署名はIC上で分散して計算されるため、ユーザーに代わって鍵を割り当てたり管理したりする中央機関は存在しません。
+
+vetKeysの背後にある技術をより詳しく見るには、[vetKeysの入門](https://internetcomputer.org/blog/features/vetkey-primer)書をご覧ください。
+
+vetKeysのユースケースは以下の通りですが、これらに限定されるものではありません：
+
+- エンドツーエンドの暗号化
+- 洗練されたアクセス・ポリシー
+- ブロックチェーン発行の署名とクロスチェーンブリッジ
+- 検証可能なランダム性
+- 「デッドマンズ・スイッチ
+- 秘密入札オークションとMEV保護
+- タイムロック暗号化
+- 証人の暗号化
+- ワンタイムプログラム
+
+これはまだ制作中の新機能であるため、この機能を強化し、さまざまなユースケースを検討するために、開発者が参加できる懸賞金が多数用意されています。報奨金の詳細とコミュニティの会話へのリンクは、[こちらのフォーラム投稿を](https://forum.dfinity.org/t/open-bnt-8-vetkeys-enabling-privacy-preserving-applications-on-the-ic/21294)ご覧ください。
+
+## dfx 0.14.2
+
+最新リリースのdfx 0.14.2では、主に以下のような既存のワークフローの修正と機能強化が行われました：
+
+- 重複アセットの診断とアップグレードステップの表示:`dfx deploy` が`dist/` とフロントエンド`assets/` ディレクトリで重複アセットを検出した場合、アップグレードステップを提案するようになりました。
+- Motoko canisters サービスコンストラクタで他のcanisters をインポートできます: 特定のcanister ビルダーが Wasm ファイルと Candid ファイルを出力した後、dfx は Candid ファイルの後処理を行います。
+- `dfx star` `dfx.json` または のネットワークレプリカポートの設定を尊重するようになりました。`networks.json`
+- `.raw.ic0.app` からのリダイレクトが`.icp0.io` ではなく`.ic0.app` にリダイレクトされるようになりました。
+- `validate_commit_proposed_batch()` メソッドの呼び出しにパーミッションが不要になりました。
+- アセットcanister がアップロード中に制限を実施するようになりました。これらの制限はすでにアップロードされたアセットには適用されません。
+- index.html フォールバックルートの正しい expr\_path を返すように修正されました。以前は、リクエストされたパスが`index.html` フォールバックルートの`expr_path` を構築するために使用されていました。この場合、`expr_path` は`index.html` ファイル自体のパスになるはずなので、これは正しくありません。
+
+さらに、このリリースに含まれる新機能は以下のとおりです：
+
+- `dfx bootstrap` と`dfx replica` コマンドの非推奨化: この2つのコマンドの組み合わせである`dfx start` を代わりに使用してください。
+- canisters アセットのカスタムビルドコマンドの追加 : カスタムビルドコマンドは`dfx.json` でカスタムタイプcanisters と同じように設定できます。このコマンドが指定されない場合、dfx はデフォルトの`npm run build` コマンドにフォールバックします。
+
+<!-- end list -->
+
+    {
+      "canisters": {
+        "ui": {
+          "type": "assets",
+          "build": ["<custom build command>"]
+        }
+      }
+    }
+
+dfx 0.14.2のリリースノート全文は[こちらを](https://github.com/dfinity/sdk/releases/tag/0.14.2)ご覧ください。
+
+## Canister dfx 0.14.0 以降で利用可能な最適化
+
+dfx 0.14.0以降のバージョンでは、汎用のWasmオプティマイザである`wasm-opt` が追加されました。`wasm-opt` を使用すると、dfx.json ファイルから直接、canister の最適化オプションを設定できるようになりました。たとえば、canisterのcycles 消費を最適化するには、この設定を使用します：
+
+```
+{
+  "canisters": {
+    "my_canister": {
+      "optimize": "cycles"
+    }
+  }
+}
+
+```
+
+また、バイナリ・サイズを小さくすることもできます：
+
+```
+{
+  "canisters": {
+    "my_canister": {
+      "optimize": "size"
+    }
+  }
+}
+
+```
+
+ベンチマークテストの結果、cycle の消費量はMotoko canisters で約 10%、Rustcanisters で約 7%、バイナリサイズは約 16% 削減されます。
+
+詳細については、[こちらのフォーラム・ポスト・アナウンスを](https://forum.dfinity.org/t/canister-optimizer-available-in-dfx-0-14-0/21157)ご覧ください。
+
+今週は以上です！NNSチームを取り上げた先週の[チーム・スポットライト・ブログ記事を](https://internetcomputer.org/blog/news-and-updates/team-spotlight-nns)見逃した方は、ぜひご覧ください。次回はRuntimeチームを取り上げます！
+
+\-DFINITY
+
+<!---
+
 
 
 # Developer weekly - July 12 2023
@@ -99,3 +200,5 @@ That’s it for this week! If you missed last week’s [team spotlight blog post
 
 -DFINITY
 
+
+-->

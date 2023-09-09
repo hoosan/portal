@@ -1,4 +1,5 @@
 ---
+
 title: Subnet Splitting MVP
 links:
   Forum Link: https://forum.dfinity.org/t/long-term-r-d-subnet-splitting-proposal/9402/4
@@ -6,6 +7,16 @@ links:
 eta:
 is_community: false
 ---
+Internet Computer は、異なるサブネットのブロックチェーンにスケールアウトすることで、制約のない容量を持つように設計されています。
+しかし、各サブネットには制約のある容量があります：canister
+サブネットが過負荷になると、そのサブネット上のcanisters の反応が悪くなったり、メモリ使用量を増やせなくなったりする可能性があります。
+
+サブネット分割は、1つのサブネットを2つのサブネットに分割する機能を提供することで、このような問題に対処することを目的としています。
+MVPバージョンは、以下のリンク先のフォーラム投稿にある完全なサブネット分割のビジョンに向けた第一歩と見なすことができます。
+フルサブネット分割と比較して、MVPバージョンは自動化とダウンタイムの最小化という点で若干の手抜きをしますが、それ以外は同じ考え方に従っており、MVPバージョンは将来の段階的なステップでフルサブネット分割に変えることができます。
+
+<!---
+
 
 The Internet Computer is designed to have unbounded capacity by scaling out to different subnet blockchains. 
 Each subnet, however, has a bounded capacity: It is limited in how many messages it can process and how much canister memory it can hold. 
@@ -15,3 +26,5 @@ Subnet splitting aims to address such issues by providing functionality to split
 The MVP version can be viewed as a first step towards the vision of full subnet splitting layed out in the forum post linked below. 
 The goal is to have a fully functional and end to end verifiable process which consists of a series of NNS proposals. 
 Compared to full subnet splitting the MVP version cuts some corners in terms of automation and minmizing downtime but otherwise follows the same ideas so that the MVP version can be turned into full subnet splitting in future incremental steps. 
+
+-->

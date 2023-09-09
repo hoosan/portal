@@ -1,9 +1,124 @@
 ---
+
 title: Architecture of the Internet Computer
 abstract: 
 shareImage: /img/how-it-works/ic-architecture.jpg
 slug: architecture-of-the-internet-computer
 ---
+# のアーキテクチャInternet Computer
+
+Internet Computer は、スマートコントラクトを安全にホストし実行するための、拡張性の高いブロックチェーンベースのプラットフォームという画期的なアプローチをとっています。
+ Internet Computer (IC)を支える技術は、拡張性の欠如など、以前のプロジェクトから学んだ多くの教訓を考慮し、ブロックチェーンプロトコルを一から考え直しました。
+ Internet Computer は、無限に拡張でき、スマートコントラクトを安全にホストするために誰もが使用できるオープンで安全なパブリックブロックチェーンネットワークである*ワールドコンピュータに*なることを意図しています。
+
+## Canister スマートコントラクト
+
+IC上のスマートコントラクトは、*canister スマートコントラクトと*呼ばれます。 *canister*
+ canister [*WebAssembly (Wasm)*](https://en.wikipedia.org/wiki/WebAssembly)プログラムコードとデータストレージを1つのユニットにバンドルします。
+誰でもcanister をInternet Computer 上にデプロイすることができます。
+Canisters は複数のマシン、つまりサブネットのノード上で複製され、フォールトトレラントな方法でコードが実行されます。
+他のブロックチェーンとは異なり、IC上のスマートコントラクトは、いくつかの可能な*変更可能性ポリシーの*いずれかを尊重することができます：完全に不変（誰にも変更できない）、一方的に変更可能（dApp 開発者によって一方的に変更可能）、または DAO 変異可能（分散化された自律組織によって承認されたように変更可能）。
+
+Canisters を使用して支払います。 *cycles*
+そのためには、canisters をcycles で「補充」する必要があります。
+Cycles は IC のユーティリティ・トークンである ICP トークンで取得できます。
+ICP でcycles を購入すると、供給源から ICP トークンが削除され、対応する価値のcycles が作成されます。
+1兆cycles 、1XDR相当のICPで取得できます。XDRは主要通貨で構成されるバスケットで、1XDRは2022年第3四半期時点でおよそ1.3米ドルです。
+
+Canister スマートコントラクトは、他のブロックチェーンのスマートコントラクトよりも強力です：
+
+- Canisters これはICの*逆ガス*モデルを実現するものです。
+- Canisters は低料金でギガバイトのメモリーを保持可能。
+- ウェブ・ブラウザは、ウェブ・インターフェースやアセットを提供するためのパブリック・クラウドを介さずに、canister スマート・コントラクトと直接対話することができます。これは、他のブロックチェーンのようにパブリッククラウドからUIが提供されるのとは対照的です。
+- Canisters 通常のソフトウェアのように、更新や進化が可能です。DAOベースのガバナンススキームは、このアップグレードプロセスを安全かつ分散化することができます。
+- Internet Identityを使用すると、canisters 、[*Web認証（WebAuthn）*プロトコルを](https://www.w3.org/TR/webauthn-2/)使用して、安全なハードウェアモジュールに含まれる秘密鍵に基づいてユーザーを認証することができます。*Internet* Identityと呼ばれるこの安全な認証サービスは、スマートコントラクトとしても実装され、他のスマートコントラクトにサービスを提供します。
+
+[canister スマートコントラクトの](https://wiki.internetcomputer.org/wiki/Canister_smart_contract)詳細はIC wikiをご覧ください。
+
+## サブネット・アーキテクチャ
+
+canister
+ICのトップレベルのビルディングブロックは、*サブネットワーク*（*サブネット*）です。ICは全体として多数のサブネットで構成され、各サブネットは他のサブネットと同時かつ独立して動作する独自のブロックチェーンです（ただし、他のサブネットとは非同期に通信できます）。各サブネットは、 スマートコントラクトをホストし、最大で合計数百ギガバイトの複製ストレージをホストします。 サブネットは
+ canister
+*ノードマシン*（*ノード*）で構成されます。 各ノードは、ブロックチェーン技術を用いてサブネットのすべての 、ステート、計算を複製します。これにより、サブネットはブロックチェーンベースの
+ canisters
+*複製されたステートマシン*、つまり安全でフォールトトレラントかつ改ざん不可能な方法でステートを保持する仮想マシンとなります：サブネット上でホストされる の計算は、たとえサブネット上の一部のノードに欠陥があったとしても（クラッシュしたり、あるいは悪意のある人物にハッキングされたりして）、停止することなく正しく進行します。 システムをスケールアウトするためにICに追加されたノードから新しいサブネットを作成することができます。これは、パブリッククラウドなどの従来のインフラがマシンを追加することでスケールアウトする方法に似ています。このようなスケールアウトアーキテクチャは、ブロックチェーン分野ではむしろ例外であり、無限のスケーリングを可能にします、つまり、ブロックチェーンのセキュリティと回復力をパブリック・クラウドのスケーラビリティと組み合わせることです。canisters
+
+<figure>
+<img src="/img/how-it-works/subnet_architecture.png" alt="Architecture: The IC is composed of subnets, each of which is an independent blockchain" title="The IC is composed of subnets, each of which is an independent blockchain" align="center" style="width:600px">
+<figcaption align="center">
+The IC is composed of subnets, each of which is an independent blockchain.<br>
+Canisters within and across subnets communicate through asynchronous messaging.
+</figcaption>
+</figure>
+
+[サブネットの](https://wiki.internetcomputer.org/wiki/Subnet_blockchain)詳細はIC wikiをご覧ください。
+
+## 非同期メッセージング
+
+前述したように、canister はそのコードとデータ（ステート）をバンドルします。
+これにより、canister のステートは他のcanisters のステートから隔離されます。
+ユーザーは*イングレスメッセージを*送信することでcanisters と対話します。
+Canisters また、同じサブネット上または異なるサブネット上の他のcanisters にメッセージを送信することで、他のcanisters と対話することもできます。
+私たちは、ユーザーまたは他のcanisters のいずれかによってcanisters に送信されたメッセージを総称して*メッセージ*または*canister メッセージと*呼びます。
+各メッセージは、canister スマートコントラクトコードの実行と（複製された）canister ステートの変更につながる可能性があります。
+ canisters に送信されるメッセージは*非同期*です。
+メッセージが送信されると、送信者はこの操作によってブロックされず、メッセージに対する応答を受信するまで他の計算を実行できます。
+他のほとんどのブロックチェーンでは、スマートコントラクトの呼び出しは同期です、
+この非同期メッセージングと分離されたcanister ステートは、異なるcanisters とサブネット間の「緩い結合」をもたらします。
+ canisters 間のセキュアな非同期クロスサブネット（XNet）メッセージングと、結果として生じるサブネットの疎結合は、新しいサブネットを追加することによってICのスケーラビリティを解放する重要な原則です。
+サブネット上の各canister のステートは、canister への非同期メッセージによってのみ変更できるため、同じサブネット上または異なるサブネット上のcanisters が同時に実行される可能性があります。
+プログラミングモデルという点では、非同期通信はICと他の多くのブロックチェーンとの大きな違いですが、前例のないスケーラビリティを実現する鍵でもあります。
+
+## コアInternet Computer Protocol
+
+ICの各サブネットはコアInternet Computer protocol （コアICプロトコル）によって駆動され、その実装がすべてのノードで実行されています。
+このプロトコルは次の4つのレイヤーで構成されています：(1) ピアツーピア、(2) コンセンサス、(3) メッセージルーティング、(4) 実行。
+このコアICプロトコル・スタックは、あらゆるサブネットのすべてのノード上で実行され、コンセンサスとメッセージ実行の面でサブネットが進歩するように駆動します。
+ICの各サブネットは、それによってICの他のサブネットとは独立して進歩を遂げる独自の複製ステートマシンです（ただし、他のサブネットとは非同期に通信します）。
+
+## チェーン・キーとチェーン進化技術
+
+チェーン[*キー*](https://internetcomputer.org/how-it-works/#Chain-key-cryptography)暗号は、Internet Computer Protocol の分散運用を可能にする暗号メカニズムの集合です。
+[チェーン進化テクノロジーは](https://internetcomputer.org/how-it-works/#Chain-evolution-technology)、ICの長期運用を可能にする特定の暗号ベースのメカニズムを指します。
+例えば、連鎖進化技術は、新しいノードが効率的にサブネットに参加したり、ダウンしたノードが効率的にサブネットの残りの部分に追いついたりすることを可能にします。
+連鎖鍵と連鎖進化技術の両方が、技術面でICを他のプロジェクトとは一線を画しています。
+
+## ガバナンス
+
+ICは、プラットフォーム・レベルとdApp レベルという複数のレベルでガバナンスを提供します。
+
+### プラットフォーム・ガバナンス
+
+ICは*トークン化されたDAO*、いわゆる*Network Nervous System (NNS)*によって統治されます。
+NNS DAOは、canister スマートコントラクトのセットとして実装され、ハイレプリケーションサブネット、すなわち多くのノードを持つサブネット、したがってより強力なセキュリティ特性を持つサブネットに展開されます。
+NNSは、ステークされたICPの保有者が提案を行い、それらの提案に投票することを可能にします。
+
+### Dapp ガバナンス
+
+dApps これはプラットフォームの NNS に似ていますが、 を管理するように調整されています。  を管理する誰もが、SNS のインスタンスをパラメータ化してデプロイすることで、トークン化された DAO に自分の の管理を引き渡すことができます。SNS は レベルでトークン化されたガバナンスを実装しており、 エンジニア自身がガバナンスシステムを実装することなく使用することができます。これは画期的なことです。  のコントロールを SNS のインスタンスに引き渡すには、通常、初期段階として分散化スワップを実行し、 のガバナンストークンのスワップを通じて資金を調達します。dApps
+ dApp dApp
+ dApp dApp
+ dApp dApp
+
+## さらに深く
+
+ICがどのように機能し、ワールド・コンピュータのビジョンを実現するのか、さらに詳しく知りたい場合は、このページの各セクションや参照したMediumの記事を読むか、YouTubeのビデオをご覧ください。
+情報源を1つにまとめたい場合は、[ホワイトペーパーを](https://dfinity.org/whitepaper.pdf)強くお勧めします。
+ただし、少し専門的な部分もありますのでご注意ください。
+
+[Internet Computer for Geeks - White Paper](https://dfinity.org/whitepaper.pdf)
+[Internet Computer Dashboard](https://dashboard.internetcomputer.org/)
+[Internet Computer Source Code](https://github.com/dfinity/ic)
+[Public Repositories for theInternet Computer ](https://github.com/dfinity?q=&type=public&language=&sort=)
+[Internet Computer Interface Specification Docs](https://internetcomputer.org/docs/ic-interface-spec.md)
+[Internet Computer Primer - Deck](https://dfinity.org/deck/)
+[Internet Computer SDK](https://github.com/dfinity/sdk)
+
+[![Watch youtube video](https://i.ytimg.com/vi/YWHTNr8RZHg/maxresdefault.jpg)](https://www.youtube.com/watch?v=YWHTNr8RZHg)
+
+<!---
+
 
 # Architecture of the Internet Computer
 
@@ -119,3 +234,5 @@ However, note that it is a little technical at times.
 [Internet Computer SDK](https://github.com/dfinity/sdk)
 
 [![Watch youtube video](https://i.ytimg.com/vi/YWHTNr8RZHg/maxresdefault.jpg)](https://www.youtube.com/watch?v=YWHTNr8RZHg)
+
+-->

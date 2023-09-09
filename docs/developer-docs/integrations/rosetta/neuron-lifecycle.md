@@ -1,56 +1,66 @@
-# Neuron のライフサイクル
+# Neuron ライフcycle
 
-Neuron は、Internet Computer のガバナンス Canister によって管理されるアセットの一種です。Neuron は、そのコントローラーがプロポーザルを提出し、投票することによって、ネットワークのガバナンスに参加することができます。
+## 概要
 
-## Neuron の生成
+neuron は、Internet Computer ガバナンスcanister によって管理される資産の一種です。Neuronは、提案の提出や投票によって、その管理者がネットワークのガバナンスに参加することを可能にします。
 
-Neuron を作るには2つのステップがあります：
+## 。neuron
 
--   任意の台帳のアカウントから、ある** ICP 数量**を Neuron のアドレスに転送します。台帳上のNeuron アドレスはガバナンス Canister に属しています。呼び出し側は、2つの部分から Neuron アドレスを計算します。
+neuron の作成には2つのステップがあります：
 
-    -   ガバナンス Canister の Principal。
+- 任意の台帳アカウントからneuronのアドレスに**ICPを**送金します。Neuron ガバナンスに属する台帳上のアドレスcanister 。呼び出し側は、2つの部分からneuron アドレスを計算します：
+  
+  - ガバナンスのプリンシパルcanister 。
+  
+  - **サブアカウントは**、それ自体が、コントローラのプリンシパルと整数 のnonceとのハッシュです。1つのプリンシパルが複数のneuronを制御するには、サブアカウントの計算に異なる整数ノ ンスを使用します。
 
-    -   **サブアカウント**：コントローラーの Principal のハッシュと整数の nonce です。サブアカウントの計算に異なる整数 nonce を選ぶことで、ひとつの Principal が複数の Neurons を制御することができます。
+- ガバナンスの`claim_or_refresh_neuron_from_account` メソッドを呼び出すcanister 。呼び出しが成功すると、ペイロードには**neuron ID** が含まれます。これは、新しく作成されたneuron の数値識別子です。ガバナンスcanister はneuron ID とサブアカウント間のマッピングを保持します。ほとんどの管理操作は、neuron IDまたはサブアカウントアドレスのいずれかを使用して実行できます。
 
--   ガバナンス Canister の `claim_or_refresh_neuron_from_account` メソッドをコールします。呼び出しに成功すると、ペイロードに新しく作成された Neuron の数値識別子である **Neuron ID** が含まれます。ガバナンス Canister は Neuron ID とサブアカウント間のマッピングを保持します。ほとんどの管理操作は、Neuron ID またはサブアカウントアドレスのいずれかを使用して実行することができます。
+## Neuron 属性
 
-## Neuron の属性
+neuron には、その寿命cycle と報酬分配を制御する以下の属性があります：
 
- Neuron は以下の属性を持ち、ライフサイクルと報酬の分配を制御します：
+### 溶解遅延
 
-溶解遅延（Dissolve Delay）  
-溶解遅延は、Neuron が溶解を開始してから「流動性」（liquid）になるまでの時間です。すでに溶解開始している場合、遅延時間は Neuron が **DISSOLVED** 状態に遷移するまでの残り時間を表します。新しく作成された Neuron の溶解遅延は 0 です。溶解遅延が 15,778,800秒（約6ヶ月）以上ある Neuron だけが、プロポーザルの投票に使用できます（正確な遅延要件は変更される可能性があります：2021-07-27現在）。一度設定すると、管理コマンドで溶解遅延を減らすことはできません。
+は、neuron が溶解を開始してから「液体」になるまでの時間です。neuron がすでに溶解している場合、ディレイはneuron が**DISSOLVED**ステートに遷移するまでの残り時間を示します。新しく作成されたneuron の溶解遅延は 0 です。少なくとも 15778800 秒 (約 6 か月) の溶解遅延を持つneurons だけが、提案の投票に使用できます (2021-07-27 時点で、正確な遅延要件は変更される可能性があります)。一度設定した溶解遅延時間は、管理コマンドで短縮することはできません。
 
-溶解状態（Dissolve State）  
-NOT_DISSOLVING  
-Neuron は固定の溶解遅延を持ち、**エイジ（age）** を発生させます。これは新しく作成された Neuron のデフォルトの状態です。
+### 解散ステート
 
-DISSOLVING  
-Neuron の溶解遅延は、時間の経過とともに減少しています。溶解遅延が 0 になると、Neuron は **DISSOLVED** 状態に遷移し、張り付けた ICP を払い出すことができるようになります。
+#### NOT\_DISSOLVING
 
-DISSOLVED  
-Neuron の溶解遅延は 0 になっています。Neuron ホルダーは、張り付けた ICP を払い出すか、溶解遅延を増加させるか、自由に行うことができ、これにより **NOT_DISSOLVING** 状態へ遷移します。
+Neuron は固定のディゾルブ遅延を持ち、**エイジが**発生します。これは新しく作成された のデフォルトステートです。neuron
 
-エイジ（Age）  
-エイジ（Age）は、Neuron が最後に **NOT_DISSOLVING** 状態に遷移してから経過した時間です。Neuron が **DISSOLVING** である場合、そのエイジは 0 になります。
+#### DISSOLVING
 
-成熟度（Maturity）  
-成熟度は、この Neuron で発生した未使用の報酬の総量です。Neuron のコントローラーは、2つの方法で成熟度を消費することができます：
+Neuronのディゾルブ遅延は時間の経過とともに減少します。溶解遅延が 0 になると、neuron は**DISSOLVED**ステートに遷移し、張り付けられた ICP を払い出すことができます。
 
-1.  **産出（Spawn）** は溶解遅延が（DISSOLVED 状態で）7日あり、成熟度と同じステーク量で、新しい Neuron を産出します。
+#### DISSOLVED
 
-2.  **マージ（Merge）** は成熟度を再ステークし、議決権を増加させます。
+Neuronの溶解遅延は0です。neuron ホルダーは、ステークされた ICP を払い出すか、溶解遅延を増加させるかのいずれかを自由に行うことができ、**NOT\_DISSOLVING**ステートに遷移します。
 
-投票力（Voting power）  
-投票力は、張り付けられた **ICP 数**に比例します。エイジと溶解遅延から計算されたボーナスは、Neuron が **NOT_DISSOLVING** 状態の場合、投票力を増大させます。
+### 年齢
+
+Ageは、neuron が最後に**NOT\_DISSOLVING**ステートに遷移してからの経過時間。neuron が**DISSOLVING** の場合、Age は 0 です。
+
+### 成熟度
+
+成熟度は、このneuron 。Neuronのコントローラは、2つの方法で成熟度を消費できます：
+
+- 溶解遅延が7日で、満期金と同額のステークを持つ新しいneuron を**生成**します。
+
+- 満期をステークに**マージ**し、投票力を増加させます。
+
+### 投票力
+
+投票権はステークされたICPの**量に**比例します。neuron が**NOT\_DISSOLVING**ステートの場合、年齢と溶解遅延の乗算ボーナスが投票力を増加させます。
 
 ## 報酬
 
-プロポーザルが受け入れられると、そのプロポーザルに投票した全ての Neuron は成熟度の上昇という形で報酬を受け取ることができます。ガバナンス Canister は毎日報酬を分配します。報酬は投票力に比例します。
+提案が受理されると、その提案に投票したすべてのneuronは満期の増加という形で報酬を受け取ります。ガバナンスcanister は毎日報酬を分配します。報酬は投票力に比例します。
 
-Neuron の状態遷移と報酬については、[Internet Computer’s Network Nervous System, Neurons, and ICP Utility Tokens を理解する](https://medium.com/dfinity/understanding-the-internet-computers-network-nervous-system-neurons-and-icp-utility-tokens-730dab65cae8) を参照してください。
+neuron のステート遷移と報酬の詳細については、[ Internet ComputerのNetwork Nervous System](https://medium.com/dfinity/understanding-the-internet-computers-network-nervous-system-neurons-and-icp-utility-tokens-730dab65cae8) 、[ neuron](https://medium.com/dfinity/understanding-the-internet-computers-network-nervous-system-neurons-and-icp-utility-tokens-730dab65cae8) の[理解、および ICP ユーティリティ・トークンを](https://medium.com/dfinity/understanding-the-internet-computers-network-nervous-system-neurons-and-icp-utility-tokens-730dab65cae8)参照してください。
 
-## 状態遷移
+## ステート遷移
 
     stateDiagram-v2
         state "Non-dissolving Neuron" as non_dissolving
@@ -64,7 +74,7 @@ Neuron の状態遷移と報酬については、[Internet Computer’s Network 
         dissolved --> non_dissolving: increase_dissolve_delay
         dissolved --> [*] : disburse
 
-<!--
+<!---
 # Neuron lifecycle
 
 ## Overview
@@ -125,13 +135,12 @@ For more information on neuron state transitions and rewards, see [understanding
         state "Non-dissolving Neuron" as non_dissolving
         state "Dissolving Reward Neuron" as dissolving
         state "Dissolved Reward Neuron" as dissolved
-        [*] ==> non_dissolving : transfer + claim_or_refresh_neuron_from_account
-        non_dissolving ==> non_dissolving : increase_dissolve_delay
-        non_dissolving ==> dissolving : start_dissolving
-        dissolving ==> non_dissolving : stop_dissolving
-        dissolving ==> dissolved : passage of time
-        dissolved ==> non_dissolving: increase_dissolve_delay
-        dissolved ==> [*] : disburse
+        [*] -!-> non_dissolving : transfer + claim_or_refresh_neuron_from_account
+        non_dissolving -!-> non_dissolving : increase_dissolve_delay
+        non_dissolving -!-> dissolving : start_dissolving
+        dissolving -!-> non_dissolving : stop_dissolving
+        dissolving -!-> dissolved : passage of time
+        dissolved -!-> non_dissolving: increase_dissolve_delay
+        dissolved -!-> [*] : disburse
 
 -->
-<!--126, 127, 128, 129, 130, 131, 132 の==>はコメントアウトの関係からーー＞（敢えて全角にしています）にしています-->

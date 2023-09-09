@@ -1,6 +1,17 @@
 ---
+
 title: Protocol upgrade
 ---
+![](/img/how-it-works/protocol-upgrade.webp)
+
+# プロトコルのアップグレード
+
+Internet Computer ブロックチェーンは、そのアルゴリズムガバナンスシステムであるNetwork Nervous System (NNS) によって管理されています。NNSの多くの任務の1つは、コミュニティがアップグレード案を採用した場合に、Internet Computer の新しいプロトコルバージョンへのアップグレードを指揮することです。あらゆるブロックチェーンにアップグレードを行うには、プロトコルの任意の変更を許可する方法、すべてのcanister スマートコントラクトのステートを保持する方法、ダウンタイムを最小限に抑える方法、自律的にアップグレードを展開する方法など、分散型システムの性質によってもたらされるいくつかの困難な問題に対する解決策が必要です。
+
+[より深く](/how-it-works/upgrades/)
+
+<!---
+
 
 ![](/img/how-it-works/protocol-upgrade.webp)
 
@@ -10,3 +21,5 @@ The Internet Computer blockchain is governed by the Network Nervous System (NNS)
 
 [Go deeper](/how-it-works/upgrades/)
 
+
+-->

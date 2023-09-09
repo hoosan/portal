@@ -1,3 +1,200 @@
+# 18: スケーラブルdapp の例
+
+## 概要
+
+[CanCanサンプルアプリケーションは](https://github.com/dfinity/cancan)、独自のアプリケーションのモデルとして使用できるいくつかの機能を示す、簡素化された動画共有サービスです。たとえば、CanCan サンプル アプリケーションを調べることで学べることは、次のとおりです：
+
+- コンテンツをフラグメントに分割してアップロードおよび保存し、クエリを使用してフラグメントを取得および再組み立てして効率的なストリーミングを行うことで、スケーラブルなアプリケーションを構築する方法。
+
+- 異なるバックエンド言語で書かれたcanisters を使用するアプリケーションの相互運用性を設定する方法。
+
+- 異なるユーザーがアップロードした動画を保存するための基本的な認証モデルを実装する方法。
+
+- デスクトップアプリやモバイルアプリ向けに、より洗練されたユーザーインターフェイス機能を実装するフロントエンドを構築する方法。
+
+## アップロードされたコンテンツを複数に分割する方法canisters
+
+canisters はWebAssembly モジュールをコンパイルしたものなので、一定の既知の制限があります。たとえば、現在WebAssembly モジュールには、最大 4GB のメモリと、許可されるオブジェクト呼び出し数の上限があります。
+
+CanCanのようなビデオ共有のサンプル・アプリケーションでは、このような制限があるため、複数のcanisters 、データを小さな塊に分割して保存・検索する必要があります。
+
+### 分散ハッシュテーブルの実装
+
+Internet Computer 向けにスケーラブルな動画共有サービスを構築する最初の試みでは、アップロードまたはストリーミングされる動画のデータ チャンクを事前に定義されたセット（canisters ）に分散する単純な get および put 関数を備えたバックエンド サービスとして、分散ハッシュ テーブル（DHT）を使用しました。プロジェクトの初期段階では、このアプローチで概念実証を行い、動画データを適切にトランスコードして保存および検索できることを検証するのに十分でした。
+
+しかし、分散ハッシュ テーブルは、保存のためにデータを入力し、視聴のためにデータを取得できるcanisters の特定の数に依存していたため、アプリケーションのスケーラビリティには限界がありました。さらに、分散ハッシュテーブルのバックエンド・サービスのオリジナルの実装には、ノードが利用できなくなったりデータが失われたりする原因となる一般的なネットワーク接続の問題に対応するためのコードが含まれていました。
+
+## スケーラビリティの簡素化
+
+Internet Computer protocol はサブネット内のノード間で複製されたステートに依存しているため、他のプラットフォームやプロトコルで動作するアプリケーションでは一般的に利用できない、フォールトトレランスとフェイルオーバーに関する特定の保証をネイティブに提供します。
+
+Internet Computer 、canisters 、リクエストの受信と応答が可能であることを保証できることがわかったため、オリジナルの分散ハッシュテーブルバックエンドサービスは、BigMapと呼ばれる、よりシンプルでスケーラブルなバックエンドサービスに置き換えられました。
+
+BigMapは、Internet Computer 。BigMapライブラリをバックエンドサービスとして使用することで、CanCanサンプルアプリケーションは、動的にデータをチャンクし、シリアライズし、複数のcanisters 。
+
+このライブラリは、任意の数のcanisters を使用して拡張できる、アプリケーション固有のインメモリ データ抽象化のためのビルディング ブロックを提供します。各canister の容量はまだ限られていますが、アプリケーションは必要なcanisters をインスタンス化し、`manifest` と呼ばれるインデックス ファイルで、各ユーザの動画の完全なコンテンツを構成するフラグメントを追跡します。
+
+プラットフォームとしてのInternet Computer がスケーラビリティ、レプリケーション、フェイルオーバー、フォールト トレランスを提供するため、`BigMap` サービスに必要なコードは、従来の分散ハッシュ テーブルよりもはるかにシンプルです。
+
+## 相互運用性の実証
+
+CanCanサンプル・アプリケーションのリポジトリに含まれるBigMapサービスは、Rustプログラミング言語で記述されています。しかし、CanCanサンプル・アプリケーションは、異なる言語で書かれたcanisters 間の相互運用性も実証しています。
+
+この場合、`BigMap` 機能は Rust プログラミング言語を使用して実装され、その他のサービス（ビデオコンテンツのエンコードとデコード、認証のためのユーザプリンシパルの管理など）はMotoko を使用して実装されています。
+
+サンプルアプリケーションのさまざまな部分をcanisters としてデプロイすることで、それらの間の相互作用がシームレスなユーザーエクスペリエンスを提供します。
+
+CanCan リポジトリでご覧いただける`BigMap` サービスは Rust で記述されていますが、実際には以下のことを実証するために Rust とMotoko の両方のプログラミング言語で実装されています：
+
+- canisters としてデプロイされたMotoko コードと Rust コードの両方をInternet Computer 上で実行できます。
+
+- CanCanサンプル・アプリケーションの動作に影響を与えることなく、バックエンド言語を切り替えることができます。
+
+- Candid言語は、JavaScript、Rust、Motoko に依存せず、BigMap APIを記述するための共通言語を提供するため、どちらの言語実装もシームレスに動作します。
+
+## 認証モデル
+
+LinkedUpサンプルアプリケーションと同様に、CanCanサンプルアプリケーションは、公開鍵と秘密鍵のペア、ブラウザベースのローカルストレージ、および`Principal` データ型を使用してユーザーを認証します。
+
+## フロントエンド機能の実装
+
+CanCanサンプルアプリケーションでは、ReactライブラリとTypeScriptを組み合わせてフロントエンドのユーザーインターフェースを実装しています。
+
+### データモデルの概要
+
+このアプリケーションは、ユーザーに関する情報と動画に関する情報を保存します。ほとんどのブラウザをサポートするため、動画はバイト配列にシリアライズされ、動画データは[Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array)オブジェクトと呼ばれる 500kb 単位のバイト セグメントに格納されます。動画が要求されると、マニフェストは動画を再生するために必要なチャンクのリストをロードし、チャンクを連結してから規格の`<video>` 要素に動画を表示します。
+
+### ユーザー プロファイル
+
+ユーザー プロファイルは`profiles/{username}` として保存され、次のデータ モデルを使って定義されます：
+
+    export interface Profile {
+      username: string;         // maya
+      following: string[];      // [`alice`, `bob]`
+      followers: string[];      // ['palice']
+      uploadedVideos: string[]; // ['profiles/maya/videos/a5b54646-2ea3-4e0e-82d1-da3ab8148df2']
+      likedVideos: string[];    // ['profiles/bob/videos/b74e4eb0-dea8-4a4a-a1ae-d4593dc86930']
+      avatar?: string;          // ?ImageData (TODO)
+    }
+
+### 動画
+
+アップロードされた動画は、`profiles/{username}/videos/{videoId}` および`public/videos` (プラットフォーム上のすべての既存動画の配列) に格納された一意の識別子によって識別されます。
+
+動画のメタデータは`profiles/{username}/videos/{videoId}/metadata` に保存されます。個々の動画の断片は`profiles/{username}/videos/{videoId}/chunks/chunk.{0-10}` に保存されます。
+
+動画は`profiles/{username}` として保存され、以下のデータモデルを使用して定義されます：
+
+    export interface Video {
+      src: string;       // 'profiles/maya/videos/f5a44646-2ea3-4e0f-83d2-da3ab8148df2'
+      userId: string;    // 'maya'
+      createdAt: string; // Date.now()
+      caption: string;   // 'cool movie, punk'
+      tags: string[];    // ['outside', 'grilling', 'beveragino']
+      likes: string[];    // ['sam', 'kelly']
+      viewCount: number; // 102
+      name: string; // 'grilling'
+    }
+
+### 前提条件
+
+始める前に、[開発者環境ガイドの](./dev-env.md)指示に従って開発者環境をセットアップしてください。
+
+さらに、このガイドには以下のパッケージが必要です：
+
+- \[x\][Node.js](https://nodejs.org) をダウンロードしてインストールしてください。
+- \[x\][Python](https://www.python.org) をダウンロードしてインストールしてください。
+- \[x\][Vessel@0.6.0](https://github.com/dfinity/vessel/releases/tag/v0.6.0) をダウンロードしてインストールします。
+
+## CanCanのデプロイdapp
+
+[vesselが](https://github.com/dfinity/vessel)バージョン0.6.\*でインストールされていることを再確認し、このリポジトリをクローンして`cancan` ディレクトリに移動します。
+
+``` shell
+vessel --version
+# vessel 0.6.0
+
+git clone git@github.com:dfinity/cancan.git
+cd cancan
+```
+
+以下のコマンドを実行して、ローカルのInternet Computer レプリカを起動します：
+
+``` shell
+dfx start --clean
+```
+
+次に、`dfx.json` ファイルを編集して、最新バージョンの dfx を使用します：
+
+```
+  "dfx": "0.14.1"
+```
+
+同じディレクトリの別のターミナルタブで次のコマンドを実行します：
+
+``` shell
+npm install
+```
+
+`./bootstrap.sh` スクリプトの内容を次のように置き換えます：
+
+    #!/bin/bash
+    
+    set -e
+    echo "Running bootstrap script..."
+    
+    # Support bootstrapping CanCan from any folder
+    BASEDIR=$(
+      cd "$(dirname "$0")"
+      pwd
+    )
+    cd "$BASEDIR"
+    
+    host="localhost"
+    address="http://$host"
+    
+    echo "dfx build"
+    npm run deploy
+    
+    # echo "Running seed script..."
+    # echo "\nThis command may prompt you to install node to run.\nPlease accept and continue."
+    # npm run seed -- 2
+    
+    URL="http://$(dfx canister id cancan_ui).$host:4943/"
+    
+    echo "Open at $URL"
+    
+    case $(uname) in
+    Linux) xdg-open $URL || true ;;
+    *) open $URL || true ;;
+    esac
+
+次に、`package-set.dhall` ファイルを編集して、アップストリームURLを更新します：
+
+    let upstream =
+      https://github.com/dfinity/vessel-package-set/releases/download/mo-0.7.5-20230118/package-set.dhall
+
+次に、ブートストラップスクリプトを実行します：
+
+    ./bootstrap.sh
+
+これにより、`cancan_ui_backend` というローカルのcanister がデプロイされます。フロントエンドを開くには、`dfx canister id cancan_ui_frontend` を実行してフロントエンドcanister ID を取得します。それからブラウザを開き、`http://<cancan_ui-canister-id>.localhost:8000/sign-in` に移動します。
+
+高速なリフレッシュとホットリロードで開発サーバーを実行するには、アプリのルートディレクトリでこのコマンドを使用できます：
+
+``` shell
+npm run start
+```
+
+デフォルトのブラウザは`localhost:3000` でタブを開きます（またはフォーカスします）。`/?canisterId=${cancan_ui_canister_id}` に、`cancan_ui_canister_id` が（現在の）`ryjl3-tyaaa-aaaaa-aaaba-cai` であることを追加します。
+
+これで、フロントエンドのコードに変更を加えても、すぐに更新を確認することができます。時折、CSSルールを追加しても更新がトリガーされず、ユーザーが手動で更新しないと変更が表示されないことがあります。
+
+## 次のステップ
+
+このガイドを完成させるために、さらにいくつかの[サンプルdapps](sample-apps.md) をチェックしてください。
+
+<!---
 # 18: Scalable dapp example
 
 ## Overview
@@ -204,3 +401,4 @@ Now you can make changes to any frontend code and see instant updates, in many c
 ## Next steps
 
 To complete this guide, check out some additional [sample dapps](sample-apps.md).
+-->

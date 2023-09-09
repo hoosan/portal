@@ -1,3 +1,393 @@
+# Network Nervous System (NNS) クイックスタートdapp 
+
+## 概要
+
+Internet Computer の構成と動作に対するすべての変更は、Network Nervous System (NNS) と呼ばれるアルゴリズムガバナンスシステムによって制御されます。NNSは、Internet Computer ブロックチェーン構成のあらゆる側面を制御し、多くのネットワーク管理操作を実行する責任を負います。例えば、Network Nervous System (NNS)は以下の責任を負います：
+
+- ネットワークに計算能力を提供するノードが使用するプロトコルとゲストOSソフトウェアのアップグレード。
+- 新しいノードオペレータとマシンのネットワークへの導入。
+- ネットワーク容量を増やすための新しいサブネットの作成
+- サブネットを分割してネットワークの負荷バランスを調整
+- 計算容量に対するユーザーの支払い額を制御するパラメータの設定。
+- canister のアクティビティとノードのパフォーマンスを監視し、悪意のある動作や統計的な逸脱を監視します。
+- ネットワークを保護するために、悪意のあるソフトウェアやパフォーマンスの低いノードを停止します。
+
+ネットワークに対する変更や更新の要求は、**プロポーザルという**形でNNSに提出されます。NNSは、neuron の保有者による投票活動に基づいて、提案の採用または却下を決定します。
+
+## neuronとは何ですか？
+
+ネットワーク参加者が提案に投票できるようにするには、ICPユーティリティ・トークンのステークを一定期間ロックし、.sと呼ばれる代表者を作成する必要があります。 **neuron**.
+
+neuronsはICPユーティリティ・トークンのステークを表すため、**台帳canister アカウントと**台帳アカウントを管理するプリンシパルを持つアイデンティティも表します。
+
+Neurons は、**ロックアップ**期間と呼ばれる特定の期間、それらが表す ICP ユーティリティ・トークンを交換できないようにすることで、Internet Computer の責任あるガバナンスに必要な安定性を提供します。
+
+次の図は、neuron を作成するワークフローと、neuron と台帳canisters の関係を簡略化して示しています。
+
+![create dissolve neuron api](../_attachments/create-dissolve-neuron-api.svg)
+
+### ガバナンスと議決権報酬
+
+個人または組織がICPユーティリティ・トークンをneuron にロックアップしている場合、neuron の保有者はガバナンスの問題について提案し、投票することができます。参加を促すため、neuron の保有者は、ロックアップしたICPユーティリティ・トークンの数とロックアップ期間の長さ（最長8年）に比例して、投票に対する報酬も得られます。
+
+### 保有株式のロック解除neuron
+
+ネットワーク参加者がneuron を作成した後、ロックされた ICP ユーティリティ・トークンの残高は、neuron を完全に**溶解**することでのみロック解除できます。**ロックされた**ステートでは、neuron にはロックアップ期間に相当する固定された非ゼロの**溶解遅延が**あります。たとえば、100 ICP ユーティリティ・トークンを 5 年間ロックしたとします。これらの設定でneuron の作成に成功すると、溶解遅延は 5 年間になります。
+
+時間が経過するにつれて減少する溶解遅延に基づいて、**溶解タイマーは** neuron を完全に溶解するのにかかる時間を決定します。
+
+溶解タイマーがゼロに達すると、neuron の所有者（neuron を作成した ICP ユーティリティ・トークンの保有者）、または認証されたカストディアンは、neuron を溶解し、ICP ユーティリティ・トークンの残高をアンロックできます。
+
+溶解したneuron は存在しなくなり、neuron が表していた ICP ユーティリティ・トークンのステークが適切な元帳canister アカウントに解放されます。
+
+## に接続します。Internet Computer
+
+Network Nervous System (NNS)dapp を使用してInternet Computer に接続するには：
+
+- #### ステップ 1: ブラウザを開き、[Network Nervous System (NNS)](https://nns.ic0.app) dapp に移動します。
+
+![NNS dapp](../_attachments/nns1.png)
+
+- #### ステップ 2:**Login**をクリックして[Internet Identity](https://identity.ic0.app) に接続します。
+
+![Connect with Internet Identity](../_attachments/nns2.png)
+
+登録がお済みでない場合は、**Register with Internet Identityを**クリックして登録できます。
+
+:::info
+Internet Identityに複数のデバイスと認証方法を追加することを強くお勧めします。たとえば、コンピュータや電話などの複数の物理デバイスをセキュリティキーで登録し、それらのデバイスおよびそれらのデバイス上で実行されるブラウザがサポートする認証オプションを使用します。
+::：
+
+インターネットIDの作成に関する詳細は、[インターネットIDの使用](https://internetidentity.zendesk.com/hc/en-us/articles/15430677359124-How-Do-I-Create-an-Internet-Identity-on-My-Mobile-Device-)方法を参照してください。
+
+登録が完了したら、\[**Login\]**をクリックして、アンカーと登録した認証方法（セキュリ ティキーや指紋など）を使用して認証できます。
+
+- #### ステップ3: \[**Proceed**\]をクリックして、Network Nervous System (NNS)dapp にアクセスします。
+
+### アカウントの追加
+
+インターネット ID を使用してログオンすると、Internet Computer 台帳にメインアカウントが作成されます。ICP ユーティリティ・トークンが開発者 ID、つまり SDK`dfx` コマンドライン・インターフェースで作成された ID に関連付けられている場合。メイン口座には、ICP ユーティリティ・トークンの残高として 0.00 が表示されます。たとえば、次のようになります：
+
+![nns app main](../_attachments/nns3.png)
+
+トークンを転送する前に、1 つ以上のリンクされたサブアカウントを作成するか、アカウントにハードウェアウォレットをアタッチできます。
+
+ICPユーティリティトークンを管理するアカウントを追加するには：
+
+- #### ステップ1：デフォルトの「My Tokens」タブで、「**Add Account**」をクリックします。
+
+![Add account](../_attachments/nns3.png)
+
+- #### ステップ 2: 追加するアカウントのタイプを選択します。
+  
+  - **New Linked Account (新規リンクアカウント**)\] は、元帳のメインアカウントアドレスにリンクされた新しいサブアカウントを作成します。
+  
+  - **ハードウェアウォレットを追加**\] は、台帳のメインアカウントアドレスにハードウェアウォレットを追加します。
+
+![Select account](../_attachments/nns4.png)
+
+- #### ステップ 3: \[新規リンク**アカウント**\] をクリックし、\[アカウント名\] を入力して \[**作成\]** をクリックします。
+
+![new linked account](../_attachments/nns5.png)
+
+## アカウント間での ICP ユーティリティ トークンの転送
+
+### CLIの使用
+
+ICP ユーティリティトークンの保持にセルフカストディを選択し、トークンが登録済みインターネット ID ではなく開発者 ID に関連付けられている場合、[Network Nervous System （NNS）](https://nns.ic0.app) dapp を使用して ICP ユーティリティトークンを管理するには、ICP ユーティリティトークンをアカウントに転送する必要があります。
+
+開発者 ID が管理する ICP ユーティリティトークンを転送するには、以下の手順に従います：
+
+- #### ステップ 1: ローカルコンピュータでターミナルシェルを開きます。
+
+- #### ステップ 2：以下のコマンドを実行して、元帳アカウントを制御する ID を使用していることを確認します：
+
+<!-- end list -->
+
+``` bash
+dfx identity whoami
+```
+
+ほとんどの場合、現在`default` の開発者 ID を使用していることがわかります。たとえば、次のようになります：
+
+    default
+
+- #### ステップ 3：次のコマンドを実行して、現在の ID のプリンシパルのテキスト表示を表示します：
+
+<!-- end list -->
+
+``` bash
+dfx identity get-principal
+```
+
+このコマンドを実行すると、次のような出力が表示されます：
+
+    tsqwz-udeik-5migd-ehrev-pvoqv-szx2g-akh5s-fkyqc-zy6q7-snav6-uqe
+
+- #### ステップ 4: 次のコマンドを実行して、ID に関連付けられた元帳口座の現在の残高を確認し ます：
+
+<!-- end list -->
+
+``` bash
+dfx ledger --network ic balance
+```
+
+- #### ステップ 5：次のようなコマンドを実行して、ICP ユーティリティ・トークンをメイン・アカウントまたは 作成したリンク先のサブアカウントに転送します：
+
+<!-- end list -->
+
+``` bash
+dfx ledger --network ic transfer <destination-account-id> --icp <ICP-amount> --memo <numeric-memo>
+```
+
+例えば、以下のアカウントがあるとします：
+
+![accounts](../_attachments/accounts.png)
+
+1つのICPユーティリティ・トークンを`Main` ：
+
+    dfx ledger --network ic transfer dd81336dbfef5c5870e84b48405c7b229c07ad999fdcacb85b9b9850bd60766f --memo 12345 --icp 1
+
+また、ICPユーティリティ・トークンを1つ、`pubs` アカウントに転送したい場合は、以下のコマンドを実行します：
+
+    dfx ledger --network ic transfer 183a04888eb20e73766f082bae01587830bd3cd912544f63fda515e9d77a96dc --icp 1 --memo 12346
+
+:::info
+この例では、`--icp` コマンド行オプションを使用して、整数を使って ICP ユーティリティ・トークンを転送する方法を説明します。
+
+- **e8sと**呼ばれるICPユーティリティ・トークンの端数単位を指定するには、`--e8s` オプションを使用します。このオプションを単独で使用することも、`--icp` オプションと組み合わせて使用することもできます。
+- また、`--amount` を使用して、転送する ICP ユーティリティ・トークンの数を小数点以下 8 桁までの端数単位で指定することもできます（例えば、`5.00000025`.
+  ::）：
+
+転送先アドレスは、Internet Computer ネットワーク上で実行されている台帳canister のアドレス、 を使用して追加したアカウント、または を使用して追加したウォレットのアドレスです。 [Network Nervous System dapp](https://nns.ic0.app)を使用して追加したアカウント、または取引所にあるウォレットのアドレスです。
+
+のアカウントにICPユーティリティ・トークンを転送する場合、このアドレスを更新する必要があるかもしれません。 [Network Nervous System dapp](https://nns.ic0.app)のアカウントにICPユーティリティトークンを送金する場合、取引が反映されるのを確認するためにブラウザを更新する必要がある場合があります。
+
+`dfx ledger` コマンドラインオプションの使用方法の詳細については、[dfx ledger](/references/cli-reference/dfx-ledger.md) を参照してください。
+
+### NNSの使用dapp
+
+- #### ステップ 1: デフォルトの「My Tokens」タブで、Internet Computer トークンが選択されていることを確認し、ウィンドウ下部の「**Send**」をクリックします。
+
+![Send](../_attachments/nns3.png)
+
+- #### ステップ2：「Send」ウィンドウで、リンク先のアカウントまたはウォレットを送信元として選択し、送信先アドレスと送信するICPの量を入力します。
+
+![Send ICP](../_attachments/nns6.png)
+
+- #### ステップ3：**続行を**選択してトランザクションを送信します。
+
+## でICPユーティリティトークンをステークします。neuron
+
+ICP ユーティリティトークンをNetwork Nervous System dapp に送金した後、Network Nervous System dapp を使用してneurons を作成および管理し、議案に投票し、Internet Computer 上でcanisters を作成することができます。
+
+Neuronガバナンスに参加し、報酬を得るには、ICPトークンが必要です。neuron を作成するには、ICP ユーティリティ・トークンを一定期間ロックアップする必要があります。neuron を作成するために必要な最小出資額は 1 ICP ユーティリティ・トークンです。ステークをロックする期間は、6カ月から最長8年まで設定できます。
+
+ICPユーティリティ・トークンをステークするには
+
+- #### ステップ1： NNSdapp で、左のナビゲーションバーから**MyNeuron Staking**を選択し、ウィンドウの下部にある**StakeNeuron**s をクリックします。
+
+![Neuron staking](../_attachments/nns7.png)
+
+- #### ステップ 2：ソースとして使用するウォレットを選択し、ステークする ICP ユーティリティートークンの数を入力し、\[**Create**\] をクリックします。
+
+![Neuron staking](../_attachments/nns8.png)
+
+- #### ステップ 3：neuron の溶解遅延を設定してステークがロックされる時間を制御し、\[**Update Delay**\] をクリックします。
+
+例えば
+
+![dissolve delay](../_attachments/dissolve-delay.png)
+
+- #### ステップ 4: \[**はい、間違いありません**\] をクリックしてロックアップ期間を確認し、ウィンドウを閉じて新しく作成されたneuron プロパティを確認します。
+
+![neuron properties](../_attachments/neuron-properties.png)
+
+## 作成後にできることneuron
+
+ステークをロックし、neuron を作成した後は、次のことができます：
+
+- **ロック解除の開始**\] をクリックして、ディゾルブ遅延タイマーを開始します。
+- ディゾルブ**遅延を**増やす\] をクリックして、ディゾルブ遅延時間を増やします。
+- **ロックアップ**\] をクリックして、ロック解除のカウントダウンを開始した後、ディゾルブ遅延を停止します。
+- ステークしているICPユーティリティ・トークンの数を増やします。
+
+## ディゾルブ遅延の開始と停止
+
+新しいneuron を作成しても、ディゾルブ遅延タイマーは自動的に開始されません。タイマーのカウントダウンは、\[**ロック解除を開始**\] をクリックして明示的に開始する必要があります。
+
+例えば、ディゾルブ ディレイを 1 年に設定し、すぐにカウントダウンを開始したい場合は、neuron を作成するプロセスの一環として、\[ロック解除開**始**\] をクリックします。気が変わって現在進行中のカウントダウンを停止したい場合は、\[**ロックアップ**\] をクリックします。\[**ロックアップ**\] をクリックしてディゾルブ ディレイを停止した後、\[**ロック解除開始**\] をクリックすると、既存のディゾルブ ディレイ期間を変更せずにカウントダウンを再開できます。既に進行中のカウントダウンを継続し、ロックアップ期間を延長したい場合は、［**ディゾルブ遅延を増やす**］をクリックし、より長いディゾルブ遅延を選択できます。
+
+## 既存の ICP ユーティリティ・トークンの追加neuron
+
+neuron を作成した後、そのneuron に賭けている ICP ユーティリティトークンの数を増やして、投票権と報酬を増やすことができます。たとえば、最初に少数の ICP ユーティリティ・トークンをステークし、その後追加でトークンを購入することにした場合、新しいneuron を作成するか、既存のneuron に「トップアップ」するオプションがあります。
+
+既存のneuron のステークを増やすには：
+
+- #### ステップ 1:[ neuron で ICP ユーティリティトークンをステーク](#stake-icp)する手順に従い、[Network Nervous System (NNS)](https://nns.ic0.app) dapp を使用して元のneuron をステークします。
+
+- #### ステップ 2:Internet Computer Association[transaction dashboard](https://dashboard.internetcomputer.org/transactions)でトランザクションを検索し、neuron アドレスを取得します。
+
+メイン ICP 元帳アカウントのアカウント識別子を使用して、トランザクションを検索できます。
+
+- #### ステップ 3:[Network Nervous System (NNS)](https://nns.ic0.app) dapp に戻り、「MyNeuron Staking」ウィンドウから「**New Transaction**」をクリックします。
+
+- #### ステップ 4: 取引ダッシュボードのneuron アドレスを \[**Destination**address\] フィールドに貼り付け、\[**Continue**\] をクリックします。
+
+- #### ステップ5: 指定したneuron に追加したいICPユーティリティトークンの量を入力し、\[**Continue**\]をクリックします。
+
+- #### ステップ6：取引の詳細を確認し、［**Confirm and Send（確認して送信**）］をクリックします。
+
+![confirm top up](../_attachments/confirm-top-up.png)
+
+- #### ステップ 7：完了したトランザクションを確認し、［**閉じる**］をクリックします。
+
+- #### ステップ 8:**Neurons タブをクリックし、増加したステークを確認します。**
+
+## 溶解したneurons をアカウントに払い戻します。
+
+neuron のディゾルブ遅延タイマーがゼロになると、neuronのステークを払い出し、ロックされた ICP ユーティリティ トークンの残高を指定した元帳アカウントに移すことができます。この手順を実行すると、neuron 識別子とその元帳の履歴は、ガバナンスcanister から永久に削除されます。
+
+neuron を払い出し、その ICP ユーティリティ トークンを返却するには：
+
+- #### ステップ 1: NNSdapp から「MyNeuron Staking」を選択し、溶解遅延期間が終了したロックされていないneuron をクリックします。例えば
+
+![unlocked neuron](../_attachments/unlocked-neuron.png)
+
+- #### ステップ 2:**払い戻しを**クリックします。例えば
+
+![disburse](../_attachments/disburse.png)
+
+- #### ステップ3: ICPユーティリティトークンを受け取るアドレスを入力するか、アカウントを選択します。例えば、`dev-projects` リンクアカウントを選択します：
+
+- #### ステップ4： 取引情報を確認し、［**Confirm and Send**］をクリックします。たとえば、［Destination address（宛先アドレス）］が`dev-projects` リンクアカウントの意図したアドレスと一致していることを確認します：
+
+![confirm send](../_attachments/confirm-send.png)
+
+- #### ステップ5：完了したトランザクションを確認し、\[**Close**\]をクリックします。
+
+例えば
+
+![confirmation](../_attachments/confirmation.png)
+
+ICPユーティリティ・トークンをInternet Computer 元帳canister の口座の1つに転送した場合、ICPタブをクリックして新しい残高を確認できます。例
+
+![updated icp](../_attachments/updated-icp.png)
+
+## 新しいneurons を生成します。
+
+直接、または他のneurons の投票に従って提案に投票すると、neuron に関連する満期が増加し、ガバナンスに参加することで得られる報酬が増加します。ロックされたステークに対する成熟度が最低しきい値の 1 ICP に達すると、新しいneuron をスポーンできます。スポーン操作により、元帳に新しい残高の ICP をロックする新しいneuron が作成されます。
+
+たとえば、100 ICP のユーティリティ・トークンを含むneuron があり、その満期が 10 パーセントである場合、約 10 ICP の新しいトークンを含む新しいneuron をスポーンできます。100 ICP トークンを含むneuron がスポーンするための最低閾値に達するには、その成熟度が 1 パーセントを超える必要があります。
+
+既存のneuron から新しいneuron をスポーンすると、既存のneuron の成熟度はゼロになります。
+
+既存のneuron から新しいneuronをスポーンするには：
+
+- #### ステップ 1: NNSdapp から「MyNeuron Staking」を選択し、新しいneuron をスポーンするのに必要な最低成熟度に達したneuron をクリックします。
+
+- #### ステップ**2：SpawnNeuron** をクリックします。
+
+## 提案に対する投票
+
+actor ガバナンスへの積極的な参加は、Internet Computer の長期的な健全性において重要なことです。提案に対する投票も、actor ICP ユーティリティトークンをneuronにロックアップする見返りとして受け取る報酬を計算する上で重要なことです。
+
+しかし、NNSに提出されたすべての提案に直接投票するには、いくつかの課題があります。たとえば、あなたが不在のときに提案が提出されて投票が必要になったり、評価するための専門知識が不足している変更が提案されたりする可能性があります。このような課題に対処するため、neuronのグループの投票に従うことで、提案の採択または却下を自動的に投票するよう、neuronを設定することができます。
+
+報酬を最大化するには、自分と利害が一致するアクティブなneuron ホルダーをフォローして、できるだけ多くの提案に投票する必要があります。たとえば、**SubnetManagement**などのトピックではInternet Computer Association (ICA)をフォローし、**Governance** などのトピックでは他のneuron ホルダーをフォローするとよいでしょう。
+
+直接、またはNetwork Nervous System dapp のフィルタを使用して他のneuron 利害関係者をフォローすることで、表示および投票する提案タイプおよび提案トピックを選択できます。たとえば、データ センターの ID やノード オペレータなどのネットワーク参加者に関係するすべてのプロポーザルを確認および投票したいが、国際通貨基金（IMF）の特別引出権（SDR）で測定される ICP の現在の市場価値に関連するプロポーザルは表示したくない場合は、**ParticipantManagement**トピック フィルタを選択し、**ExchangeRate**トピック フィルタの選択を解除できます。
+
+提案に手動で投票するには
+
+- #### ステップ 1: NNSdapp から、左のナビゲーションバーで「提案に投票」を選択します。
+
+![Proposals](../_attachments/nns9.png)
+
+- #### ステップ 2：次に、どの神経系に関する提案を表示したいかを選択します。
+
+デフォルトでは、Internet Computer NNSの提案が表示されますが、OpenChatやKinicなどのSNSの他の提案も利用可能です。
+
+- #### ステップ 3: 提案をクリックすると、提案の概要、提案の種類、トピック、投票終了日などの詳細情報が表示されます。
+
+![Proposal detail](../_attachments/nns8.png)
+
+:::info
+投票や投票報酬についての詳細は以下の記事をご覧ください：
+
+- [に賭けて多額の投票報酬を得ましょう。Network Nervous System](https://medium.com/dfinity/earn-substantial-voting-rewards-by-staking-in-the-network-nervous-system-7eb5cf988182)
+
+- [ Internet ComputerのNetwork Nervous System,neuronと ICP ユーティリティ・トークンを理解しましょう。](https://medium.com/dfinity/understanding-the-internet-computers-network-nervous-system-neurons-and-icp-utility-tokens-730dab65cae8)
+
+- [ Internet ComputerのNetwork Nervous System アプリとウォレットを始める](https://medium.com/dfinity/getting-started-on-the-internet-computers-network-nervous-system-app-wallet-61ecf111ea11)
+  ::：
+
+## プロポーザルの提出
+
+現在、network nervous system にプロポーザルを提出できるのは、`governance` canister へのコールを使用して SDK コマンドライン・インターフェース (`dfx`) を使用する場合のみです。
+
+`governance` canister を操作するための別のコマンドラインツール (`icx-nns`) は開発中であり、この機能は[Network Nervous System (NNS)](https://nns.ic0.app) dapp でも近日中に利用可能になる予定です。
+
+しかし、すぐにでもプロポーザルの提出を開始したい場合は、[icx-nns](https://github.com/dfinity/icx-nns/releases)リポジトリからリリースをダウンロードすることで、`icx-nns` コマンドラインツールの暫定版にアクセスできます。
+
+## SNS分散スワップ
+
+NNSdapp の「Launch Pad」タブからSNS分散スワップに参加できます。SNS は分散型自律組織の高度なバージョンで、SNS の参加者は新機能、ロードマップ項目、SNS 資金の割り当てなどの提案に投票できます。
+
+SNSの詳細については、[こちらを](https://internetcomputer.org/sns)ご覧ください。
+
+現在および過去のSNS分散化スワップをNNSdapp から見るには：
+
+- #### ステップ 1: NNSdapp から、左のナビゲーションバーから**Launch pad**をクリックします。
+
+![Launch pad](../_attachments/nns15.png)
+
+- #### ステップ 2: SNS スワップを選択すると、ステータス、参加者総数、トークン供給量、スワップ終了日などの詳細が表示されます。
+
+![SNS swap](../_attachments/nns16.png)
+
+## NNS からのcanisters の展開と管理dapp
+
+スワップを作成および管理するには **cycles**スマートコントラクトに似た [canisters](/references/glossary.md#canister)これはスマートコントラクトに似ています。[Network Nervous System (NNS)](https://nns.ic0.app) dapp は、ICP ユーティリティ・トークンをcycles に変換し、特定のcanister 識別子にcycles をアタッチできるようにすることで、canisters を作成および管理する便利な方法を提供します。
+
+新しいcanister を作成するには：
+
+- #### ステップ 1：NNSdapp から［**MyCanisters** ］をクリックし、［**CreateCanister**］または［**LinkCanister** ］をクリックします。
+
+![My canisters](../_attachments/nns11.png)
+
+- #### ステップ**2：CreateCanister** を選択した場合、canister の作成に使用するソース・アカウントを選択します。
+
+![Create a new canister](../_attachments/nns12.png)
+
+- #### ステップ 3: 次に、canister を作成する ICP トークンの量とcycles を入力します。次に、「**ReviewCanister Creation**」を選択します。
+
+- #### ステップ4：ICPユーティリティトークンからcycles の詳細を確認し、［**確認］を**クリックして続行します。
+
+Confirm（確認）］をクリックすると、確認できます：
+
+- 新しいcanister 識別子。
+- canister が使用できるcycles の数。
+- 新しいcanister の完全な管理権限を現在持っている管理プリンシパル。
+
+:::info
+\+canister のコントローラとして使用されるプリンシパルを変更するには、「**Change Controllers**」をクリックします。
+\+cycles をcanister に追加するには、「**AddCycles** 」をクリックします。
+::：
+
+![Review canister](../_attachments/nns13.png)
+
+- #### ステップ 5:canister をリンクするには、canister の ID を入力し、\[**Confirm\]** を選択します。
+
+![Link canister](../_attachments/nns14.png)
+
+- #### ステップ 6: **Canisters**タブに戻り、作成したcanisters を確認します。
+
+例えば
+
+![Canister list](../_attachments/nns11.png)
+
+<!---
 # Network Nervous System (NNS) dapp quick start 
 
 ## Overview
@@ -384,3 +774,5 @@ After you click Confirm, you can review:
 For example:
 
 ![Canister list](../_attachments/nns11.png)
+
+-->

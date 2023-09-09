@@ -1,3 +1,163 @@
+# ウェブゲームのホストInternet Computer
+
+## 概要
+
+このサンプルプロジェクトでは、Unity と Godot ゲームエンジンを使って [Internet Computer](https://internetcomputer.org/)にデプロイする方法を示します。
+
+UnityやGodotのゲームエンジンを使ってWebゲームを作ってみましょう。
+
+## IC GameKitを使ったWebゲームの自動作成
+
+## 前提条件
+
+- \[x\][IC SDKが](/developer-docs/setup/install/index.mdx)インストールされていることを確認してください。
+- \[[git を](https://git-scm.com/downloads)ダウンロードしてインストールしてください。
+
+### オプション1：Unity
+
+### 前提条件
+
+- \[x\][Unityが](https://unity.com/download)インストールされていることを確認してください。
+
+- #### ステップ1：**Universal Render Pipeline**テンプレートを選択して新しいUnityプロジェクトを作成します。
+
+- #### ステップ2：**IC GameKit**パッケージをインストールします：
+  
+  - 以下のURLを入力し、Unity Package Managerの**Add package from git URL**...メニューからパッケージをインストールできます：
+    `https://github.com/dfinity/ic-gamekit.git?path=/unity/com.ic.gamekit`
+
+- #### ステップ 3:`IC Connector` を有効にします：
+  
+  - IC Gamekitパッケージのインストールが完了したら、`Project Settings -> IC Settings` でInternet Computer の設定を行います。今のところ、2つの基本的なオプションしかサポートしていません：
+    - Canister name: 生成された IC プロジェクトの ファイルにあるアセット名 を設定します。`dfx.json` canister 
+    - ICコネクタを有効にする：ICコネクタのオン/オフを設定できます。これをチェックすると、Godot HTML5 エクスポートパスの下に`ic-project` というフォルダが生成されます。現在は、プロジェクトのエクスポートのみがサポートされています。
+
+- #### ステップ 4:**ビルド設定**ウィンドウで**WebGL**ビルドターゲットに切り替えます。
+
+- #### ステップ**5：Player Settings**ウィンドウの**WebGL**タブで**Settings を**選択します。
+  
+  - バージョン0.12.0より前のdfx SDKを使用している場合は、**圧縮形式を** **無効に**設定します。\
+    詳細については、[こちらのドキュメントを](https://github.com/dfinity/ic-gamekit/tree/main)参照してください。
+  - 生成されるファイル数を減らすために、**Minimal**WebGLテンプレートを選択します。
+
+- #### ステップ6：**Build Settings**ウィンドウでWebGLにビルドします。
+  
+  前のステップで**IC Connector**を有効にすると、WebGL ビルド出力フォルダの下に`ic-project` というフォルダが生成されます。
+
+### オプション2：Godot
+
+### 前提条件
+
+- \[[Godot](https://godotengine.org/download)がインストールされていることを確認してください。
+
+- #### ステップ 1: 新しい Godot プロジェクトを作成します。
+
+- #### ステップ 2: IC GameKit プラグインをインストールします：
+  
+  - Unity Package Manager の**Add package from git URL**... メニューから以下の URL を入力し、パッケージをインストールします：
+    `https://github.com/dfinity/ic-gamekit.git?path=/godot/com.ic.gamekit`
+
+- #### ステップ 3:`IC Connector` を有効にします：
+  
+  - IC Gamekitパッケージのインストールが完了したら、`Project Settings -> IC Settings` でInternet Computer の設定を行います。今のところ、2つの基本的なオプションしかサポートしていません：
+    - Canister name: 生成された IC プロジェクトの ファイルにあるアセット名 を設定します。`dfx.json` canister 
+    - ICコネクタを有効にする：ICコネクタのオン/オフを設定できます。これをチェックすると、Godot HTML5 エクスポートパスの下に`ic-project` というフォルダが生成されます。現在はプロジェクトのエクスポートのみがサポートされています。
+
+- #### ステップ 4:`Export` ウィンドウで`HTML5` プリセットに切り替えます。
+
+- #### ステップ 5：`Export Project` ボタンでプロジェクトをエクスポートします。
+  
+  前のステップで`IC Connector` を有効にすると、HTML5 エクスポートフォルダの下に`ic-project` というフォルダが生成されます。
+
+## ウェブゲームを手動で作成
+
+:::info
+手動でウェブゲームプロジェクトを生成するのは面倒でエラーが発生しやすいと思われるかもしれませんが、[IC GameKitを使って](https://github.com/dfinity/ic-gamekit)自動で行うことを強くお勧めします。このツールはまだ開発中です。フィードバックがあればお知らせください。
+::：
+
+このサンプルにはバックエンドがないので、`dfx new project_name` コマンドを使ってテンプレートを設定するメリットはありません。必要なのは`dfx.json` ファイルだけです。
+
+### オプション 1: Unity
+
+- #### ステップ 1:`unity-webgl-sample` という名前のフォルダを作成します。
+- #### ステップ 2:`unity-webgl-sample` フォルダーの下に`dfx.json` という名前のファイルを作成します。
+- #### ステップ 3:dapp プロジェクトのサンプルをインストールします：
+
+<!-- end list -->
+
+    git clone https://github.com/dfinity/examples
+    cd examples/hosting/unity-webgl-template
+
+- #### ステップ 4: このコマンドを実行してローカルネットワークを開始します：
+
+<!-- end list -->
+
+    dfx start --background
+
+- #### ステップ 5: ローカルネットワークが起動したら、このコマンドを実行してcanisters をデプロイします：
+
+<!-- end list -->
+
+    dfx deploy
+
+:::caution
+ICメインネットにデプロイした後にエラーコード500が表示された場合は、次のようにURLにrawキーワードを使用してみてください: https://\<canister-id\>.raw.ic0.app.
+::：
+
+- #### ステップ 6: デプロイされると、ターミナルから次のような応答が出力されます：
+
+<!-- end list -->
+
+    Committing batch.
+    Deployed canisters.
+    URLs:
+      Frontend canister via browser
+        unity_webgl_template_assets: http://127.0.0.1:4943/?canisterId=c5kvi-uuaaa-aaaaa-qaaia-cai
+
+ウェブブラウザでフロントエンドcanister URLに移動します。デフォルトのゲームはこのようになります：
+
+![Unity Game Example](./_attachments/unity-game-example.png)
+
+### オプション 2: Godot
+
+- #### ステップ 1:dapp プロジェクトのサンプルをダウンロードします：
+
+<!-- end list -->
+
+    git clone https://github.com/dfinity/examples
+    cd examples/hosting/godot-html5-template
+
+- #### ステップ 2: このコマンドを実行してローカルネットワークを開始します：
+
+<!-- end list -->
+
+    dfx start --background
+
+- #### ステップ 3: ローカルネットワークが起動したら、このコマンドを実行してcanisters をデプロイします：
+
+<!-- end list -->
+
+    dfx deploy
+
+:::caution
+ICメインネットにデプロイした後にエラーコード500が表示された場合は、次のようにURLにrawキーワードを使用してみてください: https://\<canister-id\>.raw.ic0.app.
+::：
+
+- #### ステップ 4: デプロイされると、ターミナルから次のような応答が出力されます：
+
+<!-- end list -->
+
+    Committing batch.
+    Deployed canisters.
+    URLs:
+      Frontend canister via browser
+        godot_html5_assets: http://127.0.0.1:4943/?canisterId=ctiya-peaaa-aaaaa-qaaja-cai
+
+ウェブブラウザでフロントエンドcanister URLに移動し、ゲームを表示します：
+
+![Godot Game Example](./_attachments/godot-game-example.png)
+
+<!---
 # Hosting a web game on the Internet Computer
 
 ## Overview 
@@ -134,3 +294,5 @@ URLs:
 Navigate to the frontend canister URL in a web browser to view your game:
 
 ![Godot Game Example](./_attachments/godot-game-example.png)
+
+-->

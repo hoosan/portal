@@ -1,3 +1,124 @@
+# Clang サポート言語
+
+IC はWebAssembly 標準モジュールにコンパイルされたdapps をサポートしているため、C、C++、Objective-C、Objective-C++ プログラミング言語や`Clang` コンパイラなどの言語で、標準コンパイラやツールチェーンを使用してアプリケーションを構築できます。
+
+## C 言語の使用
+
+C 言語で書かれたdapps を IC 上で実行できるように移行する方法を説明す るために、[examples](https://github.com/dfinity/examples/tree/master/c)リポジトリにあるシンプルな`reverse.c` プログラムを見てみましょう。`reverse.c` プログラムには、`go`という名前の、文字列をその場で反転させる関数が 1 つ含まれています。
+
+### 開発環境のセットアップ
+
+`reverse.c` プログラムをWebAssembly にコンパイルするには、`clang` コンパイラと標準ライブラリがインストールされている必要があります。`clang` がローカル・コンピューターにインストールされているかどうかは、次のコマンドを実行することで確認できます：
+
+    clang --version
+
+`clang` がインストールされている場合、コマンドは以下のような情報を表示します：
+
+    clang version 10.0.0
+    Target: x86_64-apple-darwin19.5.0
+    Thread model: posix
+    InstalledDir: /usr/local/opt/llvm/bin
+
+コマンドがバージョン情報を返さない場合は、続行する前に`clang` をインストールしてください。`clang` をインストールする手順は、使用しているオペレーティング・システムによって異なります。たとえば Debian Linux では、次のコマンドを実行します：
+
+    sudo apt-get install clang lld gcc-multilib
+
+macOSでは、Developer Command-Line Toolsをインストールするか、Homebrewを使用してLLVMをインストールすることで、`clang` 。たとえば、`clang` がインストールされていない場合は、次のコマンドを実行します：
+
+    brew install llvm
+
+### にコンパイルします。WebAssembly
+
+C プログラムをコンパイルしてWebAssembly モジュールとして実行するには、まず`clang` を使用してコンパイルし、次に`wasm-ld` を使用してリンクします。使用しているオペレーティング・システムと`clang` のバージョンによっては、macOS の`wasm-ld` や Debian の`wasm-ld-8` など、異なるバージョンのWebAssembly リンカを使用する場合があります。
+
+macOS でWebAssembly にコンパイルするには：
+
+1.  以下のclangコマンドを実行してプログラムをコンパイルします：
+    
+        clang --target=wasm32 -c -O3 reverse.c
+
+2.  以下の`wasm-ld` コマンドを実行してリンカを実行し、WebAssembly モジュールを作成します：
+    
+        wasm-ld --no-entry --export-dynamic --allow-undefined reverse.o -o reverse.wasm
+
+### 最小限の設定ファイルを作成
+
+次に、`reverse` dapp バイナリを IC にインストール可能なパッケージとして識別する簡単な設定ファイルと、`dfx` コマンドラインインターフェースを使用してcanister としてパッケージをインストールして実行できるように、`build` ディレクトリを準備する必要があります。
+
+設定ファイルとビルド・ディレクトリを準備するには
+
+1.  以下のコマンドを実行して、canisters キーで`dfx.json` ファイルを作成します：
+    
+        echo '{"canisters":{"reverse":{"main":"reverse"}}}' > dfx.json
+
+2.  次のコマンドを実行して、dapp 用の`build` ディレクトリを作成します：
+    
+        mkdir build
+
+3.  次のコマンドを実行して、dapp 用の`reverse` ディレクトリを作成します：
+    
+        mkdir build/reverse
+
+4.  次のコマンドを実行して、WebAssembly モジュールを新しい`build/reverse` ディレクトリにコピーします：
+    
+        cp reverse.wasm build/reverse/
+
+### 最小限のインターフェイス記述ファイルを作成します。
+
+標準的な開発ワークフローでは、`dfx build` コマンドを実行すると、`canisters` 出力ディレクトリーに複数のファイルが作成されます。その中には、プログラムの関数に関連付けられたデータ型の型照合を処理する 1 つ以上の Candid Interface 記述 (`.did`) ファイルが含まれます。
+
+異なるデータ型に使用する構文の詳細については、[*Candid Guide*](/developer-docs/backend/candid/index.md)および[Candid 仕様を](https://github.com/dfinity/candid/tree/master/spec)参照してください。
+
+このプログラムの Candid インターフェース記述ファイルを作成するには、以下の手順に従います：
+
+1.  `reverse.c` プログラム・ソース用に作成した`build` ディレクトリでターミナルを開きます。
+
+2.  `reverse.did` という名前の新しいテキストファイルを作成します。
+
+3.  `go` 関数の説明を追加します。
+    
+    例えば
+    
+        service : {
+          "go": (text) -> (text);
+        }
+
+4.  変更を保存し、ファイルを閉じて続行します。
+
+### をデプロイしてテストします。dapp
+
+dapp をデプロイしてテストする前に、以下を実行する必要があります：
+
+- ローカルのcanister 実行環境、または IC ブロックチェーンメインネットのいずれかに接続します。
+
+- アプリケーションのネットワーク固有の識別子を登録します。
+
+dapp をローカルにデプロイしてテストするには：
+
+1.  ローカルコンピューターで新しいターミナルウィンドウまたはタブを開きます。
+    
+    例えば、macOSでターミナルを実行している場合、\[**シェル**\]をクリックし、\[**新しいタブ**\]を選択して、現在の作業ディレクトリで新しいターミナルを開きます。
+
+2.  次のコマンドを実行して、2 番目のターミナルでローカルのcanister 実行環境を起動します：
+    
+        dfx start
+
+3.  以下のコマンドを実行して、`reverse` アプリケーション用の一意のcanister 識別子を登録します：
+    
+        dfx canister create --all
+
+4.  以下のコマンドを実行して、ローカルのcanister 実行環境にデフォルトのdapp をデプロイします：
+    
+        dfx canister install --all
+
+5.  次のコマンドを実行して、dapp の`go` 関数を呼び出します：
+    
+        dfx canister call reverse go reward
+        ("drawer")
+
+Cdapps のその他の例は、[examples](https://github.com/dfinity/examples/tree/master/c)リポジトリにあります。
+
+<!---
 # Clang-Supported Languages
 
 Because the IC supports dapps compiled to standard WebAssembly modules, you can use standard compilers and toolchains to build applications in languages such as C, C++, Objective-C, and Objective-C++ programming languages and the `Clang` compiler.
@@ -117,3 +238,5 @@ To deploy and test the dapp locally:
         ("drawer")
 
 You can find additional examples of C dapps in the [examples](https://github.com/dfinity/examples/tree/master/c) repository.
+
+-->

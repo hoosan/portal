@@ -1,3 +1,50 @@
+# 電話帳
+
+## 概要
+
+この例では、ウェブブラウザからアクセスできる電話帳アプリケーションを示します。
+
+このアプリケーションは、次のMotoko ソースコードファイルからビルドされています：
+
+- `index.jsx`Web ブラウザーで起動したときにアプリケーションのフロントエンド ユーザー インターフェースを生成するために使用される JavaScript、React、および HTML が含まれています。
+- `Main.mo`:actor の定義と、このcanister によって公開されるメソッドが含まれています。
+
+これはMotoko の例で、現在 Rust のバリアントはありません。
+
+## 前提条件
+
+この例には以下のインストールが必要です：
+
+- \[x\][IC SDKを](../developer-docs/setup/install/index.mdx)インストールしてください。
+- \[x\][Node.jsを](https://nodejs.org/en/download/)インストールしてください。
+- \[x\] GitHubから以下のプロジェクトファイルをダウンロードします: https://github.com/dfinity/examples/
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ1：プロジェクトのファイルを含むフォルダに移動し、Internet Computer のローカルインスタンスをコマンドで起動します：
+
+    cd examples/motoko/phone-book
+    dfx start --background
+
+### ステップ 2: フロントエンドの依存関係をインストールします：
+
+    npm install
+
+### ステップ 3:canister をデプロイします：
+
+    dfx deploy
+
+### ステップ4: 電話帳にアクセスできるURLをメモしておきます。
+
+    echo "http://127.0.0.1:4943/?canisterId=$(dfx canister id www)"
+
+### ステップ5：ウェブブラウザで前述のURLを開きます。
+
+電話帳のエントリーを保存するためのインターフェイスが表示されます：
+
+![Phonebook](./_attachments/phonebook.png)
+
+<!---
 # Phone book
 
 ## Overview
@@ -53,3 +100,5 @@ You will see an interface that you can interact with to store phone book entries
 
 
 
+
+-->

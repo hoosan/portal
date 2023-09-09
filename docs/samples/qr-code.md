@@ -1,3 +1,63 @@
+# QRコードジェネレーターInternet Computer
+
+## 概要
+
+この例では、Internet Computer dapp 、画像処理のような長時間の計算を1回のメッセージ実行で実行できることを示しています。
+これは、長い計算を複数のブロックにまたがって実行される小さなスライスに自動的に分割するDTS（Deterministic Time Slicing）と呼ばれる独自の機能によるものです。
+開発者は、この例で示されているように、DTSを利用するために特別なことを必要としない、通常通りの長時間のコードを書くことができます。
+
+Internet Computer メインネットで動作しているdapp のライブバージョンはこちらで試すことができます[: https://khpe2-4qaaa-aaaao-a2fnq-cai.icp0.io/.](https://khpe2-4qaaa-aaaao-a2fnq-cai.icp0.io/)
+
+## 前提条件
+
+この例では、以下のインストールが必要です：
+
+- \[x\][IC SDKを](https://internetcomputer.org/docs/current/developer-docs/setup/install/index.mdx)インストールしてください。
+- \[x\] ウェブフロントエンドを構築するために`node.js` をインストールしてください。
+- \[x\] GitHubから以下のプロファイルファイルをダウンロードしてください: https://github.com/dfinity/examples/
+
+### ステップ1：プロジェクトのファイルがあるフォルダに移動します：
+
+    cd examples/rust/qrcode
+
+### ステップ 2:Internet Computer のローカルレプリカを起動します：
+
+    dfx start --background
+
+dapp のログメッセージを見たい場合は、`--background` 引数を省略できます。
+
+### ステップ3: これで、dapp のビルドとデプロイが1つのコマンドでできるようになります：
+
+    dfx deploy
+
+エラーが表示された場合は、[開発者フォーラムを](https://forum.dfinity.org/)参照してください。
+
+デプロイに成功すると、ローカルのURLが出力されます：
+
+    Deployed canisters.
+    URLs:
+      Frontend canister via browser
+        qrcode_frontend: ...
+      Backend canister via Candid interface:
+        qrcode_backend: ...
+
+### ステップ4: ブラウザでフロントエンドのURLに移動すると、dapp ：
+
+![Screenshot of the frontend UI](./_attachments/screenshot.png)
+
+## どのように動作するか
+
+dapp の初期コードは`dfx` によって標準のフロントエンド/バックエンドテンプレートを使って自動生成されます。
+
+フロントエンドは、ユーザーがQRコードのテキストを入力し、さまざまなオプションを選択できるフォームを備えたHTMLページで構成されています。
+
+ユーザーが「生成！」ボタンをクリックすると、JavaScriptハンドラがバックエンドcanister への呼び出しを開始します。この呼び出しの重労働は、`candid` 、`js-agent` 、`dfx` によって管理され、バックエンドの Candid インターフェースから JavaScript オブジェクトが自動的に生成されます。このオブジェクトには、バックエンドの各エンドポイント用の`async` 関数が含まれており、ボタンハンドラはこれらを使用して呼び出しを行います。
+
+Rustで書かれたバックエンドは、`qrcode-generator` と`image` クレートを使ってユーザーのテキストからQRコードを作成します。また、Internet Computer のロゴとカラー・グラデーションを最終結果に追加するために、いくつかの画像処理も行います。大きな画像の場合、計算量が大きくなる可能性があることに注意してください。
+
+教育目的のために、バックエンドはQRコード生成のための2つのパブリックエンドポイントを提供しています。現在、DTSは更新には対応していますが、クエリには対応していません。その結果、更新エンドポイントは、クエリエンドポイントに比べて命令上限が大きくなり、より大きな画像を扱うことができます。
+
+<!---
 # QR code generator on the Internet Computer
 
 ## Overview
@@ -65,3 +125,5 @@ The backend, written in Rust, uses the `qrcode-generator` and `image` crates to 
 
 For educational purposes, the backend offers two public endpoints for QR code generation: one for updates and another for queries. Currently, DTS is supported for updates, but not for queries. As a result, the update endpoint has larger instruction limit compared to the query endpoint and thus can handle larger images.
 
+
+-->

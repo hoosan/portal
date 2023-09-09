@@ -1,3 +1,138 @@
+# 人生ゲーム
+
+## 概要
+
+この例題には、Conway の Game of Life の一連の実装が含まれています。
+
+その主な目的は、Motoko の安定変数を使ったステート保存アップグレードを実証することです。この実装は参考のためのものであり、効率やネットワーク遅延の隠蔽のために最適化されたものではありません。
+
+`src` ディレクトリには、バージョン v0 の初期実装が含まれていますが、その内容は、後に`versions/v1` と`versions/v2` のディレクトリの内容に置き換わります。実際のプロジェクトでは、適切なソース管理が行われていれば、src ディレクトリが 1 つ存在し、異なるバージョンのコードがリポジトリの異なるブランチに存在することがあります。
+
+ディレクトリ src (バージョン v0) には、非常にシンプルな React UI のアプリケーションがあります。
+
+ディレクトリ`versions/v1` と`versions/v2` には、デプロイされたcanister の再デプロイメントによるライブアップグレードを説明するために使用される、src への逐次アップグレードが含まれています。
+
+アップグレードをわかりやすくするために、各バージョンではライブセルの表示に異なる桁を使用しています (0,1,2)。
+
+これはMotoko の例で、現在 Rust のバリエーションはありません。
+
+## 前提条件
+
+この例には以下のインストールが必要です：
+
+- \[x\][IC SDKを](../developer-docs/setup/install/index.mdx)インストールしてください。
+- \[x\][Node.jsを](https://nodejs.org/en/download/)インストールしてください。
+- \[x\] GitHubから以下のプロジェクトファイルをダウンロードします: https://github.com/dfinity/examples/
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ1：プロジェクトのファイルがあるフォルダに移動し、Internet Computer のローカルインスタンスをコマンドで起動します：
+
+    cd examples/motoko/life
+    dfx start --background
+
+### ステップ 2:canister をデプロイします：
+
+    dfx deploy
+
+デプロイメントステップでは、life\_assetscanister のcanister id が報告されるはずです。
+
+コマンドを使ってlife\_assetsにアクセスできるURLを控えておいてください：
+
+    echo "http://127.0.0.1:4943/?canisterId=$(dfx canister id life_assets)"
+
+### ステップ3: 先ほどのコマンドの出力で返されたリンクをクリックして、ブラウザでフロントエンドを開きます。
+
+このようなフロントエンドが表示されるはずです：
+
+![Game of Life](./_attachments/game-of-life.png)
+
+**Step**ボタンをクリックしてください。グリッドはGame of Lifeの次の世代に進みます。
+
+**Run**ボタンをクリックしてください。グリッドが（ゆっくりと）連続した世代をアニメーションします。
+
+**Pause**ボタンをクリックしてください。アニメーションが一時停止します。
+
+## 他のバージョンへのアップグレード
+
+v0 の実装にはアップグレードの規定がないため、v0 の実装を再デプロイするたびに、グリッドは同じ（擬似ランダムな）初期状態に再初期化されます。
+
+グリッドのステートは、`src/State.mo` ファイルで説明されているように、ネストされたミュータブルなブール値の配列として素朴に表現されます：
+
+    module {
+    
+      public type Cell = Bool;
+      public type State = [[var Cell]];
+      ...
+    }
+
+`src/life/grid` は、ステートから構築され、ステートを維持する単純なクラスとして表現されます。ここでは詳細を省略します。
+
+`src/life/main` のメインactor はランダムなステートを作成し、2つのグリッドオブジェクト、現在のグリッドと次のグリッド (`cur` と`nxt`) を保持します。Life の`next()` メソッドは、Grid メソッドコール`cur.next(nxt)` を使用して、`cur` から`nxt` をアップデートすることで、Game of Life を次の世代に進めます。その後、`cur` と`nxt` の役割が入れ替わり、`cur` のスペースを次の世代で再利用します（ダブルバッファリングの単純な応用）。このロジックは`src/life/main.mo` ファイルに記述されています：
+
+    import Random = "Random";
+    import State = "State";
+    import Grid = "Grid";
+    
+    actor Life {
+    
+      let state = do {
+        let rand = Random.new();
+        State.new(64, func (i, j) { rand.next() % 2 == 1 });
+      };
+    
+      var cur = Grid.Grid(state);
+    
+      var nxt = Grid.Grid(State.new(cur.size(), func (i, j) { false; }));
+    
+      public func next() : async Text {
+        cur.next(nxt);
+        let temp = cur;
+        cur := nxt;
+        nxt := temp;
+        cur.toText();
+      };
+    
+      public query func current() : async Text {
+        cur.toText()
+      };
+    
+    };
+
+このactor の変数はどれも安定変数として宣言されていませんので、アップグレードしてもその値は保持されず、新規インストール時と同じように再初期化されることに注意してください。
+
+### v1 へのアップグレード
+
+v1の実装にアップグレードするには、以下のコマンドを実行してください：
+
+    mv src versions/v0
+    mv versions/v1 src
+    dfx deploy
+
+その後、同じブラウザのタブに戻り、更新します (またはリンクを再読み込みします)。
+「**実行」**ボタンをクリックし、飽きたら「**一時停止」**ボタンをクリックします。**Details\]**を開き、\[**View State**\]をクリックします。表示された\#v1のステートを見てください。
+
+![Game of life v1](./_attachments/game-of-life2.png)
+
+v0からアップグレードすると、v0をデプロイしたときと同じように、ステートがランダムになります。これは、v0のコードがステート変数の安定を宣言していなかったためで、アップグレードされたactor 、リタイアしたactor に以前のステートの値がないため、ステートを再初期化せざるを得なくなります。
+
+しかし、v1プロジェクトを2回目に再デプロイした場合、おそらくちょっとした編集を行った後であれば、デプロイ前のグリッドの最後の状態が、デプロイをまたいで保存され、ステート保存アップグレードが行われます。ステートのランダムイニシャライザーはスキップされ、ステートにはアップグレード前の値が設定されます。
+
+### v2 へのアップグレード
+
+v2 実装にアップグレードするには、以下のコマンドを実行します：
+
+    mv src versions/v1
+    mv versions/v2 src
+    dfx deploy
+
+同じブラウザのタブに戻ります。タブを更新します。グリッドのテキスト表示の表示文字を変更する以外は、現在のグリッドのステートは変更されない（つまり保持される）ことに注意してください。
+
+**Run** ボタンをクリックし、飽きたら**Pause**ボタンをクリックします。**Details\]**を開き、\[**View State**\]をクリックします。表示された\#v2のステートを見てください。
+
+![Game of life v2](./_attachments/game-of-life3.png)
+
+<!---
 # Game of Life
 
 ## Overview
@@ -145,3 +280,4 @@ Return to the same browser tab. Refresh the tab. Note the current grid state is 
 Click button **Run**, then click button **Pause** when bored. Open **Details** and click **View State**. Admire the #v2 state on display.
 
 ![Game of life v2](./_attachments/game-of-life3.png)
+-->

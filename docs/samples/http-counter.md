@@ -1,3 +1,69 @@
+# HTTPカウンタ
+
+## 概要
+
+このサンプルは、dapp カウンターと HTTP インターフェースのデモです。これは基本的に、ネイティブの HTTP インタフェースを追加したカウンタcanister の繰り返しです。
+
+このサンプルdapp は、以下のメソッドを公開するインタフェースを提供します：
+
+- `http_request`このサンプルは、以下のメソッドを公開するインタフェースを提供します：
+  - `GET` `gzip` が受け入れられた場合、いくつかの静的な ed データ。`gzip`
+  - `GET` そうでない場合は、カウンタ。
+  - `POST`を参照して`http_request_update` を呼び出します。
+  - `400` その他のすべてのリクエストを返します。
+- `http_request_update`カウンタをインクリメントします：
+  - `POST` カウンタをインクリメントします。
+    - `gzip` が受け入れられた場合、静的な`gzip`ed データを返します。
+    - そうでない場合は、新しいカウンタ値を返します。
+  - `400` その他のすべてのリクエストを返します。
+
+## 前提条件
+
+この例では、以下のインストールが必要です：
+
+- \[x\][IC SDKを](https://internetcomputer.org/docs/current/developer-docs/setup/install/index.mdx)インストールします。
+- https://github.com/dfinity/examples/ \[x\] GitHubから以下のプロジェクトファイルをダウンロードしてください。
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ 1: プロジェクト・ファイルのあるフォルダに移動し、Internet Computer のローカル・インスタンスをコマンドで起動します：
+
+    cd examples/motoko/http_counter
+    dfx start --background
+
+### ステップ 2:canister をデプロイします：
+
+    dfx deploy
+
+### ステップ 3:`http_counter` にアクセスできる URL を作成するため、canister の ID をメモしておきます。
+
+``` bash
+CANISTER_ID=$(dfx canister id http_counter)
+
+echo "http://localhost:4943/?canisterId=$CANISTER_ID"
+
+echo "http://$CANISTER_ID.localhost:4943/"
+```
+
+### ステップ4：canister のすべての機能は、以下のコマンドで実行できます：
+
+``` bash
+CANISTER_ID=$(dfx canister id http_counter)
+
+# Get the counter
+curl "$CANISTER_ID.localhost:4943/" --resolve "$CANISTER_ID.localhost:4943:127.0.0.1"
+
+# Get the static gziped query content
+curl --compressed "$CANISTER_ID.localhost:4943/" --resolve "$CANISTER_ID.localhost:4943:127.0.0.1"
+
+# Increment the counter
+curl -X POST "$CANISTER_ID.localhost:4943/" --resolve "$CANISTER_ID.localhost:4943:127.0.0.1"
+
+# Increment the counter and get the static gziped update content
+curl --compressed -X POST "$CANISTER_ID.localhost:4943/" --resolve "$CANISTER_ID.localhost:4943:127.0.0.1"
+```
+
+<!---
 # HTTP counter
 
 ## Overview
@@ -68,3 +134,5 @@ curl -X POST "$CANISTER_ID.localhost:4943/" --resolve "$CANISTER_ID.localhost:49
 curl --compressed -X POST "$CANISTER_ID.localhost:4943/" --resolve "$CANISTER_ID.localhost:4943:127.0.0.1"
 ```
 
+
+-->

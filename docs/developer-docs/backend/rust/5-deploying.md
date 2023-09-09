@@ -1,3 +1,191 @@
+# 5: ライティングとデプロイcanisters
+
+## 概要
+
+このガイドでは、Rust バックエンドcanister の記述、コンパイル、デプロイ、対話に必要な手順を説明します。
+
+このガイドでは、シンプルな 'Hello, world\!
+
+## 前提条件
+
+始める前に、開発者[環境ガイドの](./3-dev-env.md)指示に従って開発者環境をセットアップしていることを確認してください。
+
+## を書くcanister
+
+まだ開いていなければ、ローカルコンピュータでターミナルウィンドウを開いてください。
+
+まず、コマンドで新しいdfxプロジェクトを作成します：
+
+    dfx new --type rust hello_world
+
+デフォルトでは、プロジェクトの構造は以下のようになっています：
+
+    Cargo.lock
+    Cargo.toml
+    dfx.json
+    package.json
+    src
+    ├── hello_world_backend
+    │   ├── Cargo.toml
+    │   ├── hello_world_backend.did
+    │   └── src
+    │       └── lib.rs
+    └── hello_world_frontend
+        ├── assets
+        │   ├── favicon.ico
+        │   ├── logo2.svg
+        │   ├── main.css
+        │   └── sample-asset.txt
+        └── src
+            ├── index.html
+            └── index.js
+    webpack.config.js
+
+プロジェクトの構成とコード構成の詳細については、[プロジェクト構成ガイドを](./2-project-organization.md)参照してください。
+
+## `lib.rs` ファイルの作成
+
+このステップでは、`src/hello_world_backend/src/lib.rs` ファイルに注目します。
+
+テキストエディタで`src/hello_world_backend/src/lib.rs` ファイルを開きます。既存の内容を次のように置き換えます：
+
+``` rust
+#[ic_cdk::query]
+fn greet(name: String) -> String {
+    format!("Hello there, {}! This is an example greeting returned from a Rust backend canister!", name)
+}
+```
+
+ファイルを保存します。
+
+## `Cargo.toml` ファイルの作成
+
+テキストエディタで`src/hello_world_backend/Cargo.toml` ファイルを開きます。既存の内容を以下のように書き換えます：
+
+``` toml
+[package]
+name = "hello_world_backend"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+candid = "0.8.2"
+ic-cdk = "0.7.0"
+```
+
+ファイルを保存します。
+
+## canister をローカル実行環境に配置します。
+
+## を作成します。canister
+
+まず、canister コードをインストールするための空のcanister を作成します。canister を作成するには、コマンドを実行します：
+
+    dfx canister create hello_world_backend
+
+出力は以下のようになります：
+
+    Creating canister hello_world_backend...
+    hello_world_backend canister created with canister id: br5f7-7uaaa-aaaaa-qaaca-cai
+
+### ビルドcanister
+
+次に、canister をビルドして、ICにデプロイできるWebAssembly モジュールにプログラムをコンパイルする必要があります。canister をビルドするには、コマンドを実行します：
+
+    dfx build hello_world_backend
+
+### をインストールします。canister
+
+次に、コンパイルしたコードをコマンドでcanister にインストールします：
+
+    dfx canister install hello_world_backend
+
+### 実行環境へのデプロイ
+
+canister をデプロイするには、dfx ローカル実行環境をコマンドで起動します：
+
+    dfx start --clean --background
+
+次に、canister をコマンドでデプロイします：
+
+    dfx deploy hello_world_backend
+
+このコマンドは`hello_world_backend` canister のみをデプロイします。`dfx.json` ファイル内のすべてのcanisters をデプロイするには、次のコマンドを使用します：
+
+    dfx deploy
+
+## canister を IC メインネットにデプロイします。
+
+メインネットにデプロイするには、cycles の残高を持つcycles ウォレットが必要です。
+
+cycles ウォレットの設定については、[こちらの](https://internetcomputer.org/docs/current/developer-docs/setup/deploy-mainnet#confirm-your-developer-identity-and-ledger-account)ドキュメントを参照してください。
+
+cycles ウォレットの設定と使用準備ができたら、IC メインネットのステータスをチェックして、ローカル環境が接続できることを確認します。コマンドでメインネットにpingを打つことができます：
+
+    dfx ping ic
+
+出力は以下のようになるはずです：
+
+```
+  {
+    "ic_api_version": "0.18.0"  "impl_hash": "d639545e0f38e075ad240fd4ec45d4eeeb11e1f67a52cdd449cd664d825e7fec"  "impl_version": "8dc1a28b4fb9605558c03121811c9af9701a6142"  "replica_health_status": "healthy"  "root_key": [48, 129, 130, 48, 29, 6, 13, 43, 6, 1, 4, 1, 130, 220, 124, 5, 3, 1, 2, 1, 6, 12, 43, 6, 1, 4, 1, 130, 220, 124, 5, 3, 2, 1, 3, 97, 0, 129, 76, 14, 110, 199, 31, 171, 88, 59, 8, 189, 129, 55, 60, 37, 92, 60, 55, 27, 46, 132, 134, 60, 152, 164, 241, 224, 139, 116, 35, 93, 20, 251, 93, 156, 12, 213, 70, 217, 104, 95, 145, 58, 12, 11, 44, 197, 52, 21, 131, 191, 75, 67, 146, 228, 103, 219, 150, 214, 91, 155, 180, 203, 113, 113, 18, 248, 71, 46, 13, 90, 77, 20, 80, 95, 253, 116, 132, 176, 18, 145, 9, 28, 95, 135, 185, 136, 131, 70, 63, 152, 9, 26, 11, 170, 174]
+  }
+```
+
+次に、canister をメインネットにデプロイするには、コマンドを使用します：
+
+    dfx deploy hello_world_backend --network ic
+
+:::info
+メインネットとやりとりするすべてのコマンドでは、`--network ic` フラグを使用する必要があります。
+::：
+
+## のテストcanister
+
+canister の機能をテストするには、コマンドラインからcanister のメソッドを直接呼び出します。この例では、canister のメソッドは`greet` の1つだけなので、これをテストします。
+
+このメソッドをテストするには、`greet` のメソッドをコマンドで呼び出します：
+
+    dfx canister call hello_world_backend greet everyone
+
+出力は以下のようになります：
+
+    ("Hello there, everyone! This is an example greeting returned from a Rust backend canister!")
+
+最後の入力文字列を好きな名前で置き換えることができます：
+
+    dfx canister call hello_world_backend greet Bob
+
+これは出力を返します：
+
+    ("Hello there, Bob! This is an example greeting returned from a Rust backend canister!")
+
+## メソッドとの対話canister
+
+canister の機能をテストするだけでなく、`dfx` コマンドを使用してcanister を操作することもできます。例えば
+
+ウォレットからcanister にcycles を入金するには、コマンドを使います：
+
+    dfx canister deposit-cycles [cycles amount] [canister-name]
+
+canister の識別子を取得するには、コマンドを使用します：
+
+    dfx canister id [canister-name]
+
+canister の Wasm モジュールハッシュと現在のコントローラを取得するには、次のコマンドを使用します：
+
+    dfx canister info [canister-name]
+
+## 次のステップ
+
+canister が作成され、デプロイされ、テストされたので、[canister 間で呼び出す](./6-intercanister.md)方法を見てみましょう。
+
+<!---
 # 5: Writing and deploying canisters
 
 ## Overview
@@ -220,3 +408,5 @@ dfx canister info [canister-name]
 ## Next steps
 
 Now that your canister has been written, deployed, and tested, let's take a look at [making inter-canister calls](./6-intercanister.md).
+
+-->

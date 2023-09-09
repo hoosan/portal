@@ -1,3 +1,138 @@
+# チェーンキービットコイン（ckBTC）
+
+## 概要
+
+Chain-key Bitcoin (ckBTC)は[ICRC-1に準拠した](https://github.com/dfinity/ICRC-1/blob/aa82e52aaa74cc7c5f6a141e30b708bf42ede1e3/standards/ICRC-1/README.md)トークンで、ICメインネット上に100%保有されているビットコインによって1:1で裏付けされています。
+
+ckBTCの機能は、2つのcanisters の相互作用によって提供されます：
+
+- **ckBTCマイナー**。
+- **ckBTC台帳**。
+
+ckBTC台帳は、アカウントの残高を管理し、アカウント間でckBTCを送金する役割を担っています。以下の機能を提供します：
+
+- ckBTCマイナーによるckBTCの鋳造と発行。
+- ユーザー間でのckBTCの移動を可能にします。
+
+ckBTCマイナーはckBTCトークンの発行とバーンを担当します。トークンは、ユーザーがビットコインをckBTCマイナー管理下の特定のビットコインアドレスに送金すると発行されます。ビットコインアドレスは送信されたビットコインの所有者を一意に識別するため、ckBTCマイナーにとって、鋳造されたckBTC資金を正しい所有者に関連付けることが可能になります。ビットコインには最終性がないため、ckBTCの総供給量に影響を与えるすべてのビットコイン取引について、ckBTC採掘者は多数の
+確認を待ちます。ビットコインの取得要求を処理する場合、ckBTC ミンターは ckBTC をバーンしてから、対応する BTC 量（手数料を差し引いた額）を通常のビットコイン取引を使って送金します。
+
+ckBTC minter の詳細な説明は[GitHub リポジトリに](https://github.com/dfinity/ic/tree/master/rs/bitcoin/ckbtc/minter)あります。
+
+ckBTCを発行して送金するプロセスの簡略化された概要は、以下の図に示されています。
+
+![ckBTC overview](../../../samples/_attachments/ckbtc-overview.png)
+
+技術的な概要については、[こちらを](bitcoin-how-it-works.md)ご覧ください。
+
+このページでは、ckBTCマイナーcanister とのやりとりに使用できるAPIエンドポイントの詳細を説明します。
+
+## ckBTC台帳
+
+ckBTC台帳は、ckBTCマイナーからの発行およびバーン要求を受け付け、正の残高を持つすべてのアカウントのckBTC残高を記録します。さらに、ckBTC台帳はckBTC取引を処理します。
+
+ckBTC台帳はICRC-1トークン規格に準拠しています。技術的な詳細は、使用されている[ICRC-1台帳実装の](https://github.com/dfinity/ic/tree/master/rs/rosetta-api/icrc1)GitHubリポジトリにあります。
+
+## ckBTCマイナー
+
+ckBTC minterはcanister 、NNSによって制御され、[pzp6e](https://dashboard.internetcomputer.org/subnet/pzp6e-ekpqk-3c5x7-2h6so-njoeq-mt45d-h3h6c-q3mxf-vpeq5-fk5o7-yae)サブネット上で動作します。ckBTC mintercanister の設定では、以下の設定を行います：
+
+- `retrieve_btc_min_amount`:これは、バーン可能な最小ckBTC量であり、それに対応して、引き出し可能な最小BTC量です。パラメータは0.001 BTC、または100,000 Satoshiに設定されています。
+- `max_time_in_queue_nanos`:BTCの引き出しリクエストは、最大でもこの時間だけキューに保管されます。リクエストをすぐに処理するのではなく、キャッシュすることで、複数のリクエストを1回のトランザクションで処理することができ、ビットコインのマイナーの手数料を節約できるという利点があります。このパラメータは10分に設定されており、ビットコインブロック間の予想される時間に対応しています。
+- `min_confirmations`:ckBTC マイナーがビットコイン取引を受け入れるために必要な確認の数。特に、ckBTC マイナーが管理するビットコインアドレスに BTC を送金するトランザクションがこのトランザクション数に達する前に、ckBTC マイナーは ckBTC を発行しません。このパラメータは当初 72 に設定されていましたが、その間に 12 に削減されました。
+- `kyt_fee`:KYT チェックに支払わなければならない手数料。現在は2000サトシに設定されています。
+
+他にもパラメータがありますが、[ckBTC minter の Candid ファイルに](https://github.com/dfinity/ic/blob/master/rs/bitcoin/ckbtc/minter/ckbtc_minter.did)記載されています。
+
+## ckBTC minter API エンドポイント
+
+ckBTC minter はcanister とやり取りするために使用できる以下の API エンドポイントを提供します：
+
+- `get_btc_address`:呼び出し元がこのアドレスに BTC を送信して ckBTC を取得するために使用できる、特定のビットコインアドレスを返します。
+- `update_balance`:ビットコインアドレスの残高をチェックし、所有者の口座にckBTCを鋳造するよう、ckBTCマイナーに指示します。
+- `estimate_withdrawal_fee`:特定の BTC 量を取得する際に支払う手数料の現在の見積もりを返します。
+- `get_deposit_fee`:ckBTCを発行する際に請求される手数料を返します。
+- `get_withdrawal_account`:BTCを取得する前に所有者がckBTCを送金する必要がある特定のckBTCアカウントを返します。
+- `retrieve_btc`:特定のckBTC量をバーンし、手数料を差し引いた対応するBTC量を指定されたビットコインアドレスに送信するようckBTCマイナーに指示します。
+- `retrieve_btc_status`:以前の`retrieve_btc` 呼び出しのステータスを返します。
+- `get_minter_info`:ckBTCマイナー自体の情報を返します。
+- `get_events`:
+  エンドポイントについては以下で詳しく説明します。
+
+### `get_btc_address(owner: opt principal, subaccount: opt blob)`
+
+提供されたプリンシパルIDとサブアカウントは、[ecdsa\_public\_key](https://internetcomputer.org/docs/current/references/ic-interface-spec#ic-ecdsa_public_key)関数の派生パスを形成するために連結されます。プリンシパルIDが提供されない場合、送信者のプリンシパルIDが使用されます。サブアカウントが提供されない場合、デフォルトのサブアカウント（すべてゼロ）が使用されます。
+
+この公開鍵は、pay-to-witness-public-key-hash (P2WPKH) Bitcoin アドレスとしてエンコードされ、テキストとして返されます。
+
+鍵の導出は、導出レベルごとに 31 ビットが使用される BIP-32 準拠ではないことに注意。その代わりに、プリンシパル ID とサブアカウントに基づいて単一の導出が実行されます。導出は決定論的であるため、canister は与えられたプリンシパル ID とサブアカウント自体のビットコインアドレスを導出できます。
+
+### `update_balance(owner: opt principal, subaccount: opt blob)`
+
+`update_balance` 関数は、特定のビットコインアドレスに新しい UTXO があるかどうかをチェックするよう ckBTC マイナーに指示するために呼び出されます。
+
+新しい UTXO がない場合はエラーが返されます。
+
+### `estimate_withdrawal_fee(amount: opt nat64)`
+
+エンドポイントは、指定された BTC 量を取得するときに支払わなければならない手数料の見積もりを返します。内部的には、（有効な署名なしで）トランザクションが構築され、ビットコイン採掘者手数料、ckBTC 採掘者手数料、および KYT 手数料で構成される手数料が決定されます。金額が提供されない場合、トランザクションを構築するために 3 つの入力が必要であると見なされます。
+
+ビットコインを取得するリクエストを発行する前に、ckBTC マイナーとビットコインcanister の内部ステートに変更がない場合、手数料は正確に返された見積もりとなります。
+
+その間に新しいビットコイン・ブロックが採掘され、ビットコインcanister がビットコイン・マイナーの手数料を更新した場合や、手数料を見積もる際に使用された出力の一部を使用する別の取得要求が最初に処理された場合に、手数料が変更される可能性があります。
+
+### `get_deposit_fee`
+
+エンドポイントは、新しい UTXO を受け取ったときに、ckBTC マイナーが ckBTC を発行するために請求する手数料を返します。現在、この手数料は単にKYT手数料です。
+
+### `get_withdrawal_account`
+
+この関数は、呼び出し元の引き出し口座を返します。これは、ckBTC マイナーのプリンシパル ID から派生した口座と、呼び出し元のプリンシパル ID から派生したサブ口座です。
+
+ユーザーは、最初にこの特定の口座にckBTCを送金することによってのみBTCを引き出すことができます。
+
+### `retrieve_btc(address: text, amount: nat64)`
+
+この関数はckBTCマイナーに指定された金額をバーンするよう指示します。リクエストがキューからピックアップされると、リクエスト額から手数料を差し引いた額を指定されたビットコインアドレスに送金する出力を含むビットコイントランザクションが作成されます。
+
+ビットコインの取得は非同期に処理されるため、この関数はckBTCトークンをバーンするトランザクションのブロックインデックスを返します。
+
+### `retrieve_btc_status(block_index: nat64)`
+
+BTC取得リクエストのステータスは、この関数を使用して確認できます。可能なステータスは次のとおりです：
+
+- `Unknown`:指定されたブロックインデックスに関連する検索要求がないか、検索要求が古く、対応する情報がすでに削除されているため、ckBTCマイナーで利用可能な情報がありません。
+- `Pending`:BTC 検索リクエストがキューに入っています。
+- `Signing`:BTC 検索リクエストは、BTC 検索リクエストに対応するためのすべての署名を取得中です。
+- `Sending`:Bitcoin トランザクションが送信中です。
+- `Submitted`:ビットコイントランザクションが送信されました。トランザクション ID が返されます。
+- `AmountTooLow`:ビットコインマイナーの手数料が法外に高いため、BTC 検索リクエストを処理できませんでした。
+- `Confirmed`:これは、トランザクションが上記の`min_confirmations` パラメータで指定された最低必要確認数を持っている場合に発生します。
+
+### `get_minter_info`
+
+この関数は、ckBTCマイナー内部の以下のパラメータを返します：
+
+- `kyt_fee`
+- `min_confirmations`
+- `retrieve_btc_min_amount`
+
+### `get_events(start: nat64, length: nat64)`
+
+ckBTC minter は、その内部ステートを変更するイベントを追跡します。開始インデックスと長さパラメータが与えられると、ckBTC minterは、与えられた`start` インデックスのイベントからインデックス`start+length-1` のイベントまで、すべてのイベントを順次返します。
+
+このエンドポイントはデバッグ目的で使用され、このエンドポイントがこの形式で存在し続ける保証はないことに注意してください。
+
+## リソース
+
+Bitcoin を使用した独自のアプリの構築を開始するには、以下のチュートリアルを参照してください：
+
+- [ckBTC wiki ページ](https://wiki.internetcomputer.org/wiki/Chain-key_Bitcoin)。
+- [最初のビットコインのデプロイdapp](../../../samples/deploying-your-first-bitcoin-dapp.md) 。
+- [GitHub リポジトリ](https://github.com/dfinity/ic/tree/master/rs/bitcoin/ckbtc/minter)。
+- [ローカル開発](./local-development.md)。
+
+<!---
 # Chain-key Bitcoin (ckBTC)
 
 ## Overview
@@ -118,3 +253,5 @@ To start building your own apps with Bitcoin see the following tutorials:
 - [Deploying your first Bitcoin dapp](../../../samples/deploying-your-first-bitcoin-dapp.md).
 - [GitHub repository](https://github.com/dfinity/ic/tree/master/rs/bitcoin/ckbtc/minter).
 - [Local development](./local-development.md).
+
+-->

@@ -1,3 +1,99 @@
+# 無料で始めるcycles
+
+## 概要
+
+このガイドでは、dapps をメインネットにデプロイするために使用できる、最初の 20T 無料cycles を取得するために**cycles 蛇口を**使用する方法について説明します。
+
+## 前提条件
+
+- \[x\][このガイドに従って](/developer-docs/setup/install/index.mdx) Internet Computer SDK をインストールします。
+
+## ステップ1：クーポンを取得します。
+
+まず、[https://faucet](https://faucet.dfinity.org) に移動する必要があります[。dfinity.org](https://faucet.dfinity.org).
+[DFINITY dev officialDiscord](https://discord.gg/jnjVVQaE2C)サーバーにcycles のリクエストを入れる必要があります。Discord サーバーに参加するには、蛇口ページの**REQUESTCYCLES**ボタンをクリックします。
+
+![Getting Coupon](_attachments/faucet_step_1.png)
+
+## ステップ 2:Discord サーバーに入ったら、`#cycles-faucet` チャンネルに移動します。
+
+![Cycles-faucet](./_attachments/cycles-faucet.png)
+
+## ステップ 3: このチャンネルで、次のようなメッセージを送信します：
+
+> こんにちは、cycles クーポンをリクエストしたいです。ありがとうございます。
+
+## ステップ 4: このメッセージを送信すると、DFINITY チームメンバーからDiscord ダイレクトメッセージでご連絡いたします。
+
+:::caution
+ Discord 設定が他のユーザーからのダイレクトメッセージを許可するように設定されていることを確認してください。
+::：
+
+## ステップ 5:DFINITY チームからのダイレクトメッセージには、アンケートが記載されています。このアンケートに回答してください。
+
+![Survey](_attachments/faucet_step_2.png)
+
+## ステップ 6: アンケートに回答したら、ダイレクトメッセージに返信し、アンケートに回答したことをチームメンバーに知らせます。その後、クーポンが送られてきます。
+
+## ステップ 7: https:[//faucet.dfinity.org](https://faucet.dfinity.org)のウェブページに戻ります。
+
+**次のステップを**クリックして次に進みます。
+
+## ステップ 8: クーポンを利用します。
+
+クーポンコードを入手したら、蛇口UIにクーポンコードを入力します。
+
+![Enter Coupon](_attachments/faucet_step_3.png)
+
+**NEXT STEPを**クリックして次に進みます。
+
+## ステップ9：IC SDKをセットアップします。
+
+次に、お使いのコンピューターに`dfx` がインストールされていることを確認します。このコマンドを実行して、コンピューター上の`dfx` のバージョンを確認します：
+
+    dfx --version
+
+dfxのバージョンが0.12.0未満の場合は、このコマンドを実行してください：
+
+    sudo dfx upgrade
+
+![Setup SDK](_attachments/faucet_step_4.png)
+
+**NEXT STEPを**クリックして次に進みます。
+
+## ステップ10：cycles を請求するために新しい ID を作成します。
+
+新しいIDを作成するには、次のコマンドを使用します：
+
+    dfx identity new MyNewIdentity
+
+あなたのIDのシードフレーズが返されます。これを安全な場所に保存してください。
+
+次に、この ID をデフォルトで使用するように設定します：
+
+    dfx identity use MyNewIdentity
+
+## ステップ11:cycles を請求します。
+
+このコマンドを実行して、無料のcycles を要求する必要があります：
+
+    dfx wallet --network ic redeem-faucet-coupon <your-coupon-code>
+
+![Claim Cycles](_attachments/faucet_step_5.png)
+
+**次のステップを**クリックして進みます。
+
+## ステップ 12: ウォレットの確認canister.
+
+最後のステップは、`dfx wallet --network ic balance` コマンドを使用して残高をチェックすることで、ウォレットが正しくセットアップされていることを確認することです：
+
+![Verify Wallet Canister](_attachments/faucet_step_6.png)
+
+## 結論
+
+これで IC 上でウェブサイトをホストする準備ができました。またはdapp のチュートリアルに従いましょう[。](../../../tutorials/index.mdx)
+
+<!---
 # Getting started with free cycles
  
 ## Overview
@@ -99,3 +195,5 @@ The last step is to verify the wallet is setup correctly, by checking its balanc
 
 Now you are ready to host a website on the IC or follow one of our dapp tutorials, which can be found [here.](../../../tutorials/index.mdx)
 
+
+-->

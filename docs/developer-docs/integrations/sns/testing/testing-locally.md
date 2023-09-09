@@ -1,6 +1,149 @@
 ---
+
 sidebar_position: 2
 ---
+# SNSのローカルテスト
+
+## 概要
+
+開発者を支援するために、DFINITY は`sns-testing` リポジトリを作成しました。このリポジトリには、開発者が SNS プロセスをテストするのに役立つスクリプトがあります。開発者は、Internet Computer のローカルバージョンをローカルマシンで実行し、dapp をローカルにデプロイして、dapp の分散化の[段階を](../launching/launch-summary.md)実行することができます。
+
+[.yamlファイルでSNSの初期パラメータを選択](../tokenomics/preparation.md)した後、本番環境でSNSの起動をリクエストする前に、SNSの起動をローカルでテストする必要があります。
+
+** `sns-testing` リポジトリの主な目的は、開発者が自分のdapp を分散化する実際のプロセスをテストすることです。**
+
+とりわけ、開発者は`sns-testing` リポジトリを以下のことに利用できます：
+
+- プロポーザルの開始
+- プロポーザルの通過
+- 分散スワップの開始
+- DAO 投票によるdapp のアップグレード。
+
+:::info
+`sns-testing` は、ローカルで SNS プロセスをテストする一つの形態に過ぎません。開発者は自由に他のものを使ったり、`sns-testing` をフォーク/修正したり、独自のものを作ったりしてください。
+::：
+
+## `sns-testing` リポジトリの使用
+
+これらのスクリプトは、以下のようなスタックで最もテストされています：
+
+- 分散化されている単一のcanister 。
+- `dfx deploy` を使ってローカルのレプリカにデプロイできるcanister 。
+
+## `sns-testing` リポジトリを使ったテスト
+
+`sns-testing` コマンドとその引数を正しく使うには、`sns-testing` [README](https://github.com/dfinity/sns-testing#sns-lifecycle) を参照してください。
+
+:::info
+2023年8月以前に`sns-testing` を使い始めていて、SNSを立ち上げる古いレガシーな流れを使っている場合（詳しくは[こちらを](../launching/index.md)ご覧ください）、[この古いREADMEの](https://github.com/dfinity/sns-testing/blob/v1-legacy/README.md)レガシーなドキュメントを参考に作業を続けてください。特に、
+
+- Appleのシリコンのみの指示に従っていた場合は、`v1-legacy` Gitタグに切り替えてください。
+- Dockerベースのデプロイアプローチを使用していた場合は、dockerイメージを使用してください:`docker pull ghcr.io/dfinity/sns-testing:v1-legacy`.
+
+:::
+
+### SNS起動プロセスのテスト段階
+
+`sns-testing`
+なお、 の狭いケースに合致しない を持つ開発者もいるので、この表には他の開発者が経験したことの列も含まれています。`sns-testing` dapps 
+
+<table border="1">
+    <tr>
+        <th>Stage Number</th>
+        <th>Stage</th>
+        <th>Example in `sns-testing`</th>
+        <th>Notes</th>
+    </tr>
+    <tr>
+        <td>0</td>
+        <td>Developers deploy a dapp to the Internet Computer</td>
+        <td><code>./deploy_test_canister.sh</code></td>
+        <td>Custom scripts used to deploy dapps (e.g. multi-canister dapps, use nix, etc...)</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Dapp developers choose the initial parameters of the SNS for a dapp</td>
+        <td><code>example_sns_init.yaml</code></td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Dapp developers add NNS root as co-controller of dapp</td>
+        <td><code>./let_nns_control_dapp.sh</code></td>
+        <td><code></code></td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Submit NNS proposal to create SNS</td>
+        <td rowspan="1"><code>./propose_sns.sh]</code></td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>The NNS proposal is decided</td>
+        <td rowspan="5"><code>(No commands required)</code></td>
+        <td rowspan="5"><code> </code></td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td>(Automated) SNS-W deploys SNS canisters</td>
+    </tr>
+        <tr>
+        <td>6</td>
+        <td>(Automated) SNS-W sets SNS root as sole controller of dapp</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>(Automated) SNS-W initializes SNS canisters according to settings from Step 1</td>
+    </tr>
+    <tr>
+        <td>8</td>
+        <td>(Automated) SNS swap starts</td>
+    </tr>
+    <tr>
+        <td> </td>
+        <td>Users participate in the swap</td>
+        <td rowspan="1"><code>./participate_in_sns_swap.sh</code></td>
+        <td rowspan="1"></td>
+    </tr>
+    <tr>
+        <td>9</td>
+        <td>(Automated) SNS swap ends</td>
+        <td rowspan="2"><code>(No commands required)</code></td>
+    </tr>
+    <tr>
+        <td>10</td>
+        <td>(Automated) SNS swap finalizes</td>
+    </tr>
+</table>
+
+### SNS のアップグレードと管理のテスト
+
+canister またはdapp が SNS に引き渡されると、提案と投票によって更新されます。開発者は[ `sns-testing` のコマンドを使って](https://github.com/dfinity/sns-testing#sns-lifecycle)この流れをテストできます。
+
+<table border="1">
+    <tr>
+        <th>Action</th>
+        <th>Example in `sns-testing`</th>
+    </tr>
+    <tr>
+        <td>Upgrade a yet-to-be-decentralized canister by submitting an SNS proposal that can be voted on using the SNS developer neuron.</td>
+        <td><code>./upgrade_test_canister.sh</code></td>
+    </tr>
+    <tr>
+        <td>Submit proposal to upgrade a decentralized canister</td>
+        <td><code>./upgrade_test_canister.sh]</code></td>
+    </tr>
+     <tr>
+        <td>Vote on a proposal that upgrades a decentralized canister</td>
+        <td><code>./vote_on_sns_proposal.sh</code></td>
+    </tr>
+</table>
+
+また、統合や基本的な SNS の機能をテストしたい場合もあるでしょう。
+この目的のためには、テスト SNS を
+立ち上げた後に上記の手順を使用するか、[メインネットの SNS testflight](testing-on-mainnet.md) を使用します。
+
+<!---
+
 # Testing SNS locally
 
 ## Overview
@@ -141,3 +284,4 @@ Once a canister or dapp has been handed over to an SNS, it will be updated via p
 You might also want to test integrations and basic SNS functionality. 
 For this purpose you can use the above instructions after the test SNS is 
 launched or use the [SNS testflight on mainnet](testing-on-mainnet.md).
+-->

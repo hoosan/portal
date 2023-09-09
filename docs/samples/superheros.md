@@ -1,3 +1,44 @@
+# スーパーヒーロー
+
+## 概要
+
+この例では、Motoko と React を使用して、Internet Computer 上で CRUD アプリケーションを構築する方法を示します。
+
+これはMotoko の例で、現在のところ Rust バリアントはありません。
+
+## 前提条件
+
+この例では、以下のインストールが必要です：
+
+- \[x\][IC SDKを](../developer-docs/setup/install/index.mdx)インストールしてください。
+- https://github.com/dfinity/examples/ \[x\] GitHubから以下のプロジェクトファイルをダウンロードしてください。
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ 1: プロジェクト・ファイルを含むフォルダに移動し、Internet Computer のローカル・インスタンスをコマンドで起動します：
+
+    cd examples/motoko/superheros
+    dfx start --background
+
+### ステップ 2: アプリケーションのフロントエンドをビルドします：
+
+    npm install
+
+### ステップ 3:canister をデプロイします：
+
+    dfx deploy
+
+### ステップ 4:canister にアクセスできる URL を控えておいてください。
+
+    echo "http://127.0.0.1:4943/?canisterId=$(dfx canister id www)"
+
+### ステップ5：ウェブブラウザで前述のURLを開きます。
+
+以下のインターフェイスが表示されます：
+
+![Superheros interface](./_attachments/superheros.png)
+
+<!---
 # Superheros
 
 ## Overview
@@ -43,3 +84,4 @@ echo "http://127.0.0.1:4943/?canisterId=$(dfx canister id www)"
 You will see the following interface that you can interact with:
 
 ![Superheros interface](./_attachments/superheros.png)
+-->

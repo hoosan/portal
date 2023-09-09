@@ -1,3 +1,917 @@
+# 参考資料
+
+## 概要
+
+このドキュメントでは、Candid がサポートする型に関する詳細なリファレンス情報と、Candid 仕様書および Candid Rust クレートに関するドキュメントへのリンクを提供します。
+
+- サポートさ[れる](#supported-types)型
+
+- [Candid 仕様](https://github.com/dfinity/candid)
+
+- [Candid Rustクレート](https://docs.rs/candid)
+
+Candid を使い始める前にさらに情報をお探しの場合は、以下の関連リソースをご覧ください：
+
+- Candidが[アプリケーション・インターフェースの共通言語を提供する方法（ビデオ）](https://www.youtube.com/watch?v=O2KaWRtsqHg)。
+
+## サポートされる型
+
+このセクションでは、Candid がサポートするすべての型をリストします。各タイプについて、リファレンスには以下の情報が含まれています：
+
+- 型の構文および型のテキスト表現の構文。
+
+- 各型のアップグレード規則は、型の可能な**サブ**タイプと**スーパータイプの**観点から示されています。
+
+- Rust、Motoko 、Javascriptでの対応する型。
+
+サブタイプとは、メソッドの**結果を**変更できる型のことです。スーパータイプとは、メソッドの**引数を**変更できる型のことです。
+
+このリファレンスでは、それぞれの型に関連する特定のサブタイプとスーパータイプのみをリストアップしていることに注意してください。どの型にも適用できるサブタイプとスーパータイプに関する一般的な情報は繰り返しません。例えば、このリファレンスでは`empty` をサブタイプとして挙げていません。同様に、`reserved` と`opt t` はどの型の上位型でもあるため、特定の型の上位型としてリストされていません。`empty` 、`reserved` 、`opt t` の型のサブタイプの規則の詳細については、以下のセクションを参照してください：
+
+- [`opt t`](#type-opt)
+
+- [`reserved`](#type-reserved)
+
+- [`empty`](#type-empty)
+
+## 型テキスト
+
+`text` 型は人間が読めるテキストに使われます。より正確には、その値はunicodeコードポイントのシーケンスです（サロゲート部分を除く）。
+
+#### 型のシンタックス
+
+`text`
+
+#### テキスト構文
+
+``` candid
+""
+"Hello"
+"Escaped characters: \n \r \t \\ \" \'"
+"Unicode escapes: \u{2603} is ☃ and \u{221E} is ∞"
+"Raw bytes (must be utf8): \E2\98\83 is also ☃"
+```
+
+#### 対応するMotoko 型
+
+`Text`
+
+#### 対応する Rust 型
+
+`String` または`&str`
+
+#### 対応するJavaScriptの値
+
+`"String"`
+
+## ブロブ型
+
+`blob` 型はバイナリデータ、つまりバイト列に使用できます。`blob` 型を使用して記述されたインターフェースは、`vec nat8` を使用して記述されたインターフェースと互換性があります。
+
+#### 型の構文
+
+`blob`
+
+#### テキスト構文
+
+`blob <text>`
+
+ここで`<text>` は、すべての文字が utf8 エンコードされたテキストリテラルと、任意のバイト列 (`"\CA\FF\FE"`) を表します。
+
+テ キ ス ト 型に関す る 詳 し い情報は[text](#type-text) を参照 し て く だ さ い。
+
+#### サブタイプ
+
+`vec nat8`および`vec nat8` のすべてのサブタイプ。
+
+#### スーパータイプ
+
+`vec nat8`および`vec nat8` のすべてのスーパータイプ。
+
+#### 対応するMotoko 型
+
+`Blob`
+
+#### 対応するRust型
+
+`Vec<u8>` または`&[u8]`
+
+#### 対応する JavaScript の値
+
+`[ 1, 2, 3, 4, ... ]`
+
+## nat 型
+
+`nat` 型は、すべての自然数 (非負) を含みます。これは束縛されず、任意の大きな数を表すことができます。オンワイヤーエンコーディングは LEB128 ですので、小さな数も効率的に表現できます。
+
+#### 型の構文
+
+`nat`
+
+#### テキスト構文
+
+``` candid
+1234
+1_000_000
+0xDEAD_BEEF
+```
+
+#### スーパータイプ
+
+`int`
+
+#### 対応するMotoko 型
+
+`Nat`
+
+#### 対応するRust型
+
+`candid::Nat` または`u128`
+
+#### 対応する JavaScript の値
+
+`+BigInt(10000)` または`10000n`
+
+## int 型
+
+`int` 型はすべての整数を含みます。これは束縛されず、任意の大小の数を表すことができます。オンワイヤーエンコーディングは SLEB128 です。
+
+#### 型の構文
+
+`int`
+
+#### テキスト構文
+
+``` candid
+1234
+-1234
++1234
+1_000_000
+-1_000_000
++1_000_000
+0xDEAD_BEEF
+-0xDEAD_BEEF
++0xDEAD_BEEF
+```
+
+#### サブタイプ
+
+`nat`
+
+#### 対応するMotoko 型
+
+`Int`
+
+#### 対応するRust型
+
+`candid::Int` または`i128`
+
+#### 対応するJavaScriptの値
+
+`+BigInt(-10000)` または`-10000n`
+
+## 型 natN および intN
+
+型`nat8`,`nat16`,`nat32`,`nat64`,`int8`,`int16`,`int32` および`int64` は、そのビット数の表現を持つ数値を表し、より「低レベル」なインターフェイスで使用することができます。
+
+`natN` の範囲は`{0 …​ 2^N-1}` で、`intN` の範囲は`-2^(N-1) …​ 2^(N-1)-1` です。
+
+オンワイヤー表現は、まさにそのビット数です。したがって、小さな値の場合、`nat64` よりも`nat` の方がスペース効率が高くなります。
+
+#### タイプ構文
+
+`nat8` `nat16`, , , , , または`nat32` `nat64` `int8` `int16` `int32` `int64`
+
+#### テキスト構文
+
+`nat8`,`nat16`,`nat32`,`nat64` については`nat` と同じ。
+
+`int8`,`int16`,`int32`,`int64` については`int` と同じ。
+
+型アノテーションを使用して、異なる整数型を区別できます。
+
+``` candid
+100 : nat8
+-100 : int8
+(42 : nat64)
+```
+
+#### 対応するMotoko 型
+
+`natN` はデフォルトで に変換されますが、必要に応じて に変換することもできます。`NatN` `WordN` 
+
+`intN` は に変換されます。`IntN`
+
+#### 対応する Rust 型
+
+対応するサイズの符号付き整数と符号なし整数。
+
+| 長さ | 符号あり | 符号なし |
+| --- | --- | --- |
+| 8 ビット | i8 | u8 |
+| 16ビット | i16 | u16 |
+| 32ビット | i32 | u32 |
+| 64ビット | i64 | u64 |
+
+#### 対応するJavaScriptの値
+
+8ビット、16ビット、32ビットは数値型に変換されます。
+
+`int64` と は JavaScript の プリミティブに変換されます。`nat64` `BigInt` 
+
+## float32 と float64 型
+
+型`float32` と`float64` は、単精度 (32 ビット) と倍精度 (64 ビット) の IEEE 754 浮動小数点数を表します。
+
+#### 型の構文
+
+`float32`,`float64`
+
+#### テキスト構文
+
+`int` と同じ構文に加え、浮動小数点リテラルは以下の通り：
+
+``` candid
+1245.678
++1245.678
+-1_000_000.000_001
+34e10
+34E+10
+34e-10
+0xDEAD.BEEF
+0xDEAD.BEEFP-10
+0xDEAD.BEEFp+10
+```
+
+#### 対応するMotoko 型
+
+`float64` は に対応します。`Float`
+
+`float32` 現在、 には表現がMotoko**ありません**。 を使用する Candid インターフェースは、 プログラムから提供したり、 プログラムから使用したりすることはできません。`float32` Motoko 
+
+#### 対応するRust型
+
+`f32`,`f64`
+
+#### 対応する JavaScript の値
+
+浮動小数点数
+
+## 型 bool
+
+`bool` 型は論理データ型で、`true` または`false` の値のみを持つことができます。
+
+#### 型の構文
+
+`bool`
+
+#### テキスト構文
+
+`true`,`false`
+
+#### 対応するMotoko 型
+
+`Bool`
+
+#### 対応する Rust 型
+
+`bool`
+
+#### 対応するJavaScriptの値
+
+`true`,`false`
+
+## null型
+
+`null` 型は値`null` の型であり、したがってすべての`opt t` 型のサブタイプです。また、列挙をモデル化するために[バリアントを](#type-variant)使用する場合の慣用的な選択でもあります。
+
+#### 型の構文
+
+`null`
+
+#### テキスト構文
+
+`null`
+
+#### 上位型
+
+すべての`opt t` 型。
+
+#### 対応するMotoko 型
+
+`Null`
+
+#### 対応する Rust 型
+
+`()`
+
+#### 対応する JavaScript の値
+
+`null`
+
+## 型 vec t
+
+`vec` 型はベクトル（シーケンス、リスト、配列）を表します。`vec t` 型の値には、`t` 型のゼロ個以上の値のシーケンスが含まれます。
+
+#### 型の構文
+
+`vec bool` `vec nat8`, など。`vec vec text`
+
+#### テキスト構文
+
+``` candid
+vec {}
+vec { "john@doe.com"; "john.doe@example.com" };
+```
+
+#### サブタイプ
+
+- `t` が`t'` のサブタイプである場合、`vec t` は`vec t'` のサブタイプです。
+
+- `blob` は のサブタイプです。`vec nat8`
+
+#### スーパータイプ
+
+- `t` が`t'` のスーパータイプである場合、`vec t` は`vec t'` のスーパータイプです。
+
+- `blob` は の上位型。`vec nat8`
+
+#### 対応するMotoko 型
+
+`[T]`ここで、Motoko の型`T` は`t` に対応します。
+
+#### 対応する Rust 型
+
+`Vec<T>` または 、ここで Rust 型 は に対応します。`&[T]` `T` `t`
+
+`vec t` は または に変換できます。`BTreeSet` `HashSet`
+
+`vec record { KeyType; ValueType }` は あるいは に対応します。`BTreeMap` `HashMap`
+
+#### 対応するJavaScriptの値
+
+`Array`例えば`[ "text", "text2", …​ ]`
+
+## 型 opt t
+
+`opt t` 型は`t` 型のすべての値に加え、特別な`null` 値を含みます。これは、ある値がオプションであることを表現するために使用されます。つまり、データは`t` 型の値として存在するかもしれませんし、値`null` として存在しないかもしれません。
+
+`opt` 型は入れ子にすることができ（例えば`opt opt text` ）、値`null` と`opt null` は別個の値です。
+
+`opt` 型はCandidインタフェースの進化において重要な役割を果たし、以下に説明するような特別なサブタイプの規則を持っています。
+
+#### 型の構文
+
+`opt bool` `opt nat8` 、 など。`opt opt text`
+
+#### テキスト構文
+
+``` candid
+null
+opt true
+opt 8
+opt null
+opt opt "test"
+```
+
+#### サブタイプ
+
+`opt` を使ったサブタイプの正規ルールは以下のとおりです：
+
+- `t` が`t'` のサブタイプである場合、`opt t` は`opt t'` のサブタイプです。
+
+- `null` は のサブタイプ。`opt t'`
+
+- `t` が のサブタイプである場合 ( 自体が , , である場合を除く)。`opt t` `t` `null` `opt …` `reserved`
+
+さらに、アップグレードや高次のサービスに関連する技術的な理由から、型が一致しない場合は、**すべての**型は`opt t` のサブタイプであり、`null` が生成されます。しかし、ユーザはこのルールを直接利用しないことをお勧めします。
+
+#### スーパータイプ
+
+- `t` が`t'` のスーパータイプである場合，`opt t` は`opt t'` のスーパータイプです．
+
+#### 対応するMotoko タイプ
+
+`?T`ここで、Motoko の型`T` は`t` に対応します。
+
+#### 対応する Rust 型
+
+`Option<T>`対応する Rust 型`T` は`t` に対応します。
+
+#### 対応するJavaScriptの値
+
+`null` は に対応します。`[]`
+
+`opt 8` は に対応します。`[8]`
+
+`opt opt "test"` は に対応します。`[["test"]]`
+
+## 型レコード { n : t, ... }.
+
+`record` 型は、ラベル付けされた値のコレクションです。たとえば、次のコードは、`street` 、`city` 、`country` のテキスト・フィールドと、`zip_code` の数値フィールドを持つレコードの型に、`address` という名前を与えます。
+
+``` candid
+type address = record {
+  street : text;
+  city : text;
+  zip_code : nat;
+  country : text;
+};
+```
+
+レコード型宣言におけるフィールドの順序は重要ではありません。各フィールドは異なる型を持つことができます（ベクトルとは異なります）。レコード・フィールドのラベルは、この例のように32ビットの自然数であることもできます：
+
+``` candid
+type address2 = record {
+  288167939 : text;
+  1103114667 : text;
+  220614283 : nat;
+  492419670 : text;
+};
+```
+
+実際、テキスト・ラベルはその**フィールド・ハッシュとして**扱われ、ちなみに、`address` と`address2` は Candid にとって同じ型です。
+
+ラベルを省略した場合、Candidは自動的に順次増加するラベルを割り当てます。この動作により、通常ペアやタプルを表現するために使用される以下の短縮構文が導かれます。型`record { text; text; opt bool }` 。`record { 0 : text; 1: text; 2: opt bool }`
+
+#### 型の構文
+
+``` candid
+record {}
+record { first_name : text; second_name : text }
+record { "name with spaces" : nat; "unicode, too: ☃" : bool }
+record { text; text; opt bool }
+```
+
+#### テキスト構文
+
+``` candid
+record {}
+record { first_name = "John"; second_name = "Doe" }
+record { "name with spaces" = 42; "unicode, too: ☃" = true }
+record { "a"; "tuple"; null }
+```
+
+#### サブタイプ
+
+レコードのサブタイプは、追加のフィールド（型は問わない）を持つレコード型であり、いくつかのフィールドの型がサブタイプに変更されたり、オプションのフィールドが削除されたりします。ただし、メソッドの結果でオプショナル・フィールドを削除するのは悪い習慣です。フィールドの型を`opt empty` に変更することで、このフィールドが使われなくなったことを示すことができます。
+
+例えば、以下の型のレコードを返す関数があるとします：
+
+``` candid
+record {
+  first_name : text; middle_name : opt text; second_name : text; score : int
+}
+```
+
+のレコードを返す関数がある場合、それを次の型のレコードを返す関数に変更することができます：
+
+``` candid
+record {
+  first_name : text; middle_name : opt empty; second_name : text; score : nat; country : text
+}
+```
+
+ここで、`middle_name` フィールドを非推奨とし、`score` の型を変更し、`country` フィールドを追加しました。
+
+#### スーパータイプ
+
+レコードのスーパータイプは、いくつかのフィールドが削除されたり、いくつかのフィールドの型がスーパータイプに変更されたり、オプションのフィールドが追加されたレコード型です。
+
+後者は、引数レコードを追加フィールドで拡張できるようにするものです。古いインタフェースを使用しているクライアントは、そのレコードにフィールドを含めません。これは、アップグレードされたサービスで期待される場合、`null` としてデコードされます。
+
+例えば、型：
+
+``` candid
+record { first_name : text; second_name : text; score : nat }
+```
+
+のレコードを期待する関数がある場合、それを型のレコードを期待する関数に進化させることができます：
+
+``` candid
+record { first_name : text; score: int; country : opt text }
+```
+
+#### 対応するMotoko タイプ
+
+レコード型がタプル（つまり、0から始まる連続したラベル）を参照するように見える場合、Motoko タプル型（たとえば、`(T1, T2, T3)` ）が使用されます。そうでない場合は、Motoko レコード`({ first_name :Text, second_name : Text })` が使用されます。
+
+フィールド名がMotoko の予約名である場合、アンデスコアが付加されます。つまり、`record { if : bool }` は`{ if_ : Bool }` に対応します。
+
+その場合でも）フィールド名が有効なMotoko 識別子でない場合、代わりに**フィールド・**ハッシュが使用されます：`record { ☃ : bool }` は`{ 11272781 : Boolean }` に対応します。
+
+#### 対応する Rust 型
+
+ユーザ定義の`struct` と`#[derive(CandidType, Deserialize)]` 特性。
+
+`#[serde(rename = "DifferentFieldName")]` 属性を使用してフィールド名を変更できます。
+
+レコード型がタプルの場合、`(T1, T2, T3)` のようなタプル型に変換できます。
+
+#### 対応するJavaScriptの値
+
+レコード・タイプがタプルの場合、値は配列に変換され、例えば`["Candid", 42]` 。
+
+そうでない場合は、レコードオブジェクトに変換されます。たとえば、`{ "first name": "Candid", age: 42 }` 。
+
+フィールド名がハッシュの場合、`_hash_` をフィールド名として使用します。例えば、`{ _1_: 42, "1": "test" }` 。
+
+## 型バリアント { n : t, ... } 。
+
+`variant` 型は、指定されたケース（**タグ**）のちょうど1つの値を表します。つまり
+
+``` candid
+type shape = variant {
+  dot : null;
+  circle : float64;
+  rectangle : record { width : float64; height : float64 };
+  "💬" : text;
+};
+```
+
+は、ドット、円（半径を持つ）、長方形（寸法を持つ）、吹き出し（テキストを含む）のいずれかです。吹き出しはユニコードのラベル名(💬)の使用を示しています。
+
+バリアントのタグはレコードのラベルと同じように、実際には数字で、文字列タグはそのハッシュ値を参照しています。
+
+多くの場合、タグの一部または全部はデータを持ちません。その場合、`dot` のように、`null` 型を使うのが慣用的です。実際、Candidはバリアントで`: null` 型のアノテーションを省略できるようにすることで、これを奨励しています：
+
+``` candid
+type season = variant { spring; summer; fall; winter }
+```
+
+と等価です：
+
+``` candid
+type season = variant {
+  spring : null; summer: null; fall: null; winter : null
+}
+```
+
+と等価で、列挙を表すのに使われます。
+
+`variant {}` 型は合法ですが、値を持ちません。そのような意図であれば、[`empty` 型の](#type-empty)方が適切かもしれません。
+
+#### 型の構文
+
+``` candid
+variant {}
+variant { ok : nat; error : text }
+variant { "name with spaces" : nat; "unicode, too: ☃" : bool }
+variant { spring; summer; fall; winter }
+```
+
+#### テキスト構文
+
+``` candid
+variant { ok = 42 }
+variant { "unicode, too: ☃" = true }
+variant { fall }
+```
+
+#### サブタイプ
+
+バリアント型のサブタイプはいくつかのタグが削除されたバリアント型で、 いくつかのタグの型自体がサブタイプに変更されたものです。
+
+メソッドの結果の variant に新しいタグを**追加**できるようにするには、 variant 自体が`opt …` でラップされていれば可能です。これは前もって計画する必要があります！インターフェイスを設計するときは、：
+
+``` candid
+service: {
+  get_member_status (member_id : nat) -> (variant {active; expired});
+}
+```
+
+と書く代わりに、これを使うのがよいでしょう：
+
+``` candid
+service: {
+  get_member_status (member_id : nat) -> (opt variant {active; expired});
+}
+```
+
+こうすることで、後で`honorary` メンバーシップのステータスを追加する必要が生じたときに、 ステータスのリストを拡張することができます。古いクライアントは未知のフィールドを`null` として受け取ります。
+
+#### スーパータイプ
+
+バリアントタイプのスーパータイプはタグが追加されたバリアントで、 いくつかのタグのタイプがスーパータイプに変更されたものです。
+
+#### 対応するMotoko タイプ
+
+バリアントタイプは例えばMotoko バリアントタイプとして表現されます：
+
+``` motoko
+type Shape = {
+  #dot : ();
+  #circle : Float;
+  #rectangle : { width : Float; height : Float };
+  #_2669435721_ : Text;
+};
+```
+
+タグの型が`null` の場合、これはMotoko の`()` に対応することに注意してください。
+
+#### 対応する Rust 型
+
+ユーザ定義の`enum` と`#[derive(CandidType, Deserialize)]` 特性。
+
+`#[serde(rename = "DifferentFieldName")]` 属性を使用してフィールド名を変更できます。
+
+#### 対応する JavaScript の値
+
+単一のエントリを持つレコードオブジェクト。例えば、`{ dot: null }` 。
+
+フィールド名がハッシュの場合、`_hash_` をフィールド名として使用します。例えば、`{ _2669435721_: "test" }` 。
+
+## タイプ func (...) → (...)
+
+Candidは、サービスが他のサービスやそのメソッドへの参照を受け取ったり提供したりするような、高次のユースケースをサポートするように設計されています。`func` ：これは関数の**シグネチャ**（引数と結果の型、注釈）を示し、この型の値はそのシグネチャを持つ関数への参照です。
+
+サポートされているアノテーションは以下のとおりです：
+
+- `query` は、参照される関数がクエリ・メソッドであることを示し、 のステートを変更せず、安価な「クエリコール」メカニズムを使用して呼び出すことができることを意味します。canister
+
+- `oneway` は、この関数がレスポンスを返さないことを示します。
+
+パラメータの命名の詳細については、[引数と結果の命名を](/developer-docs/backend/candid/candid-concepts.md#service-naming)参照してください。
+
+#### 型の構文
+
+``` candid
+func () -> ()
+func (text) -> (text)
+func (dividend : nat, divisor : nat) -> (div : nat, mod : nat);
+func () -> (int) query
+func (func (int) -> ()) -> ()
+```
+
+#### テキスト構文
+
+現在のところ、プリンシパルで識別されるサービスのパブリックメソッドのみがサポートされています：
+
+``` candid
+func "w7x7r-cok77-xa".hello
+func "w7x7r-cok77-xa"."☃"
+func "aaaaa-aa".create_canister
+```
+
+#### サブタイプ
+
+サブタイプ： 関数型に以下の変更を加えると、[サービスのアップグレードの](/developer-docs/backend/candid/candid-concepts.md#upgrades)ルールで説明されているように、サブタイプに変更されます：
+
+- 結果型のリストが拡張されます。
+
+- 結果型のリストが拡張されます。
+
+- パラメータ型リストは省略可能な引数で拡張することができます(型`opt …`)。
+
+- 既存のパラメータ型を****スーパータイプに****変更することができます！言い換えれば、関数型は引数型に****対変型さ****れます。
+
+- 既存の結果型をサブタイプに変更することができます。
+
+#### スーパータイプ
+
+関数型に対する以下の変更は、それをスーパータイプに変更します：
+
+- 結果型のリストが短くなります。
+
+- 結果型リストが省略可能な引数で拡張されます (`opt …` 型)。
+
+- パラメータ型のリストが拡張されます。
+
+- 既存のパラメータ型を**サブタイプ**に変更することができます！言い換えれば、関数型は引数型****に対して変数を****持ちます。
+
+- 既存の結果型をスーパータイプに変更することができます。
+
+#### 対応するMotoko 型
+
+候補関数型は，`shared` Motoko 関数に対応し，結果型は`async` でラップされます（ただし，`oneway` のアノテーションが付けられている場合は，結果型は単に`()` となります）．引数や結果はタプルになります：
+
+``` candid
+type F0 = func () -> ();
+type F1 = func (text) -> (text);
+type F2 = func (text, bool) -> () oneway;
+type F3 = func (text) -> () oneway;
+type F4 = func () -> (text) query;
+```
+
+はMotoko に対応します。
+
+``` Motoko
+type F0 = shared () -> async ();
+type F1 = shared Text -> async Text;
+type F2 = shared (Text, Bool) -> ();
+type F3 = shared (text) -> ();
+type F4 = shared query () -> async Text;
+```
+
+#### 対応するRust型
+
+`candid::IDLValue::Func(Principal, String)`[IDLValue](https://docs.rs/candid/0.6.15/candid/parser/value/enum.IDLValue.html) を参照してください。
+
+#### 対応するJavaScriptの値
+
+`[Principal.fromText("aaaaa-aa"), "create_canister"]`
+
+## 型サービス：{...}
+
+サービスでは、（[`func` ](#type-func) 型を使用して）個々の関数への参照だけでなく、サービス全体への参照を渡したい場合があります。この場合、Candid型を使用してそのようなサービスの完全なインターフェイスを宣言することができます。
+
+サービスタイプの構文の詳細については、[Candidサービスの説明を](/developer-docs/backend/candid/candid-concepts.md#candid-service-descriptions)参照してください。
+
+#### 型の構文
+
+``` candid
+service: {
+  add : (nat) -> ();
+  subtract : (nat) -> ();
+  get : () -> (int) query;
+  subscribe : (func (int) -> ()) -> ();
+}
+```
+
+#### テキスト構文
+
+``` candid
+service: "w7x7r-cok77-xa"
+service: "zwigo-aiaaa-aaaaa-qaa3a-cai"
+service: "aaaaa-aa"
+```
+
+#### サブタイプ
+
+サービスタイプのサブタイプは、追加のメソッドを持つ可能性があり、既存のメソッドのタイプがサブタイプに変更されるサービスタイプです。
+
+これは、[サービスのアップグレードにおける](/developer-docs/backend/candid/candid-concepts.md#upgrades)アップグレードルールについて説明したのとまったく同じ原理です。
+
+#### スーパータイプ
+
+サービスタイプのスーパータイプは，いくつかのメソッドが削除される可能性があり，既存のメソッドのタイプがスーパータイプに変更されるサービスタイプです．
+
+#### 対応するMotoko タイプ
+
+Candid のサービスタイプはMotoko の`actor` タイプに直接対応しています：
+
+``` motoko
+actor {
+  add : shared Nat -> async ()
+  subtract : shared Nat -> async ();
+  get : shared query () -> async Int;
+  subscribe : shared (shared Int -> async ()) -> async ();
+}
+```
+
+#### 対応するRust型
+
+`candid::IDLValue::Service(Principal)`[IDLValueを](https://docs.rs/candid/0.6.15/candid/parser/value/enum.IDLValue.html)参照してください。
+
+#### 対応するJavaScriptの値
+
+`Principal.fromText("aaaaa-aa")`
+
+## プリンシパル型
+
+Internet Computer は、canisters 、ユーザー、その他のエンティティを識別するための共通スキームとして**プリンシパルを**使用します。
+
+#### 型の構文
+
+`principal`
+
+#### テキスト構文
+
+``` candid
+principal "w7x7r-cok77-xa"
+principal "zwigo-aiaaa-aaaaa-qaa3a-cai"
+principal "aaaaa-aa"
+```
+
+#### 対応するMotoko 型
+
+`Principal`
+
+#### 対応する Rust 型
+
+`candid::Principal` または`ic_types::Principal`
+
+#### 対応するJavaScriptの値
+
+`Principal.fromText("aaaaa-aa")`
+
+## 予約された型
+
+`reserved` 型は、`reserved` という1つの(無意味な)値を持つ型であり、他のすべての型のスーパータイプです。
+
+`reserved` 型はメソッドの引数を除去するために使用できます。次のシグネチャを持つメソッドを考えてみましょう：
+
+``` candid
+service: {
+  foo : (first_name : text, middle_name : text, last_name : text) -> ()
+}
+```
+
+`middle_name`Candidは、このシグネチャをこのように変更することを妨げません：
+
+``` candid
+service: {
+  foo : (first_name : text, last_name : text) -> ()
+}
+```
+
+もしクライアントが古いインターフェイスを使ってあなたに話しかけた場合、あなたは黙って`last_name` を無視し、`middle_name` を`last_name` として受け取るでしょう。メソッドの引数名は単なる慣習であり、メソッドの引数はその位置によって識別されることを覚えておいてください。
+
+代わりに
+
+``` candid
+service: {
+  foo : (first_name : text, middle_name : reserved, last_name : text) -> ()
+}
+```
+
+を使えば、`foo` が第二引数を取っていたことを示すことができます。
+
+この落とし穴を避けるには、引数が変化することが予想される関数や、引数が型ではなく位置でしか識別できない関数は、単一のレコードを取るように宣言するパターンを採用します。例えば
+
+``` candid
+service: {
+  foo : (record { first_name : text; middle_name : text; last_name : text}) -> ()
+}
+```
+
+さて、シグネチャをこう変えます：
+
+``` candid
+service: {
+  foo : (record { first_name : text; last_name : text}) -> ()
+}
+```
+
+というシグネチャに変更すると、正しい処理が行われ、削除された引数のレコードを保持しておく必要さえなくなります。
+
+:::info
+
+一般的に、メソッドから引数を削除することは推奨されません。通常は、引数を省略した新しいメソッドを導入する方が望ましいです。
+
+:::
+
+#### 型の構文
+
+`reserved`
+
+#### テキスト構文
+
+`reserved`
+
+#### サブタイプ
+
+すべての型
+
+#### 対応するMotoko 型
+
+`Any`
+
+#### 対応する Rust 型
+
+`candid::Reserved`
+
+#### 対応するJavaScriptの値
+
+任意の値
+
+## 空の型
+
+`empty` 型は値を持たない型であり、他のどの型のサブタイプでもあります。
+
+`empty` 型の実用的な使用例は比較的まれです。これは、メソッドを「決して正常に返さない」とマークするために使用できます。例えば
+
+``` candid
+service: {
+  always_fails () -> (empty)
+}
+```
+
+#### 型の構文
+
+`empty`
+
+#### テキスト構文
+
+この型には値がないので、ありません。
+
+#### スーパータイプ
+
+すべての型
+
+#### 対応するMotoko 型
+
+`None`
+
+#### 対応する Rust 型
+
+`candid::Empty`
+
+#### 対応するJavaScriptの値
+
+この型には値がないので、ありません。
+
+<!---
 # Candid reference
 
 ## Overview
@@ -807,3 +1721,5 @@ All types
 
 #### Corresponding JavaScript values  
 None, as this type has no values.
+
+-->

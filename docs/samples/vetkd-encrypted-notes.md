@@ -1,3 +1,137 @@
+# VetKD暗号化ノートdapp
+
+## 概要
+
+この例dapp は、[暗号化されたノートdapp](./encrypted-notes.md)の新しいバージョンで、新しく[提案された vetKD 機能を](https://github.com/dfinity/interface-spec/pull/158)使用するように変更されています。
+
+特に、dapp は、プリンシパル固有の AES キーを作成し、（デバイス固有の RSA キーによって）デバイス間で同期する代わりに、バックエンドcanister から取得されたプリンシパル固有の vetKey から（ブラウザで直接）導出される AES キーでノートが暗号化されるように変更されています。この鍵は、vetKD システム API から取得されるエフェメラル・トランスポート・キーを使用して、暗号化された形で取得されます。このように、dapp でデバイスを管理する必要はありません。
+
+オリジナルの encrypted-notes-dapp とこの新しい vetKD の例の違いは https://github.com/dfinity/examples/pull/561 で見ることができます。
+
+現在、このdapp を使用する唯一の方法は、以下に詳述するように、手動でローカルに配置することです。
+
+詳細は[オリジナルのencrypted-notes-dapp のREADMEを](https://github.com/dfinity/examples/blob/master/motoko/encrypted-notes-dapp/README.md)参照してください。
+
+## 免責事項
+
+この例では、[vetkd\_system\_api.wasmを介して](https://github.com/dfinity/examples/blob/master/motoko/encrypted-notes-dapp-vetkd/vetkd_system_api.wasm)、コンパイル済みの形で[提案されているvetKDシステムAPIの](https://github.com/dfinity/interface-spec/pull/158) [**安全でない**実装を](https://github.com/dfinity/examples/tree/master/rust/vetkd/src/system_api)使用しています。本番**環境や機密性の高いデータには使用しないで**ください！このサンプルは、vetKDシステムAPIに関するフィードバックを収集するための**デモンストレーションのみを目的として**います。
+
+## 前提条件
+
+この例では以下のインストールが必要です：
+
+- \[x\][IC SDKを](https://internetcomputer.org/docs/current/developer-docs/setup/install)インストールしてください。
+- \[x\] ウェブフロントエンドを構築するために`node.js` をインストールしてください。
+- \[x\] GitHubから以下のプロファイルファイルをダウンロードします: https://github.com/dfinity/examples/
+- \[x\] 環境変数:Motoko の場合は`export BUILD_ENV=motoko` を、Rust の場合は`export BUILD_ENV=rust` を設定します。
+- \[x\] Rustでデプロイする場合は、始める前に`rustup target add wasm32-unknown-unknown` 。
+
+### ステップ 1: プロジェクトのファイルがあるフォルダに移動します：
+
+    cd examples/motoko/encrypted-notes-dapp-vetkd
+
+:::info
+このプロジェクトフォルダには、Motoko と Rust コードの両方が含まれています。
+::：
+
+### ステップ 2:`$BUILD_ENV`-固有のファイル（つまり、Motoko または Rust）を生成するには、以下を実行します：
+
+``` sh
+sh ./pre_deploy.sh
+```
+
+### ステップ 3: プロジェクトルートから npm パッケージをインストールします：
+
+``` sh
+npm install
+```
+
+### ステップ4: dfxがすでに起動している場合は、以下を実行します：
+
+``` sh
+dfx stop
+rm -rf .dfx
+```
+
+次に、コマンドでdfxを起動します：
+
+``` sh
+dfx start --clean --background
+```
+
+:::info
+エラーが表示されたら、`Failed to set socket of tcp builder to 0.0.0.0:8000` 、ポート`8000` が、以前に実行したDockerコマンドなどで占有されていないことを確認します（このステップでは、Dockerデーモンを一切停止するとよいでしょう）。
+::：
+
+### ステップ5：ローカルの[インターネットID（II](https://wiki.internetcomputer.org/wiki/What_is_Internet_Identity)）をインストールするcanister ：
+
+:::info
+複数のdfx IDをセットアップしている場合は、`--identity` フラグで使用するIDを確認してください。
+::：
+
+canister ：
+
+``` sh
+dfx deploy internet_identity --argument '(null)'
+```
+
+次に、インターネット ID の URL を表示するには、以下を実行します：
+
+``` sh
+npm run print-dfx-ii
+```
+
+上記のコマンドの出力から URL にアクセスし、少なくとも 1 つのローカルインターネッ ト ID を作成します。
+
+### ステップ 6: vetKD システム APIcanister をインストールします：
+
+Canister SDK (dfx) がバックエンドcanister ソースコードにハードコードされているcanister ID を使用していることを確認します：
+
+``` sh
+dfx canister create vetkd_system_api --specified-id s55qq-oqaaa-aaaaa-aaakq-cai
+```
+
+canister をインストールし、デプロイします：
+
+``` sh
+dfx deploy vetkd_system_api
+```
+
+暗号化されたノートバックエンドcanister をデプロイします：
+
+``` sh
+dfx deploy "encrypted_notes_$BUILD_ENV"
+```
+
+生成されたcanister インターフェイスバインディングを更新します：
+
+``` sh
+dfx generate "encrypted_notes_$BUILD_ENV"
+```
+
+フロントエンドcanister をデプロイします：
+
+``` sh
+dfx deploy www
+```
+
+`npm run print-dfx-www` でURLを確認できます。
+
+### ステップ7: フロントエンドを開きます：
+
+ホットリロードにも対応したローカル開発サーバーを起動します：
+
+``` sh
+npm run dev
+```
+
+コンソール出力に表示されるURLを開いてください。通常、これは<http://localhost:3000/> です。
+
+:::info
+以前にこのページを開いたことがある場合は、ウェブブラウザからこのページのローカルストアデータをすべて削除し、ページをハードリロードしてください。例えばChromeの場合、Inspect → Application → Local Storage →`http://localhost:3000/` → Clear Allと進み、リロードしてください。
+::：
+
+<!---
 # VetKD encrypted notes dapp
 
 ## Overview
@@ -131,3 +265,5 @@ Open the URL that is printed in the console output. Usually, this is [http://loc
 :::info
 If you have opened this page previously, please remove all local store data for this page from your web browser, and hard-reload the page. For example in Chrome, go to Inspect → Application → Local Storage → `http://localhost:3000/` → Clear All, and then reload.
 :::
+
+-->

@@ -1,10 +1,73 @@
 ---
+
 title: The Internet Computer - A blockchain that offers stateful decentralized serverless computing
 description: Is serverless computation even possible on a blockchain platform? Our recent peer-reviewed article shows that the Internet Computer provides serverless computation comparable to existing cloud providers, but with the added benefits of decentralization and statefulness.
 tags: [Technology]
 author: Alexandru Uta
 image: /img/blog/serverless.webp
 ---
+# Internet Computer: ステートフルな分散型サーバーレス・コンピューティングを提供するブロックチェーン
+
+サーバーレスはクラウド・コンピューティングの世界に旋風を巻き起こし、ここ数年で大きな成長を遂げ、将来的にも非常にポジティブな予測が出ています。最近の予測によると、この市場は2028年までに年平均成長率20%以上で成長すると予想されています。基本的に、サーバーレスアーキテクチャは、IT自動化ソフトウェアを通じてクラウドベースの技術をその潜在能力を最大限に引き出し、企業がITインフラ管理に時間とリソースを費やすのではなく、成長を推進することを可能にします。
+
+これは非常に有望に聞こえますが、サーバーレス・クラウド・プラットフォームはまだステートレスで中央集権的です。そのため、アプリケーションはこの欠点を回避してステートを保存し、ベンダーロックインを回避する必要があります。Internet Computer 、セキュリティ、制御、信頼のもう一つのレイヤーを提供します。これらはすべて、単一の当事者がハードウェアやソフトウェアを制御しない分散化によって実現されます。さらに、Internet Computer は設計上ステートフルに動作します。
+
+この投稿では、Internet Computer ブロックチェーンが、分散化とステートフルという2つの重要な利点を追加したサーバーレス・コンピューティング機能をどのように提供するかについて説明します。
+
+## サーバーレスとは？
+
+サーバーレスとは、基盤となるインフラ（適切な仮想マシンのプロビジョニングとスケーリング、ソフトウェアとフレームワークのインストールとメンテナンスなど）を気にすることなく、迅速で俊敏な開発（cycles ）を可能にし、全体的な運用コストを削減する、新しいクラウド・コンピューティング・パラダイムです。severlessにはいくつかの形態がありますが、私たちのケースに最も関連しているのは、ファンクション・アズ・ア・サービス（FaaS）で、（大規模なコードベースが）非常に短い時間（ミリ秒から数分）で実行される（小さな）ファンクションに分割されます。関数は使用ごとに（つまり実行時間に応じて）課金され、さらに呼び出しごとに固定料金が加算されます。最後に重要な機能として、同じ関数のインスタンスを短時間で数千まで起動できる優れたスケーリング機能が挙げられます。
+
+## サーバーレス・プラットフォームとしてのInternet Computer 
+
+Internet Computer のアーキテクチャを簡単に垣間見ると、サーバーレス機能にさらなる利点があることに気づくでしょう。Internet Computer 上のCanister スマートコントラクトもまた、Rust、Motoko 、JavaScript、Python などの複数の言語でプログラムすることができ、canister ごとに異なる機能を提供できる複数のエンドポイントを公開することができます。以下の表は、主なサーバーレス機能とその対応表（Internet Computer ）、およびブロックチェーンがクラウドベースのサーバーレスと比較して持つ利点をまとめたものです。
+
+![Table 1](../../static/img/blog/serverless-table1.webp)
+
+*表1.主なサーバーレスの特徴とInternet Computer の機能の対比。非中央集権、ステートフルネス、信頼はサーバーレスの付加的な利点。Internet Computer*
+
+表からわかるように、Internet Computer はサーバーレス環境のすべての条件を満たしています。開発者は知らないかもしれませんが、すでにサーバーレスコードを実行しており、私たちの調査が示すように、従来のクラウドベンダーが提供するものとほぼ同じ効率で実行しています。また、特定の次元（メモリなど）では、Internet Computer 、従来のクラウドベンダーが提供するパワーを上回ることさえあります。しかし、私たちが強調したい最も重要な開発者向けの機能は、従来のサーバーレスクラウドでは提供されていないステートフルネスと分散化です。
+
+表2-3では、Internet Computer が競争力のあるサーバーレス・プラットフォームであることを可能にする技術的側面について、技術に詳しい読者に深く掘り下げて説明しています。ここで重要なのは、Internet Computer にはスマートコントラクトを実行するための2つのタイプ、更新モードと問い合わせモードがあるということです。前者はステートフルな呼び出しを表し、後者は一般的なサーバーレス・コンピューティングのようにステートレスです。
+
+![Table 2](../../static/img/blog/serverless-table2.webp)
+
+*表2.大規模サーバーレスアプリケーションの構築に重要な機能ステートフルであることは、Internet Computer の追加メリット。*
+
+![Table 3](../../static/img/blog/serverless-table3.webp)
+
+*表3.ランタイム関連機能に関するプラットフォームの詳細分析。*
+
+関数実行後のステート保持は、サーバーレス/FaaSの世界で長く求められてきた機能です。一般的に、現在のクラウドで提供されているシームレスなファンアウト型のスケーラビリティと相反するため、実装は非常に困難です。幸いなことに、Internet Computer は最初からステートフルネスを念頭に置いて設計されており、外部のストレージレイヤーやデータベースにデータを保存するような手動介入なしに、開発者にこの機能を提供します。そのため、Internet Computer でスマートコントラクトを呼び出した後は、すべての変数やデータが自動的に永続化されます。
+
+分散化は、見落とされがちなもう一つの重要な機能です。最新のサーバーレス製品は現在、いくつかの大規模な中央集権型クラウドによって提供されていますが、これはベンダーロックインにつながります。この場合、開発者のコードとデータはプロバイダと同じくらい安全であり、地理的な停止や単にベンダのポリシー変更に左右されます。Internet Computer は完全に分散化されており、ノードマシンは異なる地域で動作し、強力なコンセンサス保証の下で実行され、ビザンチン（悪意のある）障害も許容します。
+
+## Internet Computer vs. 従来のサーバーレス・プラットフォーム
+
+Internet Computer ブロックチェーンがサーバーレス・クラウドに対してどのような評価を下しているかを評価するために、Internet Computer とトップ3のサーバーレス・プラットフォームの1つで素数を計算するCPU集約型ベンチマークを実行しました。小さな入力では、Internet Computer は従来のサーバーレスよりも高速ですが、大きな入力では半分の速度です（下図の結果を参照）。これは非常に心強いことです。これは、まだ長い道のりがあるとはいえ、Internet Computer 、従来の集中型クラウドと比較した場合、性能面で支持を集めていることを示しています。より詳細な情報については、権威あるUSENIX ATCカンファレンスで発表された最近の査読付き論文をぜひご覧ください。
+
+![Figure 1](../../static/img/blog/serverless-figure1.webp)
+
+*図1.サーバーレス・プラットフォームのトップ3との速度比較。*
+
+## パフォーマンスの向上
+
+分散化やステートフルネスなどの余分な組み込み機能が、大規模なワークロードに対するInternet Computer パフォーマンスを低くしています（図2参照）。これらの機能は非常に強力で重要ですが、その反面、生のパフォーマンスも低下させます。
+
+![Figure 2](../../static/img/blog/serverless-figure2.webp)
+
+*図2.Internet Computer の分散化とステートフルネスのオーバーヘッド。*
+
+DFINITY エンジニアや研究者は、 のパフォーマンスを向上させ、改善する方法を模索し続けるでしょう。並列処理を増やしたり、現在のストレージレイヤーをログ構造化マージツリーアプローチに置き換えたりして、チェックポイント時間を改善することも、改善の可能性があります。Internet Computer
+
+より複雑なアプリケーションを可能にするために複合クエリの能力をフルに発揮させることも、パフォーマンスにプラスの影響を与えるでしょう。コンポジット・クエリについては、dapp の水平スケーリングを可能にし、クライアント側のコードを簡素化するための作業がすでに始まっています。クロスサブネットのクエリーコールと複製実行を可能にするためのさらなるエンジニアリングが進行中です。
+
+Internet Computer [、](https://internetcomputer.org/docs/current/home)サーバーレスアプリケーションを構築してください。
+
+Internet Computer [、](https://internetcomputer.org/enterprise)エンタープライズ・パイロットを実行してください。
+
+<!---
+
 
 # The Internet Computer: A blockchain that offers stateful decentralized serverless computing
 
@@ -66,3 +129,5 @@ Unleashing the full power of composite queries to enable more complex applicatio
 Build serverless applications on the Internet Computer [here](https://internetcomputer.org/docs/current/home).
 
 Run an enterprise pilot the Internet Computer [here](https://internetcomputer.org/enterprise).
+
+-->

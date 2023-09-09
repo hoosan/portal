@@ -1,3 +1,133 @@
+# 為替レートcanister
+
+## 概要
+
+XRC と呼ばれる為替レートcanister は、**uzr34 システムのサブネットで**実行されるcanister です。XRCは[HTTPSアウトコールを](https://internetcomputer.org/https-outcalls/)使用して、取引所のパブリックAPIを使用して主要な暗号通貨取引所からデータを取得し、リアルタイムまたは過去の暗号通貨価格情報を取得します。XRCはまた、外国為替レートを取得するために、世界中の外国為替データ・プロバイダーのパブリックAPIを定期的に照会します。
+
+XRCcanister は、分散型取引所（DEX）などのdapps によって使用され、為替レートを市場レートと比較して、canister スマートコントラクトに保有されている資産の価値を決定するなどの機能を提供することができます。例えば、NNSのcycle 発行canister はXRCを使用して現在のICP/XDR為替レートを取得します。これはICPからcycles への変換に必要です。
+
+XRCは、他のcanisters からのリクエストに応じてこのデータを提供します。他のcanister からの要求は、ベース・アセット、クォート・アセット、およびオプションの UNIX エポック・タイムスタンプで構成されます。
+
+**アセットとは**、シンボル（「ICP」など）とクラス（「Cryptocurrency」または「FiatCurrency」）で構成されるレコードです。ベースアセットとクォートアセットは、ICP/USD、USD/EUR、BTC/ICPなど、暗号通貨とフィアット通貨のアセットを自由に組み合わせることができます。タイムスタンプパラメータは、過去のレートを要求する機能を有効にします。タイムスタンプが提供されない場合、現在時刻の為替レートがデフォルトで返されます。
+
+## 使用法
+
+XRC のcanister ID は`uf6dk-hyaaa-aaaaq-qaaaq-cai` です。
+
+為替レートcanister は単一のエンドポイントを提供します：
+
+    "get_exchange_rate": (GetExchangeRateRequest) -> (GetExchangeRateResult)
+
+XRC にリクエストするには、以下のリクエストフォームを使用します：
+
+```
+type GetExchangeRateRequest = record {
+   base_asset: Asset;
+   quote_asset: Asset;
+   timestamp: opt nat64;
+}; 
+```
+
+このフォームを XRC に送信すると、次のような応答が返されます：
+
+    type GetExchangeRateResult = variant {
+       Ok: ExchangeRate;
+       Err: ExchangeRateError;
+    };
+
+## Cycles コスト
+
+このフォームをXRCに送信すると、次のようなレスポンスが返されます。XRCへの各リクエストには、リクエスト送信に10Bcycles のコストがかかります。そうでない場合は、`ExchangeRateError::NotEnoughCycles` エラーが返されます。リクエスト呼び出しの実際のcycles コストは、リクエストされたアセットタイプと内部為替レートキャッシュのステートという 2 つの factorに依存します。これらのパラメータは以下のとおりです：
+
+- リクエストがキャッシュから提供できる場合、実際のコストは20Mcycles です。
+- 両方の資産が不換紙幣の場合、コストは20Mcycles です。
+- 資産の一方が不換紙幣または暗号通貨USDTの場合、コストは260Mcycles です。
+- 両方の資産が暗号通貨の場合、コストは500Mcycles 。
+
+残りのcycles は要求元のcanister に返されます。サービス妨害攻撃のリスクを軽減するため、エラーの場合でも少なくとも1Mcycles が課金されることに注意してください。
+
+:::info
+注意: これらのリクエストのcycles コストは、XRCの次回のアップグレードで減少する予定です。
+::：
+
+## XRCを直接呼び出す
+
+XRC を直接呼び出すには、まずウォレットcanister ID をコマンドで環境変数としてエクスポートします：
+
+    export WALLET=[wallet-canister-id]
+
+ウォレットのcanister ID を取得する必要がある場合は、`dfx wallet addresses` コマンドを実行してウォレットのcanister ID を返します。
+
+次に、次のコマンドで BTC/USD レートを取得するようなリクエストを送信できます：
+
+    dfx canister call --wallet $WALLET --with-cycles 10000000000 xrc get_exchange_rate '(record { base_asset = record { symbol = "BTC"; class = variant { Cryptocurrency } }; quote_asset = record { symbol = "USD"; class = variant { FiatCurrency } } })'
+
+## 為替レートcanister デモ
+
+また、ローカルのXRCデモアプリケーションを実行して、ローカルで機能をテストすることもできます。
+
+:::caution
+このサンプルdapp は非常に単純であることは注目に値します。エラーが発生した場合、返り値が単なる浮動小数点数であるため、常に`0` が返されます。
+::：
+
+### 前提条件
+
+- \[x\] IC SDK パッケージをダウンロードして[インストールして](/developer-docs/setup/install/index.mdx)ください。
+
+- \[x\][Nodejsとnpmを](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)ダウンロードしてインストールしてください。
+
+- \[x\][gitを](https://git-scm.com/downloads)ダウンロードしてインストールします。
+
+次に、サンプルリポジトリをクローンし、依存関係をインストールし、以下のコマンドでcanisters をビルドします：
+
+    git clone git@github.com:THLO/xrc_demo.git
+    cd xrc_demo/
+    npm install
+    dfx canister create xrc_demo
+
+### デプロイ
+
+XRCデモをローカルでテストするには、まずコマンドでローカルの実行環境を起動します：
+
+    dfx start --background
+
+次に、canisters を次のコマンドでデプロイします：
+
+    dfx deploy --with-cycles 10000000000
+
+為替レートcanister へのリクエストごとにcycles を送信する必要があるため、`--with-cycles` パラメーターが必要であることに注意してください。cycles コストの詳細については、上記の[cycles コストの](#cycles-cost)セクションを参照してください。
+
+このコマンドの出力は以下のようになります：
+
+    Installing code for canister xrc, with canister ID br5f7-7uaaa-aaaaa-qaaca-cai
+    Installing code for canister xrc_demo, with canister ID be2us-64aaa-aaaaa-qaabq-cai
+    Deployed canisters.
+    URLs:
+      Backend canister via Candid interface:
+        xrc: http://127.0.0.1:8080/?canisterId=bw4dl-smaaa-aaaaa-qaacq-cai&id=br5f7-7uaaa-aaaaa-qaaca-cai
+        xrc_demo: http://127.0.0.1:8080/?canisterId=bw4dl-smaaa-aaaaa-qaacq-cai&id=be2us-64aaa-aaaaa-qaabq-cai
+
+ウェブブラウザで`xrc_demo` canister のリンクを開き、Candid インターフェイスを表示します。以下の Candid UI が表示されます：
+
+![Candid UI XRC](../_attachments/Candid-xrc.png)
+
+あるいは、ターミナルから`xrc_demo` canister に直接コマンドを送信することもできます：
+
+    dfx canister call --network ic xrc_demo get_exchange_rate "ICP"
+
+要求された資産と現在の為替レートに応じて、出力は以下のようになります。この例ではICPを使用しています。
+
+    (4.1865 : float64)
+
+## リソース
+
+- [為替レートの wiki ページ。](https://wiki.internetcomputer.org/wiki/Exchange_rate_canister)
+- [HTTPS アウトコール。](https://internetcomputer.org/https-outcalls/)
+- [為替レートcanister ブログ記事.](https://medium.com/dfinity/exchange-rate-canister-a-smart-contract-with-oracle-capabilities-f30694753c89)
+- [為替レートcanister フォーラムの投稿。](https://forum.dfinity.org/t/new-exchange-rate-mechanism/14543/65)
+- [為替レートcanister リポジトリ。](https://github.com/dfinity/exchange-rate-canister)
+
+<!---
 # Exchange rate canister
 
 ## Overview
@@ -143,3 +273,5 @@ The output will resemble the following, depending asset requested and its curren
 - [Exchange rate canister blog post.](https://medium.com/dfinity/exchange-rate-canister-a-smart-contract-with-oracle-capabilities-f30694753c89)
 - [Exchange rate canister forum post.](https://forum.dfinity.org/t/new-exchange-rate-mechanism/14543/65)
 - [Exchange rate canister repository.](https://github.com/dfinity/exchange-rate-canister)
+
+-->

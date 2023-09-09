@@ -1,98 +1,89 @@
-# ホットキーの生成
+# ホットキー生成
 
-このページでは、Neuron 管理のために使用するホットキーを生成する方法について説明します。
-ホットキーを取得する方法として推奨されるのは、公開されている `ic` リポジトリと同じプロセスを使用してプログラム的に生成することです。
-しかし、以下のように手動でホットキーを生成することも可能です。
-このページは、期待されるデータフォーマットを示すいくつかの例とともに、順を追って説明します。
+## 概要
 
-## 手動のプロセス
+このページでは、neuron 管理用のホットキーを生成する方法について説明します。
+ホットキーを取得する推奨方法は、公開されている`ic` リポジトリで使用されているのと同じプロセスを使用して、プログラムによって
+ホットキーを生成することです。
+ただし、以下に説明するように手動でホットキーを生成することも可能です。
+このページでは、期待されるデータ形式を示すいくつかの例とともに、ステップバイステップのガイドを示します。
 
-手動でホットキーを生成する場合、PEM ファイルを生成しそれに対応する秘密鍵と公開鍵を導出することになります。
+## 手動プロセス
 
-### PEM の生成
+手動でのホットキー生成プロセスは、PEMファイルを生成し、対応する秘密鍵と公開鍵を生成します。
 
-鍵を生成するには、まずプライベートな PEM ファイルを生成することから始めます：
+### PEMの生成
+
+鍵を生成するには、まずプライベートPEMファイルを生成します：
 
 `openssl genpkey -algorithm ed25519 -outform PEM -out private.pem`
 
-出力例です：
-```
------BEGIN PRIVATE KEY-----
-MC4CAQAwBQYDK2VwBCIEIHAOt4HGrNdcIFhBy7N9p6iq3iRowd4NZjDZ8aaaDCcX
------END PRIVATE KEY-----
-```
+出力例
 
-そして、そこから公開用 PEM を作成します：
+    -----BEGIN PRIVATE KEY-----
+    MC4CAQAwBQYDK2VwBCIEIHAOt4HGrNdcIFhBy7N9p6iq3iRowd4NZjDZ8aaaDCcX
+    -----END PRIVATE KEY-----
+
+次に、そこから公開 PEM を作成します：
 
 `openssl pkey -in private.pem -pubout > public.pem`
 
-出力例です：
+出力例：
 
-```
------BEGIN PUBLIC KEY-----
-MCowBQYDK2VwAyEA4JKtE2KNVUTo96cl202FgWv5ctwP7f1ds1O73PZ6+VE=
------END PUBLIC KEY-----
-```
+    -----BEGIN PUBLIC KEY-----
+    MCowBQYDK2VwAyEA4JKtE2KNVUTo96cl202FgWv5ctwP7f1ds1O73PZ6+VE=
+    -----END PUBLIC KEY-----
 
-## 16進数（hex）キー表現の生成
+## 16進数キー表現の生成
 
-プライベート DER ファイルを作成します：
+プライベートDERファイルを作成します：
 
 `openssl pkey -inform pem -outform der -in private.pem -out private.der`
 
-公開用 DER ファイルを作成します：
+公開DERファイルを作成：
 
 `openssl pkey -inform pem -outform der -in private.pem -out public.der -pubout`
 
+### 16進数表現
 
-### 16進数（hex）表現
+しかし、両方の鍵の16進数表現を得ることができます：
 
-生成された DER ファイルは、人間が読めるように意図されていないバイナリ形式になっています。
-しかし、両鍵とも 16進数（hex）表現を得ることはできます：
-
-
-### プライベートキー
+### 秘密鍵
 
 `xxd -p private.der`
 
-出力例です：
+出力例：
 
-```
-302e020100300506032b657004220420700eb781c6acd75c205841cbb37d
-a7a8aade2468c1de0d6630d9f1a69a0c2717
-```
+    302e020100300506032b657004220420700eb781c6acd75c205841cbb37d
+    a7a8aade2468c1de0d6630d9f1a69a0c2717
 
-### パブリックキー
+### 公開鍵
 
 `xxd -p public.der`
 
-```
-302a300506032b6570032100e092ad13628d5544e8f7a725db4d85816bf9
-72dc0fedfd5db353bbdcf67af951
-```
+    302a300506032b6570032100e092ad13628d5544e8f7a725db4d85816bf9
+    72dc0fedfd5db353bbdcf67af951
 
-公開鍵の最後の 32バイトだけを残しておく必要があります：
+公開鍵の最後の32バイトだけを保持する必要があります：
 
 `xxd -s 12 -c 32 -p public.der`
 
-出力例です：
-```
-e092ad13628d5544e8f7a725db4d85816bf972dc0fedfd5db353bbdcf67af951
-```
+出力例：
 
-これは、Rosetta の操作で、ホットキーを識別するために使用できる公開鍵です。
+    e092ad13628d5544e8f7a725db4d85816bf972dc0fedfd5db353bbdcf67af951
 
+これが、Rosettaの操作でホットキーを識別するために使用できる公開鍵です！
 
----------
+-----
 
-## FAQ
+## よくある質問
 
-- PEM ファイル生成時に *"Algorithm ed25519 not found”* と表示されるのはなぜですか？
+- #### PEMファイルを生成する際に、"Algorithm ed25519 not found "と表示されるのはなぜですか？
 
-MacOS に含まれる OpenSSL のバージョンは、デフォルトでは ed25519 をサポートしていません。
-別のバージョンの OpenSSL を (たとえば *brew* を使って) インストールするか、Linux マシンからこのコマンドを実行する必要があるかもしれません。
+MacOSに含まれているOpenSSLのバージョンは、デフォルトではed25519をサポートしていません。
+別のバージョンのOpenSSLをインストールするか（例えば*brewで*）、Linuxマシンからコマンドを実行する必要があるかもしれません。
 
-<!--
+<!---
 # Hotkeys generation
 
 ## Overview
@@ -191,5 +182,6 @@ This is the public key you can use in Rosetta operations to identify your hotkey
 The version of OpenSSL included in MacOS doesn't support ed25519 by default. 
 You may have to install another version of OpenSSL (for example through *brew*), or run the command from a Linux machine.
 
--->
 
+
+-->

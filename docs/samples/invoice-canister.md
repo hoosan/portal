@@ -1,3 +1,334 @@
+# インボイスcanister
+
+## 概要
+
+このプロジェクトは、Internet Computer 上の ICP または ICRC1 ベースのトークンで支払いを処理するための請求書を作成するためのインタフェースを提供します。これは、Internet Computer canister で、これらのトークンやその他のトークンの支払いフローを統合するための堅牢な出発点を提供することを目的としたカストディアンソリューションです。
+
+主なプロジェクトでは、4 種類のトークンのサポートを実証しています。そのうち 2 種類は ICP 標準の型を使用し、2 種類は ICRC1 標準の型を使用しています。同じインタフェースのよりシンプルなバージョンでは、ICP と ICRC1 の 2 つのトークンのみをサポートしており、`examples/motoko-seller-client` サブディレクトリにあります。
+
+canister canister このサンプル・プロジェクトでは、このメイン・プロジェクトで使用している4つのデプロイ済みトークン台帳canisters の代わりに、2つのクラス・ベースのモック台帳を使用しています。  さらに、メイン・プロジェクトの`/src/invoice/modules/supported-token/` ディレクトリにある`SupportedToken` に関連するすべての異なるモジュール・ファイルは、単一の`SupportedToken.mo` モジュール・ファイルにコンパクト化され、サンプル・プロジェクトのコード・ベースでは本文中のコメントが省略されています。それ以外のコードベースは同じです。
+
+メインネット ICP Ledger は現在 ICRC1 標準をサポートしており、メインネット ICP Ledger と統合するインボイスcanister をデプロイする場合、そのトークンは一般的な ICP または ICRC1 タイプの`SupportedToken.mo` のどちらでも使用できます。ただし、ICRC1 標準はInternet Computer における将来のトークン化標準の基礎となるため、ICRC1 を使用することをお勧めします。このプロジェクトには、デモと参照目的で ICP と ICRC1 の両方が含まれています。
+
+## APIの概要
+
+両プロジェクトは、同じ請求書canister API を共有しています：
+
+```
+add_allowed_creator()
+remove_allowed_creator()
+get_allowed_creators_list()
+
+create_invoice()
+verify_invoice()
+recover_invoice_subaccount_balance()
+
+transfer()
+get_caller_address()
+get_caller_balance()
+to_other_address_format() 
+```
+
+この API により、承認された呼び出し元は、支払いが成功した請求書の代金がその保管場所から送金されるまで、invoicecanister によって支払いが処理される請求書を作成し、確認することができます。具体的には、請求書canister は、作成された各請求書について新しい支払先アドレス（つまり、展開された請求書canister のサブアカウント）を作成し、買い手が必要な金額をそのアドレスに送信することで購入を完了できるようにします。その後、`verify_invoice()` への認可された呼び出しがインボイスcanister のトリガーとなり、その支払先アドレスの残高がそのインボイスの支払額と同じかそれ以上であることが確認され、確認に成功した場合は、そのインボイスの作成者のために作成されたアドレス(同じく、そのデプロイされたインボイスcanister のサブアカウント)にその代金が転送されます。この時点で、請求書作成者はその金額を請求書canister の保管場所から希望する宛先に送金することができます。
+
+現在、許可された作成者リストにプリンシパルを追加または削除する権限を持つ唯一の発信者は、インボイスcanister を最初にデプロイした発信者、つまりそのインストーラーです。このアクセス許可以外には、インストーラは請求書(canister)にコード化されている限り、特別な権限を持っていません。言い換えると、上記のリストの一番上にある3つのAPIメソッド以外に、インストーラが残りのAPIメソッドを呼び出すことは、インストーラが許可されたクリエータリスト上の単なる別のプリンシパルになることと同じです。これは**、**インストーラやcanister コントローラがコードを変更し、保有する資金を転送することを妨げるものではありませんが、インストーラが既存の API メソッドのいずれかを介して、請求書canister の保管資金を任意に転送することはできません。
+
+すべての許可された作成者は、インボイスを作成するときに、そのインボイスを取得または検証できる人を決定するプリンシパルの2つのリストをオプションで含めることによって、インボイスごとにアクセス制御を追加する同じ権限も持っています。誰が請求書を検証してもかまいませんが、支払済みであることが確認されると、その請求書の作成者のために作成されたアドレスに請求書が送付されます。
+
+請求書の検証を許可された発信者は、請求書の支払先アドレスの残高を回収するために、請求書（canister ）に電話をかけることもできます。支払済みとして正常に検証された請求書は、その代金が検証プロセスの一環として作成者のアドレスに送られるため、これは返金メカニズムとみなされるべきではありません。ただし、支払いが一部しか行われていない場合、または請求書がすでに検証された後に追加の支払いが行われた場合は、その残高を回収することが可能です。いずれの場合も、その請求書の支払先残高の全額が指定された宛先に転送されます。
+
+請求書作成者は`get_caller_balance()` を呼び出すことで、まだ振り出されていない代金の現在の残高を確認することができます。`get_caller_address()` を呼び出すと、この残高に関連付けられているアドレスが返されます。`to_other_address_format()` を呼び出すと、canister 期待されるタイプと、指定されたアドレスまたはテキストのテキストエンコード形式、または指定されたトークンタイプのプリンシパルのデフォルトサブアカウントの両方が返されます。
+
+これは、InvoiceCanister の一般的な機能の概要の説明に過ぎません。特に、Invoice のデータ・プライバシーに関するようなセキュリティ上の懸念事項については、[設計ドキュメントを](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/docs/DesignDoc.md)参照してください。さらに、この[invoice.didや](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/invoice.did)、[Invoice.mo](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/invoice/Invoice.mo)、[Types.mo](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/invoice/modules/Types.mo)、[SupportedToken.mo](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/invoice/modules/supported-token/SupportedToken.mo)ファイルの関連モジュールにも、広範な解説があります。
+
+## チュートリアル
+
+## 前提条件
+
+この例では、以下のインストールが必要です：
+
+- \[x\][IC SDKを](https://internetcomputer.org/docs/current/developer-docs/setup/install/index.mdx)インストールしてください。
+- \[x\][Node.jsを](https://nodejs.org/en/download/)インストールします。
+- \[x\] GitHubから以下のプロジェクトファイルをダウンロードしてください: https://github.com/dfinity/examples/
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ1：プロジェクトのファイルがあるフォルダに移動し、必要なパッケージをインストールします：
+
+    cd examples/motoko/invoice-canister
+    npm install
+
+この時点で、プロジェクトをローカル・レプリカにデプロイする準備が整いました。4つのトークンをサポートするには、4つのトークンレジャーcanisters が必要です。これらのうち3つは、ダウンロードしたWasmによってインストールされ、[DFINITY Rosetta-APIリポジトリによって](https://github.com/dfinity/ic/tree/master/rs/rosetta-api)提供されるファイルを実行します。これらのファイルは`src/token-ledger-canisters` ディレクトリにあり、このプロジェクトとは別にダウンロードするためのシェルスクリプトが付属しています。ICRC1トークンレジャーcanister Wasmとdidは、統合された2つのICRC1トークンに対してそれぞれ1回ずつ、計2回デプロイされます。もう1つのICPベースのトークンは、`dfx nns install` コマンドを実行することで台帳canister がデプロイされるため、ICP台帳wasm and didは1回のみデプロイされます。これは、トークン台帳canisters を自分のプロジェクトに統合する複数の方法を示すためです。
+
+### ステップ2：このプロジェクトを実行する前に、システム全体のネットワーク設定が、`dfx nns install` によってインストールされたcanisters の要求に従って設定されていることを確認する必要があります。
+
+以下を実行します。
+
+    cat "$(dfx info networks-json-path)"
+
+を実行して一致することを確認してください：
+
+``` json
+{
+  "local": {
+    "bind": "127.0.0.1:4943",
+    "type": "ephemeral",
+    "replica": {
+      "subnet_type": "system"
+    }
+  }
+}
+```
+
+一致しない場合は、オリジナルファイルのバックアップを取ってください。元のファイルをバックアップした後、または`networks.json` ファイルが存在しない場合は、[nano](https://www.nano-editor.org/download.php)などのテキストエディタまたは`cat` コマンドを使用して、`networks.json` を上記と一致するように設定します。`dfx nns` コマンドの使用に関する詳細は、[こちらを](https://github.com/dfinity/sdk/blob/master/docs/cli-reference/dfx-nns.md)ご覧ください。`dfx nns install` を初めて使用する場合、関連する did ファイルを正しくインストールし、`dfx.json` を設定するために、`dfx nns import` も後で使用することに注意してください。このプロジェクトはすでに設定されているため、スタートアップスクリプトではこのステップはスキップされます。
+
+システム全体の`networks.json` が上記のように設定されると、このプロジェクトのスタートアップスクリプトを実行できます。このスクリプトは[zx](https://github.com/google/zx)コマンドラインスクリプトライブラリを使用して、このプロジェクトが使用する4つのトークンレッジャーcanisters で正しく設定されたローカルレプリカを起動します。これは[clean-startup.mjs](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/clean-startup.mjs)で、dfx の再起動、`dfx nns install` の実行、必要に応じてテストに使用する ID の追加、インボイスとその他のトークンレジャーcanisters のデプロイ、最後にテストする場合は、E2E テストで使用した ID への資金の払い出し方法を説明する文書が含まれています。
+
+### ステップ3: 便宜上、このスクリプトを開始するために2つのnpmスクリプトが追加されています：
+
+    npm run deployAll
+    npm run deployForTesting
+
+テストのためにデプロイされた場合、`dfx nns install` コマンドが 2 つの初期預金 ID の 1 つとして使用する Secp256k1 ID が追加され、現在のユーザーとして切り替えられます。テスト用かどうかにかかわらず、現在のIDは4つのトークンレジャーcanisters すべての発行アカウントとして使用されます。詳細は`clean-startup.mjs` を参照してください。テストのためにこのスクリプトを実行したときのコンソール出力の例を見るには、docsフォルダにある`./docs/clean-startup-console-output` 。
+
+このスクリプトは、実行前にシステム全体のネットワーク設定ファイルが正しく設定されているかどうかをチェックします。正しく設定されていれば、上記の2つのコマンドのいずれかを使用して、デプロイされたすべてのcanisters が準備されたローカルレプリカを起動することができます。このスクリプトの`dfx` で使用されるコマンドライン引数は、まず変数としてコンソールに記録され、必要に応じて`dfx` コマンドとして使用したり、カスタム値で変更したりすることができます。
+
+詳細については、[clean-startup.mjsの](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/clean-startup.mjs)導入コメントをチェックするか、[clean-startup-console-outputの](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/docs/clean-startup-console-output.md)例を確認してください。
+
+### ステップ4：請求書の統合canister
+
+インボイスcanister を別のプロジェクトに統合するには、[設計ドキュメント](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/docs/DesignDoc.md)、[Invoice.mo](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/invoice/Invoice.mo)、[SupportedToken.mo](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/invoice/modules/supported-token/SupportedToken.mo) を確認してください。
+
+要約すると、`Invoice.mo` と`SupportedToken.mo` の両方のファイルを、どのトークンをサポートするかによって編集する必要があります。このプロジェクトでは4つのトークンを使用していますが、`motoko-seller-client` の例では2つのトークン（ICPとICRC1）だけが統合されているので、 の例から始める方が簡単かもしれません。追加トークンのサポートを追加するには、このプロジェクトのコードをコピーするためのリファレンスとして使用して、15分もあればできます。
+
+### ステップ 5: 前段階として、インボイスcanister の操作でサポートするトークンを決定します。
+
+各トークンについて、[SupportedToken.mo](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/invoice/modules/supported-token/SupportedToken.mo)の 49 行目にある`SupportedToken` バリアントの新しいタグとして、トークンを表すラベルまたはテキストを選択します。例えば、ICRC1 ckTESTBTC トークンのサポートを追加します：
+
+``` diff
+public type SupportedToken<T1, T2> = {
+  // Other supported token tag entries.
+  // T1 is used for any tokens using the ICP specification, while T2 for any of the ICRC1 specification.
+  // So adding a tag for ICRC1 ckTESTBTC token would look like:
++  #ICRC1_ckTESTBTC : T2; 
+};
+```
+
+ICP（またはICP仕様の関連型を使用するトークン）には汎用型`T1` 、ICRC1規格に基づくトークンには`T2` 。サポートされる各トークンは、それ自身のタグエントリが必要であり、ここでckTESTBTCのために追加されたタグは、物事を明確に保つために「ICRC1\_」が先頭に付いています。
+
+このバリアントの宣言がタグを追加(または削除)することによって変更されると、Motoko VSCode 拡張は自動的にコード内の編集が必要な他のすべての場所を示します(VSCode を使用していない場合は、`moc` コンパイラの警告)。これは、追加されたタグのケースを追加する必要があるすべてのスイッチで構成されます。これらのスイッチは、`SupportedToken.mo` のメソッドと、`Invoice.mo` の API メソッドの一部にのみあります（関連するメソッドはすべてここにリストされています）。
+
+`SupportedToken.mo` ：
+
+```
+getTokenVerbose()
+unwrapTokenAmount()
+wrapAsTokenAmount()  
+encodeAddress()  
+encodeAddressOrUnitErr()  
+getAddressOrUnitErr()  
+getInvoiceSubaccountAddress()  
+getEncodedInvoiceSubaccountAddress()  
+getCreatorSubaccountAddress()  
+getTransferArgsFromInvoiceSubaccount()  
+getTransferArgsFromCreatorSubaccount()  
+rewrapTransferResults()  
+getDefaultSubaccountAddress() 
+```
+
+### ステップ6:`getTokenVerbose()` を除くすべてのメソッドについて、そのスイッチに追加のケースを追加するには、サポートするトークンが ICP か ICRC1 かに対応する、このプロジェクトの実装で示されている例をコピーするだけです。
+
+タグの各参照を必ず更新してください。上記で追加した`#ICRC1_ckTESTBTC` タグの場合、`getEncodedInvoiceSubaccountAddress()` のスイッチを更新すると、次のようになります：
+
+``` diff
+public func getEncodedInvoiceSubaccountAddress({
+  token : UnitType;
+  id : Text;
+  creator : Principal;
+  canisterId : Principal;
+}) : Text {
+  switch token {
+    // Other cases.
++   case (#ICRC1_ckTESTBTC) {
++      ICRC1_Adapter.encodeAddress(ICRC1_Adapter.computeInvoiceSubaccountAddress(id, creator, canisterId));
++    };
+  };
+};
+```
+
+または`rewrapTransferResults()` ：
+
+``` diff
+public func rewrapTransferResults(sttransferResult : TransferResult) : Result.Result<TransferSuccess, TransferErr> {
+  switch (sttransferResult) {
+    // Other cases.
++    case (#ICRC1_ckBTC transferResult) {
++      switch transferResult {
++        case (#Ok txIndex) #ok(#ICRC1_ckBTC(txIndex));
++        case (#Err transferErr) #err(#ICRC1_ckBTC(transferErr));
++    };
+  };
+};
+```
+
+各メソッドでは、スイッチを同様に単純に更新する必要があります。前述したように、`getTokenVerbose()` には独自の注意が必要です--特に、正しい譲渡手数料を定義する必要があります。`TokenVerbose` は呼び出し元に返される請求書レコードの一部なので、他のフィールドも正しく定義することが強く推奨されます（特にURLは、必要に応じてトークン-台帳canister のさらなる問い合わせを簡単に行えるようにします）。ckTESTBTCトークンのサポートを追加する例では、次のようになります：
+
+``` diff
+public func getTokenVerbose<T1, T2>(supportedToken : SupportedToken<T1, T2>) : TokenVerbose {
+  switch supportedToken {
+    // Other cases.
++    case (#ICRC1_ckTESTBTC T1) {
++      return {
++        symbol = "ckTESTBTC";
++        name = "Chain key testnet Bitcoin";
++        decimals = 8 : Int;
++        fee = 10;
++        meta = ?{
++          Issuer = "NNS - For Testing Purposes Only";
++          Url = "https://dashboard.internetcomputer.org/canister/mc6ru-gyaaa-aaaar-qaaaq-cai";
++        };
++      };
++    };
+  };
+};
+```
+
+ckTESTBTC台帳のダッシュボードへのURLは、別のURLでもよいことに注意してください。たとえば、他のICRC1トークン台帳canisters の手数料、小数、シンボル、タイトルの正しい値は、そのダッシュボードURLにアクセスして見つけることができます。これらの各メソッドのスイッチが、トークンがサポートするタグのケースを含むように更新されたら、Motoko VSCodeエクステンションで確認できます。
+
+### ステップ 7: 次のステップでは、`Invoice.mo` を更新してトークン台帳の宣言を追加し、canister のactor タイプと関連するAPIメソッドを更新します。
+
+これらの API メソッド (`to_other_address_format()` を除く) は、対応する`ICP` ledger および`ICRC1` token-ledgers に対して行われる実際の呼び出しに関与するため、`ICP` および`ICRC1` actor supertype 宣言を使用して、[supported-tokenの](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/invoice/modules/supported-token/)ICPおよびICRC1サブディレクトリのいずれかにあるcanister idでactor 型をインスタンス化できます。ckTESTBTCトークンの例では、このようになります：
+
+``` diff
+import SupportedToken "./modules/supported-token/SupportedToken";
+// Could also import directly like:
+// import Actor_Supertype_ICRC1 "./modules/supported-token/token-specific/icrc1/ActorSupertype.mo";
+
+shared ({ caller = installer_ }) actor class Invoice() = this {
+
+  // Other private state and function declarations.   
+
+  // The canister id is being directly used in the actor's constructor, 
+  // but it could be added as a separate declaration, passed as a deployment argument,
+  // or even be passed in a method to be called later to dynamically create this actor type. 
++ let Ledger_ICRC1_ckTESTBTC : SupportedToken.Actor_Supertype_ICRC1 = actor ("mc6ru-gyaaa-aaaar-qaaaq-cai");
+
+  // Rest of invoice canister's code.
+};
+```
+
+### ステップ 8: トークン・レジャーのcanister'actor'の宣言が追加されたら、次のステップでは、このactor'canister への実際のコールを行う 4 つの API メソッドの対応するスイッチをアップデートします。
+
+これらのAPIメソッドは以下のとおりです：
+
+    get_caller_balance()
+    transfer()
+    verify_invoice()
+    recovery_invoice_subaccount_balance()
+
+`verify_invoice()` と`recover_invoice_subaccount_balance()` にはそれぞれ更新すべきスイッチ文が2つあり、`get_caller_balance()` と`transfer()` には更新すべきスイッチ文が1つしかないことに注意してください。
+
+`SupportedToken` actor のメソッドと同様に、新しいタグのケースを追加して各スイッチを更新することは、このプロジェクトのコードからコピーすることができます。ckTESTBTC トークンのサポートを追加する例では、 メソッドを更新すると、次のようになります：`get_caller_balance()` 
+
+``` diff
+public shared ({ caller }) func get_caller_balance(
+  { token } : Types.GetCallerBalanceArgs,
+) : async Types.GetCallerBalanceResult {
+  // Beginning method code omitted.
+  try {
+    switch subaccountAddress {
+      // Other cases.
++     case (#ICRC1_ckTESTBTC account) {
++       let balance = #ICRC1_ckTESTBTC(await Ledger_ICRC1_ckTESTBTC.icrc1_balance_of(account));
++       #ok({ balance });
++     };
+    };
+  } catch e {
+  // Rest of method's code omitted.
+};
+```
+
+構築されたactor 型宣言を追加した後、これらのメソッドの switch 文を更新することが、これら 2 つのファイルで必要な**唯一の**変更です。前述のように、これが正しく行われると、Motoko VSCode拡張機能（または`moc` コンパイラ）がこれらのスイッチに関する警告やエラーを表示しないことも確認できます。
+
+この時点で、追加トークンのサポートの統合は完了です。
+
+先にステートしたように、`motoko-seller-client` プロジェクトは、2 つのトークンのみを統合した例です。1 つは ICP 用、もう 1 つは ICRC1 用で、それぞれ`#ICP` と`#ICRC1` というバリアント・タグにマッピングされています。これらは、ICRC1仕様の2つ`#Generic Error` と`#TemporarilyUnavailable` を除いて、すべて同じ`Ok` と`Err` の結果を返すはずです。
+
+### ステップ 9: 上記のファイルが正しく設定されたら、次のステップでは、これらのファイルをプロジェクトのファイル構造に追加し（まだ追加されていない場合は、`Types.mo` モジュールも追加してください）、`dfx.json` を更新して請求書canister を追加します。
+
+インボイスcanister をMotoko タイプcanister としてcanisters リストに追加し、`Invoice.mo` ファイル（この例では "invoice" という名前のスニペットで、`Invoice.mo` はプロジェクトの`src` ディレクトリにあり、declarations 出力フィールドはありません）をメイン・ポインティングします：
+
+``` diff
+{
+  "canisters": {
+  // Other canisters. 
++    "invoice": {
++      "main": "src/Invoice.mo",
++      "type": "motoko",
++
++    },
+}
+```
+
+インボイスcanister `Invoice.mo` はクラスactor になったので、それを使用する他のcanister'のエントリーの依存関係として`dfx.json` にcanister エントリーを追加する**必要は**ありません。代わりに、actor クラス・コンストラクタで、配置された請求書canister のcanister id を渡して、請求書canister actor の参照をインスタンス化することができます。このactor クラスの型参照は、2 つの方法で含めることができます。
+
+1つの方法は、[motoko](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/examples/motoko-seller-client/src/backend/Seller.mo)-seller-client[Sellercanister](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/examples/motoko-seller-client/src/backend/Seller.mo)で示されており、`Invoice.mo` ファイルとして型を直接インポートします。もう1つの方法は、別のプロジェクトで請求書canister actor を作成するときに使用できます。`Types.mo` ファイルをそのプロジェクトにコピーし、`InvoiceCanisterAPI` 型宣言（`Types.mo` の一番下）を型参照として使用して、そのプロジェクトのcanister'コードで請求書canister actor を作成します。
+
+たとえば、`CanisterRequiringPaymentProcessing` がCanister の請求書を使用する別のプロジェクトのcanister の名前だった場合、`Type.mo` のすべての型を`Types.mo` ファイルにコピーし、デプロイされた請求書canister の ID を取得すると、次のようになります：
+
+``` diff
+// Other imports.
+import Types "./Types.mo"
+
+actor CanisterRequiringPaymentProcessing {
+   // Other state, type and method declarations.
++  let invoiceCanister : Types.InvoiceCanisterAPI = fromActor("<invoice canister id>");
+
+  // Now the API methods can be called such as
+  // await invoiceCanister.create_invoice(<CreateInvoiceArgs>);
+  // rest of canister's code...
+};
+```
+
+### ステップ 10：請求書canister をデプロイした後、そのcanister id は[`dfx canister id` コマンドで](https://github.com/dfinity/sdk/blob/master/docs/cli-reference/dfx-canister.md#dfx-canister-id)確認できます。
+
+これで、請求書canister を別のプロジェクトに統合するために必要なすべてのステップを網羅することができました。インボイスcanister とトークン台帳canisters のデプロイ方法については、[clean-startup.mjs](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/clean-startup.mjs)と同様に、[Design Doc](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/docs/DesignDoc.md)、[Invoice.mo](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/invoice/Invoice.mo)、[Types.mo](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/modules/Types.mo)、[SupportedToken.mo](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/invoice/modules/supported-token/SupportedToken.mo)を参照してください。
+
+## テスト
+
+- #### ステップ1: テストするには、最新の`motoko-<system>-<version>.tar.gz` リリースから`moc` をインストールする必要があります。https://github.com/dfinity/motoko/releases。
+
+- #### ステップ2: 次に、https://github.com/dfinity/vessel のガイドに従ってVesselをインストールしてください。
+
+- #### ステップ3:`wasmtime` もインストールする必要があります。macOSの場合は、`brew install wasmtime` でインストールできます。Linuxの場合は、`sudo apt-get install wasmtime` でインストールできます。
+
+- #### ステップ 4: ユニットテストを実行するには、`make test` を使ってください。
+
+- #### ステップ 5: エンドツーエンドの JavaScript テストを実行するには、`make e2e` を使います。
+
+CanisterInvoiceCanister の機能を理解するには、E2E テストスイート[recover\_invoice\_subaccount\_balance.test.js](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/test/e2e/src/tests/recover_invoice_subaccount_balance.test.js)を確認するのが便利です。さらに、すべてのユニットテストとE2Eテストの出力例は、[テスト用語集に](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/docs/TestingGlossay.md)あります。
+
+## 免責事項: セキュリティへの配慮
+
+このプロジェクトと`motoko-seller-client` プロジェクトは、Internet Computer における請求書ベースの支払い処理がどのように機能するかを示す**教育的な例**です。これらは、機密データや現実の金融価値を扱う本番環境で使用することを意図したものではありません。先にステートしたように、メインネットに請求書canister をデプロイする際に考慮しなければならない既知のセキュリティ問題があります：
+
+- インボイス（canister ）が保有する資金は、インストーラおよび/またはその現在の指定コントローラの管理下にあり、紛失または回復不能になる可能性があります。
+- 保存された請求書記録の詳細はデフォルトでは暗号化されておらず、ノード・プロバイダによって物理的に検査される可能性があります。
+- トランザクションを確実に処理するための対策は実施されていますが、canister 間コールが意図的にループして戻らなかったり、canister のメッセージキューがまだ着信コールがある状態で容量に達し、ドロップされる可能性があるなど、特定の条件があります。
+- このプロジェクトでは、システムサブネットとして構成されたローカルレプリカを使用しているため、計算処理にcycles 。これはメインネットcanisters 、特に受託サブネット上のレプリカでは一般的ではありません。canister 請求書をメインネットにデプロイする場合、そのcycles 残高を追跡することが、継続的な運用のために重要です。
+- すべてのAPIコールは、サブネットのコンセンサスによって認証されたものを自動的に返すようにアップデートされていますが、クエリーコールが可能な3つのAPIメソッドのいずれかがクエリーコールに変換された場合、その結果はデフォルトではこの認証を持ちません。認証可能なクエリーコール結果を提供するには、[CertifiedDataとして](https://internetcomputer.org/docs/current/references/motoko-ref/certifieddata/)返す必要があります。
+
+さらに、ICRC1アカウントのエンコードとデコードは、このプロジェクトでICRC1アカウントに使用している[AccountTextConverterの](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/src/invoice/modules/supported-token/token-specific/icrc1/AccountTextConverter.mo)現在の実装と異なる仕様が最終化された場合、更新が必要になる可能性があります。
+
+本番環境へのデプロイの準備をする際には、ガイドを十分に確認してください：
+
+- 本番[環境での実行](https://internetcomputer.org/docs/current/developer-docs/production/)。
+- [セキュリティのベストプラクティス](https://internetcomputer.org/docs/current/developer-docs/security/)。
+- [ Internet Computer canister を監査する方法](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)。
+
+を十分に確認し、十分な注意と準備をしてください。詳細は[設計ドキュメントを](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/docs/DesignDoc.md)参照してください。
+
+<!---
 # Invoice canister
 
 ## Overview
@@ -336,3 +667,5 @@ When getting ready to deploy for production, thoroughly review the guides:
 and proceed with enough caution and preparation. See the [design doc](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/docs/DesignDoc.md) for more details.
 
 
+
+-->

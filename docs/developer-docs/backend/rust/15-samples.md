@@ -1,3 +1,34 @@
+# Rustサンプルコードとアプリケーション
+
+Rustのサンプルプロジェクトは[`dfinity/examples` リポジトリにあります：](https://github.com/dfinity/examples)
+
+- **[基本的な分散型自律組織（DAO）](../../../samples/dao)**。
+- **[最初のビットコインのデプロイdapp](../../../samples/deploying-your-first-bitcoin-dapp)**.
+- **[カウンター](../../../samples/counter)**。
+- **[DIP721 NFTコンテナ](https://github.com/dfinity/examples/tree/master/rust/dip721-nft-container)**。
+- **[Hello, world](../../../samples/hello)**\!
+- **[暗号化ノートdapp](../../../samples/encrypted-notes)**.
+- **[ICP転送サンプルコード](../../../samples/token-transfer.md)**。
+- **[NFTウォレット](https://github.com/dfinity/examples/tree/master/rust/nft-wallet)**
+- **[定期タスク](https://github.com/dfinity/examples/tree/master/rust/periodic_tasks)**。
+- **[PubSub](https://github.com/dfinity/examples/tree/master/rust/pub-sub)**。
+- **[HTTP`GET` リクエストの](https://github.com/dfinity/examples/tree/master/rust/send_http_get)送信。**
+- **HTTP[ `POST` ](https://github.com/dfinity/examples/tree/master/rust/send_http_post) リクエストの送信。**
+- **[閾値 ECDSA 署名コードのウォークスルー](../../../samples/t-ecdsa-sample)**。
+
+以下のリポジトリには、Rustcanister のサンプルが追加されています：
+
+- **[Rustcanisters](https://github.com/dfinity/ic/tree/2aa53020f13c68b1f1ef41ef2b8cb54db845683a/rs/rust_canisters)** 。
+
+`cdk-rs` リポジトリには、以下の例が含まれています：
+
+- **[アセットストレージ](https://github.com/dfinity/cdk-rs/tree/main/examples/asset_storage)**。
+- **[チェス](https://github.com/dfinity/cdk-rs/tree/main/examples/chess)**。
+- **[管理canister](https://github.com/dfinity/cdk-rs/tree/main/examples/management_canister)**.
+- **[印刷](https://github.com/dfinity/cdk-rs/tree/main/examples/print)**。
+- **[プロファイル](https://github.com/dfinity/cdk-rs/tree/main/examples/profile)**。
+
+<!---
 # Rust sample code and applications
 
 The following sample projects for Rust can be found in the [`dfinity/examples` repository](https://github.com/dfinity/examples):
@@ -27,3 +58,4 @@ The `cdk-rs` repository includes the following examples:
 - **[Management canister](https://github.com/dfinity/cdk-rs/tree/main/examples/management_canister)**.
 - **[Print](https://github.com/dfinity/cdk-rs/tree/main/examples/print)**.
 - **[Profile](https://github.com/dfinity/cdk-rs/tree/main/examples/profile)**.
+-->

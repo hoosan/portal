@@ -1,4 +1,5 @@
 ---
+
 title: Developer weekly update June 14, 2023
 description: This week, we’re going to break down our latest release of dfx (0.14.1) by diving into the new features that shipped with this new version, as well as talk about some new features under the hood of Motoko.
 tags: [Devs]
@@ -6,6 +7,114 @@ image: /img/blog/thumb-dev-update-june-1.jpeg
 authors:
   - name: Jessie Mongeon
 ---
+# 開発者ウィークリー・アップデート：2023年6月14日
+
+![June 14 2023](../_assets/thumb-dev-update-june-1.jpeg)
+
+今週の開発者ウィークリーへようこそ！今週はdfxの最新リリース(0.14.1)について、新バージョンに搭載された新機能や、Motoko 。
+
+さっそく見ていきましょう！
+
+## dfx 0.14.1
+
+dfxの最新リリースである0.14.1は、主に以前のリリースである0.14.0で発生した問題に対処しています。これらの問題の1つは、単一ページのアプリケーションに影響を与えるアセットcanister 機能内のバグでした。このため、0.14.1 へのアップグレードを強くお勧めします。
+
+アセットcanister 機能の重要なパッチに加え、dfx には開発者のエクスペリエンスを向上させる以下のような新機能が追加されました：
+
+### 機能: dfx.json の gzip オプション：
+
+dfx.json の gzip オプション: dfx.json の gzip オプションは、canisters をビルドする際の最終ステップとして、wasm モジュールの gzip を使用できるようになりました。この機能はデフォルトでは無効になっていますが、`dfx.json` ファイルで以下の設定により有効にすることができます：
+
+    {
+      "canisters" : {
+        "app" : {
+          "gzip" : true
+        }
+      }
+    }
+
+カスタムcanisters のために`.wasm.gz` ファイルを直接指定したい場合、この機能はまだサポートされています。`dfx.json` ファイルに設定されたメタデータ、最適化、または縮小オプションは、カスタム`.wasm.gz` ファイルが解凍され、変更された後、canister ビルドプロセスの最後に`wasm.gz` に圧縮された後に適用されます。
+
+### 機能：ic-asset の詳細なロギング：
+
+`dfx deploy -v` (または`-vv`) のログ出力に、以下のような詳細情報が含まれるようになりました：
+
+- アップロードされたチャンクの数と合計バイト数。
+- canister および ic-asset の API バージョン。
+- `CommitBatchArgs` の各`BatchOperationKind` のカウント。
+- `CommitBatchArgs` の値 (`-vv` 出力内のみ)。
+
+### 機能：`.env` ファイルに、作成されたすべてのcanister ID が含まれるようになりました。
+
+以前のバージョンでは、`.env` ファイルには、ビルド プロセス中に明示的な依存関係としてリストされたcanisters のcanister ID だけが含まれていました。現在は、`.env` ファイルに、指定されたネットワークのすべてのcanisters とそのcanister ID が含まれます。
+
+### 機能：ユーザがコントローラとして自身を削除するときに、同意を求めるようになりました。
+
+ユーザが自分自身や使用しているウォレットを削除すると、canister の制御を失う可能性があります。 この損失を防ぐために、`dfx canister update-settings` は、プリンシパルやウォレットがcanister のコントローラリストから削除されたときに、 確認を求めるようになりました。この確認は、`–yes`/`-y` 引数を使用するか、次のようなパイプを使用してコマンドに 'yes' を渡すことで、スキップすることができます：
+
+    echo "yes" | dfx canister update-settings <...>.
+
+これらの新機能に加え、このリリースでは様々な修正が行われました：
+
+- 修正:`dfx canister delete` が停止していないcanister 上で実行されている場合、dfx は以前のようにエラーを返す代わりにcanister の削除を確認します。
+- 修正: IC SDKのドキュメントが整理されました。
+- 修正: より高価なv2認証の計算を考慮し、コミットバッチがインクリメンタルに行われるようになりました。
+- 修正:`dfx deploy`の動作で、すべてのcanisters に同じ引数を与えることができました。
+- 修正:`dfx canister install`の動作で、空の引数が指定に関係なくすべてのcanisters を呼び出すことができましたが、この動作は削除され、現在はエラーになります。
+- 修正:`dfx start` を使用して dfx を起動する場合、起動後にレプリカが少なくとも一度は 'healthy' ステータスを返さなかった場合、dfx はプロセスを終了して再起動します。
+- 修正: ビットコインのサポートが有効になっている場合、`dfx start` はビットコインcanister をインストールするようになりました。 dfx の起動は、`networks.json` および`dfx.json` ファイル内のビットコイン設定に新しいフィールド`canister_init_arg` を追加します。
+- 修正:`bitcoin_regtest` 機能が無効になりました。
+- 雑用:`dfx nns import` コマンドで設定されるローカルのcanister ID に`nns-dapp` と`internet_identity` が追加されました。
+- 雑用：SNS サブコマンドが`dfx help` の出力に表示されるようになりました。
+
+dfx 0.14.1のリリースノートは[こちらから](https://github.com/dfinity/sdk/releases/tag/0.14.1)ダウンロードできます。
+
+## インクリメンタルGC
+
+Motoko 側では、Motoko は最近、インク[リメンタルGC (Incremental Garbage Collector)](https://forum.dfinity.org/t/incremental-garbage-collector-beta-release-motoko-update-part-12/20066) と呼ばれる新しいメモリ管理サービスを実装しました。インクリメンタルGCはMotoko v0.9.0でリリースされ、現在はベータ版です。
+
+インクリメンタルGCは、Motoko のサービスで、ガベージコレクションの作業負荷を複数の異なるステップ（インクリメントと呼ばれる）に分散し、それぞれユーザーの実行中のプログラムを短い限られた時間だけ一時停止します。このサービスを通じて、ガベージコレクタはユーザーのプログラムと同時に実行され、メッセージ命令の制限を超える前に、最大4GBまでのスケーラブルなヒープ使用を可能にします。そのため、以前のMotoko バージョンで使用されていたガベージコレクションプロセスよりもはるかに高いスケーリングが可能です。
+
+### これはMotoko の開発者にとってどのような意味があるのでしょうか？
+
+ベンチマーク・テストに基づくと、インクリメンタルGCは、Motoko の他のガベージ・コレクション・プロセスと比較して、平均で3%から16%**少ない** cycles を消費しながら、最大3倍のヒープ領域の割り当てを可能にします。
+
+これは、新しいインクリメンタルGCがスケーラブルであることを意味するだけでなく、低レイテンシで実行することができ、パフォーマンスの向上を通じてMotoko 開発者のエクスペリエンスを向上させるために非常に強力であることを意味します。
+
+## 開発者向けドキュメント
+
+ここ数週間で、IC上で開発者が利用できるリソースを改善するために設計された大規模かつ長期的なプロジェクトの一環として、開発者向けドキュメントに一連の変更と更新が行われました。ここでは、開発者向けドキュメントの最も重要でインパクトのある改善について説明します。
+
+### 統一されたフォーマットとスタイルガイド
+
+開発者向けドキュメントが更新され、各ページがまとまりのある統一されたスタイルとフォーマットに従うようになりました。これには、一貫した見出しのサイズ、コードブロックのフォーマット、言語の使用、大文字、句読点が含まれます。誤字やリンク切れの修正、サイドナビゲーションバーのドキュメントリンクの更新など、その他の一般的なハウスキーピング作業も今回の更新の一部です。
+
+今後数週間は、dfx、Motoko 、SNSの更新など、ICインフラの最新リリースに合わせて各ページが最新かつ正確であることを保証するため、ドキュメントの改訂と更新を続ける予定です。
+
+ドキュメントに追加されたもう一つのものは、新しい[開発者ドキュメント・スタイルガイド](https://github.com/dfinity/portal/blob/master/style-guide.md)です。このドキュメントでは、新しいドキュメントを投稿する際に従うべきパラメータについて詳しく説明しています。見出しの大きさ、単語の選択、チュートリアルやガイドの構成方法、箇条書き、コード・スニペット、リスト、ハイパーリンクのフォーマットなどの規格が含まれています。新しいドキュメントを作成するときは、このスタイルガイドに従って、開発ドキュメント内の各ページが互いにまとまり、統一されていることを確認してください。
+
+### 新しいサンプルコード・ドキュメント
+
+`dfinity/examples` リポジトリに存在するサンプルコードそれぞれに、新しいドキュメントページが作成されました。これらのサンプルのほとんどについて、README ドキュメントは以前からありましたが、適切な開発者向けドキュメントページはありませんでした。これらの新しいページは[ここで](https://internetcomputer.org/docs/current/samples/overview)見ることができますが、いくつか注目すべき例があります：
+
+- [分散型取引所（DEX）。](https://internetcomputer.org/docs/current/samples/dex)
+- [最初のビットコインのデプロイdapp 。](https://internetcomputer.org/docs/current/samples/deploying-your-first-bitcoin-dapp)
+- [ゲーム・オブ・ライフ。](https://internetcomputer.org/docs/current/samples/game-of-life)
+- [IC でのウェブゲームのホスト。](https://internetcomputer.org/docs/current/samples/host-a-webgame)
+- [ICP トークンの転送。](https://internetcomputer.org/docs/current/samples/token-transfer)
+
+### 新しい SNS ドキュメントページ
+
+今週更新されたドキュメントのもう一つのセクションはSNSドキュメントです。これらのページは、SNSの作成、立ち上げ、管理方法に関する明確で包括的なドキュメントを提供するために、徹底的な改訂、再編成、再構築が行われました。これらのページのうち、要望の多かった[SNS準備チェックリストの](https://internetcomputer.org/docs/current/developer-docs/integrations/sns/tokenomics/sns-checklist)ページが作成され、SNSの作成と立ち上げに必要なことがステップごとに詳しく説明されています。
+
+SNSドキュメンテーション・ページは進行中のプロジェクトの一部であり、今後も更新、改訂、追加が行われる予定です。これらのページやその他のドキュメントページについてご意見がありましたら、[開発者フォーラム](https://forum.dfinity.org/)または[Githubで](https://github.com/dfinity/portal/pulls)お知らせください。
+
+今週の更新は以上です。次回の開発者向け更新は来週をお楽しみに！
+
+\-DFINITY
+
+<!---
+
 
 # Developer weekly update: June 14, 2023
 
@@ -106,3 +215,5 @@ That’s it for this week, be sure to check in next week for our next round of d
 -DFINITY 
 
 
+
+-->

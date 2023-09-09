@@ -1,3 +1,54 @@
+# 信頼canisters
+
+## 概要
+
+canisters におけるDeFiおよび関連アプリケーションの重要な側面は、ICPやビットコインなどの価値を移転する機能です。このような機能により、canisters に対する信頼が不可欠となります。ICP をcanister に預けることが安全であることを、どのように保証すればよいのでしょうか？
+
+この質問に対する答えには、2つの側面があります：
+
+1.  canister 、そのICPがすべきことをするという確信。
+
+2.  canister の動作が予期せず変化することがないという確信。
+
+## canister 。
+
+canister の正しい動作は、2つのステップでチェックできます。まず、canister にデプロイされた Wasm コードを生成するために使用されたソースコードを検査し、 期待される/要求される機能を実装していること、およびその機能のみを実装 していることを確認します。
+
+次に、canister で実行されるWasmモジュールが、主張されたソースコードから実際に生成されたものであることを確認します。ここで、ビルドの再現性が非常に重要です。開発者は、正確に同じWasmをゼロから再構築できるように、Wasmモジュールを構築している必要があります。ユーザーは、再構築されたWasmモジュールのハッシュと、ICが報告したモジュールハッシュを比較することができます。開発者とユーザーは、再現性を確保するためのガイダンスを、[再現可能なcanisters](/developer-docs/backend/reproducible-builds.md) 。
+
+## canister の動作が予期せず変更されることはないという確信
+
+Canister スマートコントラクトは、コントローラによってデプロイされ、管理されます。コントローラの分散化のレベルは、一人またはチームによって管理されるものから、NNSまたは別の種類のオンチェーンDAOによって管理されるものまで様々です。他の機能の中でも、コントローラーは自分が管理する のコードを変更することができるので、他のブロックチェーンのスマートコントラクトとは異なり、 のコードはcanisters canister **変更可能**です。コントローラーは、自分が管理する が保有するICPトークンやビットコインなどの資産を完全にコントロールできます。この機能により、 は一般的なソフトウェアに近づき、ソフトウェアロジックを必要に応じて変更できる幅広いアプリケーションに適しています。canister canisters 
+
+canister canister DeFiで使用されているようなクリティカルなアプリケーションの場合、中央集権的な変更可能性は危険な場合があります。以下では、canister の変異の制御を検証可能な形で分散化する方法について、開発者が利用できるオプションの概要を説明します。
+
+:::info
+Canister コントローラは、自発的に分散化されていない場合、canister が保有するユーザー資産、たとえばユーザーの代わりにcanister が保有するICPトークンやビットコインを完全に制御できます。悪意があれば、コントローラはすべての資産を盗むことができます。言い換えると、ユーザーとして、自分の資産を扱うcanister とやり取りする場合、canister を検査し、その資産がどのように扱われるかを知ってください。canister がそのサブアカウントにアセットを保存していると判断した場合は、canister のコントローラが分散型であることを確認してください。
+::：
+
+## Network Nervous System （NNS）による単独コントロール
+
+最も単純なオプションは、canister のコントローラを削除することです。コントローラがない場合、canister は、プラットフォームの完全性が維持されていることを前提に、NNSプロポーザルを介してNNSによってのみ変異させることができます。
+
+ユーザーは、dfxを使用して、canister のコントローラのリストを確認できます。例えば
+
+    dfx canister --network ic info ryjl3-tyaaa-aaaaa-aaaba-cai
+
+これは、プリンシパル`ryjl3-tyaaa-aaaaa-aaaba-cai` (この例では、元帳canister)を持つcanister のコントローラのリストを返します。
+
+ユーザは、[`read_state` リクエストを](/references/ic-interface-spec.md/#http-read-state)使用して、他のcanister のコントローラのリストを取得し、コントローラのリストを含む関連する[canister 情報を](/references/ic-interface-spec.md#state-tree-canister-information)取得することもできます。注意: 現在、canister はこの情報を取得できません。
+
+同様の効果は、canister のコントローラを自分自身に設定することでも得られます。しかしこの場合、canister が再インストール要求を出すなどして、何らかの方法で自分自身をアップグレードする要求を出せないことを注意深く検証する必要があります。ここでは、コードの検査と再現可能なビルドが重要です。
+
+最後に、canister の制御を、いわゆる[「ブラックホール](https://github.com/ninegua/ic-blackhole)」[ canister に渡すという、やや有用な解決策があります。この](https://github.com/ninegua/ic-blackhole) canister は、自分自身しかコントローラを持ちませんが、ブラックホール化されたcanister の利用可能なcycles バランスなど、ブラックホールが制御するcanisters に関する有用な情報を第三者が取得できます。ブラックホールcanister のインスタンスは[e3mmv-5qaaa-aaaa-aadma-caiで](https://icscan.io/canister/e3mmv-5qaaa-aaaah-aadma-cai)、[ここで](https://github.com/ninegua/ic-blackhole)徹底的に文書化されています。ここにリンクされているリポジトリでは、canister 不変性について言及していますが、これは冗長です。NNSは、「ブラックホール化」canister 、またはブラックホールcanister それ自身によってコントロールされているcanister に変更を加えることができます。
+
+## NNSによる単独制御と他のガバナンス
+
+より複雑で強力なアプローチは、canister の唯一のコントローラーを分散ガバナンス機構に設定することです。この場合、NNSは、コントローラリストに明示的に含まれていなくても、canister を最終的に制御することができます。メリットは、より具体的なガバナンスメカニズムをcanister に集中できることです。 このようなガバナンスメカニズムが実装する複雑さと制御のさまざまなレベルを想像することができます。たとえば、(今後予定されている)[SNS機能では](https://medium.com/dfinity/how-the-service-nervous-system-sns-will-bring-tokenized-governance-to-on-chain-dapps-b74fb8364a5c)、開発者が自分のcanister のコントローラを、統治するcanister に設定できます。
+
+言うまでもなく、信頼の要件は、canister を制御する SNS に移され、そこではコード検査と再現性に関するすべての考慮事項が適用されます。
+
+<!---
 # Trust in canisters
 
 ## Overview
@@ -47,3 +98,5 @@ Finally, a somewhat more useful solution is to pass control of the canister to a
 A more complex, but powerful approach, is to set the sole controller of the canister to a distributed governance mechanism. In this case, the NNS still has ultimate control over the canister, even though it is not explicitly in the controller list. The advantage is that the more specific governance mechanism can be more focused on the canister. One can imagine different levels of complexity and control that such a governance mechanism may implement. An example is the (upcoming) [SNS feature](https://medium.com/dfinity/how-the-service-nervous-system-sns-will-bring-tokenized-governance-to-on-chain-dapps-b74fb8364a5c) which allows developers to set the controller of their canister to some governing canister.
 
 Needless to say, the trust requirements are moved to the SNS controlling the canister where all of the considerations regarding code inspection and reproducibility apply.
+
+-->

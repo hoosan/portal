@@ -1,3 +1,58 @@
+# ハッカソンプロジェクト
+
+世界中の開発者がハッカソンに参加し、IC上でdapps 、ツールやその他の種類のプロジェクトを構築しています。インスピレーションを得たり、受賞プロジェクトのソースコードをご覧ください。
+
+## DFINIHack
+
+ハッカソンは素晴らしい学習方法です。そのため、外部のハッカソンに加え、DFINITY で社内のハッカソンを実施しています。コーディングの経験の有無にかかわらず、すべての部署の誰もが参加できます。目的は、新しいユースケースを探求し、開発者に提供するドキュメントやツールを評価し、社内でビルダーズカルチャーを促進することです。
+
+### DeFind
+
+DeFindはステーキングベースの検索エンジンです。今日のインターネットでは、検索エンジンはウェブクローラーを使って秘密のアルゴリズムにデータを送り込みます。広告主にとって、これは間違ったインセンティブを生み出します。例えば、見えないテキストでウェブクローラーを騙したり、ボットを通して偽のトラフィックを生成したりするインセンティブが働くかもしれません。
+
+- [GitHubのコードを参照](https://github.com/IC-Search/ic-search)。
+
+- [ライブcanister](https://jbioa-siaaa-aaaai-qanfq-cai.ic0.app).
+
+### IC Netboot
+
+IC Netbootは、開発者が仮想マシン（VM）をcanister から直接起動することを可能にします。さらに、zookeeperのようなアプリケーションのVMデータのフェイルオーバーにもなります。最後に、これはTFTP/DHCP/iPXEのような合法的なプロトコルでInternet computer 。
+
+- [GitHubのコードを参照してください](https://github.com/farazshaikh/team14)。
+
+### IC Notary
+
+IC Notaryは、ユーザーがある時点で文書（または任意のファイル）を保持していたことを証明できる、タイムスタンプ付きの公証サービスです。ユーザーはIC Notaryにファイルをアップロードすることができ、過去にアップロードされたファイルを検索してダウンロードすることもできます。
+
+- [GitHubのコードを参照](https://github.com/jplevyak/dfnhack7)。
+
+- [ライブcanister](https://jbxh5-eqaaa-aaaae-qaaoq-cai.ic0.app).
+
+### IC Vault
+
+IC Vaultは、エンドツーエンドの暗号化（すなわち、Internet Computer はいかなる平文も見ることができない）によって、Internet Computer を介したデバイス間のデータの安全な同期を保証します。
+
+- [GitHubのコードを参照](https://github.com/timohanke/hack13)。
+
+- [ライブCanister](https://xggrc-cyaaa-aaaaj-aaasq-cai.raw.ic0.app) 。
+
+- [YouTubeでのプレゼンテーション](https://youtu.be/16xxA8EKEhE)。
+
+### PrivIC
+
+PrivIC（「プライバシー」と発音）は、Internet Computer 。ユーザーはPrivICアプリに直接アクセスして、名前、生年月日、電子メール、電話番号などの属性で構成される自分のIDを管理したり、アプリからの登録/サインインフローの一部として管理したりすることができます。
+
+- [GitHubのコードを](https://github.com/open-ic/priv-ic)ご覧ください。
+
+### Sidekick
+
+Sidekick はInternet Computer 上で動作するdapp で、数行のコードからcanisters を構築できます。
+
+- [GitHubのコードを](https://github.com/blynn/sidekick)参照。
+
+- [ライブcanister](https://ffgig-jyaaa-aaaae-aaaoa-cai.raw.icp0.io) 。
+
+<!---
 # Hackathon projects
 
 Developers from around the world are participating in hackathons, building dapps, tools and other types of projects on the IC. Get inspired, and see the source code of some of the winning projects.
@@ -51,3 +106,4 @@ Sidekick is a dapp running on the Internet Computer that can build canisters fro
 -   [See code on GitHub](https://github.com/blynn/sidekick).
 
 -   [Live canister](https://ffgig-jyaaa-aaaae-aaaoa-cai.raw.icp0.io).
+-->

@@ -1,9 +1,57 @@
 ---
+
 title: Bitcoin Integration
 abstract:
 shareImage: /img/how-it-works/btc-content.600x300.jpg
 slug: bitcoin-integration
 ---
+# ビットコインの統合
+
+Internet Computer 上のビットコイン統合により、
+ビットコイン・スマートコントラクトの作成が初めて可能になります。つまり、
+Internet Computer 、実際のビットコインを使用するcanisters スマートコントラクトの形で実行されます。
+この統合は、2つの重要なコンポーネントによって可能になります。
+
+最初のコンポーネントは[連鎖鍵署名で](/how-it-works/threshold-ecdsa-signing/)、
+、すべてのcanister が ECDSA 公開鍵を取得し、
+これらの鍵に関する署名を安全な方法で取得できるようにします。
+ビットコインアドレスは ECDSA 公開鍵と結びついているため、canister 上の ECDSA 公開鍵
+を持つことは、canister が独自のビットコインアドレスを導出できることを意味します。
+ canister が[IC ECDSA インタフェースを](https://internetcomputer.org/docs/current/references/ic-interface-spec#ic-sign_with_ecdsa)使用してその公開鍵のいずれに対しても署名を要求できることを考えると、canister はそのビットコインアドレスのいずれかから他のアドレスにビットコインを移動させる有効な署名付きビットコイントランザクショ ンを作成できます。
+
+2つ目のコンポーネントは、ネットワークレベルでのビットコインとの統合です。Internet Computer レプリカ
+には、レプリカプロセスの外部プロセスである、いわゆる*ビットコインアダプターを*インスタンス化する機能があります。
+最初のステップで、ビットコインアダプターはビットコインのピアツーピアネットワークのノードに関する情報を収集し、十分な数のビットコインノードが発見されると、ランダムに選ばれた5つのビットコインノードに接続します。サブネット内の各レプリカがこの操作を実行するため、サブネット全体がビットコインネットワークへの多くの、ほとんど異なる接続を持ちます。
+ビットコインアダプタは、ビットコインブロックチェーンに関する情報を取得するために、ビットコインピアツーピアプロトコルの規格を使用します。各ビットコインアダプターは、完全なビットコインブロックヘッダーチェーンを追跡します。
+
+同時に、ビットコインアダプターはレプリカプロセスと通信し、レプリカ内の現在のビットコインのステートについて学習します。ビットコインアダプターが、レプリカから提供されたブロックヘッダーハッシュをローカルで利用可能なブロックヘッダーチェーンと比較することで、ビットコインブロックがまだレプリカで利用可能になっていないことを知ると、ビットコインアダプターは、接続されているビットコインノードから次の欠けているブロックを要求し、受信するとレプリカに転送します。
+
+レプリカ内部では、ネットワーキング層で受信されたビットコインブロックはICブロックにパックされ、コンセンサス層とメッセージルーティング層で処理され、最終的に実行層の*ビットコインcanister*。ビットコインcanister は、システムサブネットで動作するcanister で、その目的は
+ビットコイン関連の機能を他のcanisters に提供することです。特に、ビットコインブロックチェーンのステートに関する情報を保持し、任意のアドレスの残高や未使用のトランザクション出力（UTXO）など、この情報に他のcanisters がアクセスできるようにします。さらに、ブロックに入れられた直近のビットコイン取引の手数料もビットコインcanister から要求できます。
+
+Bitcoincanister は、最後の重要な機能も提供します：それは、canisters がビットコイントランザクションを送信するためのエンドポイントを提供し、ネットワーキングレイヤーで利用可能になり、そこでビットコインアダプターに転送されます。ビットコインアダプターは、接続されているビットコインピアにトランザクションをアドバタイズし、要求に応じてトランザクションを転送します。サブネット内の各レプリカがこのステップを実行するため、すべてのトランザクションはビットコインネットワーク内で迅速に分散されます。
+
+[IC管理canister インターフェースは](https://internetcomputer.org/docs/current/references/ic-interface-spec#ic-management-canister)、すべてのBitcoin統合エンドポイントへのアクセスを提供します。
+それらの使用は、以下のサンプルフローで説明されています：
+
+<figure>
+<img src="/img/how-it-works/bitcoin-integration-flow.png" alt="Bitcoin integration sample flow" title="Bitcoin integration sample flow" align="center" style="width:600px">
+</figure>
+
+canister
+次に、手数料エンドポイントを呼び出して最近の手数料を取得します。 最後に、 UTXOの一部を入力として使用してビットコイン取引を構築します。各入力について、ECDSA APIが呼び出され、必要な署名が取得されます。最後に、トランザクションが送信されます。
+ canister 
+
+[Bitcoin 統合 wiki ページ](https://wiki.internetcomputer.org/wiki/Bitcoin_integration)。
+
+[Bitcoincanister ソースコード](https://github.com/dfinity/bitcoin-canister)。
+
+[動議提案20586](https://dashboard.internetcomputer.org/proposal/20586)。
+
+[ビットコイン統合](https://medium.com/dfinity/btc-icp-mainnet-integration-complete-bringing-smart-contract-functionality-to-bitcoin-9bd81d4ce0ba)の開始
+
+<!---
+
 
 # Bitcoin Integration
 
@@ -49,3 +97,5 @@ Lastly, the canister builds a Bitcoin transaction using some of the UTXOs as inp
 [Motion Proposal 20586](https://dashboard.internetcomputer.org/proposal/20586).
 
 [Bitcoin integration goes live](https://medium.com/dfinity/btc-icp-mainnet-integration-complete-bringing-smart-contract-functionality-to-bitcoin-9bd81d4ce0ba).
+
+-->

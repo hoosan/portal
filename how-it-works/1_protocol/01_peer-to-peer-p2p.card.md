@@ -1,6 +1,23 @@
 ---
+
 title: Peer-to-peer
 ---
+![](/img/how-it-works/peer-to-peer.webp)
+
+# ピアツーピア
+
+Internet Computer のピアツーピア層（P2P）は、プロトコルスタックの最下層で、サブネットのノード間の安全で信頼性の高い通信を担当します。
+P2P層は、ノード間のインターネットプロトコル（IP）接続を基盤として、サブネットのノード間の仮想ピアツーピアブロードキャストネットワークを実現します。
+これにより、P2Pレイヤーはサブネットのすべてのノードを接続する通信ファブリックとなります。
+P2Pを使用すると、ノードはサブネット内のすべてのノードにネットワークメッセージ（*アーティファクトとも*呼ばれる）をブロードキャストできます。
+アーティファクトは、ユーザーによって提出されたcanisters への入力や、ICプロトコルによって生成されたプロトコルメッセージ（例．
+P2Pは、ブロードキャストされるアーティファクトが最終的にサブネットのすべてのノードに配信されることを保証します。
+最終的な配信は、実世界の通信ネットワークの非同期的な性質を反映したもので、Internet Computer protocol を想定しています。
+
+[もっと深く](/how-it-works/peer-to-peer-p2p/)
+
+<!---
+
 
 ![](/img/how-it-works/peer-to-peer.webp)
 
@@ -15,3 +32,5 @@ P2P ensures that artifacts to be broadcast are eventually delivered to all nodes
 Eventual delivery reflects the asynchronous nature of real-world communication networks, which we assume for the Internet Computer protocol.
 
 [Go deeper](/how-it-works/peer-to-peer-p2p/)
+
+-->

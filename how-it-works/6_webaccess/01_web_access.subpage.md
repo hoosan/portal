@@ -1,9 +1,69 @@
 ---
+
 title: Canister smart contracts serve the Web
 abstract:
 shareImage: /img/how-it-works/web-content.jpg
 slug: smart-contracts-serve-the-web
 ---
+# スマートコントラクトがウェブに貢献
+
+Internet Computer は、フロントエンド、バックエンド、データなど、完全なdapp をホストできる唯一のブロックチェーンです。どのユーザーもdapp をcanister （スマートコントラクト）としてInternet Computer 上にデプロイすることができます。Canisters はコードとステートを束ねた計算ユニットです。Canisters はデータの保存、HTML、CSS、Javascript ページの配信、API リクエストへの応答が可能です。Canisters は驚くほど高速で、200ms 以内にウェブページを配信できます。Canisters は最大 32 GB のデータを驚くほど低コストで保存できます（年間 1 GB あたり 5 ドル）。Internet Computer 上でホストされているdapps のブラウジングは、クラウド上でホストされている Web2 アプリのブラウジングと同じくらいシームレスです。これらすべてのactor、開発者はクラウドサービスを必要とせず、大規模なソーシャルメディア・アプリケーションも完全にオンチェーンで展開することができます。[ Internet Computer 上にデプロイされたdapps ](https://internetcomputer.org/ecosystem/) をいくつかお試しください。
+
+## ワークフロー
+
+Internet Computer 上にcanister としてデプロイされたウェブサイトにクライアントがアクセスする方法を説明します。アーキテクチャには4つの主要コンポーネントが含まれます。
+
+- クライアント - ユーザーが所有するデバイス。ユーザーがウェブサイトを閲覧する際、クライアント・デバイスは HTTP リクエストを送信します。
+- HTTPゲートウェイ - HTTP[ゲートウェイプロトコルを](/docs/current/references/ic-interface-spec/#http-gateway)実装するソフトウェア。HTTPリクエストをcanisters が理解できる形式に変換します。canister がレスポンスを送り返すと、HTTPゲートウェイはレスポンスをHTTPレスポンスに変換します。HTTPゲートウェイは、クライアント、バウンダリノード、または独立したサーバーのいずれかで実行できます。
+- バウンダリノード - バウンダリノードは、Internet Computer のアーキテクチャを追跡します。特に、バウンダリノードは、サブネットのリスト、各サブネット上のノードのリスト、各サブネットで実行されるcanisters などを追跡します。canister クエリを受信すると、バウンダリ・ノードはcanister を実行しているブロックチェーン・ノードの 1 つにリクエストをルーティングできます。
+- Canister - 開発者はdapp をcanister としてホストすることができます。Canister は多くのメソッドで構成されています。誰でもcanister にクエリを送信できます。クエリは、実行するcanister メソッドとcanister メソッドの入力で構成されます。Internet Computer はユーザーから送信されたクエリを受信し、対応するcanister メソッドを実行し、ユーザーにレスポンスを返します。
+
+<figure>
+<img src="/img/how-it-works/web_access.png" alt="Architecture: HTTP Gateway and Boundary nodes help in forwarding HTTP Request to canisters" title="HTTP Gateway converts the format of messages and Boundary nodes route the message to appropriate subnet" align="center" style="width:1000px">
+<figcaption align="center">
+HTTP Gateway converts the format of HTTP Requests to canister queries, and canister responses to HTTP responses.<br>
+Boundary nodes route canister queries to appropriate subnet.
+</figcaption>
+</figure>
+
+<!-- After a developer deploys an app as a canister, he gets the canister id of the created canister. Any user can then access the website for the app at a URL of the form http://\<canister id\>.ic0.app or http://\<canister id\>.raw.ic0.app. When the user enters the above URL on his browser, the browser contacts DNS service, which resolves the ic0.app domain to an IP address of a boundary node. The browser then makes a HTTP request to the boundary node.  -->
+
+## ウェブアプリのデプロイInternet Computer
+
+canister がウェブコンテンツを提供したい場合、HTTP リクエスト（URL、http メソッド、ヘッダー）を消費し、HTTP レスポンス（ステータス、ヘッダー、ボディ）を出力するメソッドを実装する必要があります。canister メソッドは、HTTP レスポンスの一部として、HTML、CSS、Javascript のコンテンツを返すことができます。詳しくは[Internet Computer Interface Spec](/docs/current/references/ic-interface-spec/#ic-http_request)を参照してください。
+
+また、既存の静的ウェブアプリ（React や Angular などのフレームワークを使用して構築されたもの）を、「アセットcanister」を作成することで、最小限の追加コードでInternet Computer にホストする簡単な方法もあります。アセットcanister は、静的なウェブサイトをホストするための多くの定型的なコードが私たちのために処理されることを除けば、通常のcanister と同様に機能します。静的ウェブサイトをホストするには、canister を作成し、そのタイプを "asset" と指定し、ウェブアプリのソースフォルダを指定するだけです。アセットcanister がInternet Computer にデプロイされると、ウェブサイトは http://\<canister id\>.ic0.app と http://\<canister id\>.raw.ic0.app からアクセスできるようになります。[チュートリアル](/docs/current/samples/host-a-website/)または[ビデオを](https://www.youtube.com/watch?v=JAQ1dkFvfPI)ご覧ください。
+
+## HTTPゲートウェイプロトコル
+
+ブラウザはHTTP(s)プロトコルのみで通信し、canister 。ブラウザとInternet Computer protocolsの間のギャップを埋めるために、ブラウザとInternet Computer の間に位置するソフトウェアである[HTTPゲートウェイを](/docs/current/references/ic-interface-spec/#http-gateway)利用します。ブラウザはhttpリクエストをhttpゲートウェイに送信します。ゲートウェイはまずhttpリクエストのURLを解釈し、対応するcanister IDを抽出します。次に、httpリクエストをcanister クエリに変換し、境界ノードに送信します。canister が応答を送り返すと、http ゲートウェイは応答を解釈し、署名を検証し、http 応答に変換してブラウザに送信します。
+
+HTTPゲートウェイプロトコルを実装する方法はたくさんあります。現在、2つの実装があります。
+
+- ゲートウェイプロトコルは[サービスワーカーとして](https://web.dev/learn/pwa/service-workers/)実装されています。ユーザーが http://\<canister id\>.ic0.app のようなURLを入力すると、ブラウザはクエリーを解決するためにDNSサービスを呼び出します。現在、DNS は ic0.app ドメインをInternet Computer の[バウンダリノードに](/how-it-works/boundary-nodes/)マッピングします。ブラウザがバウンダリノードにリクエストを行うと、HTTP ゲートウェイプロトコルを実装したサービスワーカーで応答します。ブラウザはサービスワーカーをインストールします。それ以降、ユーザーが http://\<canister id\>.ic0.app にリクエストするたびに、ブラウザはリクエストをサービスワーカーに渡します。
+- バウンダリノードもHTTPゲートウェイプロトコルを実装しています。ユーザーが http://\<canister id\>.raw.ic0.app のような URL を入力すると、ブラウザは http ゲートウェイとして動作するバウンダリノードに http リクエストを送信します。
+  HTTP ゲートウェイプロトコルを実装する方法は他にもいくつかあります。ゲートウェイはブラウザの拡張機能として実装できます。chromiumブラウザを変更して、ブラウザの一部としてHTTP Gatewayを含めることもできます。
+
+## SEO
+
+Internet Computer 上で動作するdapps は、クローラーがオンチェーンで直接アクセスできるため、Web 2.0 の世界にシームレスに統合されます。これにより、dapps は検索エンジンにインデックスされ、ソーシャルプラットフォーム上でプレビューやカードを生成するためにメタデータを読み取ることができます。Internet Computer の検索エンジン最適化（SEO）機能の使用に関するチュートリアルは、こちらの[ブログ記事を](https://medium.com/dfinity/how-to-configure-dapps-for-social-platform-previews-and-seo-62a55ee63d33)ご覧ください。
+
+[ウェブコンテンツの配信](/capabilities/serve-web-content/)
+
+[IC 上でのフロントエンドdapp の構築](https://medium.com/dfinity/building-a-front-end-dapp-on-the-internet-computer-55985f0a595b)
+
+[IC での静的ウェブサイトのホスティング](/docs/current/samples/host-a-website/)
+
+[HTTPゲートウェイプロトコル](/docs/current/references/ic-interface-spec/#http-gateway)
+
+[Web Serving Wiki の記事](https://wiki.internetcomputer.org/wiki/Web_Serving)
+
+[![Watch youtube video](https://i.ytimg.com/vi/JAQ1dkFvfPI/maxresdefault.jpg)](https://www.youtube.com/watch?v=JAQ1dkFvfPI)
+
+[![Watch youtube video](https://i.ytimg.com/vi/b_nc6yx5_DQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=b_nc6yx5_DQ)
+
+<!---
+
 
 # Smart Contracts serve the web
 
@@ -26,7 +86,7 @@ Boundary nodes route canister queries to appropriate subnet.
 </figcaption>
 </figure>
 
-<!-- After a developer deploys an app as a canister, he gets the canister id of the created canister. Any user can then access the website for the app at a URL of the form http://\<canister id\>.ic0.app or http://\<canister id\>.raw.ic0.app. When the user enters the above URL on his browser, the browser contacts DNS service, which resolves the ic0.app domain to an IP address of a boundary node. The browser then makes a HTTP request to the boundary node.  -->
+<!-- After a developer deploys an app as a canister, he gets the canister id of the created canister. Any user can then access the website for the app at a URL of the form http://\<canister id\>.ic0.app or http://\<canister id\>.raw.ic0.app. When the user enters the above URL on his browser, the browser contacts DNS service, which resolves the ic0.app domain to an IP address of a boundary node. The browser then makes a HTTP request to the boundary node.  -!->
 
 ## Deploying web apps on the Internet Computer
 
@@ -61,3 +121,5 @@ The dapps running on the Internet Computer seamlessly integrate into the Web 2.0
 [![Watch youtube video](https://i.ytimg.com/vi/JAQ1dkFvfPI/maxresdefault.jpg)](https://www.youtube.com/watch?v=JAQ1dkFvfPI)
 
 [![Watch youtube video](https://i.ytimg.com/vi/b_nc6yx5_DQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=b_nc6yx5_DQ)
+
+-->

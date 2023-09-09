@@ -1,3 +1,48 @@
+# 3: 開発環境
+
+## 環境のセットアップ
+
+プロジェクトを開始する前に、以下を確認してください：
+
+- \[x\] インターネットに接続されており、ローカルの macOS または Linux コンピュータでシェル端末にアクセスできること。
+
+- \[x\] コマンドラインインターフェイス（CLI）ウィンドウが開いていること。このウィンドウは「ターミナル」ウィンドウとも呼ばれます。
+
+- \[x\] コンピュータ上で実行中のローカル実行環境プロセスを停止しています。
+
+- \[x\][npmを](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)インストールしました。
+
+- \[x\] Rustプログラミング言語とCargoを、お使いのオペレーティングシステムの[Rustインストール](https://doc.rust-lang.org/book/ch01-01-installation.html)手順に記載されているとおりにダウンロードしてインストールしました。
+  
+  ``` bash
+  curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+  ```
+
+- \[x\]`wasm32-unknown-unknown` ターゲットをインストールしました：
+  
+  ``` bash
+  rustup target add wasm32-unknown-unknown
+  ```
+
+- \[x\][IC SDKのインストール](./../../setup/install/index.mdx)ページに記載されているように、IC SDKパッケージをダウンロードしてインストールしました。
+  
+  [IC SDK セットアップガイドには](../../setup/install/index.mdx)、Internet Computer メインネット上で実行する[Rust スマートコントラクト](../choosing-language.md)やdapps を作成するのに役立つツール、サンプルコード、ドキュメントが用意されています。セットアップガイドは、IC SDKを初めてインストールすることを前提としています。
+  
+  Rust開発をサポートするため、IC SDKには[Rustcanister 開発キット（Rust CDK](https://github.com/dfinity/cdk-rs)）が含まれています。
+  
+  **ほとんどの開発者はIC SDKを使用しますが、経験豊富なRust開発者はIC SDKを完全に回避し、[Rust CDKを](https://github.com/dfinity/cdk-rs)直接使用することもできます。**
+
+- \[x\] コードエディタをインストールしていること。Rust では[VS Code IDE](https://code.visualstudio.com/download)がよく使われています。
+
+- \[x\][gitを](https://git-scm.com/downloads)ダウンロードしてインストールしていること。
+
+- \[x\] 上記のすべてのパッケージとツールが最新のリリースバージョンにアップデートされていることを確認してください。
+
+## 次のステップ
+
+上記の手順を踏んだら、Rust を使ってバックエンドcanisters の開発を始める準備ができました！まずは[Rust クイックスタートガイド](./4-quickstart.md) をご覧ください。
+
+<!---
 # 3: Developer environment 
 
 ## Setting up your environment 
@@ -41,3 +86,5 @@ Before you start your project, verify the following:
 ## Next steps
 
 After following the steps above, you're ready to get started developing backend canisters with Rust! To get started, check out the [Rust quick start guide](./4-quickstart.md).
+
+-->

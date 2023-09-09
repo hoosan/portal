@@ -1,9 +1,57 @@
 ---
+
 title: Boundary nodes
 abstract:
 shareImage: /img/how-it-works/boundary-nodes.jpg
 slug: boundary-nodes
 ---
+# 境界ノード
+
+境界ノードは、Internet Computer (IC)
+のグローバルな分散エッジを形成し、canister スマートコントラクトへのすべてのアクセスがこれを経由します。バウンダリ・ノード
+はICのパブリック・エンドポイントを提供し、すべての受信リクエストを
+の適切なサブネットにルーティングし、レプリカ・ノード間でリクエストをロードバランスし、パフォーマンスを向上させるためにレスポンス
+をキャッシュします。
+
+<figure>
+<img src="/img/how-it-works/boundary-nodes.webp" alt="Architecture of boundary nodes" title="Architecture of boundary nodes" align="center">
+<figcaption align="left">
+Boundary nodes are the gateway to the Internet Computer, which allow users to seamlessly access the canister smart contracts.
+</figcaption>
+</figure>
+
+バウンダリ・ノードは、Internet Computer 上でホストされている
+スマート・コントラクトcanister にアクセスする2つの方法を提供します。1つ目は、HTTPゲートウェイ
+を介してストック・ブラウザを使用してアクセスする方法、2つ目は、APIバウンダリ・ノードを介してAPIcanister コール
+を使用してアクセスする方法です。
+
+HTTPゲートウェイにより、ユーザはWeb 2.0サービスにアクセスするのと同じように、ブラウザ（
+）を使ってIC上でホストされているdapps 。この目的のために、
+HTTPゲートウェイは、すべての着信HTTPリクエストをAPIcanister コールに変換し、
+その後、適切なサブネットにルーティングされます。
+
+APIバウンダリー・ノードにより、ICネイティブ・アプリケーションは
+canister スマート・コントラクトを直接呼び出すことができます。この場合、境界ノードはAPI
+canister 呼び出しを正しいサブネットにルーティングするだけです。したがって、
+ユーザーとバウンダリ・ノード間の信頼は必要ありません。
+
+HTTPゲートウェイとAPIバウンダリ・ノードの両方は現在、
+バウンダリ・ノードに統合されています。この2つを2つの独立したサービスに分離する作業が進行中です。
+完成すれば、APIバウンダリノードは完全にNNSの管理下に置かれます。
+一方、HTTPゲートウェイはコミュニティの誰でも実行することができ、地域の管轄権へのコンプライアンス（
+）を保証します。
+[詳細については、フォーラムの更新情報をご覧](https://forum.dfinity.org/t/boundary-node-roadmap/15562)ください。
+
+バウンダリ・ノードは、ICにアクセスするために提供する2つのエンドポイントに加えて、
+、IC上でホストされるdapps
+ のパフォーマンスを向上させるためのキャッシュも提供します。
+
+## さらに深く
+
+[IC Wikiのバウンダリ・ノード](https://wiki.internetcomputer.org/wiki/Boundary_Nodes)
+
+<!---
+
 
 # Boundary nodes
 
@@ -49,3 +97,5 @@ hosted on the IC.
 ## Go Even Deeper
 
 [Boundary Nodes on the IC Wiki](https://wiki.internetcomputer.org/wiki/Boundary_Nodes)
+
+-->

@@ -1,3 +1,23 @@
+# アカウントのトリミング
+
+## 概要
+
+飽和を回避し、良好なパフォーマンスを維持するために、
+台帳の容量が閾値に達している場合、一部の勘定科目がトリミングされます。
+このメカニズムにより、台帳にゴミ（残高が少なすぎて使用できない勘定科目）が蓄積されるのを防ぐことができます。
+
+## トリミングの仕組み
+
+これらのトリミングされた口座の残高も削除されます。 （これらの口座ごとにバーン・トランザクション・ブロックがチェーンに追加されます）。
+
+## 例
+
+SNS 元帳の場合、しきい値は現在、元帳の 2,800 万アカウントと、
+トリム量の 10 万アカウントに設定されています。
+したがって、トランザクションを追加すると、2,810 万アカウント以上のインデックスが作成される場合、
+残高が最も少ない 10 万アカウントがトリムされ、その残高はバーンされます。
+
+<!---
 # Account trimming
 
 ## Overview
@@ -19,3 +39,5 @@ For the SNS ledger, the threshold is currently set a 28 million accounts for the
 trim quantity.
 Therefore, if adding a transaction lead to index more than 28.1 M accounts, the 100,000 accounts with the lowest
 balance will be trimmed and their balance burned.
+
+-->

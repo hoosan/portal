@@ -1,3 +1,140 @@
+# 14: キャンディッドUIをラストで使うcanister
+
+## 概要
+
+Candid は、サービスのパブリックインターフェースを記述することを主な目的とした**インターフェース記述言語**です。canisterCandid は言語にとらわれず、Rust を含む異なるプログラミング言語で書かれたサービスとフロントエンド間の相互運用を可能にします。
+
+## 前提条件
+
+始める前に、[開発者環境ガイドの](./3-dev-env.md)指示に従って開発者環境をセットアップしていることを確認してください。
+
+## Rust からサービスとの対話canister
+
+Rust でcanister を記述する場合、`dfx build` コマンドはcanister のサービス記述が正しく参照されるようにします。しかし、Candid のサービス記述は、[Candid 仕様に](https://github.com/dfinity/candid/blob/master/spec/Candid.md#core-grammar)記載されている記述規約に従って手動で記述する必要があります。
+
+次のコード例は、単純なカウンター・アプリケーションが Candid インターフェースを使用して Rustcanister と対話する方法を示しています。
+
+:::info
+この例では、[クイックスタートや](4-quickstart.md) [デプロイcanisters](5-deploying.md)のページで説明されているように、`dfx new` コマンドで作成されたプロジェクトがあることを前提としています：
+
+`src/counter_backend/src/lib.rs`:
+
+``` rust
+use ic_cdk::{
+    api::call::ManualReply,
+    export::{candid, Principal},
+    init, query, update,
+};
+use std::cell::{Cell, RefCell};
+
+thread_local! {
+    static COUNTER: RefCell<candid::Nat> = RefCell::new(candid::Nat::from(0));
+    static OWNER: Cell<Principal> = Cell::new(Principal::from_slice(&[]));
+}
+
+#[init]
+fn init() {
+    OWNER.with(|owner| owner.set(ic_cdk::api::caller()));
+}
+
+#[update]
+fn inc() {
+    ic_cdk::println!("{:?}", OWNER.with(|owner| owner.get()));
+    COUNTER.with(|counter| *counter.borrow_mut() += 1u64);
+}
+
+#[query(manual_reply = true)]
+fn read() -> ManualReply<candid::Nat> {
+    COUNTER.with(|counter| ManualReply::one(counter))
+}
+
+#[update]
+fn write(input: candid::Nat) {
+    COUNTER.with(|counter| *counter.borrow_mut() = input);
+}
+```
+
+`src/counter_backend/counter_backend.did`:
+
+    service : {
+      "inc": () -> ();
+      "read": () -> (nat) query;
+      "write": (nat) -> ();
+    }
+
+## ブラウザでCandid UIを使用
+
+Candid UI をブラウザで使用するには、まずcanisters をデプロイする必要があります。上記で提供された`src/counter_backend/src/lib.rs` と`src/counter_backend/src/counter.did` ファイルを使用し、これらをdfxプロジェクトに保存した後、コマンドでデプロイすることができます：
+
+    dfx deploy
+
+:::info
+これらのファイルを挿入するために新しいdfxプロジェクトを作成する必要がある場合は、[ canisters のデプロイの](5-deploying.md)ページを参照してください。
+::：
+
+`dfx deploy` コマンドの出力は以下のようになります：
+
+    Deployed canisters.
+    URLs:
+      Frontend canister via browser
+        counter_frontend: http://127.0.0.1:8080/?canisterId=ajuq4-ruaaa-aaaaa-qaaga-cai
+      Backend canister via Candid interface:
+        counter_backend: http://127.0.0.1:8080/?canisterId=aovwi-4maaa-aaaaa-qaagq-cai&id=a4tbr-q4aaa-aaaaa-qaafq-cai
+
+Candid UIを使用するには、'Backendcanister via Candid interface' URLとして指定されたリンクに移動します。ブラウザでは、Candid UIは以下のように表示されます：
+
+[キャンディッドUI](../rust/_attachments/CandidUI.png)
+
+この UI インターフェースは`counter` canister の機能を呼び出すために使用できます。
+
+## Candidの使用canisters
+
+例えば、Rustで`counter` canister を呼び出す`hello` canister を書きたい場合、`hello` canister のコードは以下のようになります：
+
+`src/hello_backend/src/lib.rs`:
+
+``` rust
+use ic_cdk_macros::*;
+
+#[import(canister = "counter")]
+struct Counter;
+
+#[update]
+async fn greet() -> String {
+    let result = Counter::inc(1.into()).await;
+    format!("The current counter is {}", result)
+}
+```
+
+### このコードが行うこと
+
+`counter` canister の import マクロ (`#[import(canister = "counter")]` 宣言) が`dfx build` コマンドで処理されるとき、`dfx build` コマンドは`counter` canister 識別子と Candid 記述が Rust CDK に正しく渡されるようにします。
+
+その後、Rust CDK は Candid 型を適切な Rust ネイティブ型に変換します。この変換により、`counter` canister が異なる言語で実装されていたり、インポートされたcanister のソースコードがない場合でも、`inc` メソッドを Rust 関数のようにネイティブに呼び出すことができます。
+
+CandidとRustの間の型マッピングに関する追加情報については、[サポートされている型の](../../../references/candid-ref.md)リファレンスセクションを参照してください。
+
+他のcanisters やツールが`hello` canister と相互作用するためには、そのコンテンツを含む`.did` ファイルを手動で作成する必要があります：
+
+`src/hello_backend/hello_backend.did`
+
+``` candid
+service : {
+    greet : () -> (text);
+}
+```
+
+また、Candidサービスの説明を自動的に生成する実験的な機能もあります。
+
+## 参考文献
+
+Rust で Candid サービスやcanisters を作成するための追加情報やライブラリについては、[Candid クレート](https://docs.rs/candid/)、[Rust CDK の例](https://github.com/dfinity/cdk-rs/tree/next/examples)、[Rust チュートリアルの](../rust/index.md)ドキュメントを参照してください。
+
+## 次のステップ
+
+Rust によるバックエンドcanisters の開発ガイドを終了するには、他の[サンプル](15-samples.md)プロジェクトをチェックしてください。
+
+<!---
 # 14: Using the Candid UI with a Rust canister
 
 ## Overview
@@ -139,3 +276,4 @@ For additional information and libraries to help you create Candid services or c
 ## Next steps
 
 To finish the developing backend canisters with Rust guide, check out other [sample](15-samples.md) projects. 
+-->

@@ -1,6 +1,96 @@
 ---
+
 sidebar_position: 2
 ---
+# SNSアーキテクチャ
+
+## 概要
+
+SNS のコアアーキテクチャは、Internet Computer プラットフォームを管理する DAO であるNetwork Nervous System
+ (NNS) のアーキテクチャに酷似しています。
+これには、分散型の意思決定を可能にするガバナンスシステムと、各 SNS に固有のトークンを定義する台帳canister
+ が含まれます。
+SNS とは対照的に、NNS には IC
+プラットフォームを運営するために重要なcanisters が追加されています（例、cycles canister cycles
+また、SNSにのみ存在する 、特にSNSの起動プロセスで使用される分散化 スワップ 。canisters
+ canister 
+
+## システム機能としてのSNS（NNSコミュニティとの接続）
+
+SNScanisters
+ のコードがICによって管理されているという点で、SNSはICによってシステム機能として提供されています。[(ここで](dao-alternatives.md)、
+は、SNSのコードを使用する代替方法やDAOを作成する方法についての簡単な説明です。)
+より具体的には、これはNNSコミュニティがオリジナルのSNScanisters' コード
+を承認し、新しい改良版SNSを継続的に承認していることを意味します。
+
+### SNSワズムモジュールcanister (SNS-W){\#SNS-W}
+
+承認されたすべてのSNScanister のバージョンは、SNS**ワズムモジュールcanister (SNS-W)**と呼ばれるNNScanister,
+に保存されます。
+SNSが作成されると、SNS-Wが関与し、最新バージョンの
+SNScanister を展開する責任を負います。
+SNSを更新する必要がある場合は、SNS-Wに
+SNScanisters の新バージョンを追加するNNS提案によって行われます。
+その後、各SNSコミュニティは、SNS提案によって、承認された新バージョンをSNSインスタンスに採用することを決定できます。
+
+### カスタマイズ可能性
+
+それにもかかわらず、個々のSNSは、
+神経系パラメータと呼ばれるパラメータを選択することによってカスタマイズすることができます。
+さまざまな投票形式やトークノミクスを実現するために設定することができます。
+
+## SNSサブネット
+
+SNSは、*SNSサブネット*上でホストされます。このサブネットはSNSを排他的にホストするため、
+、エンドユーザーの検証が簡素化されます。ユーザーは、SNSがSNSサブネット上で稼働していること（
+）を確認するだけで、前項で説明したように、基礎となるコードがNNSコミュニティによって承認されていることを推測できます（
+）。
+
+## SNScanisters
+
+SNSは以下のもので構成されていますcanisters ：
+
+- ガバナンスcanister 。
+- 台帳canister とアーカイブcanisters.
+- インデックスcanister.
+- ルートcanister.
+- 分散スワップcanister.
+
+### SNSガバナンスcanisters
+
+ガバナンス** canister**ガバナンスの決定に参加できる人を定義し、これらの決定の実行を自動的にトリガーします。
+SNS が統治するdapp をどのように進化させるかの提案である**プロポーザルと**、ガバナンスの参加者を定義する**neurons を保存します。** Neuron
+SNS トークンをneuron にステークすることで、誰でもガバナンスの参加者になることができます。
+提案が採用されると、ガバナンスシステムは自動的に、自律的に、定義されたメソッドを呼び出す形で提案の実行をトリガーします。したがって、ほとんどの場合、これらの決定は完全にチェーン上で実行されます。
+
+### SNS台帳canister アーカイブとインデックス付き
+
+**台帳canister**は、
+[ICRC-1 規格](https://github.com/dfinity/ICRC-1)
+を実装し、SNSごとに異なる固有のトークンを含んでいます。
+この*ような*トークンを**SNSトークンと**呼びます。
+各SNSにおいて、このSNSの台帳は、どのアカウントがいくつのSNSトークンを所有しているか、そしてそれらのアカウント間の取引履歴
+を保存します。
+ canister のメモリが限られていても、台帳の履歴を完全に保持するために、台帳canister は、台帳のブロック履歴を保存する**アーカイブcanisters**を生成します。
+さらに、ウォレットやその他のフロントエンドは、特定のアカウントに関連するすべてのトランザクションを表示する必要があります。
+これを容易にし、すべてのフロントエンドが自分自身でこれを実装する必要がないようにするために、
+**インデックスcanister**は、特定のアカウントに関連するトランザクションのマップを提供します。
+
+### SNSルートcanister
+
+**ルートcanister**は、他の SNScanisters
+ と SNS が管理するdapp canisters をアップグレードする責任があります。
+
+### SNS（分散化）スワップcanister
+
+**分散化スワップcanister** 、略してスワップcanister は、SNS立ち上げの主なcanister 関与
+です。ユーザーはICPトークンをスワップに提供し、スワップが成功した場合、その見返りとしてステークされたSNSトークン（SNSneurons）を得ることができます。
+したがって、ICPとSNSトークンは「スワップ」されます。
+これにより、1）SNSは初期資金を集めることができ、
+2）多くの異なる参加者にneurons、ひいては議決権を分配することができ、ガバナンスが分散化されます。
+
+<!---
+
 # SNS architecture
 
 ## Overview
@@ -80,3 +170,5 @@ Hence, the ICP and the SNS tokens are "swapped".
 This facilitates that 1) the SNS can collect initial funding and
 2) the distribution of neurons and thus of voting power to many different participants, which makes the governance decentralized.
 
+
+-->

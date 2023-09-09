@@ -1,9 +1,40 @@
 ---
+
 title: Chain-key signatures
 abstract:
 shareImage: /img/how-it-works/chain-key-signature.jpg
 slug: threshold-ecdsa-signing
 ---
+# チェーンキー署名
+
+連鎖鍵*署名は*連鎖鍵技術を拡張し、他のブロックチェーンを対象とした取引を、Internet Computer Protocol を使って完全にオンチェーンで計算できるようにします。
+連鎖鍵署名を使うことで、ICは完全にトラストレスな方法で他のブロックチェーンと統合することができます。
+実際、連鎖鍵署名を使うことは、2つのブロックチェーン以外に追加の信頼前提が必要なく、特に署名鍵やそのシェアを管理する追加の当事者も必要ないため、ブロックチェーンを統合する最も強力で分散化された方法です。
+
+連鎖鍵技術と同様に、連鎖鍵署名の重要な構成要素は閾値暗号です。
+連鎖鍵暗号を実装するために[使用される閾値署名スキームは](/how-it-works/chain-key-technology/)BLS署名に基づいています。BLS署名には明確な利点がありますが、他のブロックチェーンとの互換性がありません。
+他のブロックチェーンと連携するためには、ICは他のブロックチェーンのデジタル署名方式と互換性のある閾値署名を使用する必要があります。
+（ビットコインやイーサリアムを含む）他のブロックチェーンで使用されている署名方式で最も一般的に使用されているのは、[ECDSA署名方式](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm)です。
+このため、現在ICでは*閾値ECDSA*署名がサポートされており、他の閾値署名方式の実装は計画段階にあります。
+
+ECDSA署名はブロックチェーン業界で広く使用されています。この機能により、canister スマートコントラクトがECDSA公開鍵を持ち、それに関して署名できるようになります。対応する秘密鍵は、canister スマート・コントラクトを保持するサブネットのノード間で閾値共有されます。これは、Internet Computer とビットコインおよびイーサリアムとの直接統合のための前提条件です。
+
+ECDSA用の安全で効率的な閾値署名プロトコルの実装は、BLS署名よりもはるかに困難です。近年、[閾値ECDSAに関する研究が](https://eprint.iacr.org/2020/1390)盛んに行われていますが、これらのプロトコルのどれもが、Internet Computer の厳しい要件を満たしていません。それらはすべて、*同期ネットワークを*前提としているか（メッセージが予期せず遅延した場合、プロトコルが失敗するか、安全でなくなることを意味します）、*堅牢性を*提供していないか（*1つの*ノードがクラッシュした場合、署名を生成する能力が完全に失われることを意味します）、または*その両方*です。ICではこれらの仮定はどちらも受け入れられません。多くの欠陥ノードを持つ*非同期ネットワーク*であっても、セキュリティと有効性は維持されなければなりません。
+
+DFINITY は、*非同期ネットワーク*上で動作し、非常に*ロバスト*（サブネット内のノードの3分の1までがクラッシュまたは破損しても署名を生成する）*で*ありながら、許容可能なパフォーマンスを提供する新しい閾値ECDSA署名プロトコルを設計、分析、実装しました。 の研究者によって書かれた論文では、DFINITY[プロトコルの詳細が説明](https://eprint.iacr.org/2022/506)され、[そのセキュリティの重要な要素が証明されて](https://eprint.iacr.org/2021/1330)います。
+
+[ECDSAホワイトペーパー](https://eprint.iacr.org/2021/1330)
+
+[ECDSA GitHub](https://github.com/ic-association/nns-proposals/blob/main/proposals/governance/20210920T1500Z.md)
+
+[動議提案21340](https://dashboard.internetcomputer.org/proposal/21340)
+
+[ Internet Computer コミュニティが閾値ECDSA署名を採択 動議案](https://medium.com/dfinity/the-internet-computer-community-approves-threshold-ecdsa-signatures-motion-proposal-65a0a3463492?source=friends_link&sk=db265995e31dac5ea751cd91e7b0a3b0)
+
+[![Watch youtube video](https://i.ytimg.com/vi/MulbKPwv6_s/maxresdefault.jpg)](https://www.youtube.com/watch?v=MulbKPwv6_s)
+
+<!---
+
 
 # Chain-key signatures
 
@@ -32,3 +63,5 @@ DFINITY has designed, analyzed, and implemented a new threshold ECDSA signing pr
 [The Internet Computer Community Adopts Threshold ECDSA Signatures Motion Proposal](https://medium.com/dfinity/the-internet-computer-community-approves-threshold-ecdsa-signatures-motion-proposal-65a0a3463492?source=friends_link&sk=db265995e31dac5ea751cd91e7b0a3b0)
 
 [![Watch youtube video](https://i.ytimg.com/vi/MulbKPwv6_s/maxresdefault.jpg)](https://www.youtube.com/watch?v=MulbKPwv6_s)
+
+-->

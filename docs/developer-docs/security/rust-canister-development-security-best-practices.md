@@ -1,7 +1,779 @@
 ---
+
 sidebar_position: 2
 sidebar_label: "Canister development"
 ---
+# Canister 開発セキュリティのベストプラクティス
+
+## 概要
+
+この文書には、Motoko と Rust の両方に関するcanister 開発のベストプラクティスが含まれています。
+
+## スマートコントラクトcanister 制御
+
+### SNS のような分散型ガバナンスシステムを使用して、canister に分散型コントローラーを持たせます。
+
+#### セキュリティ上の懸念
+
+canister のコントローラーは、好きなときにcanister を変更または更新できます。canister が例えばICPのようなアセットを保存している場合、これは事実上、コントローラーがcanister を更新することでこれらを盗み、cycles を自分のアカウントに転送できることを意味します。
+
+#### 推奨
+
+- Internet Computer の Service Nervous System (SNS) のような分散型ガバナンスシステムにcanister の制御を渡すことを検討し、canister への変更が SNS コミュニティが投票によって一括承認した場合にのみ実行されるようにします。SNSを使用する場合、SNSサブネット上のSNSを使用してください。これは、SNSがNNSに祝福されたバージョンを実行し、ICの一部として保守されていることを保証するためです。これらのSNSは間もなく利用可能になります。ロードマップは[こちら](https://dfinity.org/roadmap/)、設計案は[こちらを](https://forum.dfinity.org/t/open-governance-canister-for-sns-design-proposal/10224)ご覧ください。
+- もう一つの選択肢は、canister コントローラーを完全に削除して、イミュータブルなcanister スマートコントラクトを作成することです。しかし、これはcanister をアップグレードできないことを意味し、バグが見つかった場合などに深刻な影響を及ぼす可能性があることに注意してください。分散型ガバナンスシステムを使用し、スマートコントラクトをアップグレードできるというオプションは、他のブロックチェーンと比較して、Internet Computer のエコシステムの大きな利点です。
+  :::info
+  他のいくつかのブロックチェーンとは異なり、イミュータブルスマートコントラクトも実行するためにcycles を必要とし、cycles を受け取ることができることに注意してください。
+  ::：
+- ゼロからIC上にDAO[分散型自律組織を](https://en.wikipedia.org/wiki/Decentralized_autonomous_organization)実装することも可能です。これを行うことに決めた場合（例えば、[基本的なDAOの例に沿って](https://internetcomputer.org/docs/current/samples/dao)）、これはセキュリティクリティカルであり、慎重にセキュリティレビューを行わなければならないことに注意してください。さらに、ユーザーはDAOが自分自身でコントロールされていることを検証する必要があります。
+
+### 依存するスマートコントラクトの所有権の検証
+
+#### セキュリティ上の懸念
+
+canister が別のcanister スマートコントラクトに依存する（すなわち、そのスマートコントラクトに対してインターcanister コールを行う）場合、依存するcanister スマートコントラクトが分散型ガバナンスシステムによって所有されていることが不可欠です。そうでない場合、つまりコントローラーがいる場合、彼らは他の人に気づかれることなくスマートコントラクトを修正することができ、例えばcanister が保有する資産を盗むことができます。
+
+#### 推奨
+
+分散型であることが要求されるcanister とやり取りする場合、それが NNS、サービス神経システム (SNS)、または分散型ガバナンスシステムによって制御されていることを確認し、スマートコントラクトがどのような条件で、誰によって変更されるかを確認してください。
+
+## 認証
+
+### 特定のユーザーしか行えないアクションには認証が必要であることを確認します。
+
+#### セキュリティ上の懸念
+
+そうでない場合、攻撃者がユーザーの代わりに機密性の高いアクションを実行し、ユーザーのアカウントを危険にさらす可能性があります。
+
+#### 推奨
+
+- 設計上、canister のすべての呼び出しについて、呼び出し元を識別できます。呼び出し[元プリンシパルには](../../references/ic-interface-spec.md#principals)、システムAPIのメソッド`ic0.msg_caller_size` および`ic0.msg_caller_copy` を使用してアクセスできる([こちらを](../../references/ic-interface-spec.md#system-api-imports)参照)。Internet Identityなどが使用される場合、プリンシパルは、この特定のオリジンの ユーザーIDである[。](../../references/ii-spec.md#identity-design-and-data-model)一部のアクション (ユーザーのアカウントデータへのアクセスやアカウント固有の操作など) をプリンシパルまたはプリンシパルのセットに制限する必要がある場合は、canister 呼び出しで明示的にチェックする必要があります。たとえば、Rust では以下のようになります：
+
+<!-- -->
+
+```
+    // Let pk be the public key of a principal that is allowed to perform
+    // this operation. This pk could be stored in the canister's state.
+    if caller() != Principal::self_authenticating(pk) {  ic_cdk::trap(...) }
+
+    // Alternatively, if the canister keeps data for different principals
+    // in e.g. a map such as BTreeMap<Principal, UserData>, then the canister
+    // must ensure that each caller can only access and perform operations
+    // on their own data:
+    if let Some(user_data) = user_data_store.get_mut(&caller()) {
+        // perform operations on the user's data
+    }
+```
+
+- Rust では、`ic_cdk` クレートを使用して、`ic_cdk::api::caller` を使用して呼び出し元を認証できます。返されるプリンシパルが`Principal::self_authenticating` 型であることを確認し、そのプリンシパルの公開鍵を使用してユーザのアカウントを識別します。
+
+- 認証されないアクションや、認証前に高価になる可能性のある操作を避けるため、認証は呼び出しのできるだけ早い段階で行いましょう。また、[匿名ユーザーへのサービスを拒否](#disallow-the-anonymous-principal-in-authenticated-calls)するのもよい考えです。
+
+- [イングレス・メッセージの検査](#do-not-rely-on-ingress-message-inspection)中に実行される認証に依存しないでください。
+
+### 認証された呼で匿名プリンシパルを許可しないようにします。
+
+#### セキュリティ上の懸念
+
+システムAPIからの呼び出し元(例えばRustの`ic0::api::caller` )は、`Principal::anonymous()` を返すかもしれません。認証された呼び出しでは、これはおそらく望ましくない(そしてセキュ リティに影響を与える可能性がある)。
+
+#### 推奨
+
+認証された呼では、呼び出し元が匿名でないことを確認し、匿名であればエラーま たはトラップを返すようにすること。これは、例えばヘルパーメソッドを使って一元的に行うことができます。Rustでは、例えば以下のようになります：
+
+    fn caller() -> Result<Principal, String> {
+        let caller = ic0::api::caller();
+        // The anonymous principal is not allowed to interact with canister.
+        if caller == Principal::anonymous() {
+            Err(String::from(
+                "Anonymous principal not allowed to make calls.",
+            ))
+        } else {
+            Ok(caller)
+        }
+    }
+
+## アセット認証
+
+### HTTP資産認証を使用し、dApp 。`raw.icp0.io`
+
+#### セキュリティ上の懸念
+
+Dapps IC上で[アセット認証を](https://wiki.internetcomputer.org/wiki/HTTP_asset_certification)使用すると、ブラウザに配信されるHTTPアセットが本物であることを確認できます（つまり、サブネットによって閾値署名されている）。アプリがアセット認証を行わない場合、アセット認証がチェックされない を通してのみ安全に提供できます。これは、単一の悪意のあるノードまたは境界ノードがブラウザに配信されるアセットを自由に変更できるため、安全ではありません。`raw.icp0.io` 
+
+アプリが`icp0.io` に加えて`raw.icp0.io` を通して提供される場合、敵対者はユーザーを騙して（フィッシング）安全でない raw.icp0.io を使わせるかもしれません。
+
+#### 推奨
+
+- サービスワーカーがアセット認証を確認する`<canister-id>.icp0.io` 経由でのみアセットを提供してください。`<canister-id>.raw.icp0.io` を使ってはいけません。
+
+- アセットcanister (アセット認証を自動的に作成する)を使用してアセットを提供するか、[NNSdapp](https://github.com/dfinity/nns-dapp)または[Internet Identityなどで](https://github.com/dfinity/internet-identity)行われているように、アセット認証を含む`ic-certificate` ヘッダーを追加してください。
+
+- canisterの`http_request` メソッドで、リクエストがrawで来たかどうかをチェック。その場合、エラーを返し、アセットを提供しません。
+
+## Canister ストレージ
+
+### Rust：ステート変数には`thread_local!` と`Cell/RefCell` を使用し、すべてのグローバルを1つのバスケットに入れます。
+
+#### セキュリティ上の懸念
+
+Canisters Rustでは、グローバルで変更可能なステート変数が必要です。Rustでは、これを実現する方法がいくつかあります。しかし、いくつかの方法は、例えばメモリ破壊につながる可能性があります。
+
+#### 推奨
+
+- [ステート変数には、`thread_local!` と`Cell/RefCell` ](https://mmapped.blog/posts/01-effective-rust-canisters.html#use-threadlocal)を使いましょう ([effective](https://mmapped.blog/posts/01-effective-rust-canisters.html) Rust[ canisters から)。](https://mmapped.blog/posts/01-effective-rust-canisters.html)
+
+- [すべてのグローバルを1つのバスケットに](https://mmapped.blog/posts/01-effective-rust-canisters.html#clear-state)入れましょう（effective[Rustcanisters](https://mmapped.blog/posts/01-effective-rust-canisters.html) より）。
+
+### ユーザごとにcanister に格納できるデータ量を制限しましょう。
+
+#### セキュリティ上の懸念
+
+ユーザがcanister に大量のデータを保存できる場合、これを悪用してcanister のストレージがいっぱいになり、canister が使用できなくなる可能性があります。
+
+#### 推奨事項
+
+ユーザーごとにcanister に保存できるデータ量を制限します。この制限は、アップデートコールでユーザーのデータが保存されるたびにチェックされなければなりません。
+
+### 安定したメモリを使用することを検討し、バージョンアップし、テストしてください。
+
+#### セキュリティ上の懸念
+
+Canister メモリはアップグレードをまたいで永続化されません。アップグレードをまたいでデータを保持する必要がある場合、 で メモリをシリアライズし、 でデシリアライズするのが自然な方法です。メモリが大きくなりすぎると、 は更新できなくなります。`pre_upgrade` canister `post_upgrade` canister 
+
+#### 推奨事項
+
+- 安定したメモリは、アップグレード後も持続するので、この問題に対処するために使用できます。
+
+- ([効果的な Rustcanisters](https://mmapped.blog/posts/01-effective-rust-canisters.html) から)[安定したメモリの使用を検討して](https://mmapped.blog/posts/01-effective-rust-canisters.html#stable-memory-main)ください。そこで説明されているデメリットも参照してください。
+
+- 安定[メモリのバージョンアップ](https://mmapped.blog/posts/01-effective-rust-canisters.html#version-stable-memory)([effective Rustcanisters](https://mmapped.blog/posts/01-effective-rust-canisters.html)).
+
+- [アップグレードフックをテストして](https://mmapped.blog/posts/01-effective-rust-canisters.html#test-upgrades)ください ([effective R](https://mmapped.blog/posts/01-effective-rust-canisters.html)ust[ canisters から )。](https://mmapped.blog/posts/01-effective-rust-canisters.html)
+
+- [ Internet Computer canister ](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)の[監査](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)方法のアップグレードに関するセクションも参照してください (Motoko に焦点を当てていますが)。
+
+- バグを避けるために、安定したメモリのテストを書いてください。
+
+- 人々が取り組んでいるいくつかのライブラリ(ほとんどが進行中または一部未完成)：
+  
+  - <https://github.com/dfinity/stable-structures/>
+  
+  - HashMap:[https://github.com/dfinity](https://github.com/dfinity/stable-structures/pull/1)/stable-structures/pull/1 (現在、製品化には至っていません。)
+  
+  - <https://github.com/seniorjoinu/ic-stable-memory>
+
+- [ Internet Computer](https://wiki.internetcomputer.org/wiki/Current_limitations_of_the_Internet_Computer) の[現在の制限事項](https://wiki.internetcomputer.org/wiki/Current_limitations_of_the_Internet_Computer)、「長時間実行されるアップグレード」および「追加のwasmメモリを必要とする\[de\]serialiser」のセクションを参照。
+
+- たとえば、[Internet Identityは](https://github.com/dfinity/internet-identity)、ユーザーデータの保存に安定メモリを直接使用し ています。
+
+### の機密データの暗号化を検討してください。canisters
+
+#### セキュリティ上の懸念
+
+デフォルトでは、canisters は完全性を提供しますが、機密性は提供しません。canisters に保存されたデータは、ノード/レプリカによって読み取られる可能性があります。
+
+#### 推奨事項
+
+- canisters 上のプライベートまたは個人的なデータ（ユーザーの個人情報やプライベート情報など）をエンドツーエンドで暗号化することを検討してください。
+
+- dapp の[暗号化されたノートの](https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp)例は、エンドツーエンドの暗号化の方法を示しています。
+
+### バックアップの作成
+
+#### セキュリティ上の懸念
+
+canister が使用不能になり、二度とアップグレードできなくなる可能性があります：
+
+- アップグレードプロセスに欠陥がある (dapp 開発者のバグが原因)。
+
+- データを永続化するコードにバグがあるため、ステートに一貫性がない / 破損している。
+
+#### 推奨事項
+
+- canister アップグレードに使われるメソッドがテスト済みであることを確認してください。
+
+- canister を再インストールできるような災害復旧戦略を立てておくと便利でしょう。
+
+- [ Internet Computer を監査する](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)方法の「バックアップとリカバリ」の項を参照してください。[ canister](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)
+
+## canister 間の呼び出しとロールバック
+
+### メッセージ実行の基本
+
+非同期インターcanister 呼び出しにまつわる問題を理解するためには、メッセージ実行に関するいくつかの特性を理解する必要があります。これは、[セキュリティのベストプラクティスに関するコミュニティの会話でも](https://www.youtube.com/watch?v=PneRzDmf_Xw&list=PLuhDt1vhGcrez-f3I0_hvbwGZHZzkZ7Ng&index=2&t=4s)説明されています。
+
+いくつかの定義を示します。**コールとは**、canister が公開する[アップデート](/references/ic-interface-spec.md#http-call) [コールやクエリーコールの](/references/ic-interface-spec.md#http-query)実装のことです。例えば、Rust CDK を使用する場合、これらは通常、それぞれ`#[query]` または`#[update]` でアノテーションされます。**メッセージは**、サブネットがcanister に対して実行する、連続した命令 のセットです。canister 間で呼び出しが行われる場合、呼び出しは複数のメッセー ジに分割できることを、以下で説明します。以下の特性は必須です：
+
+- **プロパティ1**:canister 1回に処理されるメッセージは1つだけです。つまり、メッセージの実行は逐次的であり、並列的ではありません。
+
+- 特性**2**：各コール（クエリー/アップデート）はメッセージをトリガーします。`await` を使ってcanister 間で呼び出しが行われると、呼び出しの後のコード（青字で強調表示され ているコールバック）は別のメッセージとして実行されます。
+
+:::info
+コードがレスポンスを`await` しない場合、コールバック後のコード（`await` を使用して次のインターcanister コールがトリガーされるまで）は同じメッセージで実行されることに注意してください。
+
+たとえば、次のMotoko ：
+
+![example](./_attachments/example_highlighted_code.png)
+
+ここで実行される最初のメッセージは2-3行目で、`await` 構文（オレンジ色のボックス）を使ってインターcanister 呼び出しが行われるまでです。2つ目のメッセージは、3～5行目を実行します。canister の呼び出しがリターンしたときです（青いボックス）。この部分をインターcanister 呼び出しの*コールバックと*呼びます。この例に関係する2つのメッセージは、常に順番にスケジュールされます。
+::：
+
+- **特性3**: 正常に配送されたリクエストは、送信された順番に受け取られま す。特に、canister Aが`m1` と`m2` をこの順番でcanister Bに送る場合、両方が受け入れられると、`m1` は`m2` の前に実行されます。
+
+:::info
+この性質は、メッセージがいつ実行されるかについての保証を与えるだけで、 受け取った応答の順序については保証がないことに注意。
+::：
+
+- **特性4**：インターリーブ呼からのメッセージは、信頼できる実行順序を持ちません。
+
+canisterしかし、複数の呼がインターリーブする場合、これらのインターリーブ呼に ついて、追加の順序保証を仮定することはできない。これを説明するために、上記のコード例をもう一度考えてみましょう。`example` メソッドが2回並列に呼び出され、その結果、呼び出しがCall 1とCall 2になるとします。次の図は、2つの可能なメッセージ順序を示しています。左側では、最初の呼び出しのメッセージが最初にスケジューリングされ、その後に2回目の呼び出しのメッセージが実行されます。右側は、各コールの最初のメッセージが最初に実行される、別のメッセージスケジューリン グの可能性を示しています。あなたのコードは、メッセージの順序に関係なく、正しいステートになるはずです。
+
+![example](./_attachments/example_orderings.png)
+
+- **プロパティ 5**: トラップ/パニックが発生した場合、現在のメッセージに対するcanister ステートの変更は適用されません。
+
+例えば、上の例の2番目のメッセージ（青いボックス）でトラップが発生した場合、canister 、そのメッセージから生じたステート変更は、青いボックスの中でより前のものであっても、破棄されます。しかし、それ以前のメッセー ジ、特に最初のメッセージ（オレンジ色のボックス）のステート変更は、そのメッセー ジが正常に実行されたため、適用されていることに注意してください。
+
+- **特性6**: インターcanister の呼は、デスティネーションcanister に到達することは保証されず、呼がデスティネーションcanister に到達した場合、デスティネーションcanister は、呼の処理中にトラップするか、拒否応答を返すことができる。
+
+すべての呼間(canister )は、canister 、またはプロトコ ルによって合成的に生成された応答を受け取ることが保証されている。ただし、応答は成功する必要はなく、拒否応答でもよい。canister Internet Computerこのようなシステム生成の拒否は、呼がcalle-canister に到達する前にいつでも発生する可能性があるだけでなく、呼がcalle-canister に到達した後でも、呼の処理中にcalle-canister がトラップした場合にも発生する可能性がある。呼がcalle-canister に到達した場合、calle-canister は応答または拒否応答を生成でき、システムは、calle-canister が生成した応答または拒否応答が発呼側に戻ることを保証する(canister)。したがって、呼び出し側canister が拒否応答も処理することが重要です。拒否応答は、メッセージが受信側で正常に処理されなかったことを意味しますが、 受信側のステートが変更されなかったことを保証するものではありません。
+
+詳しくは、インターフェース仕様の[順序保証のセクションと](/references/ic-interface-spec.md#ordering_guarantees)、メッセージの実行をより詳細に定義した[抽象的な振る舞いの](/references/ic-interface-spec.md#abstract-behavior)セクションを参照してください。
+
+### await後のトラップの回避
+
+#### セキュリティ上の懸念
+
+トラップ/パニックはcanister のステートをロールバックします。そのため、トラップやパニックに続くステート変更は危険です。これは、canister 間で呼び出しが行われる場合の重要な懸念事項でもあります。パニック/トラップが、`await` から inter-canister 呼び出しの後に発生した場合、ステート は、呼び出し全体の前ではなく、inter-canister 呼び出しのコールバック呼び出しの前のスナッ プショットに戻されます！
+
+これは、例えば以下のような問題につながる可能性があります：
+
+- ステート変更が適用され、その後インターcanister コールが発行されたとします。また、これらのステート変更によって、canister は一貫性のないステートになり、そのステートはコールバックでのみ再び 一貫性のある状態になるとします。ここで、コールバックにトラップがあると、canister は一貫性のないステートになります。
+
+- この種の具体的なバグは以下のとおり。資金を送金するためにcanister 。コールバックでは、canister 、その事実をcanister ストレージに反映することで、その送金を行ったことを説明します。しかし、コールバックは使用統計データも更新し、最終的に、あるデータ構 造が一杯になったときにトラップにつながるとします。そうなると、canister 、コールバックのステート変更が適用されなくなり、転送が正しく説明されなくなるため、一貫性のないステートになってしまいます。
+  ![example](./_attachments/example_trap_after_await.png)
+  この例も、この[コミュニティの会話で](https://www.youtube.com/watch?v=PneRzDmf_Xw&list=PLuhDt1vhGcrez-f3I0_hvbwGZHZzkZ7Ng&index=2&t=4s)議論されています。
+
+- 別の例：たとえば、canister ステートの一部がインターcanister コールの前にロックされ、コールバックで解放された場合、コールバックがトラップすると、ロックが解放されない可能性があります。
+
+- 一般的に、開発者が期待したときにデータが永続化されないバグが発生する可能性があります。
+
+Rustでは、Rust CDKバージョン0.5.1から、トラップ時にローカル変数がスコープ外になることに注意してください。CDKは、これらのリソースを解放するために、実際に`ic0.call_on_cleanup` APIを呼び出します。例えば、[「信頼できるメッセージ順序付けがないことに注意](#be-aware-that-there-is-no-reliable-message-ordering)」で説明したように、ロックされたリソースを解放するために Rust の`Drop` 実装を使用することが可能です。
+
+#### 推奨
+
+- [セキュリティのベストプラクティスに関するコミュニティの会話を見て](https://www.youtube.com/watch?v=PneRzDmf_Xw&list=PLuhDt1vhGcrez-f3I0_hvbwGZHZzkZ7Ng&index=2&t=4s)ください。
+
+- [awaitの境界を越えて共有リソースをロックしないで](https://mmapped.blog/posts/01-effective-rust-canisters.html#dont-lock)ください（[効果的なRustcanisters](https://mmapped.blog/posts/01-effective-rust-canisters.html) から）。
+
+- [ `await`](https://mmapped.blog/posts/01-effective-rust-canisters.html#panic-await)の[後にパニックを](https://mmapped.blog/posts/01-effective-rust-canisters.html#panic-await)起こさないようにしましょう（[effective R](https://mmapped.blog/posts/01-effective-rust-canisters.html)ust[ canisters から）。](https://mmapped.blog/posts/01-effective-rust-canisters.html)
+
+- コンテキスト[メッセージ実行に関するICインターフェース仕様](/references/ic-interface-spec.md#message-execution)。
+
+- こちらも参照してください：[ Internet Computer canister を監査](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)する方法の「インターcanister 呼び出し」セクションも参照してください。
+
+### 信頼できるメッセージの順序付けがないことに注意してください。
+
+#### セキュリティ上の懸念
+
+上記の[メッセージ実行の基本で](#message-execution-basics)説明したように、メッセージは（呼び出し全体ではなく）アトミックに 処理されます。特に、上記のプロパティ4で説明したように、インターリーブ呼からのメッ セージは、信頼できる実行順序を持ちません。canister そのため、canister （および他のcanisters ）のステー トは、インターリーブ呼が開始されてからリターンするまでの間に変化する可 能性があり、正しく処理されないと問題が発生する可能性があります。このような問題は一般的に「リエントランシー・バグ」と呼ばれます（[リエントランシーに関するイーサリアムのベストプラクティスなどを](https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/)参照）。しかし、Internet Computer のメッセージング保証（ひいてはバグ）はイーサリアムとは異なることに注意してください。
+
+潜在的なリエントランシーのセキュリティ問題を説明するために、2つの具体的でやや類似したタイプのバグを提供します：
+
+- **Time-of-check time-of-use問題：**これは、canister の呼び出しの前に、グローバル・ステートに関する何らかの条件がチェックされ、呼び出しが戻ったときにその条件がまだ保持されていると誤って仮定する場合に発生します。たとえば、ある口座に十分な残高があるかどうかを確認し、次にインターcanister 呼を発行し、最後にコールバックメッセージの一部として転送を実行する場合。2回目のインターcanister 呼び出しが開始すると、最初の呼び出しのコールバックが実行される前に、他の元帳の移 転が発生している可能性があるため、最初にチェックした条件が保持されなくなる可 能性があります(上記のプロパティ4も参照)。
+
+- **ダブルスペンディングの問題**：このような問題は、転送が2回発行されたときに発生します。例えば、呼び出し元が払い戻しの対象かどうかをチェックし、払い戻しの対象であれば、いくらかの払い戻し額を振り込むとします。払い戻し元帳の呼び出しが正常に戻ると、canister ストレージに呼び出し元が払い戻されたことを示すフラグを設定します。これは、払い戻しメソッドが呼び出し元から2回並行して呼び出される可能性があり、その場合、転送を発行する前のメッセージ(適格性チェックを含む)が両方のコールバックの前にスケジュールされている可能性があるため、二重支出の脆弱性があります。この問題の詳細な説明は、[セキュリティのベストプラクティスに関するコミュニティの会話に](https://www.youtube.com/watch?v=PneRzDmf_Xw&list=PLuhDt1vhGcrez-f3I0_hvbwGZHZzkZ7Ng&index=2&t=4s)あります。
+
+#### 推奨事項
+
+非同期のインターcanister 呼び出し（`await` ）を行うcanister コードを注意深く見直すことを強く推奨します。2つのメッセージが同じステートにアクセス（読み取りまたは書き込み）する場合、これらのメッセージのスケジューリングが不正なトランザクションや一貫性のないステートにつながる可能性がないか、見直してください。
+
+こちらも参照してください：[ Internet Computer canister ](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister) の[監査](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)方法の「canister 間呼び出し」の項も参照してください。
+
+バグにつながる可能性のあるメッセージの順序に関する問題に対処するために、通常はロッ キングメカニズムを使用して、例えば呼び出し元（または誰でも）が、（複数のメッセージを含む）呼 び出し全体を一度に一度しか実行できないようにします。簡単な例は、前述の[コミュニティーの会話でも](https://www.youtube.com/watch?v=PneRzDmf_Xw&list=PLuhDt1vhGcrez-f3I0_hvbwGZHZzkZ7Ng&index=2&t=4s)紹介されています。
+
+通常、ロックはコールバックで解放されます。この場合、[await後のトラップの](#avoid-traps-after-await)回避で説明したように、コールバックがトラップした場合にロックが解放されないというリスクがあります。Rustでは、Rustの`Drop` 実装を使用することで、この問題を回避する良いパターンがあります。以下のコード例では、`Drop` の実装を使用して、呼び出し元ごとのロック (`CallerGuard`) を実装する方法を示しています。Rust CDKバージョン0.5.1以降では、コールバックがトラップした場合でもローカル変数はスコープ外に出るので、その場合でも呼び出し元のロックは解放されます。
+
+    pub struct State {
+        pending_requests: BTreeSet<Principal>,
+    }
+    
+    thread_local! {
+        static STATE: RefCell<State> = RefCell::new(State{pending_requests: BTreeSet::new()});
+    }
+    
+    pub struct CallerGuard {
+        principal: Principal,
+    }
+    
+    impl CallerGuard {
+        pub fn new(principal: Principal) -> Result<Self, String> {
+            STATE.with(|state| {
+                let pending_requests = &mut state.borrow_mut().pending_requests;
+                if pending_requests.contains(&principal){
+                    return Err(format!("Already processing a request for principal {:?}", &principal));
+                }
+                pending_requests.insert(principal);
+                Ok(Self { principal })
+            })
+        }
+    }
+    
+    impl Drop for CallerGuard {
+        fn drop(&mut self) {
+            STATE.with(|state| {
+                state.borrow_mut().pending_requests.remove(&self.principal);
+            })
+        }
+    }
+    
+    #[update]
+    #[candid_method(update)]
+    async fn example_call_with_locking_per_caller() -> Result<(), String> {
+        let caller = ic_cdk::caller();
+        // using `?`, we return an error immediately if there is already a call in progress for `caller`.
+        let _ = CallerGuard::new(caller)?;
+        // do anything, call other canisters
+        Ok(())
+    } // here the guard goes out of scope and is dropped
+    
+    mod test {
+        use super::*;
+    
+        #[test]
+        fn should_obtain_guard_for_different_principals() {
+            let principal_1 = Principal::anonymous();
+            let principal_2 = Principal::management_canister();
+            let caller_guard = CallerGuard::new(principal_1);
+            assert!(caller_guard.is_ok());
+            assert!(CallerGuard::new(principal_2).is_ok());
+        }
+    
+        #[test]
+        fn should_not_obtain_guard_twice_for_same_principal() {
+            let principal = Principal::anonymous();
+            let caller_guard = CallerGuard::new(principal);
+            assert!(caller_guard.is_ok());
+            assert!(CallerGuard::new(principal).is_err());
+        }
+    
+        #[test]
+        fn should_release_guard_on_drop() {
+            let principal = Principal::anonymous();
+            {
+                let caller_guard = CallerGuard::new(principal);
+                assert!(caller_guard.is_ok());
+            } // drop caller_guard as it goes out of scope here
+            // it is possible to get a guard again:
+            assert!(CallerGuard::new(principal).is_ok());
+        }
+    }
+
+このパターンを拡張することで、たとえば次のようなユースケースに対応できます：
+
+- 呼び出し元ごとにロックしないグローバルロック。この場合、`BTreeSet<Principal>` を使用する代わりに、canister ステートでブーリアン・フラグを設定します。
+- 限られた数のプリンシパルだけが同時にメソッドを実行できるようにするガード。このために、`pending_requests.len() >= MAX_NUM_CONCURRENT_REQUESTS` の場合、`CallerGuard::new()` でエラーを返すことができます。
+- メソッドが並列に呼び出される回数を制限するガード。これには、`CallerGuard::new()` でチェックされて増加し、`Drop` で減少する、canister ステートのカウンタを使用します。
+
+最後に、メソッドの並列実行を制限するために、複数のメソッドで同じガードを使用できることに注意してください。
+
+### 拒否されたインターcanister 呼び出しを正しく処理します。
+
+#### セキュリティ上の懸念
+
+上記のプロパティ 6 でステートされているように、inter-canister 呼び出しは失敗する可能性があり、その場合は**reject** になります。詳細については[拒否](/references/ic-interface-spec.md#reject-codes)コードを参照してください。例えば、送信側または受信側のcycles が不十分であったり、（メッセー ジキューのような）いくつかのデータ構造が満杯であったりすることが原因。
+
+たとえば、元帳の転送がエラーになった場合、そのエラーを処理するコールバックは、そのエラーを正しく解釈しなければなりません（転送は行わ**れませんでした**）。
+
+#### 推奨事項
+
+canister 間で呼び出しを行う場合は、常にエラー・ケース（拒否）を正しく処理します。これらのエラーは、メッセージが正常に実行されなかったことを意味します。
+
+### canister 間通話は、信頼できる相手に対してのみ行ってください。canisters
+
+#### セキュリティ上の懸念
+
+- 潜在的に悪意のあるcanisters に対してインターcanister 呼び出しを行った場合、DoS問題につながる可能性があり、また率直なデコードに関連する問 題が発生する可能性があります。また、canister の呼 び出しから返されるデータは、信頼できるものでないにもかかわらず、信頼できるも のと見なされる可能性があります。
+
+- canister 、コールバック付きで呼び出された場合、ピア が応答しないと、レシーバーが無期限にストールし、DoSになる可能性があります。canister がそのステートでは、もはやアップグレードできません。復旧には、canister のステー トを消去して再インストールする必要があります。
+
+- 要約すると、これはcanister をDoSにしたり、リソースを過剰に消費したり、canister の動作がインターcanister 呼の応答に依存する場合、ロジックバグにつながる可能性があります。
+
+#### 推奨
+
+- 信頼できるcanisters に対してのみ、インターcanister 呼び出しを行います。
+
+- インターcanister 呼び出しから返されるデータをサニタイズします。
+
+- [ Internet Computer canister ](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister) を[監査](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)する方法の「悪意のあるcanisters との会話」のセクションを参照。
+
+- [ Internet Computer の現在の制限](https://wiki.internetcomputer.org/wiki/Current_limitations_of_the_Internet_Computer)、「潜在的に悪意のある、あるいはバグのあるcanisters を呼び出すと、canisters のアップグレードを妨げる可能性がある」セクションを参照してください。
+
+### コールグラフにループがないことを確認してください。
+
+#### セキュリティ上の懸念
+
+コールグラフにループがあると (例:canister A が B を呼び出し、B が C を呼び出し、C が A を呼び出す)、canister デッドロックにつながる可能性があります。
+
+#### 推奨
+
+- このようなループは避けてください！
+
+- 詳細については、[ Internet Computer の](https://wiki.internetcomputer.org/wiki/Current_limitations_of_the_Internet_Computer) [現在の制限事項](https://wiki.internetcomputer.org/wiki/Current_limitations_of_the_Internet_Computer)、セクション「コールグラフのループ」を参照してください。
+
+## Canister アップグレード
+
+### アップグレード中のパニックに注意してください
+
+#### セキュリティ上の懸念
+
+`pre_upgrade` でcanister がトラップやパニックを起こすと、canister が恒久 的にブロックされ、アップグレードが失敗したり、まったくできなくなったりします。
+
+#### 推奨事項
+
+- 本当に回復不可能な場合を除き、`pre_upgrade` フックでのパニックやトラップは避けてください。アップグレード前のフックでパニックを起こすとアップグレードができなくなり、アップグレード前のフックは古いコードによって制御されているため、アップグレードが永久にブロックされる可能性があります。
+
+- `post_upgrade` フックのパニックは、ステートが無効な場合に、アップグレードを再試行して無効な状態を修正しようとすることができるようにします。アップグレード後のフックでパニックを起こすと、アップグレードは中止されますが、新しいコードで再試行できます。
+
+- [アップグレードフックをテスト](https://mmapped.blog/posts/01-effective-rust-canisters.html#test-upgrades)しましょう ([Rustcanisters](https://mmapped.blog/posts/01-effective-rust-canisters.html) から)。
+
+- [ Internet Computer canister ](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)の[監査](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)方法のアップグレードに関するセクションも参照してください (Motoko に焦点を当てていますが)。
+
+- [ Internet Computer](https://wiki.internetcomputer.org/wiki/Current_limitations_of_the_Internet_Computer) の[現在の制限](https://wiki.internetcomputer.org/wiki/Current_limitations_of_the_Internet_Computer)、「`pre_upgrade` フックのバグ」セクションを参照してください。
+
+### アップグレード中のタイマーの再定義
+
+#### セキュリティ上の懸念
+
+グローバルタイマーは、canister のWasmモジュールの変更時に無効化されます。[ICの仕様には](../../references/ic-interface-spec#timer)次のようにステートされています：
+
+> 「タイマーは、canister の Wasm モジュールの変更（管理canister の install\_code メソッド、uninstall\_code メソッドの呼び出し、またはcanister がcycles を使い果たした場合）にも無効化されます。特に、canister\_global\_timer関数は、canister （システムAPI関数ic0.global\_timer\_setを使用して）グローバルタイマーを再び設定しない限り、再びスケジュールされることはありません。"
+
+アップグレードは`install_code` のモードであるため、アップグレード中はタイマーが非アクティブになります。
+
+このため、セキュリティ制御やその他の重要な機能がこれらのタイマーの機能に依存している場合、脆弱性が生じる可能性があります。例えば、通貨の為替レートを更新するためにタイマーに依存している DEX は、為替レートが更新されなくなると、裁定取引の機会に対して脆弱になる可能性があります。
+
+グローバルタイマーはMotoko `Timer` メカニズムで内部的に使用されているため、Motoko タイマーも同様です。[プルリクエストの](https://github.com/dfinity/motoko/pull/3542)「アップグレードの話」で説明したように、グローバルタイマーはアップグレード時に破棄され、タイマーはアップグレード後のフックで設定する必要があります。
+
+[このプルリクエストの](https://github.com/dfinity/motoko/pull/3542)「オプトアウト」で説明されているように、Motoko を使用する場合と、`system func timer` を実装する場合では動作が異なります。`timer` 関数はアップグレード後に呼び出されます。canister が定期的なタスクにタイマーを使っていた場合、`timer` 関数は後日グローバルタイマーを再び設定するでしょう。しかし、アップグレードによって`timer` への「予期しない」呼び出しが発生するため、`timer` の呼び出し間の時間は一定ではありません。
+
+rust CDK を使用すると、[set\_timer\_interval](https://docs.rs/ic-cdk/0.6.9/ic_cdk/timer/fn.set_timer_interval.html) の API ドキュメントで説明されているように、アップグレード時に再起動のタイマーも失われます。
+
+#### 推奨
+
+- `pre_upgrade` フックでグローバルタイマーを追跡しましょう。ステートを安定変数に保存します。
+- `post_upgrade` フックでタイマーを設定します。
+- [recurringTimer](../../motoko/main/base/Timer.md#function-recurringtimer) についてはMotoko のドキュメントを参照してください。
+- [set\_timer\_interval](https://docs.rs/ic-cdk/0.6.9/ic_cdk/timer/fn.set_timer_interval.html) については Rust のドキュメントを参照してください。
+
+## HTTP アウトコール
+
+### に機密データ (API キーなど) を保存しないでください。canisters
+
+#### セキュリティ上の懸念
+
+機密データとは、アプリケーションのロジックや動作によって異なる、広い意味でのデータです。ここでは、API キーやトークンのような、一般的に機微とみなされる秘密について、網羅的でないリストを示します：
+
+- 非公開のエンドポイントとのやりとりを許可する秘密。
+- 機密データを持つエンドポイントへの問い合わせや変更を許可するシークレット。
+- 有料のAPIトークン。
+
+デフォルトでは、canister 内に保存されたデータは暗号化されていません。そのため、canister が悪意のあるレプリカにインストールされると、鍵、トークン、秘密をプレーンテキストで簡単に取得し、盗むことができます。
+
+#### 推奨事項
+
+canister 内に機密データを保存しないようにしてください。
+
+[詳細はこちらをご覧ください。](../integrations/https-outcalls/https-outcalls-how-it-works#compromised-replicas)
+
+[データの機密性セキュリティに関する推奨事項](general-security-best-practices#data-confidentiality-on-the-internet-computer)
+
+### あなたのcanisters が HTTP サーバーで十分に大きなクォータを持っていることを確認してください。
+
+#### セキュリティ上の懸念
+
+HTTPアウトコールが実行されると、サブネット内のレプリカの数によって増幅されます。ターゲットのウェブサーバは1つのリクエストだけでなく、サブネット内のノード数と同じ数のリクエストを受け取ることになります。
+
+ほとんどのウェブサーバは、ある種のレート制限を実装しています。これは、特定の時間内にクライアントがウェブサーバに対して行うことができるリクエストの数を制限するために使用されるメカニズムで、API の乱用や過剰な使用を防止します。
+
+#### 推奨事項
+
+canisters を設計・実装する際には、このようなレート制限を考慮する必要があります。レート制限は、秒単位や分単位など、さまざまな時間単位で実施されます。秒単位で実施する場合は、すべてのサブネットレプリカによる同時リクエストがクォータに違反しないようにしてください。違反すると、一時的あるいは恒久的に禁止される可能性があります。
+
+[詳細](../integrations/https-outcalls/https-outcalls-how-it-works#rate-limiting-by-servers)
+
+### idempotentエンドポイントへのHTTP outcallリクエストのみ
+
+#### セキュリティ上の懸念
+
+前述のように、HTTP outcallが実行されると、サブネット内のレプリカの数によって増幅されます。つまり、問い合わせを受けたエンドポイントは同じリクエストを何度も受け取ることになります。これはエンドポイントのステートを変更するリクエストでは特に危険で、1回の HTTP outcall がエンドポイントのステートを意図せずに何度も変更してしまう可能性があります。
+
+#### 推奨
+
+HTTP outcall によって呼び出されるエンドポイントが idempotent であること、つまりクエリーコールされるエンドポイントが何度呼び出されても同じリクエストペイロードで同じ振る舞いをすることを確認してください。
+
+サーバーによっては idempotency キーの使用をサポートしています。これらのキーは HTTP リクエストのヘッダーとして送信されるランダムな一意文字列です。HTTP outcalls 機能を使うと、それぞれの(正直な)レプリカが送るリクエストはすべて同じ idempotency key を含むことになります。これにより、サーバは重複したリクエスト (同じ idempotency key を持つリクエスト) を認識し、1つだけを処理し、サーバのステートを1度だけ変更することができます。これはサーバーがサポートしなければならない機能であることに注意してください。
+
+[詳細はこちら。](../integrations/https-outcalls/https-outcalls-how-it-works#post-requests-must-be-idempotent)
+
+### HTTP レスポンスが同一であることを保証
+
+#### セキュリティ上の問題
+
+サブネットのレプリカがHTTPレスポンスを受信する場合、これらのレスポンスは同一でなければなりません。そうでないと、コンセンサスが得られず、HTTP レスポンスは拒否されますが、それでも課金されます。
+
+#### 推奨事項
+
+コンセンサスレイヤーに送信される HTTP レスポンスが同一であることを確認します。
+
+理想的には、照会されたエンドポイントから返される HTTP レスポンスは常に同じです。しかし、ほとんどの場合、これを制御することは不可能であり、レスポンスにはランダムなデータが含まれます（例えば、レスポンスにはタイムスタンプ、クッキー値、または何らかの識別子が含まれます）。そのような場合は、[変換関数を](../integrations/https-outcalls/https-outcalls-how-it-works#transformation-function)使用して、ランダムなデータを取り除いたり、関連するデータだけを抽出したりして、各レプリカが受け取るレスポンスが同一であることを保証してください。
+
+これは HTTP レスポンスボディとヘッダに適用されます。変換関数を適用する際には、その両方を考慮するようにしてください。レスポンスヘッダは見落とされがちで、コンセンサスに失敗して失敗につながります。
+
+[詳細はこちら](../integrations/https-outcalls/https-outcalls-how-it-works#responses-must-be-similar)
+
+### HTTP リクエストとレスポンスのサイズを意識しましょう
+
+#### セキュリティに関する懸念
+
+HTTPS アウトコールの[価格は](../integrations/https-outcalls/https-outcalls-how-it-works#pricing)、とりわけ HTTP リクエストのサイズと最大レスポンス・サイズによって決まります。したがって、大きなリクエストが行われた場合、canisterのcycles の残高がすぐになくなる可能性があります。HTTPアウトコールが（ハートビートまたはタイマー呼び出しではなく）ユーザーアクションによってトリガーされる場合など、これは危険です。
+
+#### 推奨事項
+
+HTTPS アウトコールを使用する場合は、HTTP リクエストとレスポンスのサイズに注意してください。発行されるリクエストのサイズとサーバーからの HTTP レスポンスのサイズが適切であることを確認してください。
+
+HTTPアウトコールを行う場合、`max_response_bytes` パラメータを定義して、最大許容応答サイズを設定することが可能であり、強く推奨されます。このパラメータが定義されていない場合、デフォルトは2MBです（HTTPSアウトコール機能のハードレスポンスサイズ制限）。レスポンスのcycle コストは、常に`max_response_bytes` または設定されていない場合は 2MB に基づいて課金されます。
+
+最後に、ユーザーの操作によってこれらの呼び出しがトリガーされる可能性がある場合、ユーザーはHTTPアウトコールのためのcycles コストが発生する可能性があることに注意してください。
+
+[詳細はこちら。](../integrations/https-outcalls/https-outcalls-how-it-works#recipe-for-coding-a-canister-http-call)
+
+### HTTPアウトコールでの入力検証の実行
+
+#### セキュリティ上の懸念
+
+ユーザーが送信したデータを使用する HTTP アウトコールは、さまざまなインジェクション攻撃を受けやすくなります。これは、先に述べたようないくつかの問題につながる可能性があります。
+
+#### 推奨事項
+
+HTTPアウトコールでユーザー送信データを使用する場合は、入力検証を実行してください。
+
+[詳細はこちら](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html)
+
+## その他
+
+### システムAPIコールがある場合でも、canister 。
+
+#### セキュリティ上の懸念
+
+canisters はシステム API と相互作用するので、ユニットテストはシステム API を呼び出すことができないため、コードをテストするのが難しくなります。これは単体テストの不足につながるかもしれません。
+
+#### 推奨
+
+- システム API に依存しない疎結合モジュールを作成し、それらをユニットテストしてください。この[推奨を](https://mmapped.blog/posts/01-effective-rust-canisters.html#target-independent)参照してください ([effective Rustcanisters](https://mmapped.blog/posts/01-effective-rust-canisters.html))。
+
+- まだシステムAPIと相互作用する部分については: システムAPIの薄い抽象化を作成し、単体テストでフェイクします。[推奨](https://mmapped.blog/posts/01-effective-rust-canisters.html#target-independent)事項 ([effective Rustcanisters](https://mmapped.blog/posts/01-effective-rust-canisters.html)) を参照してください。例えば、以下のように「Runtime」を実装し、テストでは「MockRuntime」を使います（Dimitris Sarlis氏のコード）：
+
+<!-- -->
+
+```
+    use ic_cdk::api::{
+        call::call, caller, data_certificate, id, print, time, trap,
+    };
+
+    #[async_trait]
+    pub trait Runtime {
+        fn caller(&self) -> Result<Principal, String>;
+        fn id(&self) -> Principal;
+        fn time(&self) -> u64;
+        fn trap(&self, message: &str) -> !;
+        fn print(&self, message: &str);
+        fn data_certificate(&self) -> Option<Vec<u8>>;
+        (...)
+    }
+
+    #[async_trait]
+    impl Runtime for RuntimeImpl {
+        fn caller(&self) -> Result<Principal, String> {
+            let caller = caller();
+            // The anonymous principal is not allowed to interact with the canister.
+            if caller == Principal::anonymous() {
+                Err(String::from(
+                    "Anonymous principal not allowed to make calls.",
+                ))
+            } else {
+                Ok(caller)
+            }
+        }
+
+        fn id(&self) -> Principal {
+            id()
+        }
+
+        fn time(&self) -> u64 {
+            time()
+        }
+
+        (...)
+
+    }
+
+    pub struct MockRuntime {
+        pub caller: Principal,
+        pub canister_id: Principal,
+        pub time: u64,
+        (...)
+    }
+
+    #[async_trait]
+    impl Runtime for MockRuntime {
+        fn caller(&self) -> Result<Principal, String> {
+            Ok(self.caller)
+        }
+
+        fn id(&self) -> Principal {
+            self.canister_id
+        }
+
+        fn time(&self) -> u64 {
+            self.time
+        }
+
+        (...)
+
+    }
+```
+
+### canister のビルドを再現可能にします。
+
+#### セキュリティ上の懸念
+
+canister 、それが主張することを実行するかどうかを検証することができるはずです。ICはデプロイされたWASMモジュールのSHA256ハッシュを提供します。これが有用であるためには、canister のビルドが再現可能でなければなりません。
+
+#### 推奨事項
+
+canister のビルドを再現可能にしましょう。この[勧告を](https://mmapped.blog/posts/01-effective-rust-canisters.html#reproducible-builds)参照してください（[effective Rustcanisters](https://mmapped.blog/posts/01-effective-rust-canisters.html) より）。[これについては開発者向けドキュメントも](/developer-docs/backend/reproducible-builds.md)参照してください。
+
+### あなたのcanister
+
+#### セキュリティ
+
+攻撃された場合、canisters から、アカウント数、内部データ構造のサイズ、安定したメモリなど、関連するメトリクスを取得できると便利です。
+
+#### 推奨
+
+[ canister からメトリクスを公開](https://mmapped.blog/posts/01-effective-rust-canisters.html#expose-metrics)しましょう（[有効な Rustcanisters](https://mmapped.blog/posts/01-effective-rust-canisters.html) から）。
+
+### 時間が厳密に単調であることに依存しないでください。
+
+#### セキュリティ上の懸念
+
+System APIから読み取られる時間は単調ですが、厳密には単調ではありません。従って、2つの呼び出しが同じ時刻を返す可能性があり、時刻APIを使用する際にセキュリティバグにつながる可能性があります。
+
+#### 推奨事項
+
+[ Internet Computer canister を監査](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)する方法の「時間は厳密には単調ではありません」のセクションを参照してください。
+
+### cycles 残高の枯渇を防ぐ
+
+#### セキュリティ上の懸念
+
+Canisters cycles そのため、 をすべて消費する攻撃に対して、本質的に脆弱になります。cycles
+
+#### 推奨
+
+- これを軽減するために、canister レベルでの監視、早期認証、レート制限を検討してください。また、攻撃者は最も多くのcycles を消費する呼を狙うことに注意。[ Internet Computer canister を監査](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)する方法の「Cycle balance drain attacks」の項を参照。
+
+- 大きな計算が発生し、ステートを変更しないクエリーコールでは、メソッドがアップデートとして呼び出される場合、高価な計算を実行しないことが推奨されます。しかし、クエリーコールは[真正性を保証](general-security-best-practices#certify-query-responses-if-they-are-relevant-for-security)しないので、これはトレードオフであることに留意してください。残念ながら、クエリの実行モード（クエリとしてコールされたかアップデートとしてコールされたか）は、現在のところユーザーコードに直接公開されていません。しかし、例えば、クエリーとしてコールされた場合は`1` を返し、アップデートメソッドの場合は`0` を返す`ic0.data_certificate_present()` をコールすることができます。[認証データについては](/references/ic-interface-spec.md#system-api-certified-data)、インターフェース仕様の[セクションを](/references/ic-interface-spec.md#system-api-certified-data)参照してください。
+
+- 他のcanisters から呼び出す必要があるだけの高価な呼び出しは、実行によって消費されるcycles を補うために、呼び出しと一緒に送信されるある程度のcycles を必要とすることができます。
+
+- 最後に、イングレスメッセージに課金するオプションもありますが、これは現在プラットフォーム自体でサポートされておらず、カスタムソリューションを設計する必要があります。
+
+### イングレス・メッセージ検査に頼らない
+
+#### セキュリティ上の懸念
+
+[canister](../../references/ic-interface-spec#system-api-inspect-message)\_inspect\_message は[クエリーコールとして](../../references/ic-interface-spec#http-query)実行されるため、悪意のあるノードが存在する場合、正しい実行が保証されません。
+
+#### 推奨
+
+あなたのcanisters は、`canister_inspect_message` の正しい実行に依存すべきではありません。これは特に、[アクセス制御チェッ クの](#make-sure-any-action-that-only-a-specific-user-should-be-able-to-do-requires-authentication)ようなセキュリティ上重要なコードを、このメソッドだけで実行すべきではないことを意味します。このようなチェックは、信頼できる実行を保証するために、更新メソッドの一部として実行さ**れなければ**なりません。理想的には、`canister_inspect_message` 関数とガード関数の両方で実行されます。
+
+また、canister 間の呼び出しでは、`canister_inspect_message` は呼び出されないことに注意してください。これは、ガードを使用してアップデートコールの一部としてコードを実行するもう1つの理由です。
+
+## に固有ではありません。Internet Computer
+
+このセクションのベストプラクティスは非常に一般的なものであり、Internet Computer に特化したものではありません。このリストは決して完全なものではなく、過去に問題になった非常に具体的な懸念事項をいくつか挙げているだけです。
+
+### 入力の検証
+
+#### セキュリティ上の懸念
+
+[クエリーコールとアップデートコールで](/references/ic-interface-spec.md#http-interface)送信されるデータは一般的に信頼されません。メッセージサイズの制限は数MBです。これは例えば以下のような問題を引き起こします：
+
+- 検証されていないデータがウェブ UI でレンダリングされたり、他のシステムで表示されたりすると、インジェクション攻撃（XSS など）につながる可能性があります。
+
+- 大きなサイズのメッセージが送信され、canister に保存される可能性があり、ストレージを過剰に消費する可能性があります。
+
+- 大きな入力(例えば大きなリストや文字列)は過剰な計算を引き起こし、DoSを引き起こし、多くのcycles を消費する可能性があります。[ cycles バランスの消耗からの保護も](#protect-against-draining-the-cycles-balance)参照してください。
+
+#### 推奨
+
+- 入力妥当性検証を実施してください。
+
+- [ Internet Computer canister を監査する](https://www.joachim-breitner.de/blog/788-How_to_audit_an_Internet_Computer_canister)方法の「大規模データ攻撃」の項を参照（Candid space bomb に注意）。
+
+- [ASVS](https://owasp.org/www-project-application-security-verification-standard/)5.1.4：ASVS5.1.4：構造化されたデータが強く型付けされ、許容される文字、長さ、パターンを含む定義されたスキーマに照らして検証されること（例えば、クレジットカード番号や電話番号、あるいは、郊外と郵便番号/郵便番号が一致することをチェックするなど、関連する2つのフィールドが妥当であることを検証すること）。
+
+### Rust：安全でないRustコードを使わないでください
+
+#### セキュリティ上の懸念
+
+安全でないRustコードは、メモリ破壊の問題を引き起こす可能性があるため危険です。
+
+#### 推奨
+
+- 安全でないコードは可能な限り避けてください。
+
+- [Rust セキュリティガイドラインを](https://anssi-fr.github.io/rust-guide/04_language.html#unsafe-code)参照してください。
+
+- [DFINITY Rustガイドラインを](https://docs.dfinity.systems/dfinity/spec/meta/rust.html#_avoid_unsafe_code)参照してください。
+
+### Rust：整数オーバーフローを避ける
+
+#### セキュリティ上の懸念
+
+Rustの整数はオーバーフローする可能性があります。このようなオーバーフローは、デバッグの設定ではパニックになりますが、リリースのコンパイルでは、その値はただ黙って折り返されます。これは、例えば、整数をインデックスや一意な ID として使ったり、cycles や ICP を計算したりする場合に、セキュリティ上の大きな問題を引き起こす可能性があります。
+
+#### 推奨
+
+- ラップアラウンドする可能性のある整数演算がないか、コードを注意深く見直してください。
+
+- `saturated_add`,`saturated_sub`,`checked_add`,`checked_sub` など、これらの演算の`saturated` または`checked` バリアントを使用してください。`u32` については、[Rust のドキュメントなどを](https://doc.rust-lang.org/std/primitive.u32.html#method.saturating_add)参照してください。
+
+### Rust：金融情報の浮動小数点演算は避けてください
+
+#### セキュリティ上の懸念
+
+Rust の浮動小数点は予期しない動作をする可能性があります。特定の状況下では、精度が低下する可能性があります。ゼロで除算する場合、結果は`-inf` 、`inf` 、`NaN` になる可能性があります。 整数に変換する場合、これは予期しない結果につながる可能性があります。(浮動小数点数には`checked_div` はありません)。
+
+#### 推奨
+
+を使用します。 [`rust_decimal::Decimal`](https://docs.rs/rust_decimal/latest/rust_decimal/)または [`num_rational::Ratio`](https://docs.rs/num-rational/latest/num_rational/).Decimalは10進数を分母とする固定小数点表現を使用し、Ratioは有理数を表します。どちらも`checked_div` を実装しており、ゼロによる除算を扱うことができます。0.1や0.2のようなよく使われる数は、Decimalを使えばより直感的に表現でき、Ratioを使えば正確に表現できます。Rust の浮動小数点数では`0.1 + 0.2 != 0.3` のような丸め誤差が発生しますが、 Decimal では発生しません (https://0.30000000000000004.com/ を参照ください)。Ratio では、希望する精度を明示することができます。Decimal と Ratio のどちらを使っても、精度を管理する必要は残りますが、算術演算を簡単にすることができます。
+
+### 高価な呼び出しについては、キャプチャやプルーフ・オブ・ワークの使用を検討してください。
+
+#### セキュリティ上の懸念
+
+アップデートコールやクエリーコールが、メモリの使用量やcycles の消費量などの点で高価な場合、ボットがcanister を（ストレージを一杯にするなどして）簡単に使えなくしてしまう可能性があります。
+
+#### 推奨事項
+
+dApp がそのような操作を提供する場合、Captchas やプルーフ・オブ・ワークの追加など、ボット対策テクニックを検討してください。例えば、[Internet Identityに](https://github.com/dfinity/internet-identity)キャプチャの実装があります。
+
+<!---
+
 # Canister development security best practices
 
 ## Overview
@@ -47,7 +819,7 @@ If this is not the case, an attacker may be able to perform sensitive actions on
 
 - By design, for every canister call the caller can be identified. The calling [principal](../../references/ic-interface-spec.md#principals) can be accessed using the system API’s methods `ic0.msg_caller_size` and `ic0.msg_caller_copy` (see [here](../../references/ic-interface-spec.md#system-api-imports)). If e.g. Internet Identity is used, the principal is the user identity for this specific origin, see [here](../../references/ii-spec.md#identity-design-and-data-model). If some actions (e.g. access to user’s account data or account specific operations) should be restricted to a principal or a set of principals, then this must be explicitly checked in the canister call, for example as follows in Rust:
 
-<!-- -->
+<!-- -!->
 
         // Let pk be the public key of a principal that is allowed to perform
         // this operation. This pk could be stored in the canister's state.
@@ -568,7 +1340,7 @@ Since canisters interact with the system API, it is harder to test the code beca
 
 - For the parts that still interact with the system API: create a thin abstraction of the System API that is faked in unit tests. See the [recommendation](https://mmapped.blog/posts/01-effective-rust-canisters.html#target-independent) (from [effective Rust canisters](https://mmapped.blog/posts/01-effective-rust-canisters.html)). For example, one can implement a ‘Runtime’ as follows and then use the ‘MockRuntime’ in tests (code by Dimitris Sarlis):
 
-<!-- -->
+<!-- -!->
 
         use ic_cdk::api::{
             call::call, caller, data_certificate, id, print, time, trap,
@@ -763,3 +1535,5 @@ If an update or query call is expensive e.g. in terms of memory used or cycles c
 #### Recommendation
 
 If the dApp offers such operations, consider bot prevention techniques such as adding Captchas or proof of work. There is e.g. a captcha implementation in [Internet Identity](https://github.com/dfinity/internet-identity).
+
+-->

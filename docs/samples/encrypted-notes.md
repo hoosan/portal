@@ -1,3 +1,498 @@
+# 暗号化されたメモ書きdapp
+
+## 概要
+
+暗号化[ノートは](https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp)、短いテキストの形式で機密情報をオーサリングおよび保存するための実験的なdapp です。ユーザーは、[インターネット ID を介して](https://internetcomputer.org/internet-identity)認証された、自動的に同期された任意の数のデバイスからノートにアクセスできます。dapp’s フロントエンドで実行されるエンドツーエンドの暗号化のおかげで、ユーザーはdapp’s バックエンドを信頼する必要はありません。
+
+[ICにデプロイされたdapp ](https://cvhrw-2yaaa-aaaaj-aaiqa-cai.icp0.io/)を使って遊んだり、[YouTubeで](https://youtu.be/DZQmtPSxvbs)簡単な紹介を見ることができます。
+
+私たちは、純粋にIC上で動作する単純な（しかし単純すぎない）dapp の例を作りたいと思いました。この例はICの**ウェブサービスと** **ストレージ機能に**依存しています。私たちは、この例dapp のために、次の2つの主要な機能に焦点を当てました：
+
+1.  クライアント側の**エンドツーエンドの暗号化**。
+2.  **マルチユーザー**および**マルチデバイスの**サポート。
+
+このようなdapps を開発するためのプラットフォームとしての IC の可能性を示すため、2つの異なるcanister 開発キット（CDK）を使用してこの例を実装しました。Motoko CDKを使用すると、開発者はactor-baseddapps を実装することができます。 [Motoko](/motoko/main/motoko.md)言語を使用して実装できます。Rust CDK では、[Rust](/developer-docs/backend/rust/index.md) でdapps を実装できます。どちらの場合も、canisters はWebAssembly ファイルにコンパイルされ、IC 上にデプロイされます。
+
+## アーキテクチャ
+
+暗号化ノートの基本機能は、2つの主要コンポーネントから構成されています。
+
+まず、[IC Notesと](https://github.com/pattad/ic_notes)呼ばれる非暗号化dapp のコードを再利用しました。特に IC Notes はユーザー認証のために Internet Identity (II)canister に依存しており、このアプローチは暗号化ノートdapp にも継承されています。開発目的のために、私たちは暗号化されたノートのローカルインスタンスとともに IIcanister のローカルインスタンスをデプロイします。暗号化ノートdapp をメインネット上にデプロイする際には、実世界の II インスタンスが認証に使用されます。
+
+次に、[IC Vault](https://github.com/timohanke/icvault) と呼ばれる別の既存のdapp からソリューションを借用し、ノートの内容に対するクライアント側のエンドツーエンドの暗号化を有効にしました。私たちの暗号化されたノートdapp は、IC Vault のアプローチを踏襲し、複数のデバイスの管理をサポートしています。
+
+この文書で説明するcanisters の文脈では、デバイスは必ずしも個別の物理デバイスではなく、独自のローカルデータストレージを持つ論理的なインスタンスデバイス、例えばウェブブラウザです。例えば、同じノート PC 上で動作する 2 つの Web ブラウザは、それぞれ独自の暗号鍵を生成するため、独立した 2 つのデバイスとみなします。対照的に、IIcanister はハードウェアが生成する暗号鍵に依存し、ハードウェア・デバイスのみを区別します。
+
+ユーザごとに複数のデバイスをサポートするために、IC Vault はデバイス・マネージャを採用しています。canister は、ユーザに関連付けられているすべてのデバイス間でデバイス固有の鍵を安全に同期します。このドキュメントの残りの部分では、暗号化されたノートdapp canister に焦点を当てます。このノート は、同様の方法でデバイスマネージャを実装していますが、メインのcanister の一部として実装されています。
+
+詳細とユーザーストーリーについては、[README ファイルを](https://github.com/dfinity/examples/blob/master/motoko/encrypted-notes-dapp/README.md)参照してください。
+
+![High-level architecture overview diagram of the Encrypted Notes dapp](_attachments/encrypted-notes-arch.png)
+
+## ノート管理
+
+- ユーザはフロントエンドでIIにリンクされ、APIクエリやアップデートのコールに使用できるプリンシパルを取得します。
+
+- 内部的には、`Principal → [Notes]` という形式のマップと、`counter`.
+
+- `counter` は、 がすべてのプリンシパルで作成したノートの数を保存します。canister 
+
+- メソッド`create` は、そのプリンシパルのエントリにノートを追加します（存在する場合）。または、プリンシパルを`note_id == counter` でマップに追加し、`counter` をインクリメントします。
+
+- メソッド`update` は、呼び出し元のプリンシパルと提供された`note_id` のノートを取り出し、提供された`text` (この`text` は、フロントエンドによって暗号化されていると仮定されます)で置き換えます。
+
+- メソッド`delete` は、マップ内で与えられた`note_id` を持つノートを見つけ、それを削除します。ノートIDが常にグローバルに一意であることを保証するために、`counter` は減少しません。
+
+## 暗号化
+
+ノートの暗号化は完全にクライアントサイドで行われます。しかし、私たちの例dapp は、悪意のあるノード・プロバイダによるデータ漏洩の可能性のある攻撃からまだ保護されていません。例えば、攻撃者は特定のユーザが何冊のノートを持っているか、ユーザのアクティビティ統計などを推測することができます。したがって、このdapp のコードやパターンを使用する前に、[免責](https://github.com/dfinity/examples/blob/master/motoko/encrypted-notes-dapp/README.md#disclaimer-please-read-carefully)事項を注意深くお読みください。
+
+我々の定義では、デバイスは必ずしも独立した物理的なデバイスではなく、単に独立したローカルストレージを持つウェブブラウザのインスタンスであることを思い出してください。
+
+このdapp 、3種類の鍵を使用します：
+
+- **対称 AES-GCM 秘密鍵**：あるプリンシパルのノートを暗号化するために使用されます。プリンシパルのノートは、この秘密鍵で暗号化された暗号化ノートdapp canister に保存されます。したがって、dapp のフロントエンドは、このユーザーからのノートを復号化し、暗号化されたノートを送信して暗号化ノートcanister に格納するために、この秘密鍵を知っている必要があります。
+
+- **デバイス RSA-OAEP 公開鍵**：プリンシパルの対称 AES**秘密鍵を**暗号化するために使用されます。暗号化された秘密鍵は、プリンシパルに登録された各デバイスのcanister に保存されます。同じ鍵が、そのデバイスを使用する異なるプリンシパルに対して使用されます。
+
+- **デバイス RSA-OAEP 秘密鍵**：暗号化されたノートcanister に格納されたプリンシパルの対称 AES**秘密**鍵を復号するために使用されます。フロントエンドが秘密鍵を復号すると、暗号化されたノートcanister に格納されたノートを復号するためにこの鍵を使用することができます。
+
+形式のマップを保存します：
+
+```
+    Principal → (DeviceAlias → PublicKey,
+                 DeviceAlias → CipherText)
+```
+
+このマップは、次に説明するように、ユーザのデバイスを管理するために使用されます。デバイスを登録するために、フロントエンドはデバイスエイリアス、公開鍵、秘密鍵（ローカルストレージに保持）を生成します。
+
+デバイスの追加
+
+- この時、このデバイスの`alias` と`publickey` だけが暗号化ノートcanister に追加されます。
+
+- **デバイスの同期**: 非同期デバイスがこのIIのすべての非同期デバイスのリストを取得すると、 各非同期デバイスの公開鍵の下で対称AES**秘密鍵を**暗号化します。その後、未同期デバイスは、暗号化された対称型AES秘密**鍵を**取得し、復号化した後、暗号化されたノートcanister に格納されている既存のノートを復号化するために使用します。
+
+II.で認証されると、暗号化された秘密鍵が使用されます：
+
+- このIDが不明な場合、フロントエンドは対称AES**秘密鍵を**生成し、自身の公開鍵で暗号化します。その後、フロントエンドは`seed(publickey, ciphertext)` を呼び出し、その`ciphertext` と関連付けられた`publickey` をマップに追加します。
+
+- ユーザーが後続のデバイスを登録したい場合、フロントエンドは`register_device` を呼び出し、そのデバイスの`alias` と`publickey` を渡します。次にフロントエンドは、登録する必要があるすべてのデバイスに対して`submit_ciphertexts([publickey, ciphertext])` を呼び出します。これにより、登録されたデバイスは、ユーザー・ノートを暗号化および復号化するためのAES鍵を引き出したり、復号化したりすることができます。
+
+## シーケンス図
+
+### 新しいデバイスの追加
+
+![UML sequence diagram showing device registration and synchronization](_attachments/encrypted-notes-seq.png)
+
+## 暗号化されたノート作成dapp チュートリアル
+
+以下の手順に従って、このサンプルプロジェクトをデプロイしてください。
+
+## 前提条件
+
+- \[x\][IC SDKを](../developer-docs/setup/install)インストールします。
+- \[x\] Dockerオプションを使用する場合は、[Dockerを](https://docs.docker.com/get-docker/)ダウンロードしてインストールします。
+- \[https://github.com/dfinity/examples/tree/master/motoko/encrypted-notes-dapp.
+
+### ステップ 1.プロジェクトのフォルダ内に移動します：
+
+    cd examples/motoko/encrypted-notes-dapp
+
+:::info
+このプロジェクトフォルダには、Motoko と Rust 開発
+ の両方のファイルが含まれています ::：
+
+### ステップ 2: 使用するバックエンドcanister を反映した環境変数を設定します：
+
+Motoko デプロイメントを実行します：
+
+    export BUILD_ENV=motoko
+
+Rust デプロイメントの場合
+
+    export BUILD_ENV=rust
+
+:::info
+Rustcanister のビルドには、システムにインストールされたRustツールチェーンか、Dockerを利用したデプロイメント（下記参照）が必要です。
+::：
+
+### ステップ3: ローカルにデプロイします。
+
+### オプション1: Dockerデプロイ
+
+:::info
+このオプションはApple M1ではまだ動作しません。dfxとDockerの組み合わせは現在、必要なアーキテクチャをサポートしていません。
+::：
+
+- #### ステップ1：指示に従ってDockerをインストールし、起動します。
+- #### ステップ2:Motoko ビルド/デプロイのために環境変数を設定します：
+
+<!-- end list -->
+
+    export BUILD_ENV=motoko
+
+- #### ステップ3: Dockerイメージのビルド、canister のコンパイル、dapp のデプロイ（すべてDockerインスタンス内）を行う以下のBashスクリプトを実行します。
+
+実行には数分かかります：
+
+    sh ./deploy_locally.sh
+
+:::caution
+"No such container（そのようなコンテナはありません）"で失敗する場合は、Dockerデーモンがシステム上で実行されていることを確認してください：
+
+- #### ステップ 4: フロントエンドを開くには、`http://localhost:3000/` 。
+
+- #### ステップ 5: dockerインスタンスを停止します：
+  
+  - キーボードの**Ctrl+C を**押して、実行中のプロセスを中断します。
+  - `docker ps` を実行し、encrypted\_notes の \<CONTAINER ID''\> を探します。
+  - `docker rm -f <CONTAINER ID'\'>` を実行します。
+
+### オプション 2: 手動デプロイメント
+
+- #### ステップ1:Motoko デプロイメントのために環境変数を設定します：
+
+<!-- end list -->
+
+    export BUILD_ENV=motoko
+
+- #### ステップ2: $BUILD\_ENV固有のファイルを生成するために実行します：
+
+<!-- end list -->
+
+    sh ./pre_deploy.sh
+
+- #### ステップ 3:`npm` パッケージをプロジェクトルートからインストールします：
+
+<!-- end list -->
+
+    npm install
+
+- #### ステップ 4:`dfx` を起動します：
+
+<!-- end list -->
+
+    dfx start
+
+:::caution
+"Failed to set socket of tcp builder to 0.0.0.0:8000 "というエラーが表示された場合は、ポート8000が以前に実行したDockerコマンドなどで占有されていないことを確認してください（このステップのためにDockerデーモンを停止するとよいでしょう）。
+::：
+
+- #### ステップ5：ローカル・インターネット・アイデンティティ（II）のインストールcanister.
+
+:::info
+複数のdfx IDをセットアップしている場合は、`--identity` フラグで使用するIDを確認してください。
+::：
+
+canister ：
+
+    dfx deploy internet_identity --argument '(null)'
+
+- #### ステップ 6: インターネット ID URL を印刷するには、以下を実行します：
+
+<!-- end list -->
+
+    npm run print-dfx-ii
+
+上記の URL にアクセスし、少なくとも 1 つのローカルインターネットアイデン ティティを作成します。
+
+- #### ステップ 7: 暗号化ノートバックエンドをデプロイするcanister ：
+
+<!-- end list -->
+
+    dfx deploy "encrypted_notes_$BUILD_ENV"
+
+:::caution
+Rustcanister をデプロイする場合は、最初に`rustup target add wasm32-unknown-unknown` を実行します。
+::：
+
+- #### ステップ8: 生成されたcanister インターフェースバインディングを更新します：
+
+<!-- end list -->
+
+    dfx generate "encrypted_notes_$BUILD_ENV"
+
+- #### ステップ 9: フロントエンドのデプロイcanister.
+
+canister をインストールしてデプロイするには、 を実行してください：
+
+    dfx deploy www
+
+- #### ステップ 10：フロントエンドcanister の URL を表示するには、以下を実行してください：
+
+<!-- end list -->
+
+    npm run print-dfx-www
+
+Web ブラウザで上記の URL にアクセスしてください。`http://localhost:3000/` でフロントエンドをホットローディングで実行するには、以下を実行してください：
+
+    npm run dev
+
+:::caution
+以前にこのページを開いたことがある場合は、ウェブブラウザからこのページのローカルストアデータをすべて削除し、ページをハードリロードしてください。例えばChromeの場合、Inspect → Application → Local Storage → http://localhost:3000/ → Clear Allと進み、リロードしてください。
+::：
+
+### メインネットの展開
+
+:::info
+メインネットのデプロイプロセスを開始する前に、canisters をコントロールするためのアイデンティティとウォレットが正しく設定されていることを確認してください。
+::：
+
+- #### ステップ 1:canisters を作成します：
+
+<!-- end list -->
+
+    dfx canister --network ic create "encrypted_notes_${BUILD_ENV}"
+    dfx canister --network ic create www
+
+:::info
+`encrypted_notes_rust` は、Rust ツールチェーンがインストールされている場合のみ動作します。
+::：
+
+- #### ステップ 2:canisters をビルドします：
+
+<!-- end list -->
+
+    dfx build "encrypted_notes_${BUILD_ENV}" --network ic
+    dfx build www --network ic
+
+- #### ステップ 3: メインネットにデプロイします：
+
+:::info
+以下のコマンドでは、-modeをreinstallにして安定メモリをリセットすることもできます。
+::：
+
+    dfx canister --network ic install "encrypted_notes_${BUILD_ENV}" --mode=upgrade
+    dfx canister --network ic install www --mode=upgrade
+
+## "暗号化されたノート "のユーザーインタラクションdapp
+
+### シナリオ I：基本的な単一デバイスの使用
+
+![Single device usage](./_attachments/single_user.png)
+
+- #### ステップ 1:`Encrypted Notes` dapp のメインページを開きます。**ログイン**ボタンが表示されます。
+  
+  - ローカルに配置されている場合は、次のリンクにアクセスします： http://localhost:4943?canisterId=rkp4c-7iaaa-aaaaaca-cai
+  - メインネットICにデプロイされている場合は、対応するcanister URLにアクセスしてください。
+  
+  現時点では、`deviceAlias` 変数が1つだけローカル・ストレージに保存されています。
+  
+  :::info
+  問題が発生した場合は[トラブルシューティングを](#troubleshooting)参照してください。
+  ::：
+
+- #### ステップ2：**ログイン**ボタンをクリックします。**インターネット ID** canister にリダイレクトされます。
+  
+  - すでに`anchor` をお持ちの場合は、そのまま続行できます。**Authenticateを**クリックし、次にIDを確認し、最後に**Proceedを**クリックします。
+  - アンカーをまだお持ちでない場合は、[作成して](https://smartcontracts.org/docs/ic-identity-guide/auth-how-to.html)ください。`anchor` を作成したら、続けてください。**Authenticate（**認証）をクリックし、本人確認を行い、最後に**Proceed**（進む）をクリックします。
+
+- #### ステップ3：初めてログインすると、ノートリストが空になっているはずです。
+
+この時点で、**ローカルストレージに**追加の変数が入力されているはずです:**ic-identity**、**ic-delegation**。
+
+これらの変数は、バックエンドcanister からノートを保存/取得するために使用されます。さらに、**IndexedDB** には、**PrivateKey**、**PublicKey** という 2 つの変数が生成されます。これら2つの変数は、共有秘密鍵の暗号化/復号化に使用されます。
+
+- #### ステップ4：ノートを作成/編集/削除し、結果のノートリストの変化を観察します。
+
+### シナリオ II: ユーザーが複数のデバイスからノートにアクセスする場合
+
+このシナリオでは、ユーザーが複数のデバイスから同じ*インターネットID*アンカーを使用してdapp にアクセスします。dapp の観点からは、各Webブラウザインスタンスは個別のデバイスと見なすことができます。
+
+![Multiple devices](./_attachments/multiple_devices.png)
+
+- #### ステップ1: デバイスAで、シナリオIのステップ1～3を実行。
+- #### ステップ2: シナリオⅠのステップ1～3をデバイスBで実行します。
+
+デバイスBで観察できる微妙な違いは、"Synchronizing... "というメッセージが短時間表示されることです。デバイスAが最初にログインしたので、共有秘密を最初に生成したのもデバイスAです。デバイスBはそれを取得しなければなりません。そのために、デバイスBはまず公開鍵（pub B）をバックエンドcanister にアップロードします。デバイスAは定期的なポーリングによってpub Bを取得します。その後、デバイス A は pub B で共有秘密を再暗号化し、バックエンドにアップロードします。その後、デバイス B は暗号化された共有秘密を取得し、秘密鍵で復号化することができます。
+
+- #### ステップ 3: 両方のデバイスで、ノートのリストが空になったことを確認します。
+- #### ステップ4: デバイスAで「デバイスAからのメモ」などのメモを作成し、デバイスBでそれを確認します。
+- #### ステップ5: 同様に、デバイスBで別のノート（デバイスBからのノートなど）を作成します。
+- #### ステップ6: 2つのデバイス間でメモが同期されていることを確認します。
+
+### シナリオ III: デバイス管理
+
+![Device management](./_attachments/registered_devices.png)
+
+- #### ステップ 1: 2台以上のデバイスで同じアンカーを使用してdapp にログインします。
+- #### ステップ2: 各デバイスのメニューから "Devices "を選択します。
+- #### ステップ3: 登録されたデバイスのリストに、ログインしたデバイスの数と同じ数のエントリがあることを確認します。
+- #### ステップ4：デバイスAを使用していると仮定して、他のデバイス（例えばデバイスB）の「削除」をクリックします。
+- #### ステップ5: デバイスAを使用したまま、デバイスBがデバイスリストから削除されたことを確認します。
+
+:::info
+デバイスはそれ自体を削除することはできません。これが、現在使用しているデバイスの「削除」ボタンが表示されない理由です。
+::：
+
+- #### ステップ6: デバイスBに切り替えて、ログアウトされていることを確認します。
+- #### ステップ7: デバイスBで再度ログインし、"Device "タブで両方のデバイスがログアウトしていることを確認します。
+
+## ユニットテスト
+
+このプロジェクトは、Motoko と Rustcanisters のユニットテストの書き方も示しています。
+
+### Motoko ユニットテスト
+
+ユニットテストは[Motoko matchers](https://kritzcreek.github.io/motoko-matchers/)ライブラリを用いて`src/encrypted_notes_motoko/test/test.mo` で実装されています。
+
+すべてのテストを実行する最も簡単な方法は、以下のステップです：
+
+- #### ステップ 1:`BUILD_ENV=motoko` を使って Docker 経由でデプロイするための[上記の](#option-1-docker-deployment)指示に従います。
+- #### ステップ 2: 新しいコンソールを開き、`docker ps` と入力し、 イメージの *`<CONTAINER ID>`*`encrypted_notes` をコピーします。
+- #### ステップ3: 実行します：` docker exec  ``<CONTAINER ID>` を実行します。`  sh src/encrypted_notes_motoko/test/run_tests.sh `
+- #### ステップ4：出力の最後に`All tests passed.` 。
+
+別の方法として、ローカルデプロイ後にユニットテストを実行することもできます：
+
+``` sh
+src/encrypted_notes_motoko/test/run_tests.sh
+```
+
+しかし、そのためには [`wasmtime`](https://wasmtime.dev/)そして [`motoko-matchers`](https://github.com/kritzcreek/motoko-matchers):
+
+``` sh
+git clone https://github.com/kritzcreek/motoko-matchers $(dfx cache show)/motoko-matchers
+chmod +x src/encrypted_notes_motoko/test/run_tests.sh
+src/encrypted_notes_motoko/test/run_tests.sh
+```
+
+出力の最後に`All tests passed.` 。
+
+### Rustユニットテスト
+
+ユニットテストは`src/encrypted_notes_rust/src/lib.rs` で実装されています。
+
+全てのテストを実行する最も簡単な方法は以下のステップです：
+
+- #### ステップ1:[上記の](#option-1-docker-deployment)指示に従って、`BUILD_ENV=rust` を使ってDocker経由でデプロイします。
+- #### ステップ2: 新しいコンソールを開き、`docker ps` と入力し、 イメージの *`<CONTAINER ID>`*`encrypted_notes` をコピーします。
+- #### ステップ3: 実行します：` docker exec  ``<CONTAINER ID>` を実行します。`  cargo test `
+- #### ステップ4：出力の最後に`test result: ok.` 。
+
+また、ローカルにデプロイした後にユニットテストを実行することもできます：
+
+``` sh
+cargo test
+```
+
+## トラブルシューティングリソース
+
+### ビルド/デプロイの問題
+
+エラー`ERR_OSSL_EVP_UNSUPPORTED`.
+node.jsのバージョン17+では、NodeがOpenSSLを処理する方法に変更が加えられています。
+これは、古い動作を必要とする特定の依存関係との衝突を引き起こす可能性があります。
+
+考えられる対処法
+
+1.  `export NODE_OPTIONS=--openssl-legacy-provider` (ノード 17+ でテスト済み)
+2.  nodeのバージョンを16.13.2 LTSに戻す(未テスト)
+
+### ログインの問題
+
+ブラウザのキャッシュの問題により、`Could not initialize crypto service` のようなエラーが発生することがあります。dapp を再デプロイすると、このような問題が発生することがあります。この場合、ブラウザの**ローカルストレージと** **IndexedDB** をクリアしてください。
+
+### SSL 証明書の問題
+
+ブラウザによっては、無効な SSL 証明書に基づいてローカルリソースをブロックすることがあります。暗号化されたノートのローカル展開版dapp をテストしている間に、ブラウザのコンソールで証明書の問題を観察した場合、**localhost から読み込まれたリソースの証明書を無視**するようにブラウザの設定を変更してください。例えば、Google Chromeの場合、[chrome://flags/\#allow-insecure-localhostで](chrome://flags/#allow-insecure-localhost)可能です。
+
+## dfx.jsonファイルの構造
+
+`dfx.json` は、ローカルレプリカまたはICにデプロイする際のプロジェクトの設定です。 ディレクトリの作成を支援します（ が含まれます - ローカルレプリカとICの両方で、単に の名前をidにマップするだけです）。ここには様々な設定オプションがあり、これは全てを網羅しているわけではありません。ここでは主に のターゲットタイプについて説明します（これらはすべて キーの下に存在します）。`.dfx` `canister_ids.json` canister canisters `canisters` 
+
+``` sh
+{
+    "canisters": {
+        "encrypted_notes_motoko": {
+            "main": "src/encrypted_notes_motoko/main.mo",
+            "type": "motoko"
+        },
+        "encrypted_notes_rust": {
+            "type": "custom",
+            "build": "cargo build --target wasm32-unknown-unknown --package encrypted_notes_rust --release",
+            "wasm": "target/wasm32-unknown-unknown/release/encrypted_notes_rust.wasm",
+            "candid": "src/encrypted_notes_rust/src/encrypted_notes_rust.did"
+        },
+        "www": {
+            "dependencies": ["encrypted_notes_motoko"],
+            "frontend": {
+                "entrypoint": "src/frontend/public/index.html"
+            },
+            "source": ["src/frontend/public/"],
+            "type": "assets"
+        },
+        "internet_identity": {
+            "candid": "internet_identity.did",
+            "type": "custom",
+            "wasm": "internet_identity.wasm"
+        }
+    },
+    "networks": {
+        "local": {
+            "bind": "0.0.0.0:8000",
+            "type": "ephemeral"
+        }
+    },
+    "version": 1
+}
+```
+
+#### **encrypted\_notes\_motoko** ：
+
+Motoko は、 を構築・配備するためのIC固有の言語です。2つのキーが必要です: ： : " " が必要で、dfxに を正しくビルドする方法を知らせます。canisters
+`main` canister
+`type`motoko canister
+
+#### **encrypted\_notes\_rust**：
+
+RustはWebAssembly -Internet Computer のバイナリ形式をネイティブにサポートしており、ICにフックできるic\_cdkクレートがあります。motoko とは異なり、dfx にはmotoko canisters と同じように推論する Rust ネイティブターゲットがまだありません。
+`type`: カスタム（dfxにユーザー定義の作業が必要であることを知らせる）
+`build`: プロジェクトをwasmバイナリにするために必要なコマンド。このレポでは
+
+``` sh
+cargo build --package encrypted_notes_rust --target wasm32-unknown-unknown --release
+```
+
+`wasm`
+`candid` ：dfx にはまだ candid IDL の Rust 自動生成機能がないので、DFX は "build" でビルドされた の candid ファイルがどこにあるかを知る必要があります。canister 
+
+#### **www**：
+
+frontend wwwcanister (「アセット」canister)は、ICにデプロイする一連のファイルや静的なウェブサイトを表す方法です。私たちのプロジェクトのフロントエンドは[Svelteで](https://svelte.dev/)構築されています。
+`dependencies`: dfxがアプリの前にビルドしてデプロイするように、アプリを提供するために使用されるすべてのcanisters の配列です。
+`frontend: { entrypoint: ""}`: dfxがアプリの前にビルドしてデプロイするように、アプリを提供するために使用されるすべての の配列です：このキーのセットは、dfxにフロントエンドとしてビルドするよう指示しますcanister 。entrypointは、npmビルドの最後にアプリのエントリーポイントが存在する場所です
+`source`: npmビルドの最後にアプリの残りの部分が存在する場所
+`type` ：「assets "はassetsまたはstaticcanister 。
+
+#### **バイナリターゲット**：
+
+wasmバイナリであれば、任意のバイナリターゲットをデプロイすることもできます。
+`wasm`: wasmファイル。
+`candid`: wasmファイル内の全てのインターフェイスを表すcandidfile。
+
+:::info
+"wasm "と "candid "のインターフェイス定義に不一致がある場合、canister 。
+::：
+
+## ローカルメモリモデル
+
+:::info
+このdapp はウェブブラウザの**ローカルストレージと** **IndexedDB**を使って以下のデータを保存します：
+
+- デバイス名。
+- ユーザー ID 情報。
+- 秘密鍵と公開鍵のペア
+
+ノートを暗号化/復号化するための対称鍵はRAMに保存されます（この鍵は複数のデバイス間で共有されます）。dapp の仕組みについては、ウェブブラウザのローカルストレージ/IndexedDB ウィンドウをご覧ください。Chrome では**デベロッパーツール→アプリケーション→ローカルストレージ/IndexedDB**。
+
+## 謝辞
+
+このプロジェクトで使用したフロントエンドコンポーネントの出発点となった[IC Notes](https://github.com/pattad/ic_notes)の作者に感謝します。
+
+このプロジェクトのバックエンド、ブラウザベースの暗号化、デバイス管理の出発点となった[IC Vaultの](https://github.com/timohanke/icvault)作者に感謝します。
+
+<!---
 # Encrypted note-taking dapp
 
 ## Overview
@@ -492,3 +987,5 @@ A symmetric key for encrypting/decrypting the notes is stored in RAM (this key i
 We thank the author of [IC Notes](https://github.com/pattad/ic_notes) whose code was the starting point for the frontend component used in this project.
 
 We thank the authors of [IC Vault](https://github.com/timohanke/icvault) whose code was the starting point for this project's backend, browser-based encryption, and device management.
+
+-->

@@ -1,3 +1,38 @@
+# Factor
+
+## 概要
+
+このサンプルは、入力以下のすべての正の整数の積を計算する再帰的な数学関数を示します。
+
+これはMotoko の例で、現在のところ Rust バリアントはありません。
+
+## 前提条件
+
+この例では、以下のインストールが必要です：
+
+- \[x\][IC SDKを](../developer-docs/setup/install/index.mdx)インストールしてください。
+- https://github.com/dfinity/examples/ \[x\] GitHubから以下のプロジェクトファイルをダウンロードしてください。
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ 1: プロジェクト・ファイルのあるフォルダに移動し、Internet Computer のローカル・インスタンスをコマンドで起動します：
+
+    cd examples/motoko/factorial
+    dfx start --background
+
+### ステップ 2:canister をデプロイします：
+
+    dfx deploy
+
+### ステップ3: 20のfactorialを計算します：
+
+`dfx canister call factorial fac '(20)'`
+
+以下の出力が返されます：
+
+    (2_432_902_008_176_640_000 : nat)
+
+<!---
 # Factorial
 
 ## Overview
@@ -37,3 +72,4 @@ The following output will be returned:
 ```
 (2_432_902_008_176_640_000 : nat)
 ```
+-->

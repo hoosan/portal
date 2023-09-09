@@ -1,3 +1,113 @@
+# 4: Rustクイックスタート
+
+## 概要
+
+Internet Computer ブロックチェーン用のアプリケーションは、**プロジェクトとして**開始します。IC SDK を使用して、Internet Computer ブロックチェーン用の新しいプロジェクトを作成できます。このプロジェクトはInternet Computer ブロックチェーンにデプロイするために構築するため、このガイドでは`dfx` 親コマンドとそのサブコマンドを使用して Rust プログラムを作成、ビルド、デプロイする方法を中心に説明します。
+
+## 前提条件
+
+始める前に、[開発者環境ガイドの](./3-dev-env.md)指示に従って開発者環境をセットアップしていることを確認してください。
+
+## 新しい Rust プロジェクトの作成
+
+IC SDK を使用して新しい Rust プロジェクトを作成するには、ターミナルウィンドウを開き、以下のコマンドを実行します：
+
+    dfx new --type=rust <project_name>
+
+ここで、`<project name>` はプロジェクト名を表します。たとえば、`rust_hello` という名前のプロジェクトを作成するには、次のコマンドを実行します：
+
+    dfx new --type=rust rust_hello
+
+`dfx new --type=rust rust_hello` コマンドを実行すると、`rust_hello` プロジェクトディレクトリ、テンプレートファイル、`rust_hello` Git リポジトリが作成されます。
+
+次に、以下のコマンドを実行してプロジェクト・ディレクトリに移動します：
+
+    cd rust_hello
+
+## ローカル実行環境の開始
+
+次に、プロジェクトをビルドする前に、開発環境で稼働しているローカル実行環境か、分散型のInternet Computer メインネットのどちらかに接続する必要があります。このガイドでは、開発環境のローカルにデプロイすることにします。メインネットへのデプロイの詳細については、次のステップの[デプロイcanisters](./5-deploying.md) を参照してください。
+
+ローカル実行環境を起動するには、まずプロジェクトのルートディレクトリにいることを確認します。
+
+次に、以下のコマンドを実行して、バックグラウンドでローカル実行環境を起動します：
+
+    dfx start --background
+
+:::info
+プラットフォームとローカルのセキュリティ設定によっては、警告が表示されることがあります。受信ネットワーク接続を許可または拒否するようプロンプトが表示された場合は、\[**許可\]** をクリックします。
+::：
+
+## プロジェクトの登録、ビルド、デプロイ
+
+開発環境で実行されているローカル実行環境に接続したら、プロジェクトをローカルに登録、ビルド、デプロイできます。
+
+以下のコマンドを実行して、`dfx.json` ファイルで指定したcanisters を登録、ビルド、デプロイします：
+
+    dfx deploy
+
+`dfx deploy` コマンドの出力には、以下の抜粋のような各操作に関する情報が表示されます：
+
+    Creating a wallet canister on the local network.
+    The wallet canister on the "local" network for user "default" is "rwlgt-iiaaa-aaaaa-aaaaa-cai"
+    Deploying all canisters.
+    Creating canisters...
+    Creating canister rust_hello_backend...
+    rust_hello_backend canister created with canister id: rrkah-fqaaa-aaaaa-aaaaq-cai
+    Creating canister rust_hello_frontend...
+    rust_hello_frontend canister created with canister id: ryjl3-tyaaa-aaaaa-aaaba-cai
+    Building canisters...
+    
+    ...
+    
+    Deployed canisters.
+    URLs:
+    Frontend canister via browser
+        rust_hello_frontend: http://127.0.0.1:4943/?canisterId=ryjl3-tyaaa-aaaaa-aaaba-cai
+    Backend canister via Candid interface:
+        rust_hello_backend: http://127.0.0.1:4943/?canisterId=r7inp-6aaaa-aaaaa-aaabq-cai&id=rrkah-fqaaa-aaaaa-aaaaq-cai
+
+## のテストdapp
+
+canisters とやりとりする方法はいくつかあります。まず、ブラウザからのアクセスについて説明しましょう。
+
+フロントエンドcanister (`rust_hello_frontend`) にアクセスするには、前のステップでターミナルに表示されたリンクをたどるだけです。
+
+```
+    Frontend canister via browser
+        rust_hello_frontend: http://127.0.0.1:4943/?canisterId=ryjl3-tyaaa-aaaaa-aaaba-cai
+```
+
+フロントエンドcanisters は**アセットcanisters** とも呼ばれ、スマートコントラクトから直接ウェブコンテンツにアクセスすることができます。これにより、バックエンドだけでなくdapp 全体をInternet Computer にデプロイすることができます。
+
+バックエンドcanister (`rust_hello_backend`) にアクセスするには、前のステップで端末に出力された URL を再度開きます。
+
+    Backend canister via Candid interface:
+            rust_hello_backend: http://127.0.0.1:4943/?canisterId=r7inp-6aaaa-aaaaa-aaabq-cai&id=rrkah-fqaaa-aaaaa-aaaaq-cai
+
+この方法を使って [`Candid UI` canister](https://github.com/dfinity/candid/tree/master/tools/ui)`dfx deploy` を最初に実行したときに、自動的にローカルレプリカにデプロイされます。`Candid UI` canister はバックエンドcanister からインタフェースをフェッチし、ビジュアルなウェブインタフェースでcanister の API をテストしたりブラウズしたりできます。
+
+dfxを使用してコマンドラインからローカルにデプロイされた`rust_hello_backend` をテストするには、次のコマンドを実行して`greet` 関数を実行します：
+
+    dfx canister call rust_hello_backend greet world
+
+次に、`rust_hello_backend` canister `greet` 関数の呼び出しがテキスト・メッセージ`("Hello, world!")` を返すことを確認します。
+
+## ローカル実行環境の停止
+
+アプリケーションをテストした後、ローカル実行環境を停止して、バックグラウンドで実行し続けないようにすることができます。
+
+コンピュータ上で実行されているローカル実行環境を停止するには、次のコマンドを実行します：
+
+    dfx stop
+
+今後dfxを再度起動する場合は、`dfx start --clean` コマンドで起動し、以前のステート状態を消去する必要があります。
+
+## 次のステップ
+
+では、次のステップで、dfxの記述と[デプロイについて](5-deploying.md)詳しく見ていきましょう。[ canisters](5-deploying.md)
+
+<!---
 # 4: Rust quick start
 
 ## Overview
@@ -121,3 +231,5 @@ When dfx is started again in the future, it should be started with the `dfx star
 ## Next steps
 
 Now, let's take a closer look into writing and [deploying canisters](5-deploying.md)
+
+-->

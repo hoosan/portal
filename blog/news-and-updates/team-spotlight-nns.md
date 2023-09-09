@@ -1,9 +1,95 @@
 ---
+
 title: Team spotlight - Network Nervous System
 description: For the first installment of this series, we sat down with the Network Nervous System team to learn more about the NNS, the SNS initiative, and the current goals the team is focused on.
 tags: [Team spotlight]
 image: /img/blog/dev-update-blog-nns-1.jpeg
 ---
+![NNS Team spotlight](../../static/img/blog/dev-update-blog-nns-1.jpeg)
+
+開発者の皆さん、こんにちは。新しいブログ記事シリーズ、チーム・スポットライトへようこそ！
+
+2週間に1度、DFINITY チームの1つを紹介し、彼らが取り組んでいることを知り、そのチームが IC のエコシステムにどのようにフィットしているかを深く掘り下げていきます。この新しいシリーズを通して、開発者はSDKとMotoko チーム以外のチームの最新情報と洞察を得ることができます。SDKと チームは、このブログの「Developer weekly update」シリーズで定期的に取り上げています。
+
+このシリーズの第1回目として、Network Nervous System チームと対談し、NNS、SNS イニシアチブ、チームが現在注力している目標について詳しく伺いました。
+
+**まずはじめに、NNSチームの焦点と目的についてお聞かせください。NNSチームの使命は何でしょうか？**
+
+*NNSはNetwork Nervous System の略です。NNSはDAO（分散型自律組織）で、Internet Computer Protocol 。*例えば、*ノードがどのようにサブネットに割り当てられるか、Internet Computer protocol がどのように新しいバージョンに更新されるかを調整します。*
+*ですから、その名前が示すように、NNSチームの主な任務は、NNS DAOの設計、実装、メンテナンスに貢献*することです。*これに加えてNNSチームは、ICプラットフォームが提供するDAOフレームワークであり、個々のアプリケーションがガバナンスを分散できるようにするService Nervous System (SNS)の設計と実装の主要な貢献者です。*
+
+**NNSチームは、管理・貢献する責任が非常に重く、エキサイティングなチームです！NNSチームの構成は？**
+
+*スイスと米国にまたがる6人のエンジニア、1人のエンジニアリング・マネージャー、2人の研究者で構成されています。*
+
+**NNSチームが最も力を入れているICの製品や機能は何ですか？**
+
+*NNSチームが取り組んでいる主な製品は2つあります：*
+
+*- NNS DAO*
+
+*- SNS DAOとSNSを立ち上げるためのSNS launchpadからなるSNS DAOフレームワークです。*
+
+**NNS DAOの概要はすでにお聞きしましたので、SNSの取り組みについてもう少しお話ししましょう。SNSの取り組みについて、NNSチームが担当していることを簡単に教えてください。**
+
+*NNSチームはSNSイニシアチブの主要な貢献者の1つです。私たちはSNSスワップ（canister ）の構築を支援し、その維持に貢献しています。このスワップは初期資金を集め、立ち上げ時にSNSを分散化する役割を担っています。また、私たちはメンテナンスの主要責任チームでもあります：*
+
+*- SNS Governancecanister DAOの意思決定を担当。*
+
+*- SNS Rootcanister は、他のcanisters のアップグレードを担当します。*
+
+*- SNS Wasm modulescanister" と呼ばれる NNScanister は、デプロイを担当し、SNScanisters のアップグレードに関与します。*
+
+**NNS DAOは、SNSイニシアティブや新しいSNSの立ち上げに果たす役割はありますか？**
+
+*NNS DAOは、新しいSNSの立ち上げを承認し、開始します。つまり、誰かが新しいSNSにdapp’s 、このプロセスを承認する必要があります。このプロセスの詳細は[こちらを](https://internetcomputer.org/docs/current/developer-docs/integrations/sns/launching/launch-summary)ご覧ください。*
+
+**チームのロードマップについて話しましょう。NNSチームが現在取り組んでいる、あるいは注力している主要プロジェクトは何ですか？**
+
+*私たちは通常、異なるプロジェクトに並行して取り組んでいます（NNSとSNSの機能を組み合わせて）。現在取り組んでいるプロジェクトの1つは、SNSの立ち上げプロセスをより使いやすくすることです。現在、SNSを立ち上げるには、2つのNNSの提案と、新しいSNSに彼らのdapp を引き渡す開発者チームからのかなりの手作業が必要です。*
+
+*その名が示すように、「1プロポーザル」機能が実装されれば、この全プロセスは1つのNNSプロポーザルで行われます。つまり、SNSを立ち上げるべきかどうかをICコミュニティが決定するNNS提案が1つあり、dapp 、この提案が採用されれば、SNSの完全な立ち上げが自動的にトリガーされ、実行されるということです。*
+
+**SNSの立ち上げプロセスが劇的に改善されそうですね！この目標を達成するために、どのようなコンポーネントが開発されているのでしょうか？**
+
+*このプロセスを変更するには、新しい提案を導入するための NNS ガバナンスや SNScanisters の展開を調整する SNS Wasm モジュールcanister など、複数のコンポーネントを変更する必要があります。*
+
+**このプロジェクトの利点について簡単に触れましたが、「1プロポーザル」機能を導入することで追加的な利点はありますか？**
+
+* dapp を SNS に渡したい開発者にとっては、SNS 立ち上げのフローが飛躍的に簡素化されます。さらに、SNSを立ち上げるべきかどうかを判断するために、1つのSNS提案を理解し検証するだけでよいNNSコミュニティにとっても、プロセスが簡素化されます。*
+
+**現在、NNSチームが計画している主なロードマップは他にありますか？**
+
+*私たちが活動している環境は少しダイナミックなので、具体的な機能について話すのは難しいです。代わりに、私たちが持っているハイレベルな目標をご紹介します：*
+
+*- NNS側では、ガバナンスへの参加、新しいノードのオンボーディング、Internet Computer の成長に重点を置いています。*
+
+*- SNSについては、SNSを立ち上げる際のプロジェクト体験の改善、SNSが立ち上げられた後のDAOメンバーの体験の改善、10倍のプロジェクトをサポートするためのフレームワークの拡張に重点を置いています。*
+
+**NNSチームの最新情報を知りたい開発者は、どこを見ればいいのでしょうか？**
+
+*NNS と SNScanisters の両方に提出された提案について、公式DFINITY フォーラムで定期的に最新情報を公開しています。このフォーラムでは、今後のAPIの変更や私たちが取り組んでいる新機能の最新情報を得ることができます。[以下は](https://forum.dfinity.org/t/nns-updates-june-12-2023/20670)フォーラムの投稿例です。*
+
+*フォーラムでは、機能のアイデアやデザインについてコミュニティと議論しています。私たちのすべての主要な機能は、フォーラムの投稿とディスカッションから始まります。[以下は](https://forum.dfinity.org/t/enhancement-of-the-sns-launch-process-one-proposal/19548)、前述の1-プロポーザル機能のフォーラム投稿です。*
+
+**NNS DAOまたはSNSイニシアチブの機能または側面で、チームが最も誇りに思っているものは何ですか？**
+
+*NNSは現存するDAOの中で最も進化したものの1つです。他のDAOと比較した大きな利点は、プロポーザルの実行が完全にチェーン上で行われることと、プロポーザルがどのcanister 、どのメソッドでもトリガーできることです。これにより、コミュニティ全体で意思決定が行われ、完全に自動的に実行される可能性が無限に広がります！*
+
+*NNS DAOは数百の提案で1年以上稼働しています！*
+
+*私たちが構築を支援したSNSフレームワークによって、すでに2つのプロジェクトがSNS DAOを立ち上げることができました。これはとてもエキサイティングなことで、他のプロジェクトがこれに続くか楽しみです！*
+
+**これは信じられないことで、間違いなく非常に誇らしいことです！スポットライト・インタビューの最後に、もう一つ質問があります。DFINITY の他の開発チームと比べて、NNSチームの特徴は何ですか？**
+
+*私たちはかなり "新しい "チームです。多くのチームメンバーが昨年加入しました。私たちのチームのエンジニアは、アメリカとスイスにかなり均等に散らばっています。*
+
+NNSチームの皆さん、私たちと一緒にNNSのあらゆることに飛び込んでいただき、本当にありがとうございました！私たちと同じように多くのことを学んでいただけたと思います。今月末には、また別のチーム・スポットライトのブログ記事を掲載しますので、ぜひご覧ください！
+
+\-DFINITY
+
+<!---
+
 
 ![NNS Team spotlight](../../static/img/blog/dev-update-blog-nns-1.jpeg)
 
@@ -89,3 +175,5 @@ For the first installment of this series, we sat down with the Network Nervous S
 Thank you so much to the NNS team for sitting down with us and diving into all things NNS! We hope that you learned as much as we did. Be sure to check in later in the month for another team spotlight blog post! 
 
 -DFINITY
+
+-->

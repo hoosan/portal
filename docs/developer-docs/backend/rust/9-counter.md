@@ -1,3 +1,240 @@
+# 9: カウンターのインクリメント
+
+## 概要
+
+このガイドでは、カウンタをインクリメントするためのいくつかの基本的な関数を提供し、値の永続性を示すdapp を記述します。
+
+このガイドでは、dapp は、カウンタの現在値を表す自然数を格納するミュータブル変数として`COUNTER` を宣言します。このdapp は以下の関数をサポートしています：
+
+- `increment` 関数は現在値を更新し、戻り値なしで 1 ずつ増分します。
+
+- `get` 関数は、カウンタの現在値を返す単純なクエリです。
+
+- `set` 関数は、現在値を引数として指定した数値に更新します。
+
+このガイドでは、配置されたcanister で関数を呼び出してカウンタをインクリメントする簡単な例を示します。値をインクリメントする関数を複数回呼び出すことで、変数のステート、つまり呼び出しの間の変数の値が存続していることを確認できます。
+
+## 前提条件
+
+始める前に、[開発者環境ガイドの](./3-dev-env.md)指示に従って開発者環境をセットアップしていることを確認してください。
+
+## counterdapp プロジェクトを作成します。
+
+まだ開いていなければ、ローカル・コンピューターでターミナル・ウィンドウを開いてください。
+
+まず、以下のコマンドを実行して新しいプロジェクトを作成します：
+
+``` bash
+dfx new --type=rust rust_counter
+```
+
+次に、次のコマンドを実行して、プロジェクト・ディレクトリに移動します：
+
+``` bash
+cd rust_counter
+```
+
+:::info
+Note: 以下の手順は、ターミナルが開いていて、カレントディレクトリが`rust_counter` であると仮定しています .
+::：
+
+これで、Rustdapp のファイルが揃ったので、`lib.rs` dapp のテンプレートを、dapp のカウンターを作成するコードに置き換えることができます。
+
+デフォルトのdapp を置き換えるには、テキストエディタでテンプレート`src/rust_counter_backend/src/lib.rs` ファイルを開き、既存の内容を削除します。
+
+次に、このコードをコピーして`src/rust_counter_backend/src/lib.rs` ファイルに貼り付けます。
+
+``` rust
+use std::cell::RefCell;
+use candid::types::number::Nat;
+
+thread_local! {
+    static COUNTER: RefCell<Nat> = RefCell::new(Nat::from(0));
+}
+
+/// Get the value of the counter.
+#[ic_cdk_macros::query]
+fn get() -> Nat {
+    COUNTER.with(|counter| (*counter.borrow()).clone())
+}
+
+/// Set the value of the counter.
+#[ic_cdk_macros::update]
+fn set(n: Nat) {
+    // COUNTER.replace(n);  // requires #![feature(local_key_cell_methods)]
+    COUNTER.with(|count| *count.borrow_mut() = n);
+}
+
+/// Increment the value of the counter.
+#[ic_cdk_macros::update]
+fn inc() {
+    COUNTER.with(|counter| *counter.borrow_mut() += 1);
+}
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_set() {
+        let expected = Nat::from(42);
+        set(expected.clone());
+        assert_eq!(get(), expected);
+    }
+
+    #[test]
+    fn test_init() {
+        assert_eq!(get(), Nat::from(0));
+    }
+
+    #[test]
+    fn test_inc() {
+        for i in 1..10 {
+            inc();
+            assert_eq!(get(), Nat::from(i));
+        }
+    }
+}
+```
+
+変更を保存し、`lib.rs` ファイルを閉じて続行します。
+
+### インターフェース記述ファイルの更新
+
+Candid は、Internet Computer 上で動作するcanisters と対話するためのインターフェイス記述言語 (IDL) です。 Candid ファイルは、canisterのインターフェイスの言語に依存しない記述で、canister が定義する各関数の名前、パラメータ、結果の形式とデータ型を含みます。
+
+Candid ファイルをプロジェクトに追加することで、Internet Computer ブロックチェーン上で安全に実行するために、Rust での定義からデータが適切に変換されることを保証できます。
+
+Candidインターフェース記述言語の構文の詳細については、[**Candidガイド**](./../candid/index.md)または[Candidクレートのドキュメントを](https://docs.rs/candid/)参照してください。
+
+Candidファイルを更新するには、テキストエディタで`src/rust_counter_backend/rust_counter_backend.did` ファイルを開き、`increment` 、`get` 、`set` 関数の次の`service` 定義をコピーして貼り付けます：
+
+``` did
+service : {
+    "increment": () -> ();
+    "get": () -> (nat) query;
+    "set": (nat) -> ();
+}
+```
+
+変更を保存し、`rust_counter_backend.did` ファイルを閉じて続行します。
+
+## Cargo.tomlファイルの作成
+
+他の規格のRustクレートと同様に、Rustクレート構築の詳細を設定する`Cargo.toml` ファイルがあります。
+
+`src/rust_counter_backend/Cargo.toml` ファイルを開き、既存の内容を以下の内容に置き換えます：
+
+``` toml
+[package]
+name = "rust_counter_backend"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+candid = "0.8.2"
+ic-cdk = "0.7.0"
+serde = { version = "1.0", features = ["derive"] }
+```
+
+ファイルを保存します。
+
+## Cargo.tomlの依存関係を更新します。
+
+Cargo.tomlファイルを変更したので、以下のコマンドを実行してプロジェクトの依存関係を更新します：
+
+    cargo update
+
+### ローカルのcanister 実行環境を起動します。
+
+`rust_counter` プロジェクトをビルドする前に、開発環境または分散型Internet Computer ブロックチェーンメインネットで実行されているローカルcanister 実行環境に接続する必要があります。
+
+以下のコマンドを実行して、バックグラウンドでコンピューター上のローカルcanister 実行環境を起動します：
+
+``` bash
+dfx start --clean --background 
+```
+
+プラットフォームとローカルのセキュリティ設定によっては、警告が表示される場合があります。受信ネットワーク接続の許可または拒否を求められた場合は、\[**許可\]** をクリックします。
+
+### プロジェクトの登録、ビルド、およびデプロイ
+
+開発環境で実行されているローカルのcanister 実行環境に接続したら、プロジェクトをローカルに登録、ビルド、およびデプロイできます。
+
+次のコマンドを実行して、`dfx.json` ファイルで指定したcanisters を登録、ビルド、デプロイします：
+
+``` bash
+dfx deploy
+```
+
+## canister の関数を呼び出して、その関数をテストします。dapp
+
+canister のデプロイに成功したら、canister が提供する関数を呼び出してテストできます。このガイドでは
+
+- `get` 関数を呼び出してカウンタの値をクエリーします。
+
+- `increment` 関数を呼び出して、呼び出されるたびにカウンタをインクリメントします。
+
+- `set` 関数を呼び出して引数を渡し、カウンタを指定した任意の値にアップデートします。
+
+`get` 関数を呼び出して、次のコマンドを実行して`COUNTER` 変数の現在値を読み取ります：
+
+``` bash
+dfx canister call rust_counter_backend get
+```
+
+このコマンドは、`COUNTER` 変数の現在値をゼロとして返します：
+
+    (0 : nat)
+
+`increment` 関数を呼び出して、`COUNTER` 変数の値を 1 つインクリメントします：
+
+``` bash
+dfx canister call rust_counter_backend increment
+```
+
+このコマンドは変数の値をインクリメントし、ステート を変更しますが、結果は返しません。
+
+コマンドを再実行して`get` 関数を呼び出し、`COUNTER` 変数の現在の値を確認します：
+
+``` bash
+dfx canister call rust_counter_backend get
+```
+
+コマンドは更新された`COUNTER` 変数の値を1として返します：
+
+    (1 : nat)
+
+追加のコマンドを実行して、関数の呼び出しや異なる値の使用を試してみてください。
+
+例えば、以下のようなコマンドを実行して、カウンターの値を設定したり返したりしてみてください：
+
+``` bash
+dfx canister call rust_counter_backend set '(987)'
+dfx canister call rust_counter_backend get
+```
+
+現在の値 987 を返します。
+
+``` bash
+dfx canister call rust_counter_backend increment
+dfx canister call rust_counter_backend get
+```
+
+インクリメントされた値 988 を返します。
+
+## 次のステップ
+
+次に、[周期タイマーの](10-timers.md)使い方を調べてみましょう。
+
+<!---
 # 9: Incrementing a counter
 
 ## Overview
@@ -235,3 +472,5 @@ Returns the incremented value of 988.
 ## Next steps
 
 Next, let's explore how to use [periodic timers](10-timers.md).
+
+-->

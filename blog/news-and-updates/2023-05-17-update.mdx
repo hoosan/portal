@@ -1,4 +1,5 @@
 ---
+
 title: Motoko update May 17, 2023
 description: Today, we’re excited to discuss a beta test for the new incremental GC! If you want to test out the full usage of the Motoko heap then keep reading!
 tags: [New features]
@@ -6,6 +7,46 @@ image: https://global.discourse-cdn.com/business4/uploads/dfn/original/2X/d/d118
 authors:
   - name: Kento Sugama
 ---
+# Motoko 更新日: 2023年5月17日
+
+![Z0zMQPRKVIaK7jX1WCzBxbK7DNGYjXBoWlMMrpIDSPqavL4W9hlRZqqqYCOEbdnC4EBkqTzFWg7c8iUig](https://global.discourse-cdn.com/business4/uploads/dfn/original/2X/d/d118475179adf31ed419566b5052467b00b8bb0a.jpeg)
+
+Motoko 開発者の皆さん！ :wave：
+
+最新のMotoko アップデート記事へおかえりなさい！
+前回のアップデートを見逃してしまった方は、[こちらで](https://forum.dfinity.org/t/bitcoin-x-ic-hackathon-and-candid-formatting-syntax-highlighting-motoko-update-part-11/19485)追いつくことができます。ICの新しいBitcoinハッカソンとVSCodeの率直な機能について説明しました。
+
+今日は、新しいインクリメンタルGCのベータテストについて説明します！Motoko ヒープの完全な使用法をテストしたい場合は、読み続けてください！
+
+![IluNt1](https://global.discourse-cdn.com/business4/uploads/dfn/original/2X/f/fdf17ef114032b61d14fc6aa8e79509f5f64d6c9.png)
+
+## インクリメンタルガレージコレクター：ベータリリース！
+
+新しい強力なガベージコレクタであるインクリメンタルGCが、 のバージョンでベータテスト用にリリースされました。 [`0.9.0`](https://github.com/dfinity/motoko/releases/tag/0.9.0)Motoko ！
+インクリメンタルGCの最大のインパクトは、Motoko で4GBの上限いっぱいまでヒープを使用できるようになったことです。既存のGCは、メッセージごとの命令制限のためにヒープ全体を収集することができませんが、新しいGCは、必要に応じて複数のメッセージにわたってその作業を分散します。転送ポインタに基づく退避コンパクションを使用することで、GCはすべてのフェーズで限定された短い休止を保証し、他の言語（例えばJava）で使用される最も近代的で高度なGCに匹敵します。このGCのスケーラビリティは、将来Motoko 、64ビットのヒープ空間に移行する際にも重要なイネーブラーになるでしょう。
+私たちのGCベンチマークに基づくと、インクリメンタルGCは、Motoko で利用可能な他のGCと比較して、平均で約3～16％少ないcycles を消費しながら、最大3倍のヒープ空間を割り当てることができます。
+今のところ、インクリメンタルGCはベータテストのみを目的としており、`—incremental-gc` コンパイラフラグによって明示的に有効にすることができます。`dfx.json` でこの機能を有効にすることができます：
+
+    {
+      “canisters”: {
+        “my_dapp”: {
+           “main”: “src/my-dapp.mo”,
+           “type”: “motoko”,
+           “args” : “--incremental-gc”
+        },
+      },
+    }
+
+フィードバックがあればお知らせください。また、この大規模で複雑な機能をリードし、構築してくれた@luc-blaeserに特別なエールを送ります！
+インクリメンタルGCの詳細については、[こちらを](https://github.com/dfinity/motoko/pull/3837)ご覧ください。
+
+# それではまた次回！
+
+そしてさらなるアップデートにご期待ください！
+\-DFINITY 言語チーム
+
+<!---
+
 
 # Motoko update: May 17, 2023
 
@@ -41,3 +82,5 @@ More information on the incremental GC can be found [here](https://github.com/df
 # 'Til next time!
 Keep building, and stay tuned for more updates!
 – DFINITY Languages team
+
+-->

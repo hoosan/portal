@@ -1,7 +1,141 @@
 ---
+
 sidebar_position: 1
 sidebar_label: General
 ---
+# 一般的なセキュリティのベストプラクティス
+
+## 概要
+
+この文書には、一般的なセキュリティのベストプラクティスに関する情報が含まれています。
+
+## クエリレスポンスがセキュリティに関連する場合、そのクエリレスポンスを認証します。
+
+### セキュリティ上の問題
+
+(アップデートコールとは対照的に)[クエリーコールに対する](/references/ic-interface-spec.md#https-interface)レスポンスは、canister/subnetによって閾値署名されません。そのため、悪意のあるレプリカやバウンダリノードがデータを変更し、その真正性を侵害する可能性があります。アップデートコールがクエリーコールへのレスポンスに依存している場合、これは特に危険です。
+
+### 推奨事項
+
+- 真正性保証が必要なすべてのセキュリティ関連のクエリ応答データ（これはdApp ごとに評価する必要があります）は、認証変数を使用して IC によって認証されるべきです。[certified-mapの](https://github.com/dfinity/cdk-rs/tree/main/library/ic-certified-map)ような既存のデータ構造の使用を検討。データ認証はフロントエンドで検証されなければなりません。
+
+- あるいは、これらの呼び出しは、呼び出し元によってアップデートコールとして発行されなければなりません（例えば、agent-jsにおいて）。すべての問い合わせは、呼び出し元によって更新として発行することもできることに注意してください。
+
+- 例として、[Internet Identityの](https://github.com/dfinity/internet-identity/blob/b29a6f68bbe5a49d048e12bc7a3263a9f43d080b/src/internet_identity/src/main.rs#L775-L808)資産認証、[NNSdapp](https://github.com/dfinity/nns-dapp/blob/372c3562127d70c2fde059bc9c268e8ae858583e/rs/src/assets.rs#L121-L145) 、または[Internet Identityのcanister 署名実装が](https://github.com/dfinity/internet-identity/blob/main/src/internet_identity/src/signature_map.rs)あります。
+
+### のデータ機密性Internet Computer
+
+#### セキュリティ上の懸念
+
+Internet Computer にデータを格納する場合、データアクセスには2つのレベルがある。
+
+1.  ノードは、サブネットに保存されているすべてのデータを読むことができます。これには、canister に保存されているすべてのデータとともに、canister に送受信されるすべてのメッセージが含まれます。これは、ノードが、canister で利用可能なすべてのデータを抽出できることを意味します。これは、ノードに TEE ベースのセキュリティを実装することで変化します。
+
+2.  エンドユーザクライアントは、ノードとcanisters が利用できるようにしたデータにのみアクセスできます。サブネットのノードが悪さをしてデータを漏らさなければ、クライアントが読むことができるのは、イングレスメッセージに対するレスポンスと、ノードが送信したクエリだけです。どのデータをクライアントに公開するかは、canister 。
+
+サブネットのステートツリーに格納されているデータの部分的な情報は常に漏れます。したがって、「True」か「False」のどちらかしかないブール値のように、エントロピー値が低いデータは完全に漏れて、完全に公開される可能性があります。エントロピーの高いデータのリークはごくわずかです。
+
+サブネットのステート・ツリーに格納される可能性のあるユーザー関連データには2種類あります。1つ目は、ユーザがcanister にイングレス・メッセージを送信する場合です。メッセージ・ハッシュとレスポンスは両方ともサブネットのステート・ツリーに格納され、クライアントが安全に取得できるようになります。イングレス・メッセージは、エージェントによって実装され、通常はユーザーに公開されない高エントロピーのnonceを含む必要があります。メッセージ応答はcanister によって決定され、高エントロピー値を含まないかもしれません。もしcanister レスポンスが低エントロピーの値で構成されている場合、そのデータはイングレスメッセージ送信者以外のユーザに漏洩する可能性があります。
+
+ユーザー関連データの2つ目のタイプは、canister によって保持される認証変数で、サブネットのステートツリーを通じて公開されます。canister が低エントロピーのデータをステートツリーに配置した場合、そのデータは、そのデータ部分にアクセスすべきではないユーザーに漏れる可能性があります。
+
+#### 推奨
+
+外部ユーザーからデータの機密性を保護する必要がある開発者は、サブネットのステートツリー内のデータが十分なレベルのエントロピーを持つようにする必要があります。128ビットを推奨します。データ自体に十分なエントロピーがない場合は、ランダム性を利用した人工的なデータを追加することをお勧めします。
+
+特に、canister 、イングレス・メッセージに対するレスポンスに高エントロピーのデータを含めることで、送信者以外の外部ユーザーにデータが漏れないようにすることができます。あるいは、canister 、秘密にしておくべき変数に高エントロピーのデータを追加することで、認証された変数のデータが漏れないようにすることができます。
+
+さらに、イングレス・メッセージ・レスポンスと同様に、低エントロピー・データを含むcanister のプライベート・カスタム・セクションは、権限のないユーザーに漏れる可能性があります。したがって、canister のプライベートカスタムセクションには、十分なレベルのエントロピーを使用する必要があります。128ビットを推奨します。データ自体に十分なエントロピーがない場合は、ランダム性を利用した人工的なデータを追加することをお勧めします。
+
+## に固有ではありません。Internet Computer
+
+このセクションのベストプラクティスは非常に一般的なものであり、Internet Computer に特化したものではありません。このリストは決して完全なものではなく、過去に問題になった非常に具体的な懸念事項をいくつか挙げているだけです。
+
+### 既知の脆弱性を持つサードパーティ製コンポーネントを使わないでください。
+
+#### セキュリティ上の懸念
+
+脆弱で古いコンポーネントを使うことは、[大きなセキュリティリスク](https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/)です。
+
+#### 推奨事項
+
+- サードパーティコンポーネントを、既知の脆弱性のデータベースと定期的に照合してください：
+  
+  - Rust:[cargo audit](https://crates.io/crates/cargo-audit) を使ってください。
+  
+  - JavaScript / NPM:[npm audit](https://docs.npmjs.com/cli/v8/commands/npm-audit) を使ってください。
+
+- 既知の脆弱性があれば、ビルドは失敗するはずです。
+
+- メンテナンスされておらず、信頼できない可能性のあるリポジトリのフォーク版を使用しないでください。
+
+- 広く使われておらず、十分な（理想的にはサードパーティによる）レビューを受けていない可能性のあるサードパーティ製コンポーネントの使用は避けましょう。
+
+- 使用しているコンポーネントのバージョンを固定し、自動的に破損したアップデートに切り替わらないようにしてください。
+
+### 暗号を自分で実装しないでください。
+
+#### セキュリティ上の懸念
+
+暗号アルゴリズムを実装するときに間違いを犯しやすく、セキュリティバグにつながります。
+
+#### 推奨
+
+- オープンソースで、多くの人のレビューを受けているような、よく知られたライブラリを使用してください。例えば、JavaScript の[Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)を使ったり、Rust の[sha256](https://crates.io/crates/sha256)のようなクレートを使ってください。
+
+### 安全な暗号方式を使いましょう
+
+#### セキュリティ上の懸念
+
+いくつかの暗号方式は壊れています（古いTLSのバージョン、MD5、SHA1、DESなど）。これらを使うことはセキュリティ上の問題を引き起こします。
+
+#### 推奨
+
+暗号を使う必要がある場合は、壊れておらず、既知の問題がない暗号方式だけを使いましょう。NISTやIETFなどで規格化されたアルゴリズムを使うのが理想的です。
+
+参考文献
+
+- [OWASP 暗号の失敗例](https://owasp.org/Top10/A02_2021-Cryptographic_Failures/)
+
+### コードのテスト
+
+#### セキュリティ上の懸念
+
+テストカバレッジが小さいと、コードの変更が難しくなり、正しさやセキュリティの特性に違反し、バグにつながる可能性があるためです。対応するテストがない場合、レビュー（および、セキュリティレビュー）において、正しさとセキュリティ特性を検証することは困難です。
+
+#### 推奨
+
+canister の実装とフロントエンドのコードについて、特に、セキュリティに関連する特性や不変量について、テストを書いてください。
+
+- [効果的なRustのcanisters](https://mmapped.blog/posts/01-effective-rust-canisters.html) ：
+  
+  - [アップグレードのテスト](https://mmapped.blog/posts/01-effective-rust-canisters.html#test-upgrades)。
+  - [コードをターゲットに依存しない](https://mmapped.blog/posts/01-effective-rust-canisters.html#target-independent)ようにします。
+
+- [システム API 呼び出しがある場合でも、canister のコードをテストして](rust-canister-development-security-best-practices#test-your-canister-code)ください。
+
+- [テストについては、DFINITY Rust ガイドラインを](https://docs.dfinity.systems/dfinity/spec/meta/rust.html#_tests)参照してください。
+
+- wasmレベルの単体テストには、[Motoko Matchersの](https://github.com/kritzcreek/motoko-matchers)使用を検討してください。
+
+- Motoko-level のユニットテストについては、[ canister モジュールを](https://kritzcreek.github.io/motoko-matchers/Canister.html)検討してください。[ここと](https://github.com/dfinity/motoko-base/blob/master/test/resultTest.mo) [ここにも](https://github.com/dfinity/motoko-base/blob/master/test/textTest.mo)テスト例があります。例として、[インボイスの](https://github.com/dfinity/invoice-canister)エンドツーエンドテストとユニットテスト[ canister も参照してください。](https://github.com/dfinity/invoice-canister)
+
+- 長期にわたるテストシナリオについては、[Motoko BigTest](https://github.com/matthewhammer/motoko-bigtest) を検討してください。
+
+### 本番環境でのテストコードと開発コードは避けてください
+
+#### セキュリティ上の懸念
+
+開発またはテストセットアップにのみ使用されるコードパスをプロダクションコードに含めるのは危険です。何か問題が発生した場合（そして、時には発生します！）、本番環境にセキュリティバグをもたらすかもしれません。
+
+例えば、認証を検証するための公開鍵が、信頼できないソースから取得された問題を見たことがあります。
+
+#### 推奨
+
+可能な限り、本番環境でのテストコードや開発コードを避けてください。
+
+<!---
+
 # General security best practices
 
 ## Overview
@@ -131,3 +265,5 @@ For example, we have seen issues where the public key to verify certification wa
 #### Recommendation
 
 Avoid test and dev code in production code whenever possible.
+
+-->

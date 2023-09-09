@@ -1,3 +1,70 @@
+# シンプルなToDo
+
+## 概要
+
+この例では、シンプルな ToDo チェックリスト・アプリケーションの作成方法を説明します。
+
+このアプリケーションは、次のMotoko ソース・コード・ファイルからビルドされます：
+
+- `Utils.mo`ToDoチェックリスト項目の追加、完了、削除のコア関数。
+- `Types.mo`ToDoチェックリスト項目の型定義。
+- `Main.mo` actor の定義と、この によって公開されるメソッドが含まれます。canister
+
+これはMotoko の例で、現在 Rust バリアントはありません。
+
+## 前提条件
+
+この例には以下のインストールが必要です：
+
+- \[x\][IC SDKを](../developer-docs/setup/install/index.mdx)インストールしてください。
+- https://github.com/dfinity/examples/ \[x\] GitHubから以下のプロジェクトファイルをダウンロードしてください。
+
+ターミナル・ウィンドウを開きます。
+
+### ステップ 1: プロジェクト・ファイルのあるフォルダに移動し、Internet Computer のローカル・インスタンスをコマンドで起動します：
+
+    cd examples/motoko/simple-to-do
+    dfx start --background
+
+### ステップ2：canister をデプロイします：
+
+    dfx deploy
+
+### ステップ 3: addTodo メソッドを呼び出して、ToDo チェックリストを作成します：
+
+    dfx canister call simple_to_do addTodo '("Create a project")'
+    dfx canister call simple_to_do addTodo '("Build the project")'
+    dfx canister call simple_to_do addTodo '("Deploy the project")'
+
+### ステップ 4: showTodosメソッドを呼び出して、ToDoチェックリストを表示します：
+
+    dfx canister call simple_to_do showTodos
+
+### ステップ 5: 入力した値が出力されることを確認します：
+
+    ("
+    ___TO-DOs___
+    (1) Create a project
+    (2) Build the project
+    (3) Deploy the project")
+
+### ステップ6: completeTodoメソッドを呼び出して、ToDoチェックリスト項目を完成させます：
+
+    dfx canister call simple_to_do completeTodo '(1)'
+
+### ステップ7: showTodosメソッドを呼び出して、ToDoチェックリストを表示します。
+
+    dfx canister call simple_to_do showTodos
+
+### ステップ 8: 返り値が期待したものと一致することを確認します。
+
+    ("
+    ___TO-DOs___
+    (1) Create a project ✔
+    (2) Build the project
+    (3) Deploy the project")
+
+<!---
 # Simple to-do
 
 ## Overview
@@ -77,3 +144,4 @@ ___TO-DOs___
 (2) Build the project
 (3) Deploy the project")
 ```
+-->

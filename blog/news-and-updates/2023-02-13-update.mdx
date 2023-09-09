@@ -1,9 +1,74 @@
 ---
+
 title: Developer weekly update February 13, 2023
 description: Welcome to this week’s edition of developer weekly, where we give you the lowdown on new tools and features we’re shipping, new use cases for existing features, and other news and content we found interesting over the past week.
 tags: [Devs]
 image: /img/blog/quill.png
 ---
+# 開発者ウィークリー・アップデート2023年2月13日
+
+開発者の皆さん、こんにちは！今週のデベロッパーウィークリーへようこそ。
+出荷中の新しいツールや機能、既存機能の新しいユースケース、その他この一週間で気になったニュースやコンテンツをお伝えします。
+
+# Quillに新しい家ができました
+
+![Header image](../_assets/quill.png)
+
+Quillはコールドウォレットのための最小限の台帳とガバナンスツールキットです。Quillを使えば、エアギャップされたデバイスに保存できるセルフカストディキーを使って
+、署名されたメッセージを生成することができます。これらのメッセージはその後、ネットワークにアクセスできるマシン
+に転送することができ、そこでInternet Computer に送信することができます。
+以前は、特定のユースケースに対応する quill のフォークがいくつかありました。私たちは、必要なすべてのコマンド
+に一箇所で簡単にアクセスできるようにしました。sns-quillのようなレポや他の内部フォークもQuillに統合されました。
+quillはリリースページからダウンロードできます。
+
+# 再デプロイcanister
+
+![Header image](../_assets/broken-car.png)
+
+もしあなたのcanister がアップグレード中にトラブったことがあるのなら、それはかなりフラストレーションのたまる経験かもしれません。
+まず最初に試せるのは、canister コードをアンインストールすることです。これでcanister から WASM が削除され、
+は空のステートとなります。注意 - WASM がアンインストールされると、あなたのcanister にはユーザがアクセスできなくなります。
+高い稼働時間が必要な場合は、この方法は最適ではないかもしれません。
+
+    dfx canister uninstall-code [CANISTER NAME or ID]
+
+もちろん、このコマンドを発行するときはcanisterの実際の名前または ID を使用してください。
+
+canister コードがアンインストールされたら、再デプロイを試してください。これで WASM がソースからビルドされ、
+あなたの空のcanister にデプロイされます。
+
+    dfx deploy --upgrade-unchanged [CANISTER NAME or ID]
+
+`--upgrade-unchanged` フラグを使うと、DFX はcanister WASM を強制的にインストールし、新しい
+WASM を古いものと比較するチェックをスキップします。
+
+> canister をアップグレードする場合、`dfx deploy` と`dfx canister install` は、wasm ハッシュが変更されていなければ、.wasm
+> のインストールをスキップします。これにより、たとえば dfx のデプロイごとに、すべての
+> アセットの安定したメモリを往復する必要がなくなります。この引数を渡すことで、dfx は
+> そのハッシュが既にインストールされている wasm と一致しても、代わりにその wasm をインストールします。
+
+このトラブルシューティングがInternet Computer を構築する際に役立つことを願っています！
+
+## 変なChatGPT
+
+![Header image](../_assets/chatgpt.png)
+
+New York Timesの不気味な記事で、コラムニストのKevin Roose氏が、OpenAIのChatGPTを搭載した新しい
+Bing検索エンジンに統合されたチャットボットと会話をしています。
+ご存じない方のために説明すると、ChatGPTはOpenAIによって開発された言語モデルです。基本的には、書籍、記事、ウェブページなどの人間の言語の大規模なデータセットで訓練されたコンピュータプログラム
+。この
+トレーニングを通じて、ChatGPTは人間のような言語を理解し、生成することを学び、今ではチャットボットのように、書かれたテキストを通じて
+人間と対話するために使用することができます。
+
+マイクロソフトは、OpenAIとのパートナーシップを開発し、最近、このモデルを
+Bing検索エンジンに統合しました。Bingにはチャット機能がついており、会話形式で検索エンジンと対話することができます
+。
+
+ケビン・ルースはチャットボットと数時間過ごし、一転して、このモデルに非常に
+奇妙な応答を生成させることに成功し、最終的に彼への愛を宣言しました。ネタバレはしません。
+
+<!---
+
 
 # Developer weekly update: February 13, 2023
 
@@ -74,3 +139,5 @@ Kevin Roose spent a couple of hours with the chatbot and in a turn of events, ma
 strange responses, and ultimately, declare its love for him. I won’t spoil the read for you.
 
 
+
+-->

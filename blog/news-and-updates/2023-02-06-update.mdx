@@ -1,4 +1,5 @@
 ---
+
 title: Motoko update February 6, 2023
 description: Today we’ll be talking about a new language feature that lets you catch send errors, and a beta release of Candid! Bonus section about a podcast on designing languages for smart contract development.
 tags: [New features]
@@ -6,6 +7,75 @@ image: /img/blog/motoko-sentinel.png
 authors:
   - name: Kento Sugama
 ---
+# Motoko 更新2023年2月6日
+
+![Header image](../_assets/motoko-sentinel.png)
+
+Motoko 開発者の皆さん、こんにちは！
+
+最新のMotoko アップデート・ポストへようこそ。今後は隔週で更新を行う予定です。
+
+Motoko チームからの前回の更新記事を見逃した方は、[こちら](https://forum.dfinity.org/t/motoko-package-management-and-code-blocks-weekly-motoko-updates/18142)
+をご覧ください！前回は
+ Motoko エコシステムにおけるパッケージ管理の改善に関する継続的な取り組みと、言語機能としてのコードブロック
+のレビューについて話しました。
+
+今日は、送信エラーをキャッチできる新しい言語機能と Candid のベータ版リリースについてお話します！ボーナス
+スマートコントラクト開発のための言語設計に関するポッドキャストについてのセクション。
+
+## メッセージ送信のエラーをキャッチ Motoko 0.8.0\!
+
+先週、Motoko の新バージョンをリリースしました。これには、メッセージ送信
+の失敗をキャッチできる新しい言語機能が含まれています。
+
+これまでは、canister メッセージの送信に失敗すると、
+失敗から回復するチャンスを与えずにプログラムがトラップしていました。このような失敗は、canister リソースが不足しているために起こります。典型的な原因は、宛先のcanister の着信メッセージ
+のキューが一杯であること、または、canister を呼び出す側のcycles に、
+の呼び出しに必要な十分な費用がないことです。(このようなエラーが発生するケースは、他にもいくつかあります。
+詳細は[こちら](https://github.com/dfinity/motoko/pull/3630))。
+
+トラップの代わりに、これらのエラーは`Error` として投げられるようになりました！具体的には、
+new`ErrorCode #call_error { err_code = n }` でスローされます。`n` は、基盤となるプラットフォームが返すエラーコードです。
+
+したがって、これらのエラーは`try catch` 式でキャッチして処理することができ、
+これらのメッセージを回復したり、適当にフェイルさせたりすることができます！
+
+## 新しい Candid: ベータ版リリース
+
+言語チームはCandidの新しいベータリリースもリリースしました！この
+プロジェクトを担当してくれた @chenyan に感謝します。
+
+新しいバージョンには、いくつかの変更を含むいくつかの新機能が含まれています：
+
+まず、Candid は、バリアントタグが同じでなくても、オプションのバリアントタイプをデコードできるようになり、クライアントコードを壊すことなく
+のバリアントタイプをアップグレードできるようになりました。
+
+また、デシリアライザーは参照型に対してのみサブタイプのチェックを行うようになり、
+Candid 仕様 1.4 に完全に準拠するようになりました。同じ仕様は、先週リリースしたMotoko バージョン 0.8.0 にも実装されています。
+
+Rust開発者のために、Rust Candidの実装には、デシリアライズ時間やcanister バイナリ・サイズにおける
+の最適化など、大きな改善も含まれています。
+
+ベータリリースは[crates.ioに](https://crates.io/crates/candid/0.9.0-beta.2)アップされています。本リリースまでに
+で遭遇したバグがあればお知らせください！
+
+## ボーナス：a16zポッドキャスト - スマート・コントラクト言語設計
+
+先週、Andreessen Horowitzによって、スマート
+コントラクトを記述するための言語設計に関するポッドキャストのエピソードがリリースされました！
+
+https://open.spotify.com/episode/20pTy6Y344MKNySYJZov27 こちらからご覧いただけます。
+
+このエピソードでは、Web2とWeb3プログラミングの課題の違いと、その違いに対応した言語（
+）の設計方法について語っています。個人的に洞察に満ちた内容だったので、ここでシェアしようと思います :)このポッドキャストを私たちのチームと共有してくれた
+@diegop に感謝します。
+
+## それではまた次回！
+
+\-DFINITY 言語チーム
+
+<!---
+
 
 # Motoko update: February 6, 2023
 ![Header image](../_assets/motoko-sentinel.png)
@@ -74,3 +144,5 @@ that accommodate those differences. Personally, I found it insightful so I thoug
 – DFINITY Languages team
 
 
+
+-->

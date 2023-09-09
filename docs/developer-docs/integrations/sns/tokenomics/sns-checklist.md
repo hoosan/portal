@@ -1,6 +1,181 @@
 ---
+
 sidebar_position: 2
 ---
+# SNS準備チェックリスト
+
+:::caution
+本ガイドラインは、情報提供のみを目的としており、時間の経過とともに
+適切に変更される可能性があります。
+SNSの立ち上げを計画しているプロジェクトに一般的なガイダンスを提供することを目的としていますが、そのような立ち上げの準備として
+、取るべき行動項目の決定的なリストとして解釈されるべきではありません。このガイドに従うことは、SNS
+の立ち上げの成功を保証するものではありません。最終的には、このガイドに従うこと、および/または
+SNSを立ち上げることは、自己責任で行ってください。
+::：
+
+:::info
+NNSは、1つの提案だけでSNSを立ち上げることができる新しいフローを承認しました。
+旧フローでは、2つのNNSと1つのSNSの提案が必要でした。
+これが現在推奨されているSNSの立ち上げフローであるため、このページや他のページでは、新しい「1つの提案」のフローに焦点を当てています。
+とはいえ、旧フローで開始したプロジェクトが、すでにテストを開始しているなどの理由で、この経路を継続したい場合は、旧レガシーフローもまだ利用可能です。このようなプロジェクトは、旧フローに従った詳細な立ち上げステージと、これらのステージを通過するために取るべき具体的なアクションを、[こちらで](../launching/launch-steps.md)ご覧いただけます。
+::：
+
+# 1.ドキュメンテーション/準備
+
+## 1.1.トークノミクス仕様
+
+### 1.1.1.トークン・ユーティリティ
+
+DAO のトークンが、ガバナンスへの参加、DAO がガバナンスするdapp が提供するサービスへの積極的な参加への報酬、dapp と DAO の成長への貢献への報酬のために、どのようなユースケースで使われるかを簡潔に定義します。
+
+### 1.1.2.初期トークン割り当て
+
+最初のトークン割り当て、つまりどのグループ/アカウントがどれだけのトークンを受け取るべきかを定義するために、開発者は以下の主要なブロックを考慮することができます：DAO treasury、decentralization swap、seed funders、funding development team。トークンの割り当てに関する詳細は、[tokenomics intro](./tokenomics-intro.md) を参照してください。開発者とシードチームの権利確定期間に関する情報も含めてください。
+
+### 1.1.3.議決権
+
+設立時の議決権の分配方法、潜在的な攻撃ベクトル、および議決権が時間の経過とともにどのように変化するかについての情報を提供してください。
+
+発生時にスワップ参加者が議決権の過半数を持つことがベストプラクティスと考えられています。もし開発者とシード投資家が一緒に過半数を持つのであれば、なぜこの2者が独立し ているのかを明確に示すべき。
+
+### 1.1.4.資金調達目標
+
+分散化スワップについて、最低・最大の資金調達目標が定義されていること。資金使途（チームの増強計画など）についての情報も追加してください。
+
+### 1.1.5.SNSトークノミクスツール
+
+[SNS tokenomics ツールを](https://docs.google.com/spreadsheets/u/0/d/1eSxkJl94jPt63CdOXH6ROy-WSkacW6P4qcAKMLrfBPc/edit)使用して、選択したトークンの量、トークンの初期分配、溶解遅延などを分析し、文書化します。ツールとトレーニングデッキは、[このウィキページに](https://wiki.internetcomputer.org/wiki/How-To:_SNS_tokenomics_configuration)あります。
+
+## 1.2.技術アーキテクチャ/ホワイトペーパー/プロジェクトロードマップ
+
+### 1.2.1.技術アーキテクチャ
+
+テクニカルアーキテクチャは、dapp の概要を示し、dapp がどのように機能するかを説明するものです。dapps の中には、チームが開発・保守するオフチェーンコンポーネントや、サードパーティコンポーネントに依存するものがあります。DAOによって制御されないコンポーネントの使用も、依存関係を示すために含まれるべきです。
+
+### 1.2.2.ホワイトペーパー
+
+ホワイトペーパーは、dapp についての情報、アーキテクチャ、SNS の立ち上げによるゴール、トークノミクス、分散化提案に投票するコミュニティに関連するその他の情報を提供する必要があります。dapp が SNS の立ち上げから何を得られるかを明確にする必要があります。ヒントとして、OpenChatのホワイトペーパーは[こちら](https://oc.app/whitepaper)、Hot or Notのホワイト[ペーパーは](https://hotornot.notion.site/hotornot/Hot-or-Not-Whitepaper-c539179e51f44867979f4372e4635f59)こちらをご覧ください。
+
+### 1.2.3.プロジェクトのロードマップ
+
+ロードマップは、dapp 、SNS立ち上げ後の計画を示すものです。ロードマップは、dapp の背後にいるチーム/開発者がdapp のために持っているビジョンと、彼らが SNS のローンチ後も取り組みたいことを示すべきです。[OpenChatのロードマップを](https://oc.app/roadmap)参考にしてください。
+
+## 1.3.依存関係の開示
+
+SNS 立ち上げ時にdapp を完全に分散化することは不可能かもしれません。dapp はオフチェーンサービスやSMS/テキストゲートウェイのようなサードパーティサービスプロバイダに依存している可能性があります。
+
+もしdapp が DAO によって管理できない何らかの依存関係を持つのであれば、コミュニティが潜在的なリスクを認識できるように、それらの依存関係は文書化されるべきです。可能であれば、これらのサービスをどのようにオンチェーン化し、DAOの管理下に置くかの計画も必要です。
+
+## 1.4.SNS設定ファイルの作成
+
+SNSは、初期パラメータを定義するNNSプロポーザルを使用して初期化されます。したがって、初期設定はNNS DAOによって承認されます。
+プロポーザルは.yaml設定ファイルから作成することができ、トークン名、トークン供給、トークン分配、取引手数料、ディゾルブ遅延などを定義します。
+
+初期パラメータについては[こちらで](./preparation.md)詳しく説明しています。
+定義が必要なすべてのパラメータを含むテンプレートは[こちらで](https://github.com/dfinity/ic/blob/master/rs/sns/cli/sns_init_template.yaml)、記入例は[こちらで](https://github.com/dfinity/sns-testing/blob/main/example_sns_init.yaml)ご覧いただけます。
+透明性と読みやすさのために、パラメータとトークンの割り当てを説明するコメントを設定ファイルに追加してください。
+
+restricted\_countries "パラメータは、次のような国コードの配列を取ります:`restricted_countries: [ "CH" ]` 。
+
+NNSによって承認されたパラメータとして定義された確認テキストは、ユーザーが分散スワップに参加する前に表示することができます。この確認テキストは次のように設定できます：`confirmation_text: "Please confirm that..."`
+
+NNSプロポーザルを提出する前に、ローカルで広範囲に設定をテストしてください。テストの詳細についてはセクション2を参照してください。
+
+## 1.5.NNSプロポーザルの作成
+
+<!-- OLD: As a part of the SNS launch process, two proposals must be created. The first proposal is for allowing a principle to create the SNS canisters, see Hot or Not’s [command](https://forum.dfinity.org/t/help-submit-the-sns-w-wallet-principal-id-to-be-whitelisted/20322/20) to create the first proposal.-->
+
+SNSの立ち上げプロセスの一環として、SNSの作成と分散スワップの開始をNNSに依頼するために、NNSプロポーザルを作成する必要があります。プロポーザルの作成方法については、[こちらを](../launching/launch-summary-1proposal.md)ご覧ください。
+
+トークノミクス（トークン配布、ガバナンス、分散スワップ）、dapp の詳細（オープンソース・コードへのリンク）、ホワイトペーパー、フォーラムでの議論へのリンク（ステップ 3.2 を参照）、その他コミュニティがdapp のために SNS を立ち上げるべきかどうかを判断するために関連するあらゆる情報を含めてください。
+
+準備プロセスの詳細については[ドキュメントを](./preparation.md)、立ち上げの仕組みの詳細については[このドキュメントを](../launching/index.md)参照してください。
+ドキュメントのページ「[SNS preeployment considerations](./predeployment-considerations.md)」には、ホワイトペーパー/提案書でカバーすべきトピックのリストがあります。DFINITYの投票については、この[フォーラムの投稿を](https://forum.dfinity.org/t/dfinitys-voting-on-upcoming-sns-launch-proposals/19543)参照してください。
+
+# 2.技術的な準備とテスト
+
+## 2.1.セキュリティレビュー
+
+一般に、リスクのある発見事項の修正を含むセキュリティレビューを実施することは、ベストプラクティスと考えられています。セキュリティのベストプラクティスに関するガイダンスは[こちら](../../../security/index.md)。セキュリティレビューがどの程度dapp に関連しているのか、また、該当する場合には、dapp に対してどのようなセキュリティレビューが実施されているのかを説明する必要があります。
+
+## 2.2.オープンソース
+
+dapp がまだオープンソース化されていない場合は、SNS の立ち上げ前、実際には分散化提案が作成される前にオープンソース化されるべきです。ソースコードがコミュニティと共有されていなければ、dapp は真の分散型とは言えません。コードをオープンソース化することで、コミュニティはSNSのローンチ前、そしてアップグレードが投票によって決定されるローンチ後に、dapp を評価する機会を得ることができます。コードを完全に可視化することなく、有意義な投票決定を下すことは困難です。また、可視化しなければ、投票前にコードを検証し、それがもたらす影響を評価することもできません。
+
+## 2.3.再現可能なビルドの作成
+
+コードをオープンソース化するのと同じ理由で、オープンソース化されたコードから再現可能なビルドを作成することが可能であるべきです。ビルドとデプロイの手順を提供することで、コミュニティはSNSの立ち上げ提案に投票する前にdapp 、コードを評価することができます。また、アップグレードに投票する必要がある分散化後は、投票前にコミュニティによってアップグレードを検証し、テストすることができます。
+
+ビルドとデプロイの手順をソースコードと一緒に提供します。理想的には、説明書はコードリポジトリのREADMEファイルの一部であり、そうでない場合は、説明書へのリンクをREADMEファイルで利用できるようにする必要があります。再現可能なビルドを作成するためには、ビルド環境が再現可能である必要があります。Dockerを使って再現可能なビルドを作成する方法については、[こちらの](../../../backend/reproducible-builds.md)ドキュメントを参照してください。
+
+## 2.4.SNS Testflightを使用して、メインネット上のSNSでdapp 。
+
+dapp 本番環境で SNS の起動を要求する前に、開発者はデプロイされたdapp’s の操作（例えば、dapp’s canisters のアップグレード）を SNS プロポーザル経由でテストすることを強くお勧めします。
+
+SNSプロポーザルによるcanisters のアップグレード、SNSプロポーザルによるアセットcanister コンテンツの更新テスト、その他の典型的なアップグレードおよび保守運用を必ずテストしてください。また、[cycles の管理戦略を](../managing/cycles-usage.md)確立し、canisters が枯渇しないようにしましょう。cycles テスト期間は長ければ長いほどよく、理想的には数週間です。
+
+開発者は、testflight SNS に登録されたdapp’s canisters を直接管理することができます。
+testflight は、ローカルのテスト環境でも、メインネット上のライブdapp でも行うことができます。メインネットに展開する場合、testflight SNSは、専用のSNSサブネットではなく、通常のアプリケーションサブネットに展開されます。
+
+メインネット上で SNS testflight を使用するには、`–network ic` パラメータを deploy コマンドに渡します。テストフライトを実行するための[ドキュメントは](../testing/testing-on-mainnet.md)、追加されたパラメータ（これもドキュメントで説明されています）を除いて、ローカルに展開する場合と同じです。
+
+セットアップ手順など、[メインネット上でのSNS Testflightの](../testing/testing-on-mainnet.md)テストに関する詳細については、ドキュメントを参照してください。
+
+## 2.5.SNSフロントエンドをdapp
+
+開発者はdapp に SNS 機能のフロントエンドを統合することができます。これにより、neuronの参加者がdapp のフロントエンドで直接提案に投票できるようになります。統合は、SNSを立ち上げる前に、SNS TestflightまたはローカルのSNSテストで十分にテストしてください。
+
+## 2.6.SNSの立ち上げをローカルでテスト
+
+SNSを使用したすべてのdapp （2.4節で説明）操作の包括的なテストに加え、SNSのローンチプロセスのローカルテストを実施することをお勧めします。そうすることで、NNSフロントエンドdapp を介して、ユーザーの視点からもSNSの初期トークンスワッププロセスを完全にシミュレートすることができます。テスト用にSNSをローカルにセットアップする方法の詳細は、こちらをご覧ください[1](https://github.com/dfinity/sns-testing).
+
+# 3.コミュニティ協議
+
+## 3.1.トークノミクス／ホワイトペーパー／ロードマップ／アーキテクチャの公開
+
+セクション1.1および1.2で作成された文書は、SNSのローンチに先駆けて公開されるべきです。これにより、dapp 、dapp の将来計画、技術アーキテクチャ、トークノミクスに関する透明性が提供されます。この情報は、dapp’s ウェブサイト、GitHub、または意味のある場所で共有することができます。
+
+## 3.2.コミュニティでの議論
+
+開発者は分散化計画についてコミュニティとフォーラムで議論することを強く推奨します。NNSの提案が作成される少なくとも2、3週間前にスレッドを立てることをお勧めします。そうすることで、コミュニティはあなたの計画について知り、質問し、SNSの立ち上げに対する信頼を築くことができます。十分な数の NNSneuronが提案に賛成票を投じない限り、SNS の初期化と分散化スワップは開始されません。
+
+共有することをお勧めします：
+
+- \[x\] 使用したinitファイル。[ここで](https://github.com/dfinity/ic/blob/master/rs/sns/cli/sns_init_template.yaml)テンプレートを見つけることができます。
+- \[x\] 分散化とトークノミクスの完全な説明を含むホワイトペーパーを提供してください。
+- \[x\]dapp アーキテクチャの技術的な分解をcanisters 、ソースコード、ドキュメントとして提供し、コミュニティがdapp がスワップ後に実際に分散化されたアプリケーションになることを検証できるようにします。
+- \[x\]dapp について、どの程度までセキュリティレビューが関連すると考えられていたのか、また、dapp について、どのようなセキュリティレビューが実施されたのかを説明してください。
+
+このアイデアは、コミュニティに情報を提供することで、コミュニティが分散化の観点からサポートしているものを検証できるようにすることです。
+
+この[フォーラムの投稿は](https://forum.dfinity.org/t/dfinitys-voting-on-upcoming-sns-launch-proposals/19543)、DFINITY 、投票する際の観点からの最初の考えを示しています。
+
+## 4.SNS立ち上げワークフロー
+
+SNS 立ち上げに含まれるすべてのステージと、これらのステージを有効にするために必要なアクションのより詳細な[説明を](../launching/launch-summary-1proposal.md)ご覧ください[。](../launching/launch-steps-1proposal.md)
+
+## 4.1.Dapp コントロール・ハンドオーバー
+
+SNS立ち上げのためのNNS提案の提出とともに、dapp の開発者は、canister の追加コントローラとしてNNSルートdapp を設定することにより、dapp をNNSに引き渡します。
+
+プリンシパルが変更されるため、引き渡しがdapp 全体に対してどのような影響を与えるかを検討します。例えば、資産canisters のアクセス権を変更する必要がありますか？SNS を立ち上げる前に、dapp のすべての機能を徹底的にテストする必要があります。SNS testflightによるテストについては、前述を参照してください。
+
+## 4.2.分散化提案の提出
+
+この提案書により、SNSの立ち上げが開始されます。手順1.4で作成した提案内容を用いて、NNS提案書を作成します。その方法は、[立ち上げステージに必要なアクションのドキュメントを](../launching/launch-steps-1proposal.md)参照してください。
+
+## 4.3.カスタムSNS関数の設定
+
+SNSプロポーザルを介してSNS管理canisters でコードを実行するには、canisters 、2つのパブリック関数（
+ドキュメントではジェネリック関数とも呼ばれる）を公開する必要があります。最初の関数は、プロポーザルのペイロードを検証してレンダリングする検証関数（
+）であり、2番目の関数は、プロポーザルのペイロードを指定してアクションを実行する実行関数（
+）です。
+
+ジェネリック関数を使用するには、まずSNSプロポーザルを提出し、これらの関数をSNSガバナンスに登録する必要があります。プロポーザルが採用されると、指定されたバイナリペイロードでそれらを実行するプロポーザルを提出することができます。
+プロポーザルの詳細については、[SNSの管理方法のドキュメントに](../managing/making-proposals.md)記載されています。
+
+<!---
+
 
 # SNS preparation checklist
 
@@ -72,7 +247,7 @@ A confirmation text, defined as a parameter that is approved by the NNS, can be 
 Test the configuration extensively locally before submitting the NNS proposal. See section 2 for more information about testing.
 
 ## 1.5. Create NNS proposals
-<!-- OLD: As a part of the SNS launch process, two proposals must be created. The first proposal is for allowing a principle to create the SNS canisters, see Hot or Not’s [command](https://forum.dfinity.org/t/help-submit-the-sns-w-wallet-principal-id-to-be-whitelisted/20322/20) to create the first proposal.-->
+<!-- OLD: As a part of the SNS launch process, two proposals must be created. The first proposal is for allowing a principle to create the SNS canisters, see Hot or Not’s [command](https://forum.dfinity.org/t/help-submit-the-sns-w-wallet-principal-id-to-be-whitelisted/20322/20) to create the first proposal.-!->
 
  As a part of the SNS launch process, an NNS proposal must be created to ask the NNS to create an SNS and start a decentralization swap. You can find the details about how to create such a proposal [here](../launching/launch-summary-1proposal.md).
 
@@ -150,3 +325,5 @@ an action given the proposal payload.
 
 To use generic functions, you must first submit an SNS proposal to register these functions with SNS governance. Once the proposal is adopted, you can submit proposals to execute them with a given binary payload.
 You can find more details on proposals in the [documentation how to manage SNSs](../managing/making-proposals.md).
+
+-->
