@@ -9,28 +9,6 @@ const sidebars = {
           label: "Tutorials introduction",
           id: "tutorials/index",
         },
-        {
-          type: "doc",
-          label: "Deploy your first dapp in 5 minutes",
-          id: "tutorials/deploy_sample_app",
-        },
-        {
-          type: "category",
-          label: "Create your first dapp in 10 minutes",
-          link: {
-            type: "doc",
-            id: "tutorials/create_your_first_app/index",
-          },
-          items: [
-            "tutorials/create_your_first_app/backend-overview",
-            "tutorials/create_your_first_app/creating-project",
-            "tutorials/create_your_first_app/adding-variables-and-methods",
-            "tutorials/create_your_first_app/deploying-locally-using-candid-ui",
-            "tutorials/create_your_first_app/storing-data",
-            "tutorials/create_your_first_app/add-frontend",
-            "tutorials/create_your_first_app/wrapup",
-          ],
-          },
          {
           type: "category",
           label: "Developer journey",
@@ -53,6 +31,22 @@ const sidebars = {
                 "tutorials/developer-journey/level-0/intro-canisters",
                 "tutorials/developer-journey/level-0/intro-languages",
                 "tutorials/developer-journey/level-0/intro-dfx"
+              ],
+            },
+            {
+              type: "category",
+              label: "Level 1: Space cadet",
+              link: {
+                type: "doc",
+                id: "tutorials/developer-journey/level-1/index",
+            },
+              items: [
+                "tutorials/developer-journey/level-1/1.1-live-demo",
+                "tutorials/developer-journey/level-1/1.2-motoko-lvl1",
+                "tutorials/developer-journey/level-1/1.3-first-dapp",
+                "tutorials/developer-journey/level-1/1.4-using-cycles",
+                "tutorials/developer-journey/level-1/1.5-deploying-canisters",
+                "tutorials/developer-journey/level-1/1.6-managing-canisters",
               ],
             },
           ],
@@ -292,7 +286,7 @@ const sidebars = {
               label: "Troubleshooting resources",
               id: "developer-docs/backend/troubleshooting",
             },
-          ], 
+          ],
         },
     {
       type: "category",
@@ -339,6 +333,16 @@ const sidebars = {
               type: "doc",
               label: "Large web assembly modules",
               id: "developer-docs/production/larger-wasm",
+            },
+            {
+              type: "doc",
+              label: "Sharing links to dapps",
+              id: "developer-docs/production/social-sharing",
+            },
+                        {
+              type: "doc",
+              label: "Topping up canisters",
+              id: "developer-docs/production/topping-up-canister",
             },
               ],
       },
@@ -506,7 +510,7 @@ const sidebars = {
         "tokenomics/nns/neurons-fund",
         "tokenomics/nns/nns-staking-voting-rewards",
     ],
-    }, 
+    },
     {
         type: "category",
         label: "Service Nervous System (SNS)",
@@ -573,6 +577,8 @@ const sidebars = {
                   id: "developer-docs/integrations/sns/launching/index",
                 },
                 items: [
+                  "developer-docs/integrations/sns/launching/launch-summary-1proposal",
+                  "developer-docs/integrations/sns/launching/launch-steps-1proposal",
                   "developer-docs/integrations/sns/launching/launch-summary",
                   "developer-docs/integrations/sns/launching/launch-steps",
                 ],
@@ -898,7 +904,7 @@ const sidebars = {
       ],
     },
   ],
-  
+
 };
 
 module.exports = sidebars;
