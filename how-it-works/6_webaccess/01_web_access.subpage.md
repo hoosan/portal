@@ -62,7 +62,7 @@ Internet Computer 上で動作するdapps は、クローラーがオンチェ�
 
 [![Watch youtube video](https://i.ytimg.com/vi/b_nc6yx5_DQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=b_nc6yx5_DQ)
 
-<!---
+/**
 
 
 # Smart Contracts serve the web
@@ -86,7 +86,7 @@ Boundary nodes route canister queries to appropriate subnet.
 </figcaption>
 </figure>
 
-<!-- After a developer deploys an app as a canister, he gets the canister id of the created canister. Any user can then access the website for the app at a URL of the form http://\<canister id\>.ic0.app or http://\<canister id\>.raw.ic0.app. When the user enters the above URL on his browser, the browser contacts DNS service, which resolves the ic0.app domain to an IP address of a boundary node. The browser then makes a HTTP request to the boundary node.  -!->
+<!-- After a developer deploys an app as a canister, he gets the canister id of the created canister. Any user can then access the website for the app at a URL of the form http://\<canister id\>.ic0.app or http://\<canister id\>.raw.ic0.app. When the user enters the above URL on his browser, the browser contacts DNS service, which resolves the ic0.app domain to an IP address of a boundary node. The browser then makes a HTTP request to the boundary node.  -->
 
 ## Deploying web apps on the Internet Computer
 
@@ -122,4 +122,4 @@ The dapps running on the Internet Computer seamlessly integrate into the Web 2.0
 
 [![Watch youtube video](https://i.ytimg.com/vi/b_nc6yx5_DQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=b_nc6yx5_DQ)
 
--->
+*/

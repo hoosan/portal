@@ -52,7 +52,7 @@ Sidekick はInternet Computer 上で動作するdapp で、数行のコードか
 
 - [ライブcanister](https://ffgig-jyaaa-aaaae-aaaoa-cai.raw.icp0.io) 。
 
-<!---
+/**
 # Hackathon projects
 
 Developers from around the world are participating in hackathons, building dapps, tools and other types of projects on the IC. Get inspired, and see the source code of some of the winning projects.
@@ -106,4 +106,4 @@ Sidekick is a dapp running on the Internet Computer that can build canisters fro
 -   [See code on GitHub](https://github.com/blynn/sidekick).
 
 -   [Live canister](https://ffgig-jyaaa-aaaae-aaaoa-cai.raw.icp0.io).
--->
+*/

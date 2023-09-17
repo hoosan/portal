@@ -15,7 +15,7 @@ Internet Computer 、ビットコインの統合は2つの柱から成り立っ�
 
 [より深く](/how-it-works/bitcoin-integration/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/btc-content.600x300.webp)
@@ -29,4 +29,4 @@ and to transmit Bitcoin transactions originating from canisters to the Bitcoin n
 
 [Go deeper](/how-it-works/bitcoin-integration/)
 
--->
+*/

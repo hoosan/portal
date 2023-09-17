@@ -20,7 +20,7 @@ canisters のWasmヒープは4GiBに制限されています。この制限は�
 開発者に潜在的なメモリ問題を警告し、
 canister をより少ないメモリを使用するバージョンに安全にアップグレードできるようにします。
 
-<!---
+/**
 
 
 The Wasm heap of canisters is limited to 4GiB. The limit is fundamental and
@@ -36,4 +36,4 @@ the limit, it will receive an out-of-memory error. This will alert the
 developer to the potential memory issue and allow them to safely upgrade the
 canister to a version that uses less memory.
 
--->
+*/

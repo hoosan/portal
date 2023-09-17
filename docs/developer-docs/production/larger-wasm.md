@@ -16,7 +16,7 @@ dfx canister install my-canister --wasm my-canister.wasm.gz
 
 圧縮は現在`dfx deploy` ではサポートされていません。
 
-<!---
+/**
 # Large web assembly modules
 
 ## Overview
@@ -35,4 +35,4 @@ dfx canister install my-canister --wasm my-canister.wasm.gz
 
 Compression is currently not supported by `dfx deploy`.
 
--->
+*/

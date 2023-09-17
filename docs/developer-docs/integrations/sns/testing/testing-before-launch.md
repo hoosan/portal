@@ -43,7 +43,7 @@ SNSを立ち上げる前に、徹底的にテストすることをお勧めし�
 
 dappSNS**testflightで**使われるモックSNSは、dapp の分散化後のライフcycle がどのように見えるかを開発者に提供します。
 
-<!---
+/**
 
 
 # SNS testing before launch
@@ -86,4 +86,4 @@ Among other things, here are some examples of issues developers find after runni
 
 The mock SNS used in a SNS testflight gives developers the ability to see how post-decentralization lifecycle of a dapp looks like, but still provides a way for a developer to keep control of their dapp. **Therefore, developers are encouraged to run and perform an SNS testflight on the mainnet, potentially for multiple days or weeks, to ensure that all aspects have been covered.**
 
--->
+*/

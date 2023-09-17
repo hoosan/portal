@@ -132,7 +132,7 @@ Bitcoin を使用した独自のアプリの構築を開始するには、以下
 - [GitHub リポジトリ](https://github.com/dfinity/ic/tree/master/rs/bitcoin/ckbtc/minter)。
 - [ローカル開発](./local-development.md)。
 
-<!---
+/**
 # Chain-key Bitcoin (ckBTC)
 
 ## Overview
@@ -254,4 +254,4 @@ To start building your own apps with Bitcoin see the following tutorials:
 - [GitHub repository](https://github.com/dfinity/ic/tree/master/rs/bitcoin/ckbtc/minter).
 - [Local development](./local-development.md).
 
--->
+*/

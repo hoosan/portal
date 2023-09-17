@@ -48,7 +48,7 @@ Canister コントローラは、自発的に分散化されていない場合�
 
 言うまでもなく、信頼の要件は、canister を制御する SNS に移され、そこではコード検査と再現性に関するすべての考慮事項が適用されます。
 
-<!---
+/**
 # Trust in canisters
 
 ## Overview
@@ -99,4 +99,4 @@ A more complex, but powerful approach, is to set the sole controller of the cani
 
 Needless to say, the trust requirements are moved to the SNS controlling the canister where all of the considerations regarding code inspection and reproducibility apply.
 
--->
+*/

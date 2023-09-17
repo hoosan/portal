@@ -328,7 +328,7 @@ CanisterInvoiceCanister の機能を理解するには、E2E テストスイー�
 
 を十分に確認し、十分な注意と準備をしてください。詳細は[設計ドキュメントを](https://github.com/dfinity/examples/blob/master/motoko/invoice-canister/docs/DesignDoc.md)参照してください。
 
-<!---
+/**
 # Invoice canister
 
 ## Overview
@@ -668,4 +668,4 @@ and proceed with enough caution and preparation. See the [design doc](https://gi
 
 
 
--->
+*/

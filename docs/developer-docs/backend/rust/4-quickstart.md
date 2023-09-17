@@ -107,7 +107,7 @@ dfxを使用してコマンドラインからローカルにデプロイされ�
 
 では、次のステップで、dfxの記述と[デプロイについて](5-deploying.md)詳しく見ていきましょう。[ canisters](5-deploying.md)
 
-<!---
+/**
 # 4: Rust quick start
 
 ## Overview
@@ -232,4 +232,4 @@ When dfx is started again in the future, it should be started with the `dfx star
 
 Now, let's take a closer look into writing and [deploying canisters](5-deploying.md)
 
--->
+*/

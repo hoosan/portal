@@ -41,7 +41,7 @@ Internet Computer についてもっと知る : internetcomputer.org
 
 Internet Computer でビルドを開始 :[Developer Docs](https://internetcomputer.org/docs/current/home).
 
-<!---
+/**
 
 
 
@@ -82,4 +82,4 @@ Follow the tech on Twitter: @DFINITYDev
 
 Start building on the Internet Computer: [Developer Docs](https://internetcomputer.org/docs/current/home).
 
--->
+*/

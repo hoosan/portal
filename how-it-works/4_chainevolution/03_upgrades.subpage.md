@@ -56,7 +56,7 @@ Proposal to upgrade a subnet to a new replica version. The status of all proposa
 
 [![Watch youtube video](https://i.ytimg.com/vi/oEEPLJVX5DE/maxresdefault.jpg)](https://www.youtube.com/watch?v=oEEPLJVX5DE)
 
-<!---
+/**
 
 
 # Blockchain Protocol Upgrade
@@ -110,4 +110,4 @@ Suppose a protocol upgrade of the subnet is supposed to be done at the beginning
 
 [![Watch youtube video](https://i.ytimg.com/vi/oEEPLJVX5DE/maxresdefault.jpg)](https://www.youtube.com/watch?v=oEEPLJVX5DE)
 
--->
+*/

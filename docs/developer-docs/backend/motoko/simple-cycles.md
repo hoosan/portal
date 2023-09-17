@@ -205,7 +205,7 @@ cycles での作業に関する詳細情報をお探しの場合は、以下の�
 
 次のステップでは、[ actor を](define-an-actor.md) [使ったクエリについて](define-an-actor.md)説明します。
 
-<!---
+/**
 # 13: Accepting cycles from a wallet
 
 ## Overview
@@ -448,4 +448,4 @@ If you are looking for more information about working with cycles, check out the
 ## Next steps
 
 In the next step, we'll cover [querying using an actor](define-an-actor.md).
--->
+*/

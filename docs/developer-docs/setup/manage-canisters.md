@@ -319,7 +319,7 @@ canister を削除すると、canister 識別子、コード、ステート が�
 
 - ICで使用される様々な用語の定義については、[IC用語集を](../../references/glossary.md)参照してください。
 
-<!---
+/**
 # Managing canisters
 
 ## Overview
@@ -605,4 +605,4 @@ To delete all canisters for a project:
 
 -   [IC glossary](../../references/glossary.md) to learn the definitions of various terms used within the IC. 
 
--->
+*/

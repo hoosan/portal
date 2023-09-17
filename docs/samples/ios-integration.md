@@ -112,7 +112,7 @@ IOSアプリは、リモートAPNサーバーからの通知を受信できる�
 
 詳細については、[README ファイルを](https://github.com/dfinity/examples/blob/master/motoko/ios-notifications/README.md)参照してください。
 
-<!---
+/**
 # IOS integration
 
 ## Overview
@@ -231,4 +231,4 @@ These are the steps to show an IOS notification:
 
 For further details, please refer to the [README file](https://github.com/dfinity/examples/blob/master/motoko/ios-notifications/README.md).
 
--->
+*/

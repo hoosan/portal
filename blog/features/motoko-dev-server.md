@@ -174,7 +174,7 @@ CI=true mo-dev --generate --deploy
 
 お読みいただきありがとうございました。ありがとうございました！
 
-<!---
+/**
 
 
 # Announcing the Motoko Dev Server: live-reloading for Web3 dapps
@@ -346,4 +346,4 @@ Otherwise, consider submitting a request on our [Developer Experience Feedback B
 
 Thanks for reading. Cheers!
 
--->
+*/

@@ -18,7 +18,7 @@ Internet Computer スマートコントラクトのメッセージを実行す�
 アップデートメッセージ、ハートビート、タイマーの命令上限は近い将来300億命令まで引き上げられる[予定](https://forum.dfinity.org/t/deterministic-time-slicing/10635)です。
 ::：
 
-<!---
+/**
 # Instruction Limits
 
 ## Overview
@@ -38,4 +38,4 @@ The instruction limit depends on the message type as shown in the following tabl
 The instruction limit for update messages, heartbeats, and timers is [planned](https://forum.dfinity.org/t/deterministic-time-slicing/10635) to be raised to 30 billion instructions in near future.
 :::
 
--->
+*/

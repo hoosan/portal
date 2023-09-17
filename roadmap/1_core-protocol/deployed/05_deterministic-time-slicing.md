@@ -15,7 +15,7 @@ in_beta: true
 このようなメッセージの命令上限が50億命令から200億命令に増加しました。
 「設定可能なワズム・ヒープ上限」機能が出荷された後、さらに増加する予定です。
 
-<!---
+/**
 
 
 Deterministic time slicing allows for long(er) running, multi-round computations by suspending the execution at the end of one round and resuming it in the next.
@@ -25,4 +25,4 @@ All messages except for queries are automatically sliced and executed in multipl
 The instruction limit for such messages has been increased from 5 billion instructions to 20 billion instructions.
 Further increases will follow after the "Configurable Wasm Heap Limit" feature ships.
 
--->
+*/

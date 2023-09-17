@@ -69,7 +69,7 @@ dapp で定義されている関数呼び出しと型のリストを確認しま
 
 次のステップでは、[スケーラブルなdapp の例を](scalability-cancan.md)探ります。
 
-<!---
+/**
 # 17: Using the Candid UI to test functions in a browser
 
 ## Overview
@@ -151,4 +151,4 @@ For example, if a function takes an array, you might need to specify the number 
 ## Next steps
 
 In the next step, we'll explore a [scalable dapp example](scalability-cancan.md).
--->
+*/

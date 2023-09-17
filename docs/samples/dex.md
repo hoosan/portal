@@ -151,7 +151,7 @@ ICの設計は、より複雑なオンチェーン計算を可能にします。
 
 - 待機後にパニックを発生させない：パニックが発生すると、ステートがロールバックされます。これは、交換の正しさに問題を引き起こす可能性があります。
 
-<!---
+/**
 # Decentralized exchange (DEX) sample
 
 ## Overview
@@ -309,4 +309,4 @@ To trade tokens with yourself, you can open a second incognito browser window.
 
 -   No panics after await: when a panic happens, the state gets rolled back. This can cause issues with the correctness of the exchange.
 
--->
+*/

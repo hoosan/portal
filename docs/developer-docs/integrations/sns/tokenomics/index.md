@@ -32,7 +32,7 @@ SNSの立ち上げには、多くの非技術的・技術的な準備ステッ�
 したがって、この2つのトピックについては、以下の別々のセクションで説明します。
  （[SNSの統合と](../integrating/index.md) [SNSのテストを](../testing/testing-before-launch.md)参照）。
 
-<!---
+/**
 # Preparing and SNS launch
 ## Overview
 Launching an SNS entails many non-technical and technical preparations steps.
@@ -67,4 +67,4 @@ later in the SNS lifecycle.
 Therefore, these two topics are discussed in separate sections below
 (see [SNS integration](../integrating/index.md) and [SNS testing](../testing/testing-before-launch.md)).
 
--->
+*/

@@ -143,7 +143,7 @@ docker run \
 
 `rosetta-api` はあなたのledgerインスタンスに接続され、使用する準備ができています。Rosettaトークンの転送操作については、[トークンの転送の](../rosetta/transfers)記事をお読みください。
 
-<!---
+/**
 # Deploy new token
 
 ## Overview
@@ -284,4 +284,4 @@ The output should look like the following:
 
 `rosetta-api` is connected to your ledger instance and ready to be used. Read the [transfers tokens](../rosetta/transfers) article to learn about Rosetta token transfer operations.
 
--->
+*/

@@ -11,11 +11,11 @@ is_community: true
 
 IC wiki: https://wiki.internetcomputer.org/wiki/Node\_provider\_hardware
 
-<!---
+/**
 
 
 Components of the first replica node hardware generation are becoming obsolete. By providing a second generation hardware specification, node providers will be able to buy new replica nodes. The new specification is vendor-independent and include new features such as an SEV-enabled CPU. The specification is described in detail on the internet computer wiki, and has been validated so far for two specific configurations (Asus and Dell). In addition, the first nodes based on this second generation hardware specification have been deployed by independent node providers on the IC network.
 
 IC wiki: https://wiki.internetcomputer.org/wiki/Node_provider_hardware
 
--->
+*/

@@ -212,7 +212,7 @@ HTTP outcallsリクエストのためのcycles のコストには、固定部分
 
 ドキュメントにまだ記載されていない問題が発生した場合、またはエンジニアがより効果的にこの機能を使用できるようにドキュメントの改善提案がある場合は、canister HTTP リクエストの[フォーラムトピックで](https://forum.dfinity.org/t/enable-canisters-to-make-http-s-requests/9670)お知らせください。
 
-<!---
+/**
 # HTTPS outcalls: technology overview
 
 ## Overview
@@ -408,4 +408,4 @@ The current pricing is defined to be rather conservative (expensive) and prices 
 
 If you are experiencing issues that are not yet described in the documentation or have other suggestions for improvement of the documentation that may help engineers use the feature more effectively, please let us know about it in the [forum topic](https://forum.dfinity.org/t/enable-canisters-to-make-http-s-requests/9670) for canister HTTP requests.
 
--->
+*/

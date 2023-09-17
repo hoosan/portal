@@ -43,7 +43,7 @@ HTTPコールの大半は、Web 2.0データを読み取るための`GET` コー
   - Rust で HTTP[POST](https://github.com/dfinity/examples/tree/master/rust/send_http_post)リクエストを行うサンプルコード
   - で HTTP[POST](https://github.com/dfinity/examples/tree/master/motoko/send_http_post)リクエストを行うサンプルコード[ Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_post)
 
-<!---
+/**
 # HTTPS outcalls
 
 ## Overview
@@ -83,4 +83,4 @@ We expect the majority of HTTP calls to be `GET` calls for reading Web 2.0 data,
     * Sample code for making [HTTP GET requests in Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_get) 
     * Sample code for making [HTTP POST requests in Rust](https://github.com/dfinity/examples/tree/master/rust/send_http_post) 
     * Sample code for making [HTTP POST requests in Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_post)
--->
+*/

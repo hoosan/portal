@@ -26,7 +26,7 @@
 
 私たちはベストプラクティスのコレクションを提供します。私たちは、これがInternet Computer 上のdapps のセキュリティを向上させるために有用であると考えていますが、このようなリストが完全であることはなく、潜在的なセキュリティ上の懸念をすべてカバーすることはないことを指摘しておきたいと思います。例えば、一般的なベストプラクティスではカバーできない、dapps のユースケースに非常に特化した攻撃ベクトルが常に存在します。したがって、ベストプラクティスに従うことは、セキュリティレビューを補完することはできても、置き換えることはできません。特に、セキュリティ上重要なdapps 場合には、セキュリティレビュー／監査を実施することを推奨します。さらに、ベストプラクティスは、現在のところ、リスクや優先順位に従って順序付けされていないことに注意してください。
 
-<!---
+/**
 # Security best practices
 
 ## Overview
@@ -55,4 +55,4 @@ This document was initially intended for internal use at DFINITY. However, we no
 
 We provide a collection of best practices that may grow over time. While we think this is useful to improve security of dapps on the Internet Computer, we’d like to point out that such a list will never be complete and will never cover all potential security concerns. For example, there will always be attack vectors very specific to a dapps use cases that cannot be covered by general best practices. Thus, following the best practices can complement, but not replace security reviews. Especially for security critical dapps we recommend performing security reviews/audits. Furthermore, please not that the best practices are currently not ordered according to risk or priority.
 
--->
+*/

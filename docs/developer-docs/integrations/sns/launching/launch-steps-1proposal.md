@@ -98,7 +98,7 @@ dapp 開発者が行う技術的なことは何もありません。これは、
 dapp 開発者が行う技術的なことは何もありません。これはステージ 4 で採択された提案の結果
 として自動的にトリガーされます。
 
-<!---
+/**
 # Commands & actions to go through SNS launch
 
 ## Overview
@@ -195,4 +195,4 @@ of an adopted proposal in Stage 4.
 Nothing technical for dapp developers to do. This is triggered automatically as a result
 of an adopted proposal in Stage 4.
 
--->
+*/

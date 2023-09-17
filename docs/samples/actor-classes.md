@@ -70,7 +70,7 @@ Bucketactor クラスの各非同期インスタンス化は、新しい Bucketc
     debug.print: putting: (23, "23")
     ()
 
-<!---
+/**
 # Actor classes
 
 ## Overview
@@ -150,4 +150,4 @@ debug.print: putting: (22, "22")
 debug.print: putting: (23, "23")
 ()
 ```
--->
+*/

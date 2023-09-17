@@ -207,7 +207,7 @@ ICP transferはcanister 、ICPをその口座から他の口座に転送する�
     dfx identity use default
     dfx canister call ledger_transfer distributeRewards '()'
 
-<!---
+/**
 # ICP transfer sample code
 
 ## Overview
@@ -463,4 +463,4 @@ dfx canister call ledger_transfer distributeRewards '()'
 
 
 
--->
+*/

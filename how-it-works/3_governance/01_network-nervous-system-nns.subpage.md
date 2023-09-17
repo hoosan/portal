@@ -29,7 +29,7 @@ Network Nervous System (NNS) は、Internet Computer ブロックチェーンを
 
 [NNSステーキングガイド\[ベータ版］](https://dfinity.github.io/ic-staking-documentation/)
 
-<!---
+/**
 
 
 # Network Nervous System: Internet Computer Blockchain Governance
@@ -57,4 +57,4 @@ The Network Nervous System (NNS) is the open algorithmic system governing the In
 
 [NNS Staking Guide [Beta]](https://dfinity.github.io/ic-staking-documentation/)
 
--->
+*/

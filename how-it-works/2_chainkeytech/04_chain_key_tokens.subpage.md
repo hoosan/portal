@@ -65,7 +65,7 @@ ICP上のチェーンキートークンのアーキテクチャは、以下の�
 
 将来、Internet Computer ブロックチェーンが他のブロックチェーンと統合されると、より多くのチェーンキートークンが ICP で利用可能になります。新しいチェーンキートークンのトークン台帳は、それぞれの新しいチェーンキートークン用にパラメータ化された、同じICRC-1台帳コードベースを使用できます。チェーンキートークンcanister スマートコントラクト（マイナー）は、異なるブロックチェーン用に書き直す必要があります。次に計画されている主要なブロックチェーンの統合はICP \<\> ETHで、イーサリアムのERC-20トークンをチェーンキートークンとしてICにもたらします。これには、ERC-20トークン用のマイナーcanister 、各トークンに対して複製される新しいバリエーションが必要です。
 
-<!---
+/**
 
 
 # Chain-Key Tokens
@@ -128,4 +128,4 @@ Since Bitcoin uses the UTXO model for tracking account balances, the wrapping co
 
 When the Internet Computer blockchain will integrate with additional blockchains in the future, more chain-key tokens will become available on ICP. The token ledger of a new chain-key token can use the same ICRC-1 ledger code base, parameterized for the respective new chain-key token. The chain-key token canister smart contracts, or minter, needs to be re-written for different blockchains. The next major blockchain integration being planned is ICP <> ETH, bringing Ethereum's ERC-20 tokens to the IC as chain-key tokens. This requires a new variant of the minter canister for ERC-20 tokens that is then replicated for each token.
 
--->
+*/

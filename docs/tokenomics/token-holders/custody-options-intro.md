@@ -70,7 +70,7 @@
 
 - 秘密鍵やシードフレーズを紛失しないでください。紛失すると、永久にデジタル資産にアクセスできなくなります。
 
-<!---
+/**
 # Self-custody for digital assets
 
 ## Overview
@@ -143,4 +143,4 @@ With this in mind, you should take note of the following general recommendations
 
 -   Do not lose your private key or your seed phrase. If lost, you will be permanently unable to access your digital assets.
 
--->
+*/

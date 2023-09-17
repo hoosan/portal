@@ -17,7 +17,7 @@ ICのコンセンサスプロトコルは、次の要件を満たすように設
 
 [より深く](/how-it-works/consensus/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/consensus.webp)
@@ -36,4 +36,4 @@ robustness (graceful degradation of latency and throughput in the presence of no
 
 [Go deeper](/how-it-works/consensus/)
 
--->
+*/

@@ -664,7 +664,7 @@ S
        location = S.location
     }
 
-<!---
+/**
 # Ledger canister {#_the_ledger_canister}
 
 ## Overview
@@ -1323,4 +1323,4 @@ Given a list of blocks `L=(B0,B1,…​,Bn)` we write `Blocks(index,len)` for th
        location = S.location
     }
 
--->
+*/

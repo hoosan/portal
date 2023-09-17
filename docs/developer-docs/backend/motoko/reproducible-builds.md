@@ -239,7 +239,7 @@ Canister の作成者への推奨事項をまとめます：
 
 コントローラーが Canister コードをアップグレードした場合、このハッシュが変更される可能性がありますので注意してください。
 
-<!--
+/**
 # Reproducible Canister Builds
 
 Thanks to its consensus protocol, the Internet Computer always runs canisters' code correctly. But this doesn’t mean that it’s running the *correct* code for a canister. If you are using a canister somebody else developed, you may want to verify that the canister is indeed running some intended code before giving it control to make important decision for you, e.g., sending your ICP to a canister. Verifying this requires answering two questions:
@@ -481,4 +481,4 @@ Finally, if your build is reproducible, you can compare the hash of the resultin
 
 Beware that this hash might change if the controllers upgrade the canister code.
 428, 437の"*"は「＊」に変更してあります
--->
+*/

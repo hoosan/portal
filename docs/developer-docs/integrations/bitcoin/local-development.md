@@ -314,7 +314,7 @@ Candid UI で、送信先アドレスと送信金額を追加します。以下�
   rm -r data
   mkdir data
 
-<!---
+/**
 # Developing Bitcoin dapps locally
 
 ## Overview
@@ -611,4 +611,4 @@ installed locally.
     rm -r data
     mkdir data
 
--->
+*/

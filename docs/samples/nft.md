@@ -495,7 +495,7 @@ minting-tool local "$(dfx canister id dip721_nft_container)" --owner "$(dfx iden
 - [DIP721](https://github.com/Psychedelic/DIP721)。
 - 発行[ツール](https://github.com/dfinity/experimental-minting-tool)。
 
-<!---
+/**
 # NFT minting
 
 This example demonstrates implementing an NFT canister. NFTs (non-fungible tokens) are unique tokens with arbitrary
@@ -1014,4 +1014,4 @@ This Rust example comes with a demo script, `demo.sh`, which runs through an exa
 - [Rust](https://rustup.rs).
 - [DIP721](https://github.com/Psychedelic/DIP721).
 - [Minting tool](https://github.com/dfinity/experimental-minting-tool).
--->
+*/

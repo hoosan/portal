@@ -264,7 +264,7 @@ webpack以外のbundlerを使いたい場合もあるでしょう。バンドル
 
 - #### ステップ 5: 宣言をコミットし、コードベースにインポートします。
 
-<!---
+/**
 
 
 # Building a web frontend
@@ -524,4 +524,4 @@ with your bundler, the following steps should get you going:
 
 - #### Step 5: Commit the declarations and import them in your codebase.
 
--->
+*/

@@ -12,7 +12,7 @@ Internet Computer 開発者ブログへようこそ！ここでは、新機能�
 
 お楽しみください！
 
-<!---
+/**
 
 
 # Developer news and updates blog
@@ -22,4 +22,4 @@ features, deep dives into the design and engineering work that goes into the IC 
 world we find interesting enough to share.
 
 Enjoy!
--->
+*/

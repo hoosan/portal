@@ -63,7 +63,7 @@ curl -X POST "$CANISTER_ID.localhost:4943/" --resolve "$CANISTER_ID.localhost:49
 curl --compressed -X POST "$CANISTER_ID.localhost:4943/" --resolve "$CANISTER_ID.localhost:4943:127.0.0.1"
 ```
 
-<!---
+/**
 # HTTP counter
 
 ## Overview
@@ -135,4 +135,4 @@ curl --compressed -X POST "$CANISTER_ID.localhost:4943/" --resolve "$CANISTER_ID
 ```
 
 
--->
+*/

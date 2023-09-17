@@ -76,7 +76,7 @@
 
 - 0\.[3: 開発者環境のセットアップ](03-dev-env.md)。
 
-<!---
+/**
 # 0.2: Internet Computer terminology 
 
 ## Overview
@@ -156,4 +156,4 @@ This page introduces some of the most commonly used terminology that developers 
 
 - [0.3: Developer environment setup](03-dev-env.md).
 
--->
+*/

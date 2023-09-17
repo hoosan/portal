@@ -272,7 +272,7 @@ dapp の例では、Motoko でシンプルなdapp を構築する方法を示し
 
 その他の有用なビデオシリーズは、[coding with Kyleに](https://www.youtube.com/watch?v=M2XnywvwxFM&list=PLuhDt1vhGcrfQGLWqhUo9-DFD5JaHqCh1)あります。
 
-<!---
+/**
 # Overview
 
 Take a look at some sample dapps below and see the possibilities of building on the IC. All samples and further projects can be found in the [samples repo](https://github.com/dfinity/examples). Additional resources can be found in the [awesome DFINITY repo](https://github.com/dfinity/awesome-dfinity) (a curated set of open-source projects and examples from our community) or [Hackathon projects](hackathon-projects)!
@@ -519,4 +519,4 @@ These videos from the [community conversations](https://www.youtube.com/playlist
 
 Additional useful video series can be found at [coding with Kyle](https://www.youtube.com/watch?v=M2XnywvwxFM&list=PLuhDt1vhGcrfQGLWqhUo9-DFD5JaHqCh1).
 
--->
+*/

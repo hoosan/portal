@@ -117,7 +117,7 @@ Motoko のこれらの機能の詳細については、以下を参照してく�
 
     (8 : nat)
 
-<!---
+/**
 # Counter
 
 ## Overview
@@ -239,4 +239,4 @@ The following output should be returned:
 ```
 
 
--->
+*/

@@ -10,7 +10,7 @@ Canister スマートコントラクトは変数を認証変数として宣言�
 
 [より深く](/how-it-works/response-certification/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/certified-variables.webp)
@@ -21,4 +21,4 @@ Canister smart contracts can declare variables as certified. Whenever set, these
 
 [Go deeper](/how-it-works/response-certification/)
 
--->
+*/

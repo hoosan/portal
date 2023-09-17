@@ -45,7 +45,7 @@
       },
     )
 
-<!---
+/**
 # Quick sort
 
 ## Overview
@@ -98,4 +98,4 @@ The output will resemble the following:
   },
 )
 ```
--->
+*/

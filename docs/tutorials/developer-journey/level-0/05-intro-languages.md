@@ -107,7 +107,7 @@ C++は、icpp Worldによって開発された[icpp-pro CDKを通じて](https:/
 
 - 0\.[6: dfxの紹介](06-intro-dfx.md)。
 
-<!---
+/**
 # 0.5: Introduction to languages 
 
 ## Overview
@@ -217,4 +217,4 @@ C++ is available through the [icpp-pro CDK](https://docs.icpp.world/) developed 
 
 - [0.6: Introduction to dfx](06-intro-dfx.md).
 
--->
+*/

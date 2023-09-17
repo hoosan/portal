@@ -123,7 +123,7 @@ canister IDを把握したり、`canisterId=...` クエリパラメータを使�
 
 詳細は [`dfx.json`](https://github.com/dfinity/internet-identity/blob/main/demos/using-dev-build/dfx.json)ファイルと[Internet Identityに関するgenesis talkを](https://youtu.be/oxEr8UzGeBo)確認してください。
 
-<!---
+/**
 # Internet Identity integration
 
 ## Overview
@@ -245,4 +245,4 @@ Figuring the canister IDs, and using the `canisterId=...` query parameter is all
 
 For more information, check the [`dfx.json`](https://github.com/dfinity/internet-identity/blob/main/demos/using-dev-build/dfx.json) file and the [genesis talk on Internet Identity](https://youtu.be/oxEr8UzGeBo).
 
--->
+*/

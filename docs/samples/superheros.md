@@ -38,7 +38,7 @@
 
 ![Superheros interface](./_attachments/superheros.png)
 
-<!---
+/**
 # Superheros
 
 ## Overview
@@ -84,4 +84,4 @@ echo "http://127.0.0.1:4943/?canisterId=$(dfx canister id www)"
 You will see the following interface that you can interact with:
 
 ![Superheros interface](./_attachments/superheros.png)
--->
+*/

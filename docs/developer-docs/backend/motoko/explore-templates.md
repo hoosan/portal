@@ -135,7 +135,7 @@ Motoko プログラミング言語を使ってシンプルなdapp を作成す�
 
 次に、dapp をデプロイする前に、[開発者環境を](./dev-env.md)セットアップしましょう。
 
-<!---
+/**
 # 2: Project organization
 
 ## Overview
@@ -281,4 +281,4 @@ We’ll explore code that uses `actor` objects and asynchronous message handling
 
 Next, let's set up our [developer environment](./dev-env.md) before deploying the dapp. 
 
--->
+*/

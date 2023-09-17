@@ -911,7 +911,7 @@ service: {
 
 この型には値がないので、ありません。
 
-<!---
+/**
 # Candid reference
 
 ## Overview
@@ -1722,4 +1722,4 @@ All types
 #### Corresponding JavaScript values  
 None, as this type has no values.
 
--->
+*/

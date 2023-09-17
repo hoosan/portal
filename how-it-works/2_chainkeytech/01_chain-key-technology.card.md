@@ -16,7 +16,7 @@ Internet Computer protocol は、チェーン*キー暗号と*総称される高
 
 [より深く](/how-it-works/chain-key-technology/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/chain-key-cryptography.webp)
@@ -32,4 +32,4 @@ A key component of chain-key cryptography is a *threshold signature scheme*, whi
 
 [Go deeper](/how-it-works/chain-key-technology/)
 
--->
+*/

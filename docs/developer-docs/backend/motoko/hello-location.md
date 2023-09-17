@@ -217,7 +217,7 @@ Candid UI を使用してコードをテストします。
 
 次のガイドでは、[ウォレットからcycles を受け取る](simple-cycles.md)方法について説明します。
 
-<!---
+/**
 # 12: Passing text arguments
 
 ## Overview
@@ -475,4 +475,4 @@ In this example, each function accepts an array of text strings. Therefore, you 
 ## Next steps
 
 In the next guide, we'll cover [accepting cycles from a wallet.](simple-cycles.md)
--->
+*/

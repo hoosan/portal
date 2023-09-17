@@ -67,7 +67,7 @@ Backend canister via Candid interface:
 
 ### ステップ 6:`app_frontend_js` の印刷された URL をブラウザで開きます。
 
-<!---
+/**
 # vetKeys API demo
 
 ## Overview
@@ -144,4 +144,4 @@ Backend canister via Candid interface:
 
 ### Step 6: Open the printed URL for the `app_frontend_js` in your browser.
 
--->
+*/

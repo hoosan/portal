@@ -47,7 +47,7 @@ Internet Computerの複雑な動作を詳しく理解したい方は、[Internet
 - [Romanのブログ](https://mmapped.blog/posts.html)
 - [カイルのブログ](https://kyle-peacock.com/blog/)
 
-<!---
+/**
 
 
 # Reference documentation
@@ -86,4 +86,4 @@ For other references, feel free to check out:
 - [Roman's blog](https://mmapped.blog/posts.html).
 - [Kyle's blog](https://kyle-peacock.com/blog/). 
 
--->
+*/

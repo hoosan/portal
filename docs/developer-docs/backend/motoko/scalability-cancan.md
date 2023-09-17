@@ -194,7 +194,7 @@ npm run start
 
 このガイドを完成させるために、さらにいくつかの[サンプルdapps](sample-apps.md) をチェックしてください。
 
-<!---
+/**
 # 18: Scalable dapp example
 
 ## Overview
@@ -401,4 +401,4 @@ Now you can make changes to any frontend code and see instant updates, in many c
 ## Next steps
 
 To complete this guide, check out some additional [sample dapps](sample-apps.md).
--->
+*/

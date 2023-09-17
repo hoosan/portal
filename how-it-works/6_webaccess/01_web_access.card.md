@@ -14,7 +14,7 @@ HTTPリクエストに安全に対応できるからです。
 
 [もっと深く](/how-it-works/smart-contracts-serve-the-web/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/web-content.jpg)
@@ -29,4 +29,4 @@ securely serve HTTP requests.
 
 [Go deeper](/how-it-works/smart-contracts-serve-the-web/)
 
--->
+*/

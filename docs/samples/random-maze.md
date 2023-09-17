@@ -52,7 +52,7 @@
 
 ![Random maze](./_attachments/maze2.png)
 
-<!---
+/**
 # Random maze
 
 ## Overview
@@ -114,4 +114,4 @@ Enter a size for the maze, then select **Generate!**. The maze will be displayed
 
 ![Random maze](./_attachments/maze2.png)
 
--->
+*/

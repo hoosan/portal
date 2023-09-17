@@ -11,7 +11,7 @@ title: Fault tolerance
 
 [より深く](/how-it-works/fault-tolerance/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/fault-tolerance.webp)
@@ -24,4 +24,4 @@ The new node then joins the subnet and performs a state synchronization with its
 
 [Go deeper](/how-it-works/fault-tolerance/)
 
--->
+*/

@@ -14,7 +14,7 @@ Internet Computer で利用可能なサブネット・タイプはさまざま�
 その代償として、cycles コスト面でより高価になります（コストはノード数に対して線形に増加します。
 詳細は[こちらを](../gas-cost.md)参照）。
 
-<!---
+/**
 # Subnet types
 
 There are different subnet types available on the Internet Computer. These types are related to properties of the
@@ -31,4 +31,4 @@ application subnet. Having more nodes provides better security guarantees to dap
 the expense of being more expensive in terms of cycles cost (costs scale linearly to number of nodes, for more details
 see [here](../gas-cost.md)).
 
--->
+*/

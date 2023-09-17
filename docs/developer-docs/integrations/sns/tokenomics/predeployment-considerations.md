@@ -64,7 +64,7 @@ NNS提案は、dapp が長期的に持続可能であり、dapp が分散化コ�
 これには、エコシステムの成長と財務の変化に関するデータと情報の提供が含まれるかもしれません。
 また、トークン保有者のインプット、フィードバック、賛同を得て、製品ロードマップを管理することも含まれるかもしれません。
 
-<!---
+/**
 
 # SNS predeployment considerations
 
@@ -126,4 +126,4 @@ holding community to continue project success and direction.
 This may include providing data and information about ecosystem growth and financial changes.
 It also may include managing the product roadmap with token-holder input, feedback and buy-in.
 
--->
+*/

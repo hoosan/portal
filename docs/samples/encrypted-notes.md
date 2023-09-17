@@ -492,7 +492,7 @@ wasmバイナリであれば、任意のバイナリターゲットをデプロ�
 
 このプロジェクトのバックエンド、ブラウザベースの暗号化、デバイス管理の出発点となった[IC Vaultの](https://github.com/timohanke/icvault)作者に感謝します。
 
-<!---
+/**
 # Encrypted note-taking dapp
 
 ## Overview
@@ -988,4 +988,4 @@ We thank the author of [IC Notes](https://github.com/pattad/ic_notes) whose code
 
 We thank the authors of [IC Vault](https://github.com/timohanke/icvault) whose code was the starting point for this project's backend, browser-based encryption, and device management.
 
--->
+*/

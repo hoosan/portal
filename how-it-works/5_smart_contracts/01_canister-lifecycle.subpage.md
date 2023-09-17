@@ -41,7 +41,7 @@ Canisters canisters
 
 本講演では、Internet Computer 上でcanister スマートコントラクトを作成する方法、そのソフトウェアのインストールとアップグレードの方法、canisters をcycles でトップアップする方法について説明します。
 
-<!---
+/**
 
 
 # Canisters
@@ -80,4 +80,4 @@ Of course, a canister may ensure at all times that the data that needs to be per
 
 This talk covers how to create canister smart contracts on the Internet Computer, how to install and upgrade their software, and how to top up canisters with cycles.
 
--->
+*/

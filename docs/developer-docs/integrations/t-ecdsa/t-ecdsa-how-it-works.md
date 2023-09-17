@@ -105,7 +105,7 @@ IC のどのサブネット上のcanister でも、管理canister によって�
 
 この機能の一般利用可能性（GA）リリースの一環として、`secp256k1` 楕円曲線上のプロダクション ECDSA キーが配備され、ビットコインメインネットやその他のユースケースとの統合に使用されます。
 
-<!---
+/**
 # Threshold ECDSA: technology overview
 
 ## Overview
@@ -211,4 +211,4 @@ Any canister on any subnet of the IC can call the threshold ECDSA API exposed by
 
 As part of the general availability (GA) release of the feature, a production ECDSA key on the `secp256k1` elliptic curve has been deployed to be used for integration with the Bitcoin Mainnet and other use cases of interest.
 
--->
+*/

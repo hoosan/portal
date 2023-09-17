@@ -49,7 +49,7 @@ DFINITY は、*非同期ネットワーク*上で動作する[新しいDKGプロ
 
 [![Watch youtube video](https://i.ytimg.com/vi/vUcDRFC09J0/maxresdefault.jpg)](https://www.youtube.com/watch?v=vUcDRFC09J0)
 
-<!---
+/**
 
 
 # Chain-Key Cryptography
@@ -96,4 +96,4 @@ DFINITY has designed, analyzed, and implemented [a new DKG protocol](https://epr
 
 [![Watch youtube video](https://i.ytimg.com/vi/vUcDRFC09J0/maxresdefault.jpg)](https://www.youtube.com/watch?v=vUcDRFC09J0)
 
--->
+*/

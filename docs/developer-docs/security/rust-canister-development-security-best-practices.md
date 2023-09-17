@@ -772,7 +772,7 @@ Rust の浮動小数点は予期しない動作をする可能性があります
 
 dApp がそのような操作を提供する場合、Captchas やプルーフ・オブ・ワークの追加など、ボット対策テクニックを検討してください。例えば、[Internet Identityに](https://github.com/dfinity/internet-identity)キャプチャの実装があります。
 
-<!---
+/**
 
 # Canister development security best practices
 
@@ -819,7 +819,7 @@ If this is not the case, an attacker may be able to perform sensitive actions on
 
 - By design, for every canister call the caller can be identified. The calling [principal](../../references/ic-interface-spec.md#principals) can be accessed using the system API’s methods `ic0.msg_caller_size` and `ic0.msg_caller_copy` (see [here](../../references/ic-interface-spec.md#system-api-imports)). If e.g. Internet Identity is used, the principal is the user identity for this specific origin, see [here](../../references/ii-spec.md#identity-design-and-data-model). If some actions (e.g. access to user’s account data or account specific operations) should be restricted to a principal or a set of principals, then this must be explicitly checked in the canister call, for example as follows in Rust:
 
-<!-- -!->
+<!-- -->
 
         // Let pk be the public key of a principal that is allowed to perform
         // this operation. This pk could be stored in the canister's state.
@@ -1340,7 +1340,7 @@ Since canisters interact with the system API, it is harder to test the code beca
 
 - For the parts that still interact with the system API: create a thin abstraction of the System API that is faked in unit tests. See the [recommendation](https://mmapped.blog/posts/01-effective-rust-canisters.html#target-independent) (from [effective Rust canisters](https://mmapped.blog/posts/01-effective-rust-canisters.html)). For example, one can implement a ‘Runtime’ as follows and then use the ‘MockRuntime’ in tests (code by Dimitris Sarlis):
 
-<!-- -!->
+<!-- -->
 
         use ic_cdk::api::{
             call::call, caller, data_certificate, id, print, time, trap,
@@ -1536,4 +1536,4 @@ If an update or query call is expensive e.g. in terms of memory used or cycles c
 
 If the dApp offers such operations, consider bot prevention techniques such as adding Captchas or proof of work. There is e.g. a captcha implementation in [Internet Identity](https://github.com/dfinity/internet-identity).
 
--->
+*/

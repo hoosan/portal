@@ -148,7 +148,7 @@ $ dfx canister call dmalx-m4aaa-aaaaa-qaanq-cai get '(1: nat)' --query
 このブログ記事がお役に立ちましたら幸いです。コンポジットクエリ機能を使ってハッピーコーディング！
 コンポジットクエリ機能に貢献してくれたDFINITY に感謝します：Adam Spofford、Claudio Russo、Martin Raszyk、Robin Künzler、Roel Storms、Stefan Kaestle、Ulan Degenbaev、Yan Chen。
 
-<!---
+/**
 
 
 # Building a partitioned key-value store with composite queries on the Internet Computer
@@ -290,4 +290,4 @@ Congratulations! You have successfully built a key-value store using Rust and le
 We hope you found this blog post helpful. Happy coding with the composite query feature!
 Many thanks to the DFINITY for contributing to the composite query feature: Adam Spofford, Claudio Russo, Martin Raszyk, Robin Künzler, Roel Storms, Stefan Kaestle, Ulan Degenbaev, Yan Chen
 
--->
+*/

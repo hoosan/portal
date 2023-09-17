@@ -154,7 +154,7 @@ canister をアップグレードするには、必要に応じて新しいタ�
 
 次に、[ canisters を](./8-optimizing.md) [最適化して](./8-optimizing.md)みましょう。
 
-<!---
+/**
 # 7: Upgrading a canister
 
 ## Overview
@@ -317,4 +317,4 @@ dfx canister install [canister-id] --mode upgrade
 
 Next, let's take a look at [optimizing canisters](./8-optimizing.md).
 
--->
+*/

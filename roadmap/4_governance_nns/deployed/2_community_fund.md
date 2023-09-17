@@ -9,8 +9,8 @@ is_community: false
 ---
 この機能は、NNSコミュニティがInternet Computer のプロジェクトに投資するための「金庫」を持つための手段を提供するコミュニティファンドの最初のバージョンを実装しています。この最初のバージョンでは、「コミュニティファンド」機能を有効にしたneuronは、SNSのデセンタリゼーションスワップに投資するNNSの決定にその満期を公開することができます。
 
-<!---
+/**
 
 This feature implements a first version of a community fund that provides means for the NNS community to have a "treasury" to invest in projects on the Internet Computer. In this first version neurons which have enabled the “community fund” feature may expose their maturity to the decisions of the NNS to invest in SNS decentalization swaps.
 
--->
+*/

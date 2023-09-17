@@ -82,7 +82,7 @@ Internet Computer canister が`canister_heartbeat` 関数をエクスポート�
 - **バックエンドチュートリアル：** [タイマーの使用法](rust/10-timers.md)。
 - **例** [定期的なタスクとタイマー](https://github.com/dfinity/examples/tree/master/rust/periodic_tasks)（タイマーとハートビートのコストの比較）。
 
-<!---
+/**
 
 # Periodic tasks and timers
 
@@ -160,4 +160,4 @@ If there are no await points in the timer handler, the periodic timer will be re
 - **Backend tutorial:** [Using timers](rust/10-timers.md).
 - **Example:** [Periodic tasks and timers](https://github.com/dfinity/examples/tree/master/rust/periodic_tasks) (compares the costs of timers and heartbeats).
 
--->
+*/

@@ -11,7 +11,7 @@ Internet Computer
 
 [より深く](/how-it-works/asset-certification/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/asset-certification.jpg)
@@ -25,4 +25,4 @@ communicating with a malicious node.
 
 [Go deeper](/how-it-works/asset-certification/)
 
--->
+*/

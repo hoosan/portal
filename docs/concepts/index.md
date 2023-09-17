@@ -18,11 +18,11 @@ ICの設計とアーキテクチャについて少し知っておくと、あな
 
 - [ canisters の紹介 - スマート・コントラクトの進化（ビデオ）](https://www.youtube.com/watch?v=LKpGuBOXxtQ)。
 
-import DocCardList from '@theme/DocCardList'；
+import DocCardList from '@theme/DocCardList';
 
 <DocCardList />
 
-<!---
+<!--
 
 
 # How it works

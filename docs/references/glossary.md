@@ -722,7 +722,7 @@ canister ステートの変更になります。
 
 **XDRは** *特別引出権（SDR*）の通貨コード。SDRは、国際通貨基金（IMF）が定義・管理する補助的な外国為替資産。SDR は通貨そのものではありませんが、IMF 加盟国が保有する通貨と交換できる権利を表します。したがって、このドキュメントでは SDR を通貨コード**XDR**として参照しています。
 
-<!---
+/**
 # Glossary
 
 ## A
@@ -1456,4 +1456,4 @@ stack-based virtual machine.
 
 **XDR** is the currency code for *special drawing rights (SDR)*. SDRs are supplementary foreign exchange assets that are defined and maintained by the International Monetary Fund (IMF). SDRs are not a currency themselves, but represent a claim to a currenty that is held by IMF member countries in which they may be exchanged. The IC developer docs refer to currencies based on their currency codes, therefore SDRs are referenced as its currency code **XDR** in this documentation. 
 
--->
+*/

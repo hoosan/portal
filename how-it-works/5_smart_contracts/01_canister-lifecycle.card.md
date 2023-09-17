@@ -13,7 +13,7 @@ Canisters はコントローラによって管理されます。canisters の制
 
 [もっと深く](/how-it-works/canister-lifecycle/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/canisters.webp)
@@ -27,4 +27,4 @@ Controllers are the only entities which can deploy the canister to the Internet 
 
 [Go deeper](/how-it-works/canister-lifecycle/)
 
--->
+*/

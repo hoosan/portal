@@ -51,7 +51,7 @@ NNSに保存された情報のおかげで、canisters P2Pは
 
 [![Watch youtube video](https://i.ytimg.com/vi/HOQb0lKIy9I/maxresdefault.jpg)](https://www.youtube.com/watch?v=HOQb0lKIy9I)
 
-<!---
+/**
 
 
 # Peer-to-Peer
@@ -104,4 +104,4 @@ two nodes is encrypted and authenticated, by using TLS.
 
 [![Watch youtube video](https://i.ytimg.com/vi/HOQb0lKIy9I/maxresdefault.jpg)](https://www.youtube.com/watch?v=HOQb0lKIy9I)
 
--->
+*/

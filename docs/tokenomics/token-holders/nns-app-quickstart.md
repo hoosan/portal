@@ -387,7 +387,7 @@ Confirm（確認）］をクリックすると、確認できます：
 
 ![Canister list](../_attachments/nns11.png)
 
-<!---
+/**
 # Network Nervous System (NNS) dapp quick start 
 
 ## Overview
@@ -775,4 +775,4 @@ For example:
 
 ![Canister list](../_attachments/nns11.png)
 
--->
+*/

@@ -43,7 +43,7 @@ SNS のコントロールを分散化し、それによって SNS が統治す�
 統治されます。
 収集されたICPはSNS所有の国庫に保管されます。
 
-<!---
+/**
 
 # SNS launch
 
@@ -85,4 +85,4 @@ After a successful decentralization swap, SNS tokens are owned and the SNS is go
 by a large community.
 The ICP that were collected are in an SNS-owned treasury.
 
--->
+*/

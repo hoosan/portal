@@ -52,7 +52,7 @@
 
 より高度なdapps 、基本的なビルディングブロックの使用方法についてのより詳細な例をカバーする追加のガイドは、[examples](https://github.com/dfinity/examples)リポジトリと[**Motoko プログラミング言語ガイドに**](/motoko/main/about-this-guide.md)あります。
 
-<!---
+/**
 # Introduction to developing canisters in Motoko
 
 ## Overview
@@ -107,4 +107,4 @@ The following guides introduce the basics for writing dapps that run on the IC:
 
 Additional guides covering more advanced dapps and more detailed examples of how to use the basic building blocks are available in the [examples](https://github.com/dfinity/examples) repository and [**Motoko programming language guide**](/motoko/main/about-this-guide.md).
 
--->
+*/

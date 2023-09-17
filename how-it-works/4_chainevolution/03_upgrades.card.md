@@ -10,7 +10,7 @@ Internet Computer ブロックチェーンは、そのアルゴリズムガバ�
 
 [より深く](/how-it-works/upgrades/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/protocol-upgrade.webp)
@@ -22,4 +22,4 @@ The Internet Computer blockchain is governed by the Network Nervous System (NNS)
 [Go deeper](/how-it-works/upgrades/)
 
 
--->
+*/

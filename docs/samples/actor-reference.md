@@ -53,7 +53,7 @@ Actor 参照は，生のプリンシパル識別子に型付けされたイン�
 - [Actorと同期データ](../motoko/main/actors-async.md)。
 - [ Motoko 基本的な概念と用語](../motoko/main/basic-concepts.md)。
 
-<!---
+/**
 # Actor reference
 
 ## Overview
@@ -116,4 +116,4 @@ The output will resemble the following:
 
 - [Actors and sync data](../motoko/main/actors-async.md).
 - [Basic Motoko concepts and terms](../motoko/main/basic-concepts.md).
--->
+*/

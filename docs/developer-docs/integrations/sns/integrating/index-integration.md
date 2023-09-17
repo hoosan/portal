@@ -60,7 +60,7 @@ dfx deploy icrc1-index --argument "(record {
 
 インターフェースの詳細については、インデックスcanister の[Candid ファイルを](https://gitlab.com/dfinity-lab/public/ic/-/blob/master/rs/rosetta-api/icrc1/index/index.did)確認してください。
 
-<!---
+/**
 
 # SNS index canister
 ## Overview
@@ -119,4 +119,4 @@ list_subaccounts : (ListSubaccountsArgs) -> (vec SubAccount) query;
 
 Please check the [Candid file](https://gitlab.com/dfinity-lab/public/ic/-/blob/master/rs/rosetta-api/icrc1/index/index.did) of the index canister for the interface details.
 
--->
+*/

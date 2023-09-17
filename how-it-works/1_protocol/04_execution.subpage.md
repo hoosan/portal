@@ -113,7 +113,7 @@ IC上のリソースの価格は非常に競争的です。
 多くのアプリケーションでは、安全な乱数生成器が必要です。しかし、実行の一部としてナイーブな方法で乱数を生成することは、すべてのノードが異なる乱数を計算することになるため、決定論を破壊することになります。
 ICは、実行層が*ランダムテープと*呼ばれる分散型擬似乱数生成器にアクセスすることで、この問題を解決します。ランダムテープは[連鎖鍵暗号を](https://internetcomputer.org/how-it-works/#Chain-key-cryptography)使用して構築されます。毎ラウンド、サブネットワークは新鮮な閾値BLS署名を生成します。この署名はその性質上、予測不可能で一様に分布します。この署名は暗号擬似ランダム生成器のシードとして使用できます。これにより、canister スマートコントラクトは、Internet Computer のもう一つのユニークな特徴である、高効率で安全な乱数ソースにアクセスすることができます。
 
-<!---
+/**
 
 
 # Execution
@@ -225,4 +225,4 @@ Prices for a given resource, e.g., executing Wasm instructions, scale with the r
 Many applications benefit from, or require a secure random number generator. Yet, generating random numbers in the naïve way as part of execution trivially destroys determinism as every node would compute different randomness.
 The IC solves this problem by the execution layer having access to a decentralised pseudorandom number generator called the _random tape_. The random tape is built using [chain-key cryptography](https://internetcomputer.org/how-it-works/#Chain-key-cryptography). Every round, the subnetwork produces a fresh threshold BLS signature which, by its very nature, is unpredictable and uniformly distributed. This signature can then be used as seed in a cryptographic pseudorandom generator. This gives canister smart contracts access to a highly-efficient and secure random number source, which is another unique feature of the Internet Computer.
 
--->
+*/

@@ -271,7 +271,7 @@ dfx canister call timer start_with_interval_secs 5
 
 この例に基づいてアプリケーションを開発する場合、Internet Computer で開発するための[セキュリ ティ・ベスト・プラクティスを](https://internetcomputer.org/docs/current/references/security/)よく理解し、遵守することを推奨します。 この例では、すべてのベスト・プラクティスを実装していないかもしれません。
 
-<!---
+/**
 # Periodic tasks and timers
 
 ## Overview
@@ -521,4 +521,4 @@ As shown in `Example 2`, there might be still very specific use cases for the he
 
 If you base your application on this example, we recommend you familiarize yourself with and adhere to the [security best practices](https://internetcomputer.org/docs/current/references/security/) for developing on the Internet Computer. This example may not implement all the best practices.
 
--->
+*/

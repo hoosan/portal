@@ -56,7 +56,7 @@ NNSのサブネットが前進を続けている間に、NNSのcanister に障�
 
 [![Watch youtube video](https://i.ytimg.com/vi/WaNJINjGleg/maxresdefault.jpg)](https://www.youtube.com/watch?v=WaNJINjGleg)
 
-<!---
+/**
 
 
 # Fault tolerance
@@ -110,4 +110,4 @@ In the worst case, the entire NNS subnet could get stuck and fail to make progre
 
 [![Watch youtube video](https://i.ytimg.com/vi/WaNJINjGleg/maxresdefault.jpg)](https://www.youtube.com/watch?v=WaNJINjGleg)
 
--->
+*/

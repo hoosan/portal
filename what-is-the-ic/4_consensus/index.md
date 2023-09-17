@@ -11,7 +11,7 @@ Internet Computer Protocol は、サブネットの複数のノードに障害�
 - 暗号学的な最終性 - ICコンセンサスは、暗号学的に保証された最終性、つまり、確定されたステート変更は元に戻せません。
 - ビザンチンフォールトトレランス（BFT） - ICは、任意に故障したノードの3分の1まで（ただしそれ以下）耐えることができます。
 
-<!---
+/**
 
 
 The Internet Computer Protocol ensures that the canister state on any subnet is always consistent—even if multiple nodes of a subnet are faulty or misbehave. The IC is neither a proof-of-work, nor a proof-of-stake network, but a so-called DAO-controlled network, where the NNS DAO manages subnet node membership. The [consensus protocol](/how-it-works/consensus/) has the following properties:
@@ -21,4 +21,4 @@ The Internet Computer Protocol ensures that the canister state on any subnet is 
 * Cryptographic finality – IC consensus reaches cryptographically-guaranteed finality, that is, finalized state changes cannot be undone.
 * Byzantine fault tolerance (BFT) – The IC can tolerate up to (but less than) one third of arbitrarily faulty nodes.
 
--->
+*/

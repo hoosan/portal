@@ -64,7 +64,7 @@
     (2) Build the project
     (3) Deploy the project")
 
-<!---
+/**
 # Simple to-do
 
 ## Overview
@@ -144,4 +144,4 @@ ___TO-DOs___
 (2) Build the project
 (3) Deploy the project")
 ```
--->
+*/

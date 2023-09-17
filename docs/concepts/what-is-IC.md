@@ -40,7 +40,7 @@ Internet Computer protocol はプラットフォームベースのリスクを�
 
 また、Internet Computer は、開発者が暗号的に安全な ID を使用してアクセス制御を実施することを可能にし、ユーザー名とパスワード、または外部の ID 管理プラグインに依存する必要性を低減します。
 
-<!---
+/**
 # What is the Internet Computer?
 
 The **Internet Computer** is a blockchain that enables developers, organizations, and entrepreneurs to build and deploy secure, autonomous, and tamper-proof **canisters**, an evolution of **smart contracts**.
@@ -83,4 +83,4 @@ In addition, because dapps can be "autonomous" and public, developers can write 
 
 The Internet Computer also enables developers to use cryptographically-secure identities to enforce access controls, reducing the need to rely on usernames and passwords or external identity management plug-ins.
 
--->
+*/

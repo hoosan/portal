@@ -13,7 +13,7 @@ Internet Computer がNetwork Nervous System によって制御されるのと同
 
 [もっと深く](/sns/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/service-nervous-system.webp)
@@ -25,4 +25,4 @@ This allows distributing the power and ownership of the dapp over a number of pa
 
 [Go deeper](/sns/)
 
--->
+*/

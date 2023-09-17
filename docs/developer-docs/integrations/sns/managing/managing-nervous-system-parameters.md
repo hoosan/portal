@@ -159,7 +159,7 @@ quill send message.json
 
 [アクティブなSNSの提案](https://dashboard.internetcomputer.org/sns/7jkta-eyaaa-aaaaq-aaarq-cai/proposal/6)例をご覧ください。
 
-<!---
+/**
 # Managing nervous system parameters
 
 ## Overview
@@ -322,4 +322,4 @@ quill send message.json
 
 See example [proposal of an active SNS](https://dashboard.internetcomputer.org/sns/7jkta-eyaaa-aaaaq-aaarq-cai/proposal/6).
 
--->
+*/

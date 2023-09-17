@@ -131,7 +131,7 @@ npm run dev
 以前にこのページを開いたことがある場合は、ウェブブラウザからこのページのローカルストアデータをすべて削除し、ページをハードリロードしてください。例えばChromeの場合、Inspect → Application → Local Storage →`http://localhost:3000/` → Clear Allと進み、リロードしてください。
 ::：
 
-<!---
+/**
 # VetKD encrypted notes dapp
 
 ## Overview
@@ -266,4 +266,4 @@ Open the URL that is printed in the console output. Usually, this is [http://loc
 If you have opened this page previously, please remove all local store data for this page from your web browser, and hard-reload the page. For example in Chrome, go to Inspect → Application → Local Storage → `http://localhost:3000/` → Clear All, and then reload.
 :::
 
--->
+*/

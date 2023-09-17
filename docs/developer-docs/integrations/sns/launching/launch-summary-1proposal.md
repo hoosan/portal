@@ -498,7 +498,7 @@ neuron s のスワップ参加者に渡されます。
   </tr>
 </table>
 
-<!---
+/**
 # Stages of an SNS launch
 ## Overview
 During an SNS launch, a dapp is handed over to the NNS and the NNS both
@@ -982,4 +982,4 @@ If successful, at the end of stage, we have:
   </tr>
 </table>
 
--->
+*/

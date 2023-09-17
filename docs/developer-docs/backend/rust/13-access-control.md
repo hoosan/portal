@@ -657,7 +657,7 @@ minting-tool local "$(dfx canister id dip721_nft_container)" --owner "$(dfx iden
 
 次に、[Rustcanisters で Candid](14-candid.md)を使ってみましょう。
 
-<!---
+/**
 # 13: Access control
 
 ## Overview
@@ -1316,4 +1316,4 @@ Minting is restricted to anyone authorized with the `custodians` parameter or th
 ## Next steps
 
 Next, let's dive into using [Candid with Rust canisters.](14-candid.md)
--->
+*/

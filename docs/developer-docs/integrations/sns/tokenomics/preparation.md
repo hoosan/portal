@@ -70,7 +70,7 @@ sidebar_position: 6
 将来スワップ・トークンの売却が増えると、
 議決権倍率は、すべてのスワップ・トークンが売却されたときに 1 になるまで増加します。
 
-<!---
+/**
 
 # SNS initial parameters {#setting-parameters}
 ## Overview
@@ -141,4 +141,4 @@ voting power multiplier increases until it is 1 when all swap tokens have been
 sold.
 
 
--->
+*/

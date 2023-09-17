@@ -390,7 +390,7 @@ CRC値は4バイトです。
     大文字小文字を区別することで、1文字につき1ビット以上のチェックビットを追加することはできませんが、私たちは少なくとも合計30ビットを望んでいます（**要件1：セキュリティを**参照）。
   - これは、高度にカスタム化されたコードを意味します（**要件4：開発者の経験を**参照）。
 
-<!---
+/**
 
 
 # ID encoding specification
@@ -781,4 +781,4 @@ This is more important to us (see **requirement 4: developer experience**).
     Capitalization cannot add more than 1 check bit per character but we wanted at least 30 bits total (see **requirement 1: security**).
   * This would mean highly custom code (see **requirement 4: developer experience**).
 
--->
+*/

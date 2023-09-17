@@ -155,7 +155,7 @@ VETKDは、IDベースの暗号化を分散環境で拡張するために使用�
 
 素敵な暗号ツールを作るという点で、私たちにできることは限られています。この業界で成功する最善の方法は、参加することです。ですからVETKDがあなたのプロジェクトに役立つとお考えでしたら、私たちにお知らせください。フィードバックをお聞かせください。現在、最も簡単な方法は、[フォーラムでの](https://forum.dfinity.org/t/threshold-key-derivation-privacy-on-the-ic/16560)議論に参加することです。また、「いいね！」、「シェア」、「購読」、その他全てにご協力をお願いします。
 
-<!---
+/**
 # VETKeys Primer
 
 The **VETKeys** feature is in ongoing development on the Internet Computer (IC). It stands for ‘**V**erifiable **E**ncrypted **T**hreshold Keys’ and enables a number of cryptographic functionalities on the IC. The primary motivation for VETKeys is to facilitate onchain encryption, as such we focus this primer with that example in mind. 
@@ -299,4 +299,4 @@ It also shows one possible way of building VETKD, there are others, some with fa
 ## Participate
 There is only so much we can do in terms of producing nice crypto tools. It’s up to you to pick them up and use them to address real world privacy issues faced in Web3. The best way to succeed in this industry is to engage. So! Let us know what you’re building and if you think VETKD could be useful for your project. We’re happy to hear feedback and to explain more things if you need them. Currently the easiest way to engage is to join the discussion on the [forum](https://forum.dfinity.org/t/threshold-key-derivation-privacy-on-the-ic/16560). Also, like, share, subscribe, and all the rest.
 
--->
+*/

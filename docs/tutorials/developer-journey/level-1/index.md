@@ -63,7 +63,7 @@
   - canister の凍結しきい値の設定。
   - canister の削除 .
 
-<!---
+/**
 # Level 1: Space cadet 
 
 - [1.1: Exploring a live demo](1.1-live-demo.md): Before we begin developing our own dapps, let's explore a live, deployed canister that utilizes the Motoko playground through the `dfx deploy --playground` command. This module covers:
@@ -122,4 +122,4 @@
     - Getting cycles back from a canister.
     - Setting the canister's freezing threshold.
     - Deleting a canister.
--->
+*/

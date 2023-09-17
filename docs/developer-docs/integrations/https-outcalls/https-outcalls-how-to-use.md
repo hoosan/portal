@@ -57,7 +57,7 @@ Motoko と Rust で`GET` と`POST`リクエストを行う具体的な例は、�
 - [ `GET` リクエストの最小サンプルコード](./https-outcalls-get.md)
 - [ `POST` リクエストの最小サンプルコード](./https-outcalls-post.md)
 
-<!---
+/**
 # How to use HTTP outcalls: Intro
 
 This guide shoes how to use the [HTTPS outcalls](../index.md) feature of the IC. This feature allows smart contracts to directly make calls to HTTP(S) servers external to the blockchain and use the response in the further processing of the smart contract, without the need of oracles.
@@ -116,4 +116,4 @@ To see concrete examples of making `GET` and `POST`requests in Motoko and Rust s
 * [Minimal sample code of making a `POST` request](./https-outcalls-post.md)
 
 
--->
+*/

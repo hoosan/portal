@@ -88,7 +88,7 @@ NNSチームの皆さん、私たちと一緒にNNSのあらゆることに飛�
 
 \-DFINITY
 
-<!---
+/**
 
 
 ![NNS Team spotlight](../../static/img/blog/dev-update-blog-nns-1.jpeg)
@@ -176,4 +176,4 @@ Thank you so much to the NNS team for sitting down with us and diving into all t
 
 -DFINITY
 
--->
+*/

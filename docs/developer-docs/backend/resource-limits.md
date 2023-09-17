@@ -36,7 +36,7 @@ IC は、以下のような理由でWebAssembly モジュールを拒否する�
 
 これらの制限に関する詳細は、[Internet Computer インタフェース仕様に](https://internetcomputer.org/docs/current/references/ic-interface-spec/#system-api-module)記載されています。
 
-<!---
+/**
 # Resource constraints and limits on the Internet Computer
 
 ## Overview
@@ -76,4 +76,4 @@ The IC may reject WebAssembly modules for reasons such that:
 
 More information regarding these restrictions can be found in the [Internet Computer interface specification](https://internetcomputer.org/docs/current/references/ic-interface-spec/#system-api-module).
 
--->
+*/

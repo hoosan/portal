@@ -36,7 +36,7 @@ IC上の各個人dapp は、dapp の*サービス神経システム（SNS*）に
 
 [より深く](/how-it-works/architecture-of-the-internet-computer/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/ic-architecture.jpg)
@@ -74,4 +74,4 @@ The [Internet Computer](https://dashboard.internetcomputer.org/) was launched an
 
 [Go deeper](/how-it-works/architecture-of-the-internet-computer/)
 
--->
+*/

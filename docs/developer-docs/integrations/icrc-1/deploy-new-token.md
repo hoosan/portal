@@ -98,7 +98,7 @@ dfx canister --network ${NETWORK} call icrc1-ledger icrc1_symbol
 
 新しいトークンがデプロイされ、使用できるようになっています。
 
-<!---
+/**
 # Deploy a new ICRC-1 token
 
 ## Overview
@@ -200,4 +200,4 @@ The output should look like the following:
 
 Your new token is deployed and ready to be used.
 
--->
+*/

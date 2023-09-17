@@ -64,7 +64,7 @@ NNS が IC をコントロールするオープントークン化された DAO �
 - [Threshold ECDSAでは](./t-ecdsa/index.md)、この機能で実現できることの概要を説明しています。
 - 詳細については、[How it worksを](./t-ecdsa/t-ecdsa-how-it-works.md)ご覧ください。
 
-<!---
+/**
 # Functionality integrations
 
 ## Overview
@@ -129,4 +129,4 @@ A threshold ECDSA implementation on a blockchain can be viewed as the on-chain p
 
 
 
--->
+*/

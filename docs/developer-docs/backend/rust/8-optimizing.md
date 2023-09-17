@@ -80,7 +80,7 @@ canister 最適化に関する詳細情報および`wasm-opt` ベンチマーク
 
 次は[カウンターのインクリメントを見て](9-counter.md)みましょう。
 
-<!---
+/**
 # 8: Optimizing Rust canisters
 
 ## Overview
@@ -168,4 +168,4 @@ More information on canister optimization and information on `wasm-opt` benchmar
 
 Next, let's take a look at [incrementing a counter.](9-counter.md)
 
--->
+*/

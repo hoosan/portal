@@ -41,7 +41,7 @@ Motoko は IC 開発者向けドキュメントの[参考文献](../../../motoko
 
 次に、Motoko プロジェクトの[コード](./explore-templates.md)構成を確認してみましょう。
 
-<!---
+/**
 # 1: Motoko fundamentals
 
 ## Overview
@@ -84,4 +84,4 @@ Motoko is extensively documented in the [references](../../../motoko/main/basic-
 
 Next, let's review the [code organization](./explore-templates.md) of a Motoko project. 
 
--->
+*/

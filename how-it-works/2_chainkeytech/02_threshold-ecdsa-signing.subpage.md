@@ -33,7 +33,7 @@ DFINITY は、*非同期ネットワーク*上で動作し、非常に*ロバス
 
 [![Watch youtube video](https://i.ytimg.com/vi/MulbKPwv6_s/maxresdefault.jpg)](https://www.youtube.com/watch?v=MulbKPwv6_s)
 
-<!---
+/**
 
 
 # Chain-key signatures
@@ -64,4 +64,4 @@ DFINITY has designed, analyzed, and implemented a new threshold ECDSA signing pr
 
 [![Watch youtube video](https://i.ytimg.com/vi/MulbKPwv6_s/maxresdefault.jpg)](https://www.youtube.com/watch?v=MulbKPwv6_s)
 
--->
+*/

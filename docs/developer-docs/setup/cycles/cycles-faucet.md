@@ -93,7 +93,7 @@ dfxのバージョンが0.12.0未満の場合は、このコマンドを実行�
 
 これで IC 上でウェブサイトをホストする準備ができました。またはdapp のチュートリアルに従いましょう[。](../../../tutorials/index.mdx)
 
-<!---
+/**
 # Getting started with free cycles
  
 ## Overview
@@ -196,4 +196,4 @@ The last step is to verify the wallet is setup correctly, by checking its balanc
 Now you are ready to host a website on the IC or follow one of our dapp tutorials, which can be found [here.](../../../tutorials/index.mdx)
 
 
--->
+*/

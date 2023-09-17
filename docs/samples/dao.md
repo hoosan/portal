@@ -280,7 +280,7 @@
 - [ic-cdk-macros](https://docs.rs/ic-cdk-macros)
 - [JavaScript APIリファレンス](https://erxue-5aaaa-aaaab-qaagq-cai.ic0.app/)
 
-<!---
+/**
 # Basic decentralized autonomous organization (DAO)
 
 This sample project demonstrates a basic [decentralized autonomous organization](https://en.wikipedia.org/wiki/Decentralized_autonomous_organization) (DAO) that can be deployed to the [Internet Computer](https://github.com/dfinity/ic). The basic DAO sample code is available in [Motoko](https://github.com/dfinity/examples/tree/master/motoko/basic_dao) and [Rust](https://github.com/dfinity/examples/tree/master/rust/basic_dao). You can see a quick introduction on [YouTube](https://youtu.be/3IcYlieA-EE).
@@ -589,4 +589,4 @@ Output:
 - [ic-cdk](https://docs.rs/ic-cdk/latest/ic_cdk/)
 - [ic-cdk-macros](https://docs.rs/ic-cdk-macros)
 - [JavaScript API reference](https://erxue-5aaaa-aaaab-qaagq-cai.ic0.app/)
--->
+*/

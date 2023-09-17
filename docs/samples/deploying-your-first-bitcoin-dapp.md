@@ -180,7 +180,7 @@ Candid UI で、送信先アドレスと送信金額を追加します。以下�
 - canister のテストネットBTC残高を確認します。
 - canister を使用して、テストネット BTC を別の BTC アドレスに送信します。
 
-<!---
+/**
 # Deploying your first Bitcoin dapp
 
 ## Overview 
@@ -364,4 +364,4 @@ In this tutorial, you were able to:
 * Check the testnet BTC balance of the canister.
 * Use the canister to send testnet BTC to another BTC address. 
 
--->
+*/

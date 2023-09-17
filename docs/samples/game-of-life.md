@@ -132,7 +132,7 @@ v2 実装にアップグレードするには、以下のコマンドを実行�
 
 ![Game of life v2](./_attachments/game-of-life3.png)
 
-<!---
+/**
 # Game of Life
 
 ## Overview
@@ -280,4 +280,4 @@ Return to the same browser tab. Refresh the tab. Note the current grid state is 
 Click button **Run**, then click button **Pause** when bored. Open **Details** and click **View State**. Admire the #v2 state on display.
 
 ![Game of life v2](./_attachments/game-of-life3.png)
--->
+*/

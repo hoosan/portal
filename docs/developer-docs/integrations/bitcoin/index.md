@@ -37,7 +37,7 @@ Internet Computer は、このような他のブロックチェーンとの直�
 - ローカルで Bitcoin 統合の実験に興味がある場合は、[ローカル開発ガイドを](local-development.md)参照してください。
 - [サンプルレポには](https://github.com/dfinity/examples) [Rust](https://github.com/dfinity/examples/tree/master/rust/basic_bitcoin)と [Motoko](https://github.com/dfinity/examples/tree/master/motoko/basic_bitcoin)サンプル[コードのウォークスルーに従って](../../../samples/deploying-your-first-bitcoin-dapp.md)ビルドを開始できます。
 
-<!---
+/**
 # Bitcoin integration
 
 ## Overview
@@ -73,4 +73,4 @@ We envision that many people will prefer to use ckBTC instead of our native inte
 - If you are interested in experimenting with Bitcoin integration locally, see the [local development guide](local-development.md).
 - In the [examples repo](https://github.com/dfinity/examples) you can find sample code in [Rust](https://github.com/dfinity/examples/tree/master/rust/basic_bitcoin) and [Motoko](https://github.com/dfinity/examples/tree/master/motoko/basic_bitcoin) from which you can start to build following the [sample code walk-through](../../../samples/deploying-your-first-bitcoin-dapp.md).
 
--->
+*/

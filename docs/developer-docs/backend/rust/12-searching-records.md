@@ -324,7 +324,7 @@ dfx canister call rust_profile_backend search '("black")'
 
 次は、Rustcanisters の[アクセス制御について](./13-access-control.md)説明します。
 
-<!---
+/**
 # 12: Adding and searching simple records
 
 ## Overview
@@ -661,4 +661,4 @@ The command returns the `Dupree` profile:
 
 Next, we'll cover [access control](./13-access-control.md) in Rust canisters.
 
--->
+*/

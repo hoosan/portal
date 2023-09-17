@@ -176,7 +176,7 @@ canister のデプロイに成功したら、canister によって提供され�
 
 次のガイドでは、[ canister にテキスト引数を渡す](hello-location.md)方法について説明します。
 
-<!---
+/**
 # 11: Incrementing a natural number
 
 ## Overview
@@ -381,4 +381,4 @@ To test your code, follow the instructions [here](candid-ui.md).
 ## Next steps
 
 In the next guide, we'll cover [passing text arguments to a canister](hello-location.md).
--->
+*/

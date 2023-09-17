@@ -69,7 +69,7 @@ func factorial(n : Nat) : ?Nat {
 
 `mo-doc` のソースコードは[dfinity/](https://github.com/dfinity/motoko/tree/master/src/docs) [motoko GitHubリポジトリで入手できます。貢献を歓迎します！](https://github.com/dfinity/motoko/tree/master/src/docs)
 
-<!---
+/**
 # Generating Motoko documentation
 
 `mo-doc` is a command-line tool for generating documentation for Motoko source code. It processes source files and generates documentation in various formats. 
@@ -141,4 +141,4 @@ Check out Motoko's [base library souce code](https://github.com/dfinity/motoko-b
 
 The source code for `mo-doc` is available in the [dfinity/motoko](https://github.com/dfinity/motoko/tree/master/src/docs) GitHub repository. Contributions are welcome!
 
--->
+*/

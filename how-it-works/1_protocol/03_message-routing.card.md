@@ -14,7 +14,7 @@ title: Message routing
 
 [より深く](/how-it-works/message-routing/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/messaging-routing.webp)
@@ -29,4 +29,4 @@ Another crucial functionality implemented by the message routing layer is *state
 
 [Go deeper](/how-it-works/message-routing/)
 
--->
+*/

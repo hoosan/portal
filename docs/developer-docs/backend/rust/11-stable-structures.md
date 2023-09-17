@@ -12,7 +12,7 @@
 
 次のステップでは、[レコードの保存と検索について](12-searching-records.md)説明します。
 
-<!---
+/**
 # 11: Stable structures
 
 ## Overview
@@ -27,4 +27,4 @@ For more information about stable structures, please see the [stable structures 
 
 For the next step, let's dive into [storing and searching records](12-searching-records.md).
 
--->
+*/

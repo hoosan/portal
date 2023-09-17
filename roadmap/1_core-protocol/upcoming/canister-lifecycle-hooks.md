@@ -16,7 +16,7 @@ dapps を維持するのは困難です。
 はプッシュ・モデルを導入しており、
 のcycles とメモリが不足すると、canister に自動的に通知されます。
 
-<!---
+/**
 
 
 Currently, developers have to actively monitor their canisters by periodically
@@ -28,4 +28,4 @@ This feature aims to improve the monitoring and observability of canisters by
 introducing a push model, where the canister is automatically notified when it
 is low on cycles and memory.
 
--->
+*/

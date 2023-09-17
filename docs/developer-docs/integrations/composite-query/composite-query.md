@@ -143,7 +143,7 @@ examplesリポジトリには、同等の[Motoko exampleも](https://github.com/
 
 フィードバックや提案はこちらのフォーラムに投稿[できます: https://forum.dfinity.org/t/proposal-composite-queries/15979](https://forum.dfinity.org/t/proposal-composite-queries/15979)
 
-<!---
+/**
 # Composite queries
 ## Overview
 The Internet Computer (IC) supports two types of messages: updates and queries. An update message is executed on all nodes and persists canister state changes. A query message discards state changes and typically executes on a single node. It is possible to execute a query message as an update. In such a case, the query still discards the state changes, but the execution happens on all nodes and the result of execution goes through consensus. This “query-as-update” execution mode is also known as replicated query.
@@ -281,4 +281,4 @@ The following example canisters demonstrate how to use composite queries:
 
 Feedback and suggestions can be contributed on the forum here: [https://forum.dfinity.org/t/proposal-composite-queries/15979](https://forum.dfinity.org/t/proposal-composite-queries/15979)
 
--->
+*/

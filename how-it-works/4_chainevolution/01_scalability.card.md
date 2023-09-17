@@ -12,7 +12,7 @@ ICのNetwork Nervous System (NNS)が新しいサブネットを作成するこ�
 
 [さらに深く](/how-it-works/scalability/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/infinite-scalability.webp)
@@ -25,4 +25,4 @@ The selected group of nodes then begins to form a new subnet blockchain.
 
 [Go deeper](/how-it-works/scalability/)
 
--->
+*/

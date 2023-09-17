@@ -53,7 +53,7 @@
 
 canisters の作成とデプロイに関する詳細については、[ canisters の作成とデプロイのページを](deploying.md)参照してください。
 
-<!---
+/**
 # 4: Motoko quick start
 
 ## Overview
@@ -113,4 +113,4 @@ Backend canister via Candid interface:
 ## Next steps
 
 For a more detailed look at writing and deploying canisters, move onto the [writing and deploying canisters page](deploying.md).
--->
+*/

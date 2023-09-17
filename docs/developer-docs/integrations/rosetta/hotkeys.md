@@ -83,7 +83,7 @@
 MacOSに含まれているOpenSSLのバージョンは、デフォルトではed25519をサポートしていません。
 別のバージョンのOpenSSLをインストールするか（例えば*brewで*）、Linuxマシンからコマンドを実行する必要があるかもしれません。
 
-<!---
+/**
 # Hotkeys generation
 
 ## Overview
@@ -184,4 +184,4 @@ You may have to install another version of OpenSSL (for example through *brew*),
 
 
 
--->
+*/

@@ -11,7 +11,7 @@
 ``` json file=./dfx-json-schema.json
 ```
 
-<!---
+/**
 # dfx.json Schema
 
 ## Overview
@@ -24,4 +24,4 @@ To generate the schema to a file yourself, use `dfx schema --outfile path/to/out
 
 ``` json file=./dfx-json-schema.json
 ```
--->
+*/

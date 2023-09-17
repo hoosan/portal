@@ -559,7 +559,7 @@ dapp のフロントエンドの実験が終わったら、ローカルのcanist
     dfx stop
   ```
 
-<!---
+/**
 
 
 # Customizing the frontend
@@ -1090,4 +1090,4 @@ To stop the local network:
 
         dfx stop
 
--->
+*/

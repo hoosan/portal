@@ -15,7 +15,7 @@ Internet Computer は、異なるサブネットのブロックチェーンに�
 MVPバージョンは、以下のリンク先のフォーラム投稿にある完全なサブネット分割のビジョンに向けた第一歩と見なすことができます。
 フルサブネット分割と比較して、MVPバージョンは自動化とダウンタイムの最小化という点で若干の手抜きをしますが、それ以外は同じ考え方に従っており、MVPバージョンは将来の段階的なステップでフルサブネット分割に変えることができます。
 
-<!---
+/**
 
 
 The Internet Computer is designed to have unbounded capacity by scaling out to different subnet blockchains. 
@@ -27,4 +27,4 @@ The MVP version can be viewed as a first step towards the vision of full subnet 
 The goal is to have a fully functional and end to end verifiable process which consists of a series of NNS proposals. 
 Compared to full subnet splitting the MVP version cuts some corners in terms of automation and minmizing downtime but otherwise follows the same ideas so that the MVP version can be turned into full subnet splitting in future incremental steps. 
 
--->
+*/

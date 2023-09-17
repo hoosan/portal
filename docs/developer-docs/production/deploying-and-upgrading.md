@@ -69,7 +69,7 @@ NFTプロジェクトやDeFicanister は、取引手数料を利用して独自�
   - [ canisters](/concepts/trust-in-canisters.md)の[信頼と](/concepts/trust-in-canisters.md) [再現可能なビルドの](../backend/reproducible-builds.md)セクションに、このトピックに関連する情報があります。
 - \[ \]**ユーザーは、コードが突然変更されないことをどのように信頼**できますか?
 
-<!---
+/**
 # Deploying and upgrading canisters
 
 ## Overview
@@ -139,4 +139,4 @@ Here is a checklist of the things you will need to consider:
   * The sections [trust in canisters](/concepts/trust-in-canisters.md) and [reproducible builds](../backend/reproducible-builds.md) contain information related to this topic.
 - [ ] **How can users trust that the code will not suddenly change?**
 
--->
+*/

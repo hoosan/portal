@@ -101,7 +101,7 @@ Wikiには以下のトピックのガイドもあります：
 - SNS[分散化スワップへの参加方法：quill](https://wiki.internetcomputer.org/wiki/How-To:_Participate_in_the_SNS_decentralization_sale_via_quill)（canisters とやりとりするためのコマンドラインツール）を使ってSNS[分散化スワップに](https://wiki.internetcomputer.org/wiki/How-To:_Participate_in_the_SNS_decentralization_sale_via_quill)参加します。
 - [コミュニティファンドへの](https://wiki.internetcomputer.org/wiki/How-To:_Join_the_Community_fund_via_quill)参加方法: quill（コマンドラインツール）canisters.
 
-<!---
+/**
 # Service Nervous System (SNS)
 
 ## Overview
@@ -135,7 +135,7 @@ In this documentation you will find
 This section not only targets developers that have a dapp that they would like to decentralize with an SNS, but also developers that want to build services that integrate with SNSs, such as wallet dapps or decentralized exchanges.
 
 It includes
-* [An introduction to SNS integration](./integrating/index.md). <!--Guidelines how to integrate a frontend (integrate-sns/frontend-integration.md)-!->
+* [An introduction to SNS integration](./integrating/index.md). <!--Guidelines how to integrate a frontend (integrate-sns/frontend-integration.md)-->
 * [Guidelines how to integrate with the ledger canister](./integrating/ledger-integration.md).
 * [Guidelines how to integrate with the index canister](./integrating/index-integration.md).
 
@@ -164,7 +164,7 @@ This section includes
 * [An intorduction to how to use the asset canister with an SNS-controlled dapp](./managing/sns-asset-canister.md).
 
 
-<!-- Information on nervous system parameters that can be configured in each SNS (managing-sns/nervous-system-parameters.md); Information on how SNS are upgraded (managing-sns/upgradeSNS.md)-!->
+<!-- Information on nervous system parameters that can be configured in each SNS (managing-sns/nervous-system-parameters.md); Information on how SNS are upgraded (managing-sns/upgradeSNS.md)-->
 
 ## Explanations and guides for users
 Finally, the website and Wiki contain information relevant for users of the SNS.
@@ -190,4 +190,4 @@ The Wiki also contains guides for the following topics:
 * [How to: participate in the SNS decentralization swap via quill](https://wiki.internetcomputer.org/wiki/How-To:_Participate_in_the_SNS_decentralization_sale_via_quill), which is a command line tool for interacting with canisters.
 * [How to: join the community fund via quill](https://wiki.internetcomputer.org/wiki/How-To:_Join_the_Community_fund_via_quill), which is a command line tool for interacting with canisters.
 
--->
+*/

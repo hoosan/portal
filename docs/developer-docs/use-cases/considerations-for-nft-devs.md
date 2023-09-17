@@ -99,7 +99,7 @@ canister のブラックホール化にも問題があります。canister の�
 - [NFT Anvil](https://nftanvil.com/)。
 - [Yumi](https://tppkg-ziaaa-aaaal-qatrq-cai.raw.icp0.io/)。
 
-<!---
+/**
 
 # NFT development
 
@@ -212,4 +212,4 @@ The following resources are community projects. Please do your own research and 
 
 
 
--->
+*/

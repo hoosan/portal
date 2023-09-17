@@ -157,7 +157,7 @@ ICメインネットにデプロイした後にエラーコード500が表示さ
 
 ![Godot Game Example](./_attachments/godot-game-example.png)
 
-<!---
+/**
 # Hosting a web game on the Internet Computer
 
 ## Overview 
@@ -295,4 +295,4 @@ Navigate to the frontend canister URL in a web browser to view your game:
 
 ![Godot Game Example](./_attachments/godot-game-example.png)
 
--->
+*/

@@ -13,11 +13,11 @@ is_community: false
 
 提案された解決策は、国庫移転の提案が50％の賛成を得た場合のみ承認することです。
 
-<!---
+/**
 
 Via the proposal action “Transfer SNS Treasury funds” an SNS can vote on transferring funds from its treasury, for example to pay developers for work on code extensions. Currently, this type of proposals follows the same rules as all proposals which can be adopted with only 3% voter participation. There is the risk that a malicious treasury transfer is approved because:
 * Voters might be overwhelmed with many proposals submitted in parallel.
 * (Some) voters are not yet actively voting, in particular in the first days/weeks after SNS launch, where participants are still configuring their following set-up.
 
 The proposed solution is to approve treasury transfer proposals only if they reach 50% approval.
--->
+*/

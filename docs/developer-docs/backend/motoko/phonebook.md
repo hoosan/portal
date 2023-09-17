@@ -168,7 +168,7 @@ dapp は1つのキーに対して1つの値を返すように書かれている�
 
 次に、[電卓関数での整数の使い方](calculator.md)を見てみましょう。
 
-<!---
+/**
 # 9: Importing library modules
 
 ## Overview
@@ -360,4 +360,4 @@ For example, you might want to change the source code so that instead of a dapp 
 
 Next, let's take a look at [using integers in calculator functions](calculator.md)
 
--->
+*/

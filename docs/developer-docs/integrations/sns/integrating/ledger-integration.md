@@ -14,7 +14,7 @@ SNS 台帳canister は、**チェーンの**最後のブロックでの口座残
 ICRC-1 台帳のインストール方法については、「[ICRC-1 台帳のデプロイメント](/developer-docs/integrations/icrc-1/deploy-new-token.md)」を参照してください。
 ICRC-1 台帳との対話方法については、「[ICRC-1 台帳の対話](/developer-docs/integrations/icrc-1/index.md)」を参照してください。
 
-<!---
+/**
 
 # SNS ledger canister
 ## Overview
@@ -26,4 +26,4 @@ The ledger canister follows the [ICRC-1](https://github.com/dfinity/ICRC-1) spec
 
 For instructions on how to install the ICRC-1 Ledger follow [ICRC-1 Ledger Deployment](/developer-docs/integrations/icrc-1/deploy-new-token.md).
 For instructions on how to interact with the ICRC-1 Ledger follow [ICRC-1 Ledger Interaction](/developer-docs/integrations/icrc-1/index.md).
--->
+*/

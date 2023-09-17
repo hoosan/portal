@@ -808,7 +808,7 @@ Rosetta API は、neuron のステートを操作メタデータとして`/const
 }
 ```
 
-<!---
+/**
 # Staking and neuron management
 
 ## Overview
@@ -1622,4 +1622,4 @@ The Rosetta API returns the state of the neuron as operation metadata in the `/c
 }
 ```
 
--->
+*/

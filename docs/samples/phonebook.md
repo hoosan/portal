@@ -44,7 +44,7 @@
 
 ![Phonebook](./_attachments/phonebook.png)
 
-<!---
+/**
 # Phone book
 
 ## Overview
@@ -101,4 +101,4 @@ You will see an interface that you can interact with to store phone book entries
 
 
 
--->
+*/

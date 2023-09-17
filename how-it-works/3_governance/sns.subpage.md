@@ -13,7 +13,7 @@ SNSは、[Network Nervous System (NNS)](/how-it-works/network-nervous-system-nns
 
 - [Service Nervous System (SNS) はどのようにオンチェーンにトークン化されたガバナンスをもたらすのかDapps ｜Medium](https://medium.com/dfinity/how-the-service-nervous-system-sns-will-bring-tokenized-governance-to-on-chain-dapps-b74fb8364a5c)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/service-nervous-system.webp)
@@ -25,4 +25,4 @@ An SNS would derive from the [Network Nervous System (NNS)](/how-it-works/networ
 * [How the Service Nervous System (SNS) Will Bring Tokenized Governance to On-Chain Dapps | Medium](https://medium.com/dfinity/how-the-service-nervous-system-sns-will-bring-tokenized-governance-to-on-chain-dapps-b74fb8364a5c)
 
 
--->
+*/

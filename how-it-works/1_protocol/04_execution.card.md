@@ -20,7 +20,7 @@ Canister メッセージ、すなわちユーザーによるイングレスメ�
 
 [より深く](/how-it-works/execution-layer/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/execution.webp)
@@ -40,4 +40,4 @@ The execution layer has many unique features, which sets apart the IC from other
 
 [Go deeper](/how-it-works/execution-layer/)
 
--->
+*/

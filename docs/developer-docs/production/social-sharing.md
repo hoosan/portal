@@ -83,7 +83,7 @@ raw アクセスを有効にするには、`.ic-assets.json` ファイルに以�
 Identity の代替フロントエンドオリジンとして登録します。代替オリジンを設定するには、以下の手順に従ってください。
 [代替オリジンの設定](../integrations/internet-identity/alternative-origins.md)
 
-<!---
+/**
 # Sharing links to dapps
 
 ## Overview
@@ -177,4 +177,4 @@ register the domains as alternative frontend origins for Internet
 Identity. Follow these instructions to configure alternative origins:
 [Configuring alternative origins](../integrations/internet-identity/alternative-origins.md)
 
--->
+*/

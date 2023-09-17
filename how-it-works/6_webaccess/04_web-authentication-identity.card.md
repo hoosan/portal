@@ -14,7 +14,7 @@ Internet Identityは、Internet Computer 上のアプリケーションへのゲ
 
 [より深く](/how-it-works/web-authentication-identity/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/internet-identity.webp)
@@ -27,4 +27,4 @@ Internet Identity is a gateway to applications on the Internet Computer. When yo
 
 [Go deeper](/how-it-works/web-authentication-identity/)
 
--->
+*/

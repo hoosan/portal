@@ -230,7 +230,7 @@ FEは、見かけ上のBEからのレスポンス（canister ）を信頼し、�
 
 canister は証明書を更新し、フロントエンドはそれをチェックします。開発者コンソールには、各ステップに関する追加コメントが表示されます。
 
-<!---
+/**
 # Certified variables
 
 ## Overview
@@ -482,4 +482,4 @@ The canister updates its certificate, and the frontend checks it. The developer 
 
 
 
--->
+*/

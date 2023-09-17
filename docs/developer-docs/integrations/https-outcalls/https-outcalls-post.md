@@ -531,7 +531,7 @@ RustとMotoko の両方の最小限の例では、生のレスポンスを変換
 - Rust による[HTTP POST](https://github.com/dfinity/examples/tree/master/rust/send_http_post)リクエストのサンプルコード
 - の HTTP[POST](https://github.com/dfinity/examples/tree/master/motoko/send_http_post)リクエストのサンプルコード[ Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_post)
 
-<!---
+/**
 # How to use HTTP outcalls: POST
 
 ## Overview
@@ -1054,4 +1054,4 @@ In both the Rust and Motoko minimal examples, we did not create a **transform** 
 
 * Sample code of [HTTP POST requests in Rust](https://github.com/dfinity/examples/tree/master/rust/send_http_post)
 * Sample code of [HTTP POST requests in Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_post)
--->
+*/

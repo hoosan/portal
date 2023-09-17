@@ -10,9 +10,9 @@ is_community: false
 Motoko ベースライブラリに StableMemory が登場します。開発者はまもなく、自分のプロジェクト
 を実験的 Stable Memory の使用から公式な Stable Memory ソリューションにアップグレードできるようになります。
 
-<!---
+/**
 
 StableMemory is coming to the Motoko Base Library. Developers will soon be able to upgrade their projects
 from the use of Experimental Stable Memory to an official Stable Memory solution. 
 
--->
+*/

@@ -12,7 +12,7 @@ coverImage: /img/how-it-works/ck-tokens-content.600x300.webp
 
 [さらに深く](/how-it-works/chain-key-tokens/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/ck-tokens-content.600x300.webp)
@@ -23,4 +23,4 @@ Chain-key tokens — and Chain-Key Bitcoin (ckBTC) — are a cryptography-based 
 
 [Go deeper](/how-it-works/chain-key-tokens/)
 
--->
+*/

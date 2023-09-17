@@ -174,7 +174,7 @@ SNSプロポーザルを介してSNS管理canisters でコードを実行する�
 ジェネリック関数を使用するには、まずSNSプロポーザルを提出し、これらの関数をSNSガバナンスに登録する必要があります。プロポーザルが採用されると、指定されたバイナリペイロードでそれらを実行するプロポーザルを提出することができます。
 プロポーザルの詳細については、[SNSの管理方法のドキュメントに](../managing/making-proposals.md)記載されています。
 
-<!---
+/**
 
 
 # SNS preparation checklist
@@ -247,7 +247,7 @@ A confirmation text, defined as a parameter that is approved by the NNS, can be 
 Test the configuration extensively locally before submitting the NNS proposal. See section 2 for more information about testing.
 
 ## 1.5. Create NNS proposals
-<!-- OLD: As a part of the SNS launch process, two proposals must be created. The first proposal is for allowing a principle to create the SNS canisters, see Hot or Not’s [command](https://forum.dfinity.org/t/help-submit-the-sns-w-wallet-principal-id-to-be-whitelisted/20322/20) to create the first proposal.-!->
+<!-- OLD: As a part of the SNS launch process, two proposals must be created. The first proposal is for allowing a principle to create the SNS canisters, see Hot or Not’s [command](https://forum.dfinity.org/t/help-submit-the-sns-w-wallet-principal-id-to-be-whitelisted/20322/20) to create the first proposal.-->
 
  As a part of the SNS launch process, an NNS proposal must be created to ask the NNS to create an SNS and start a decentralization swap. You can find the details about how to create such a proposal [here](../launching/launch-summary-1proposal.md).
 
@@ -326,4 +326,4 @@ an action given the proposal payload.
 To use generic functions, you must first submit an SNS proposal to register these functions with SNS governance. Once the proposal is adopted, you can submit proposals to execute them with a given binary payload.
 You can find more details on proposals in the [documentation how to manage SNSs](../managing/making-proposals.md).
 
--->
+*/

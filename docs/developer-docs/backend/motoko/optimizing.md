@@ -57,7 +57,7 @@ canister 最適化に関する詳細情報および`wasm-opt` ベンチマーク
 
 次に、[ライブラリモジュールのインポートを見て](phonebook.md)みましょう。
 
-<!---
+/**
 # 8: Optimizing canisters
 
 ## Overview
@@ -122,4 +122,4 @@ More information on canister optimization and information on `wasm-opt` benchmar
 ## Next steps
 
 Next, let's take a look at [importing library modules](phonebook.md).
--->
+*/

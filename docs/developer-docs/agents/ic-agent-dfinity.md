@@ -18,7 +18,7 @@ ic-agentは、Internet Computer を介してInternet Computer に直接接続で
 - Rustエージェントのドキュメントは[こちら](https://docs.rs/ic-agent/latest/ic_agent)。
 - Rustエージェントのソースコードは[こちら](https://github.com/dfinity/agent-rs)。
 
-<!---
+/**
 
 # Calling IC from a Rust agent
 
@@ -34,4 +34,4 @@ One example of a project that uses the `ic-agent` is dfx, which you can find [he
 - Rust agent documentation [here](https://docs.rs/ic-agent/latest/ic_agent).
 - Rust agent source code [here](https://github.com/dfinity/agent-rs).
 
--->
+*/

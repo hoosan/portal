@@ -106,7 +106,7 @@ Node.jsは`dfx` 、フロントエンドのコードと依存関係を生成す�
 
 - 0\.[4:canisters](04-intro-canisters.md) の[紹介](04-intro-canisters.md).
 
-<!---
+/**
 # 0.3: Developer environment setup
 
 ## Overview
@@ -219,4 +219,4 @@ We'll use this working directory to contain the projects that we build throughou
 
 - [0.4: Introduction to canisters](04-intro-canisters.md).
 
--->
+*/

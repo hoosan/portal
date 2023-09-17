@@ -102,7 +102,7 @@
 
 あとは、canister をデプロイするだけです。以降、オリジン**B**から認証を行おうとすると、**A を**使用しているときと同じプリンシパルが返されます。
 
-<!---
+/**
 # Alternative frontend origins
 
 ## Overview
@@ -210,4 +210,4 @@ This includes a general rule to not ignore the `.well-known` directory, and rule
 
 Then, all you need to do is deploy your canister. When you attempt to authenticate from origin **B** from then on, you will get back the same principal you get while using **A**.
 
--->
+*/

@@ -14,7 +14,7 @@ Canister Internet Computer 上のスマートコントラクトは、ビット�
  canister
  Internet Computer
 
-<!---
+/**
 
 
 Canister smart contracts on the Internet Computer can control and hold real bitcoin on the Bitcoin network. 
@@ -25,4 +25,4 @@ Vice versa, users can use this canister to redeem their ckBTC for real bitcoin.
 As ckBTC is a token that lives on the Internet Computer, it can be transacted efficiently and with low fees.
 The ckBTC token is backed 1:1 with real bitcoin that is publicly-verifiably held 100% on chain.
 
--->
+*/

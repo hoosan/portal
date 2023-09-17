@@ -50,7 +50,7 @@ canister
 
 [ビットコイン統合](https://medium.com/dfinity/btc-icp-mainnet-integration-complete-bringing-smart-contract-functionality-to-bitcoin-9bd81d4ce0ba)の開始
 
-<!---
+/**
 
 
 # Bitcoin Integration
@@ -98,4 +98,4 @@ Lastly, the canister builds a Bitcoin transaction using some of the UTXOs as inp
 
 [Bitcoin integration goes live](https://medium.com/dfinity/btc-icp-mainnet-integration-complete-bringing-smart-contract-functionality-to-bitcoin-9bd81d4ce0ba).
 
--->
+*/

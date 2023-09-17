@@ -30,7 +30,7 @@
 | 0.6.24 | [リリースノート](https://github.com/dfinity/sdk/releases/tag/0.6.24) |  |
 | 0.6.23 | [リリースノート](https://github.com/dfinity/sdk/releases/tag/0.6.23) |  |
 
-<!---
+/**
 # Release Notes
 
 | Version | Release Notes                                                       | Migration Guide                                                                                            |
@@ -63,4 +63,4 @@
 | 0.6.24  | [release notes](https://github.com/dfinity/sdk/releases/tag/0.6.24) |                                                                                                            |
 | 0.6.23  | [release notes](https://github.com/dfinity/sdk/releases/tag/0.6.23) |                                                                                                            |
 
--->
+*/
