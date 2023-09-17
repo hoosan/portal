@@ -10,7 +10,7 @@ Motoko はスマートコントラクトのための新しいプログラミン�
 
 [より深く](/how-it-works/motoko/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/motoko.webp)
@@ -21,4 +21,4 @@ Motoko is a new programming language for smart contracts. It is designed to seam
 
 [Go deeper](/how-it-works/motoko/)
 
--->
+*/

@@ -10,7 +10,7 @@
 
 - [リファレンス](../../../references/candid-ref.md)では、Candid のツールやライブラリへのリンクや、Candid がサポートしている型についての詳細なリファレンス情報を提供しています。
 
-<!--
+/**
 # Candid
 
 Welcome to the Candid documentation for developers.
@@ -23,4 +23,4 @@ This *Candid Guide* explains what Candid is and how you can use it when developi
 
 -   The [Reference](../../../references/candid-ref.md) section provides links to Candid tools and libraries and detailed reference information about Candid supported types.
 
--->
+*/

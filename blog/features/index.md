@@ -14,7 +14,7 @@ sidebar_position: 1
 
 もっと知りたいことがあれば、遠慮なく[フォーラムや](https://forum.dfinity.org/) [ツイッターの開発者アカウントまで](https://twitter.com/DFINITYDev)ご連絡ください。
 
-<!---
+/**
 
 
 # Features updates
@@ -25,4 +25,4 @@ Here you will find updates about the ongoing development of features on the IC. 
 - [Community conversations playlist](https://youtube.com/playlist?list=PLuhDt1vhGcrdQu9Hw8eLDV9OTZXE5lklI) on Youtube
 
 If there's anything that you'd like to know more about, don't hesitate to reach out on the [forum](https://forum.dfinity.org/), or at our [dev account on twitter](https://twitter.com/DFINITYDev).
--->
+*/

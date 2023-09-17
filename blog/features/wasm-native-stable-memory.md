@@ -101,7 +101,7 @@ fn insert_many(entries: Vec<(u128, u128)>) {
 
 Dapps 安定したメモリを使用しているアプリケーションでは、開発者が変更を加えなくても、安定したメモリの読み書きのパフォーマンスが 1.5 ～ 2 倍向上するはずです。ですから、今すぐ安定メモリの使用を検討すべきです！
 
-<!---
+/**
 
 
 # Wasm-native stable memory
@@ -199,4 +199,4 @@ If you’re interested in seeing some architecture of more complicated dapps tha
 
 Dapps which use stable memory should see 1.5-2x performance improvements for stable memory reads and writes without developers needing to make any changes. So you should consider using stable memory today!
 
--->
+*/

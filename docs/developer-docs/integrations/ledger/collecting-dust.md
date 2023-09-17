@@ -17,7 +17,7 @@ SNS 元帳の場合、しきい値は現在、元帳の 2,800 万アカウント
 したがって、トランザクションを追加すると、2,810 万アカウント以上のインデックスが作成される場合、
 残高が最も少ない 10 万アカウントがトリムされ、その残高はバーンされます。
 
-<!---
+/**
 # Account trimming
 
 ## Overview
@@ -40,4 +40,4 @@ trim quantity.
 Therefore, if adding a transaction lead to index more than 28.1 M accounts, the 100,000 accounts with the lowest
 balance will be trimmed and their balance burned.
 
--->
+*/

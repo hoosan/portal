@@ -67,7 +67,7 @@ ICPトークンは以下の点でビットコインと異なります：
 
 - このメモフィールドはRosetta APIによってトランザクションを区別するnonceを格納するために使用されます。しかし、このフィールドには他の用途も考えられます。
 
-<!---
+/**
 # The ICP ledger
 
 ## Overview
@@ -138,4 +138,4 @@ The ICP token differs from Bitcoin in the following ways:
 
 -   Any transaction can store an 8-byte memo — this memo field is used by the Rosetta API to store the nonce that distinguishes between transactions. However, other uses for the field are possible.
 
--->
+*/

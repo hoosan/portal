@@ -12,7 +12,7 @@ NNSの意思決定は、オープントークナイズされたガバナンス�
 
 [より深く](/nns/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/network-nervous-system.webp)
@@ -25,4 +25,4 @@ NNS decision making is done via an open tokenized governance system. The NNS is 
 
 [Go deeper](/nns/)
 
--->
+*/

@@ -108,7 +108,7 @@ Ask authors of tools for permission
    cycles に変換し、
   SNScanisters にcycles を送る作業を、少なくともある程度自動化することが考えられます。
 
-<!---
+/**
 # SNS cycle management
 
 ## Overview
@@ -182,7 +182,7 @@ SNS root knows about all these canisters and their cycles.
 You can get all the SNS and associated dapp canisters' status,
 which includes the cycles, by using the SNS root canister's method
 `get_sns_canisters_summary`.
-<!-- dfx, dashboard?-!->
+<!-- dfx, dashboard?-->
 
 ### Step 2: Send new cycles to a given canister.
 If the first step shows that one of SNS or dapp canisters runs 
@@ -199,7 +199,7 @@ You can find [here](./making-proposals.md) how to make such a proposal.
 <!--## Helpful community tools
 - Is referring to community tools sth that we do? (think it would be nice)
 Ask authors of tools for permission
--!->
+-->
 
 ## The (possible) future of cycles management
 As this page shows, the current management of cycles is 
@@ -218,4 +218,4 @@ conceivable that the task of taking ICP from the SNS's treasury,
    converting them to cycles, and sending those cycles to the 
    SNS canisters can be automated at least to some extent.
 
--->
+*/

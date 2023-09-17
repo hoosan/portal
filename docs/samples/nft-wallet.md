@@ -47,7 +47,7 @@ cd ..
 dfx canister call nftwallet transfer '(record {canister = principal "<NFT canister id>"; index = 1:nat64}, principal "<recipient canister id>", opt true)'
 ```
 
-<!---
+/**
 # NFT wallet
 
 ## Overview
@@ -96,4 +96,4 @@ For example, to to transfer an NFT use the command:
 dfx canister call nftwallet transfer '(record {canister = principal "<NFT canister id>"; index = 1:nat64}, principal "<recipient canister id>", opt true)'
 ```
 
--->
+*/

@@ -124,7 +124,7 @@ USDでのAPIコールあたりのコストは、2022年11月23日のUSD/XDR為�
 
 - [ローカル開発](./local-development.md)。
 
-<!---
+/**
 # Bitcoin integration: technology overview
 
 ## Overview
@@ -249,4 +249,4 @@ To start building your own apps with Bitcoin see the following tutorials:
 
 - [Local development](./local-development.md).
 
--->
+*/

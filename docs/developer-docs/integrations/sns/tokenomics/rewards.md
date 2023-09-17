@@ -139,7 +139,7 @@ NNS と同様に、SNS ガバナンス提案によって SNS の構成を変更�
 - トークンの一部（ユーザー報酬用に予約）は、SNS が管理するアカウント（canister ）に保管できます。このcanister は、報酬がいつ誰に支払われるかを成文化できます。
 - このソリューションでは、（新規発行ではなく）既存のトークンを支払うことができます。ユーザーの報酬が発行のトリガーになることが必要な場合は、後のフェーズで追加できます。
 
-<!---
+/**
 
 # SNS rewards
 
@@ -271,4 +271,4 @@ In the following we provide an overview of the relevant parameters for the deter
 * Some tokens (reserved for user rewards) can be held in an account that is owned by an SNS-controlled canister. This canister can then codify when the rewards are paid out and to whom.
 * This solution allows paying out existing (not newly minted) tokens. If it is required that user rewards trigger minting, this could be added in a later phase.
 
--->
+*/

@@ -18,7 +18,7 @@ Internet Computer 上のどのdapp も SNS に引き渡すことができ、そ�
 各 SNS には、意思決定と変更を指揮するステークベースのガバナンスシステムと、各 SNS に固有のトークンを定義する台帳が含まれます。
 SNSの立ち上げが成功すると、SNSが作成され、ガバナンスコントロールが分散化スワップでユーザーに配布され、（ガバナンスコントロールと引き換えに）初期資金が集められ、dapp'のコントロールが新しいSNSに引き渡されます。
 
-<!---
+/**
 
 # SNS introduction
 
@@ -36,4 +36,4 @@ Each SNS includes a stake-based governance system, that orchestrates decision ma
 The SNS framework also comes with a defined path how an SNS is launched.
 During a successful launch, an SNS is created, the governance control is distributed to users in a decentralization swap, initial funds are collected (in exchange for governance control), and the dapp's control is handed over to the new SNS.
 
--->
+*/

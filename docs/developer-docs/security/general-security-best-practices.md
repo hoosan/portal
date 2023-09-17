@@ -134,7 +134,7 @@ canister の実装とフロントエンドのコードについて、特に、�
 
 可能な限り、本番環境でのテストコードや開発コードを避けてください。
 
-<!---
+/**
 
 # General security best practices
 
@@ -266,4 +266,4 @@ For example, we have seen issues where the public key to verify certification wa
 
 Avoid test and dev code in production code whenever possible.
 
--->
+*/

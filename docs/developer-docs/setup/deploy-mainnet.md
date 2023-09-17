@@ -460,7 +460,7 @@ Motoko の使用方法や、Internet Computer ブロックチェーン用のdapp
 
 - [Candidとは何か](/developer-docs/backend/candid/candid-concepts.md)：Candidインターフェース記述言語がどのようにサービスの相互運用性とコンポーザビリティを実現するかについて学びます。
 
-<!---
+/**
 
 
 # Deploying to the Internet Computer mainnet 
@@ -850,4 +850,4 @@ Here are some suggestions for where to go next:
 -   [What is Candid?](/developer-docs/backend/candid/candid-concepts.md) to learn how the Candid interface description language enables service interoperability and composability.
 
 
--->
+*/

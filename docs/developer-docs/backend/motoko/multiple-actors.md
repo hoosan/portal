@@ -311,7 +311,7 @@ Internet Computer ブロックチェーンメインネット上で実行され�
 
 次のガイドでは、[IDを使用したアクセス制御について](./access-control.md)説明します。
 
-<!---
+/**
 # 15: Using multiple actors
 
 ## Overview
@@ -665,4 +665,4 @@ To test your canisters running on the Internet Computer blockchain mainnet use t
 ## Next steps
 
 In the next guide, let's discuss [access control using identities](./access-control.md)
--->
+*/

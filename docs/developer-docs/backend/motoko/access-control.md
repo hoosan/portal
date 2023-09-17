@@ -442,7 +442,7 @@ ID と認証に関する詳細情報をお探しの場合は、以下の関連�
 
 次に、[ canisters を](candid-ui.md) [使用して Candid UI](candid-ui.md) を使用してみましょう。
 
-<!---
+/**
 # 16: Add access control with identities
 
 ## Overview
@@ -987,4 +987,4 @@ If you are looking for more information about identity and authentication, check
 
 Next, let's dive into using the [Candid UI with canisters](candid-ui.md).
 
--->
+*/

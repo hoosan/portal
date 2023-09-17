@@ -40,7 +40,7 @@
 
     (2 : nat)
 
-<!---
+/**
 # PubSub
 
 ## Overview
@@ -92,4 +92,4 @@ The output should resemble the following:
 ```
 (2 : nat)
 ```
--->
+*/

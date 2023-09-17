@@ -14,7 +14,7 @@ ICネットワークのさらなる成長のために、新しいReplica HW仕�
 
 IC wiki: https://wiki.internetcomputer.org/wiki/Node\_Provider\_Remuneration
 
-<!---
+/**
 
 
 For the further growth of the IC network, the new Replica HW specification has been defined. This new Hardware specification is generic (instead of vendor specific) and supports VM memory encryption and attestation which will be needed in future features on the IC. Since the HW specification is different, a new version of the remuneration, which will be called V2 (Version 2) remuneration model is being defined. Based on feedback and discussion within the community, this remuneration is based on the following:
@@ -23,4 +23,4 @@ For the further growth of the IC network, the new Replica HW specification has b
 
 IC wiki: https://wiki.internetcomputer.org/wiki/Node_Provider_Remuneration
 
--->
+*/

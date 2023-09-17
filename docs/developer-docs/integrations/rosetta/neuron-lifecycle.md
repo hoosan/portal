@@ -74,7 +74,7 @@ neuron のステート遷移と報酬の詳細については、[ Internet Compu
         dissolved --> non_dissolving: increase_dissolve_delay
         dissolved --> [*] : disburse
 
-<!---
+/**
 # Neuron lifecycle
 
 ## Overview
@@ -135,12 +135,12 @@ For more information on neuron state transitions and rewards, see [understanding
         state "Non-dissolving Neuron" as non_dissolving
         state "Dissolving Reward Neuron" as dissolving
         state "Dissolved Reward Neuron" as dissolved
-        [*] -!-> non_dissolving : transfer + claim_or_refresh_neuron_from_account
-        non_dissolving -!-> non_dissolving : increase_dissolve_delay
-        non_dissolving -!-> dissolving : start_dissolving
-        dissolving -!-> non_dissolving : stop_dissolving
-        dissolving -!-> dissolved : passage of time
-        dissolved -!-> non_dissolving: increase_dissolve_delay
-        dissolved -!-> [*] : disburse
+        [*] --> non_dissolving : transfer + claim_or_refresh_neuron_from_account
+        non_dissolving --> non_dissolving : increase_dissolve_delay
+        non_dissolving --> dissolving : start_dissolving
+        dissolving --> non_dissolving : stop_dissolving
+        dissolving --> dissolved : passage of time
+        dissolved --> non_dissolving: increase_dissolve_delay
+        dissolved --> [*] : disburse
 
--->
+*/

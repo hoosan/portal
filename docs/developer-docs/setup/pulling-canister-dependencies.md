@@ -436,7 +436,7 @@ canister 開発者チームを考えてみましょう：
 - [GitHub サンプルプロジェクト](https://github.com/lwshang/pullable.git)
 - [依存関係をプルするコンセプトのドキュメント](https://github.com/dfinity/sdk/blob/master/docs/concepts/pull-dependencies.md)
 
-<!---
+/**
 # Pulling canister dependencies
 
 ## Overview
@@ -879,4 +879,4 @@ These files also help CI to detect outdated dependencies.
 - [GitHub example project](https://github.com/lwshang/pullable.git).
 - [Pull dependencies concept documentation](https://github.com/dfinity/sdk/blob/master/docs/concepts/pull-dependencies.md).
 
--->
+*/

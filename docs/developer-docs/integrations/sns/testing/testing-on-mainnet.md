@@ -339,7 +339,7 @@ dfx canister call sns_root recover '()'
 
 メインネットでテストフライトを実行する場合は、`dfx canister` に追加の引数として`--network ic` を渡します。
 
-<!---
+/**
 
 # Testing on mainnet (SNS testflight)
 
@@ -671,4 +671,4 @@ dfx canister call sns_root recover '()'
 ```
 
 When running the testflight on the mainnet, pass `--network ic` as an additional argument to `dfx canister`.
--->
+*/

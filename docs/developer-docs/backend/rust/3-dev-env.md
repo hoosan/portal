@@ -42,7 +42,7 @@
 
 上記の手順を踏んだら、Rust を使ってバックエンドcanisters の開発を始める準備ができました！まずは[Rust クイックスタートガイド](./4-quickstart.md) をご覧ください。
 
-<!---
+/**
 # 3: Developer environment 
 
 ## Setting up your environment 
@@ -87,4 +87,4 @@ Before you start your project, verify the following:
 
 After following the steps above, you're ready to get started developing backend canisters with Rust! To get started, check out the [Rust quick start guide](./4-quickstart.md).
 
--->
+*/

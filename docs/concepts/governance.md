@@ -22,7 +22,7 @@ Internet Computer 上のトークンは一般的に流動的であるため、�
 
 Internet Computer ブロックチェーンは、neuronにロックアップされた ICP トークンの数を追跡し、ICP トークンのアカウント残高の管理と連動して投票に必要なロジックを提供します。
 
-<!---
+/**
 # Neurons and governance
 
 ## Overview 
@@ -46,4 +46,4 @@ When a person or organization has some number of ICP tokens locked up in a neuro
 
 The Internet Computer blockchain tracks the number of ICP tokens that are locked up in neurons and provides the logic necessary for voting in conjunction with managing ICP token account balances.
 
--->
+*/

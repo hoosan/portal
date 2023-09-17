@@ -32,7 +32,7 @@
 
     ("This is a test.")
 
-<!---
+/**
 # Echo
 
 ## Overview
@@ -75,4 +75,4 @@ The following output will be returned:
 ```
 ("This is a test.")
 ```
--->
+*/

@@ -28,7 +28,7 @@ Rustのサンプルプロジェクトは[`dfinity/examples` リポジトリに�
 - **[印刷](https://github.com/dfinity/cdk-rs/tree/main/examples/print)**。
 - **[プロファイル](https://github.com/dfinity/cdk-rs/tree/main/examples/profile)**。
 
-<!---
+/**
 # Rust sample code and applications
 
 The following sample projects for Rust can be found in the [`dfinity/examples` repository](https://github.com/dfinity/examples):
@@ -58,4 +58,4 @@ The `cdk-rs` repository includes the following examples:
 - **[Management canister](https://github.com/dfinity/cdk-rs/tree/main/examples/management_canister)**.
 - **[Print](https://github.com/dfinity/cdk-rs/tree/main/examples/print)**.
 - **[Profile](https://github.com/dfinity/cdk-rs/tree/main/examples/profile)**.
--->
+*/

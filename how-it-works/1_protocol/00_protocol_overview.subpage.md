@@ -40,7 +40,7 @@ canistercanister
 
 コアとなるICプロトコルは、その動作において連[*鎖鍵暗号に*](https://internetcomputer.org/how-it-works/#Chain-key-cryptography)大きく依存しています。  チェーン・キー暗号の重要なコンポーネントは[*チェーン進化技術で*](https://internetcomputer.org/how-it-works/#Chain-evolution-technology)、新しいノードがサブネットに簡単かつ安全に参加できるようにするなど、ICの長期運用を容易にします。
 
-<!---
+/**
 
 
 # Core Internet Computer Protocol – Overview
@@ -77,4 +77,4 @@ Local inter-canister messages do not need to go through consensus, while XNet in
 
 The core IC protocol heavily relies on [*chain-key cryptography*](https://internetcomputer.org/how-it-works/#Chain-key-cryptography) for its operation.  A key component of chain-key cryptography is [*chain-evolution technology*](https://internetcomputer.org/how-it-works/#Chain-evolution-technology), which facilitates the long-term operation of the IC, such as allowing new nodes to easily and securely join a subnet.
 
--->
+*/

@@ -128,7 +128,7 @@ canister の更新によって変更されたワズム・コードや、canister
 
 [![Watch youtube video](https://img.youtube.com/vi/YexfeByBXlo/0.jpg)](https://www.youtube.com/watch?v=YexfeByBXlo)
 
-<!---
+/**
 
 
 # Message Routing
@@ -258,4 +258,4 @@ Check out the [wiki page](https://wiki.internetcomputer.org/wiki/IC_message_rout
 
 [![Watch youtube video](https://img.youtube.com/vi/YexfeByBXlo/0.jpg)](https://www.youtube.com/watch?v=YexfeByBXlo)
 
--->
+*/

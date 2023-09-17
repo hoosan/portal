@@ -89,7 +89,7 @@ SNS トークンをneuron にステークすることで、誰でもガバナン
 これにより、1）SNSは初期資金を集めることができ、
 2）多くの異なる参加者にneurons、ひいては議決権を分配することができ、ガバナンスが分散化されます。
 
-<!---
+/**
 
 # SNS architecture
 
@@ -171,4 +171,4 @@ This facilitates that 1) the SNS can collect initial funding and
 2) the distribution of neurons and thus of voting power to many different participants, which makes the governance decentralized.
 
 
--->
+*/

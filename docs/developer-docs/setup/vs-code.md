@@ -54,7 +54,7 @@ Motoko VS Code 拡張機能は完全にオープンソースであり、[GitHub 
 
 Rustcanisters を開発するためのワークスペースを設定するには、公式の[Rust in Visual Studio Code](https://code.visualstudio.com/docs/languages/rust)ドキュメントを参照してください。
 
-<!---
+/**
 # Using Visual Studio Code
 
 ## Overview
@@ -111,4 +111,4 @@ The Motoko VS Code extension is completely open-source and [available on GitHub]
 
 Please refer to the official [Rust in Visual Studio Code](https://code.visualstudio.com/docs/languages/rust) documentation to configure your workspace for developing Rust canisters.
 
--->
+*/

@@ -278,7 +278,7 @@ expand(bytes) = if Blob.size(bytes) < 32
                 else bytes
 ```
 
-<!---
+/**
 # ICRC-1 token standard
 
 ## Overview
@@ -561,4 +561,4 @@ expand(bytes) = if Blob.size(bytes) < 32
                 else bytes
 ```
 
--->
+*/

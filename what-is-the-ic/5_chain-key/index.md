@@ -20,7 +20,7 @@ ICは連鎖鍵暗号方式を採用しています：
 - 永続的な公開鍵 - メンバーシップの変更や鍵の再共有は、どのサブネットの公開鍵にも影響しません。
 - ガベージコレクション - ストレージが無限に増えるのを防ぐため、定期的に各サブネットのブロックチェーンから以前のブロックが削除されます。
 
-<!---
+/**
 
 
 The correct operation of subnets (and inter-subnet communication) relies on a suite of novel cryptographic protocols, collectively referred to as [*chain-key cryptography*](/how-it-works/chain-key-technology/). Chain-key cryptography makes it possible for subnets to authenticate
@@ -38,4 +38,4 @@ The IC uses chain-key cryptography to provide:
 * Garbage collection – Periodically, previous blocks are pruned from each subnet blockchain to prevent storage from growing infinitely.
 
 
--->
+*/

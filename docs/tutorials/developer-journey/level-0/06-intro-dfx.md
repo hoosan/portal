@@ -191,7 +191,7 @@ actor オブジェクト、クラス、非同期メッセージについては�
 
 - 1.1:ライブ・デモを見る
 
-<!---
+/**
 # 0.6: Introduction to dfx
 
 ## Overview
@@ -398,4 +398,4 @@ We'll explore actor objects, classes, and asynchronous messages in a future tuto
 
 - 1.1: Exploring a live demo.
 
--->
+*/

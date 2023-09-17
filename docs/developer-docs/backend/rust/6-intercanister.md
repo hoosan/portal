@@ -161,7 +161,7 @@ canisters を確認したので、デプロイしてみましょう。
 
 次に、[ canisters を](./7-upgrading.md) [アップグレード](./7-upgrading.md)する方法を説明します。
 
-<!---
+/**
 # 6: Inter-canister calls
 
 ## Overview
@@ -339,4 +339,4 @@ The output should resemble the following:
 
 Next, let's cover how to [upgrade canisters](./7-upgrading.md).
 
--->
+*/

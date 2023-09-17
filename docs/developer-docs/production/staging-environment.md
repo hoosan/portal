@@ -57,7 +57,7 @@ dfx identity set-wallet "$(dfx identity get-wallet --network ic)" --network mySt
 
 ステージング環境用に別のcycles ウォレットを使いたい場合は、[ネットワークのクイックスタートに](/developer-docs/setup/deploy-mainnet.md)ある「Cycles ウォレットの作成」の手順に従ってください。
 
-<!---
+/**
 # Staging Environment
 
 Many projects can benefit from having a staging environment available besides the usual local and live deployments. This page explains how to set up such a staging environment.
@@ -116,4 +116,4 @@ dfx identity set-wallet "$(dfx identity get-wallet --network ic)" --network mySt
 
 If you prefer to use a separate cycles wallet for the staging environment, follow the instructions in the step 'Creating a Cycles Wallet' in the [network quick start](/developer-docs/setup/deploy-mainnet.md).
 
--->
+*/

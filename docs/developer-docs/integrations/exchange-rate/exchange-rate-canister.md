@@ -127,7 +127,7 @@ XRCデモをローカルでテストするには、まずコマンドでロー�
 - [為替レートcanister フォーラムの投稿。](https://forum.dfinity.org/t/new-exchange-rate-mechanism/14543/65)
 - [為替レートcanister リポジトリ。](https://github.com/dfinity/exchange-rate-canister)
 
-<!---
+/**
 # Exchange rate canister
 
 ## Overview
@@ -274,4 +274,4 @@ The output will resemble the following, depending asset requested and its curren
 - [Exchange rate canister forum post.](https://forum.dfinity.org/t/new-exchange-rate-mechanism/14543/65)
 - [Exchange rate canister repository.](https://github.com/dfinity/exchange-rate-canister)
 
--->
+*/

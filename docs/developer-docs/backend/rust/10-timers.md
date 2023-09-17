@@ -235,7 +235,7 @@ dfx canister call my_timers_backend counter
 
 次のステップでは、Rust[安定](./stable-structures)構造に飛び込んでみましょう。
 
-<!---
+/**
 # 10: Using periodic timers
 
 ## Overview 
@@ -476,4 +476,4 @@ dfx canister call my_timers_backend counter
 ## Next steps
 For the next step, let's dive into Rust [stable structures](./stable-structures).
 
--->
+*/

@@ -22,7 +22,7 @@
 
 上記のステップを踏んだら、Motoko を使ってバックエンドcanisters の開発を始める準備ができました！まずは、[Motoko クイックスタートガイド](./at-a-glance.md) をご覧ください。
 
-<!---
+/**
 # 3: Developer environment
 
 ## Setting up your environment 
@@ -46,4 +46,4 @@ Before you start your project, verify the following:
 ## Next steps
 After following the steps above, you're ready to get started developing backend canisters with Motoko! To get started, check out the [Motoko quick start guide](./at-a-glance.md).
 
--->
+*/

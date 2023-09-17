@@ -227,7 +227,7 @@ canister のコンパイルに成功すると、デフォルトの`.dfx/local/ca
 
 次に、[複数のactor](multiple-actors.md) 。
 
-<!---
+/**
 # 14: Querying using an actor
 
 ## Overview
@@ -486,4 +486,4 @@ Note that if you are running the Internet Computer mainnet in a separate termina
 
 ## Next steps
 Next, let's take a look at using [multiple-actors](multiple-actors.md).
--->
+*/

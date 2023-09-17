@@ -53,7 +53,7 @@ ICにはインフレとデフレのメカニズムがあります。ガバナン
 
 ![](/img/how-it-works/deflation_inflation.png)
 
-<!---
+/**
 
 
 # Tokenomics of the Internet Computer
@@ -105,4 +105,4 @@ The IC has inflationary and deflationary mechanisms. Governance participants can
 
 ![](/img/how-it-works/deflation_inflation.png)
 
--->
+*/

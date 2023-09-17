@@ -269,7 +269,7 @@ dapp がデプロイされたことを確認し、コマンドラインを使っ
 
 - [Candid](/docs/developer-docs/backend/candid/candid-concepts.md)インターフェース記述言語 Candid がどのようにサービスの相互運用性とコンポーザビリティを実現するかを学ぶには、[Candid とは何ですか](/docs/developer-docs/backend/candid/candid-concepts.md)？
 
-<!---
+/**
 
 
 # Local deployment
@@ -515,4 +515,4 @@ Here are some suggestions for where to go next:
 -   [What is Candid?](/docs/developer-docs/backend/candid/candid-concepts.md) to learn how the Candid interface description language enables service interoperability and composability.
 
 
--->
+*/

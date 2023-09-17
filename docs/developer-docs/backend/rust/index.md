@@ -28,7 +28,7 @@ Rustの開発をサポートするために、IC SDKには[Rustcanister developm
 
 RustCanisters の構築を始めるための[例が](https://github.com/dfinity/cdk-rs/tree/main/examples)いくつかあります。
 
-<!---
+/**
 # Introduction to developing canisters in Rust
 
 Rust is a powerful and type-sound modern programming language with an active developer community. Because Rust compiles to WebAssembly, it offers a rich development environment for writing dapps to run on the Internet Computer blockchain. 
@@ -58,4 +58,4 @@ To support Rust development, the IC SDK includes the [Rust canister development 
 There are a few [examples](https://github.com/dfinity/cdk-rs/tree/main/examples) to get you started building Rust Canisters.
 
 
--->
+*/

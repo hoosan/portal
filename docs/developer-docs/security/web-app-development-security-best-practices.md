@@ -149,7 +149,7 @@ sidebar_label: Web app development
 
 - 高いセキュリティ要求があるアプリケーションについては、トランザクション承認の使用を考慮してください。これは、例えばトークンやcycle の移動が含まれる場合に推奨されます。例えば、[NNSdapp](https://github.com/dfinity/nns-dapp)でハードウェア・ウォレットを使用することで、これを実現できます。
 
-<!---
+/**
 
 # Web app development security best practices
 
@@ -295,4 +295,4 @@ If this is not the case, a user may by accident execute some sensitive actions.
 
 -   For applications with high security requirements, consider the use of transaction approval, i.e. using e.g. a WebAuthn device to let the user confirm certain critical actions or transactions. This is recommended e.g. when token or cycle transfers is involved. For example, using a hardware wallet in the [NNS dapp](https://github.com/dfinity/nns-dapp) achieves this.
 
--->
+*/

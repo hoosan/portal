@@ -12,7 +12,7 @@ dapp 、すでにSNS立ち上げプロセスの計画やテストを開始して
 [SNS立ち上げの](./launch-summary-1proposal.md)段階と、SNS立ち[上げを通過するためのコマンドとアクションの](./launch-steps-1proposal.md)ページでは、新しく推奨される1提案の立ち上げフローと、それを通過する方法を定義しています。
 [SNS立ち上げの段階 - レガシーフローと](./launch-summary.md)、[SNS立ち上げを通過するためのコマンドとアクション - レガシーフローの](./launch-steps.md)ページでは、今後非推奨になるかもしれない古いレガシーフローを定義しています。
 
-<!---
+/**
 # Launching an SNS
 
 This section describes the SNS launch process in detail.
@@ -26,4 +26,4 @@ As some dapp projects may have already started planning and testing the SNS laun
 Therefore, the developer documentation currently includes pages to describe both the legacy and the new flow.
 The pages [stages of an SNS launch](./launch-summary-1proposal.md) and [commands and actions to go through SNS launch](./launch-steps-1proposal.md) define the new, recommended 1-proposal launch flow and how to go through it.
 The pages [stages of an SNS launch - legacy flow](./launch-summary.md) and [commands and actions to go through SNS launch - legacy flow](./launch-steps.md) define the old, legacy flow that might be deprecated going forward.
--->
+*/

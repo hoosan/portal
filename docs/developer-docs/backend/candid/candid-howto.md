@@ -198,7 +198,7 @@ Motoko 、Rust、JavaScript 用の Candid 実装に加え、以下のホスト�
 
 新しい言語やツールのためにCandidの実装を追加する場合、公式の[Candidテストデータを](https://github.com/dfinity/candid/tree/master/test)使用して、実装がCandidと互換性があることをテストして検証することができます。
 
-<!---
+/**
 # Using Candid
 
 # Overview
@@ -393,4 +393,4 @@ If you want to create a Candid implementation to support a language or tool for 
 
 If you add a Candid implementation for a new language or tool, you can use the official [Candid test data](https://github.com/dfinity/candid/tree/master/test) to test and verify that your implementation is compatible with Candid, even in slightly more obscure corner cases.
 
--->
+*/

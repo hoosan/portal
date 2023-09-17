@@ -65,7 +65,7 @@ dapp ファイル名の構成設定を変更しても、`dfx build` コマンド
 
 - IC 内で使用されるさまざまな用語の定義については、[IC 用語集を](../../references/glossary.md)参照してください。
 
-<!---
+/**
 # Managing projects
 
 ## Overview
@@ -130,4 +130,4 @@ For example, you can change the IP address for the local network by modifying th
 -   [Concepts](../../concepts/index.md) to learn about different IC concepts and services.  
 
 -   [IC glossary](../../references/glossary.md) to learn the definitions of various terms used within the IC. 
--->
+*/

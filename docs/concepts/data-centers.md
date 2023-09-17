@@ -38,7 +38,7 @@ Internet Computer を構成する世界中のデータセンターに配置さ�
 - [Internet Computer ](https://wiki.internetcomputer.org/wiki/Node_provider_hardware)Wiki：[ノードプロバイダのハードウェア](https://wiki.internetcomputer.org/wiki/Node_provider_hardware)
 - [Internet Computer ](https://wiki.internetcomputer.org/wiki/Node_Provider_Onboarding)Wiki：ノード[プロバイダーのオンボーディング](https://wiki.internetcomputer.org/wiki/Node_Provider_Onboarding)
 
-<!---
+/**
 # Decentralized data centers
 
 ## Overview
@@ -79,4 +79,4 @@ If you are looking for more information about data center operations and node pr
 - [Internet Computer Wiki: node provider hardware](https://wiki.internetcomputer.org/wiki/Node_provider_hardware).
 - [Internet Computer Wiki: node provider onboarding](https://wiki.internetcomputer.org/wiki/Node_Provider_Onboarding).
 
--->
+*/

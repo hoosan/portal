@@ -54,7 +54,7 @@ canister をアップグレードするには、まず、新しいターミナ�
 
 次に、[canister 間の呼び出しを見て](intercanister-calls.md)みましょう。
 
-<!---
+/**
 # 6: Upgrading canisters
 
 ## Overview
@@ -120,4 +120,4 @@ dfx canister install [canister-id] --mode upgrade
 
 Next, let's take a look at [inter-canister calls](intercanister-calls.md).
 
--->
+*/

@@ -24,7 +24,7 @@ cycle の管理についてさらに詳しく知りたい方は、以下の記�
 - **[ DFINITY cycles 蛇口からの無料cycles の入手](cycles-faucet.md)**。
 - **[ICP トークンのcycles への変換](converting_icp_tokens_into_cycles.md)**。
 
-<!---
+/**
 # Acquiring and managing cycles
 
 ## What are ICP cycles?
@@ -48,4 +48,4 @@ To further explore cycle management please see the following articles:
 - **[Getting free cycles from DFINITY cycles faucet](cycles-faucet.md)**.
 - **[Converting ICP tokens into cycles](converting_icp_tokens_into_cycles.md)**.
 
--->
+*/

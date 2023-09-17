@@ -21,7 +21,7 @@ Internet Computer の認証機能は、*認証変数を通して* canisters に�
 
 [認証された変数とアセット](https://assets.ctfassets.net/ywqk17d3hsnp/7AaD21HKM8kV3GguC8qWB4/5023bc305edb6fa3bd4aa593e72335c2/2021-06-10_Certified_variables_and_assets__1_.pdf)
 
-<!---
+/**
 
 
 # Certified Variables
@@ -40,4 +40,4 @@ More technically, each canister can specify a single 32-byte value that will be 
 
 [Certified Variables & Assets](https://assets.ctfassets.net/ywqk17d3hsnp/7AaD21HKM8kV3GguC8qWB4/5023bc305edb6fa3bd4aa593e72335c2/2021-06-10_Certified_variables_and_assets__1_.pdf)
 
--->
+*/

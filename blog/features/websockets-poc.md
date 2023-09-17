@@ -71,7 +71,7 @@ WebSockets を
 [開発者フォーラム](https://forum.dfinity.org/t/websockets-on-the-ic-a-proof-of-concept/20836)
 [にスレッドを](https://forum.dfinity.org/t/websockets-on-the-ic-a-proof-of-concept/20836)立ち上げ、あなたが構築したすべてのアプリケーションとあなたのフィードバックを見ることを楽しみにしています。
 
-<!---
+/**
 
 
 Today, users expect web applications to be fast and snappy: an exchange should update
@@ -140,4 +140,4 @@ improvements to enhance security and stability for any use in production. We hav
 started [a thread in the developer forum](https://forum.dfinity.org/t/websockets-on-the-ic-a-proof-of-concept/20836)
 and are looking forward to seeing all the applications you built and your feedback.
 
--->
+*/

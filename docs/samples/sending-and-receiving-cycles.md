@@ -116,7 +116,7 @@ cycles 出力:`wallet_receive` の実装は、最大でも10\_000\_000\_000cycle
 追加のアクセス制御チェック(ここでは省略)を行わないと、悪意のあるクライアントが私たちの素朴な転送関数を悪用して、canister のすべてのcycles を流出させる可能性があります。
 ::：
 
-<!---
+/**
 # Sending and receiving cycles
 
 ## Overview
@@ -265,4 +265,4 @@ In this step, we are passing our own wallet's `wallet_receive` function as the f
 :::caution
 Without some additional access control checks (omitted here), a malicious client could abuse our naive transfer function to drain the canister of all of its cycles.
 :::
--->
+*/

@@ -131,7 +131,7 @@ dfx canister call canister1 main
 
 次に、次のステップの[最適化を見て](./optimizing.md)みましょう。[ canisters](./optimizing.md)
 
-<!---
+/**
 # 7: Making inter-canister calls
 
 ## Overview
@@ -287,4 +287,4 @@ dfx canister call canister1 main "ajuq4-ruaaa-aaaaa-qaaga-cai"
 ## Next steps
 
 Next, let's take a look at [optimizing canisters](./optimizing.md)
--->
+*/

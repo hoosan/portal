@@ -526,7 +526,7 @@ RustとMotoko の両方の最小の例では、生のレスポンスを変換す
 - Rust による[HTTP GET](https://github.com/dfinity/examples/tree/master/rust/send_http_get)リクエストのサンプルコード
 - の[HTTP GET](https://github.com/dfinity/examples/tree/master/motoko/send_http_get)リクエストのサンプルコード[ Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_get)
 
-<!---
+/**
 # How to use HTTP outcalls: GET
 ## Overview
 
@@ -1043,4 +1043,4 @@ In both the Rust and Motoko minimal examples, we did not create a **transform** 
 
 * Sample code of [HTTP GET requests in Rust](https://github.com/dfinity/examples/tree/master/rust/send_http_get)
 * Sample code of [HTTP GET requests in Motoko](https://github.com/dfinity/examples/tree/master/motoko/send_http_get)
--->
+*/

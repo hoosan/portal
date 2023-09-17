@@ -233,7 +233,7 @@ Rustエラー型はAPIコンシューマーがエラーから正しく回復す�
 
 それではさっそく Rust の[開発環境を](./3-dev-env.md)セットアップしましょう。
 
-<!---
+/**
 # 2: Project organization
 
 ## Overview
@@ -474,4 +474,4 @@ If a service method returns a result type, it can still reject the call. Therefo
 ## Next steps
 Now let's get started setting up the Rust [developer environment](./3-dev-env.md).
 
--->
+*/

@@ -10,7 +10,7 @@ Internet Computer は ICP と呼ばれるユーティリティ・トークンを
 
 [より深く](/how-it-works/tokenomics/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/tokenomics.600.jpg)
@@ -21,4 +21,4 @@ The Internet Computer makes use of an utility token called ICP. The ICP token is
 
 [Go deeper](/how-it-works/tokenomics/)
 
--->
+*/

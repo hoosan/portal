@@ -27,7 +27,7 @@ Motoko はスマートコントラクトのための新しいプログラミン�
 
 [Motoko 基本ライブラリ](https://internetcomputer.org/docs/base-libraries/stdlib-intro.html)
 
-<!---
+/**
 
 
 # Motoko Smart Contract Language
@@ -52,4 +52,4 @@ Motoko is a new programming language for smart contracts. It is designed to seam
 
 [Motoko base library](https://internetcomputer.org/docs/base-libraries/stdlib-intro.html)
 
--->
+*/

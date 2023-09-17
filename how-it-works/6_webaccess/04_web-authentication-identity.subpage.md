@@ -59,7 +59,7 @@ Internet Identity が作成されると、ユーザーはそれを使用して�
 
 [![Watch youtube video](https://i.ytimg.com/vi/9eUTcCP_ELM/maxresdefault.jpg)](https://www.youtube.com/watch?v=9eUTcCP_ELM)
 
-<!---
+/**
 
 
 # Internet Identity
@@ -118,4 +118,4 @@ As mentioned previously, it is also important to add a recovery phrase in case y
 
 [![Watch youtube video](https://i.ytimg.com/vi/9eUTcCP_ELM/maxresdefault.jpg)](https://www.youtube.com/watch?v=9eUTcCP_ELM)
 
--->
+*/

@@ -64,7 +64,7 @@ WSL でインターネットにアクセスできない場合、たとえば、�
 - Windows では、WSL を再起動して、この修正を有効にします。\
   `wsl.exe --shutdown`
 
-<!---
+/**
 
 # Installing the IC SDK on Windows
 
@@ -130,4 +130,4 @@ If you don't have internet access on WSL, for instance you cannot ping any serve
 - On Windows, restart WSL to let this fix take effect.  
    `wsl.exe --shutdown`
 
--->
+*/

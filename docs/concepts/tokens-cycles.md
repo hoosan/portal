@@ -70,7 +70,7 @@ Internet Computer 経済モデルは、キャパシティを管理する権限�
 
 - [トークン経済の概要（ビデオ）](https://www.youtube.com/watch?v=H2p5q0PR2pc)。
 
-<!---
+/**
 # Tokens and cycles
 
 ## Overview 
@@ -142,4 +142,4 @@ If you are looking for more information about tokens and cycles, check out the f
 
 -   [Overview of token economics (video)](https://www.youtube.com/watch?v=H2p5q0PR2pc).
 
--->
+*/

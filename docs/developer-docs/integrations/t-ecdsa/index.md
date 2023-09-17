@@ -24,7 +24,7 @@ Internet Computer の任意のサブネット上の各canister は、一意の E
 - `threshold-ecdsa` のサンプルコードは[examples リポジトリの](https://github.com/dfinity/examples)[`motoko`](https://github.com/dfinity/examples/tree/master/motoko/threshold-ecdsa)または [`rust`](https://github.com/dfinity/examples/tree/master/rust/threshold-ecdsa)サブディレクトリにあります。
 - 対応するコード・ウォークスルーは[サンプル・ドキュメントに](../../../samples/t-ecdsa-sample.md)あります。
 
-<!---
+/**
 # Threshold ECDSA: chain-key signatures
 
 ## Overview
@@ -48,4 +48,4 @@ Those are only a few examples for use cases of our threshold ECDSA protocol. Cre
 - Sample code for `threshold-ecdsa` is provided in the [examples repository](https://github.com/dfinity/examples), under either [`motoko`](https://github.com/dfinity/examples/tree/master/motoko/threshold-ecdsa) or [`rust`](https://github.com/dfinity/examples/tree/master/rust/threshold-ecdsa) sub-directories. 
 - You can find the corresponding code-walkthrough in the [samples documentation](../../../samples/t-ecdsa-sample.md).
 
--->
+*/

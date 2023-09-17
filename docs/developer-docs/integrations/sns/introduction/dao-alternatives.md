@@ -35,7 +35,7 @@ SNS コードが実装しているもの以外にも、もちろん DAO を実�
 コミュニティは DAO のバージョンを保守するか、
 第三者を信頼する必要があります。
 
-<!---
+/**
 
 # Alternatives how to get and maintain a DAO
 
@@ -69,4 +69,4 @@ easier as all SNSs on the SNS subnet run the same cansiter versions that are ver
   communities will have to maintain the DAO versions or trust
   a third party to do so.
 
--->
+*/

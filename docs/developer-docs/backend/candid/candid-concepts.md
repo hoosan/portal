@@ -271,7 +271,7 @@ Rustプログラム用のCandidサービス記述の書き方の例について�
 
 使用するホスト言語に関係なく、ホスト言語の型と Candid の型のマッピングを知っておくことが重要です。[サポートされている型の](/references/candid-ref.md)リファレンスセクションでは、Motoko 、Rust、JavaScriptのCandid型マッピングが説明されています。
 
-<!---
+/**
 # What is Candid?
 
 ## Overview
@@ -544,4 +544,4 @@ For examples of how to write Candid service descriptions for Rust programs, see 
 
 Regardless of the host language you use, it is important to know the mapping between host language types and Candid types. In the [supported types](/references/candid-ref.md) reference section, you’ll find Candid type mapping described for Motoko, Rust, and JavaScript.
 
--->
+*/

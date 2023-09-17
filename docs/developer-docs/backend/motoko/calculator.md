@@ -189,7 +189,7 @@
 
 次のガイドでは、[自然数のインクリメントを見て](counter-tutorial.md)みましょう。
 
-<!---
+/**
 # 10: Using integers in calculator functions
 
 ## Overview 
@@ -414,4 +414,4 @@ For example, the program displays output similar to the following:
 ## Next steps
 
 In the next guide, let's look at [incrementing natural numbers](counter-tutorial.md)
--->
+*/

@@ -182,7 +182,7 @@ SNS ローカルテストリポジトリ
 
     dfx canister --network "${NETWORK}" call <SWAP_CANISTER_ID> finalize_swap '(record {})'
 
-<!---
+/**
 # Commands & actions to go through SNS launch - legacy flow
 
 :::caution
@@ -368,4 +368,4 @@ You can find this command with more context in the SNS local testing repository
 dfx canister --network "${NETWORK}" call <SWAP_CANISTER_ID> finalize_swap '(record {})'
 ```
 
--->
+*/

@@ -120,7 +120,7 @@ canisters に関する詳細情報をお探しの場合は、以下の関連リ�
 
 - [最初のアプリケーションのデプロイ（ビデオ）](https://www.youtube.com/watch?v=yqIoiyuGYNA)。
 
-<!---
+/**
 # Canisters and code
 
 ## Overview
@@ -242,4 +242,4 @@ If you are looking for more information about canisters, check out the following
 
 -   [Deploying your first application (video)](https://www.youtube.com/watch?v=yqIoiyuGYNA).
 
--->
+*/

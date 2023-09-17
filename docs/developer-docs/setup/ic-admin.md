@@ -44,7 +44,7 @@ $ chmod +x ./ic-admin
 $ diff <(shasum -a 256 ./ic-admin | cut -d' ' -f1) <(echo e29bb9cc462e800b8b960ad49c412e5f5fdbb5ae2ae9fde0c13058422ba32802) && echo "ic-admin checksum matches" || echo "***ERROR***: ic-admin checksum does not match"
 ```
 
-<!---
+/**
 # IC Admin
 
 `ic-admin` is a tool used to create and submit NNS proposals.
@@ -82,4 +82,4 @@ $ chmod +x ./ic-admin
 ```bash
 $ diff <(shasum -a 256 ./ic-admin | cut -d' ' -f1) <(echo e29bb9cc462e800b8b960ad49c412e5f5fdbb5ae2ae9fde0c13058422ba32802) && echo "ic-admin checksum matches" || echo "***ERROR***: ic-admin checksum does not match"
 ```
--->
+*/

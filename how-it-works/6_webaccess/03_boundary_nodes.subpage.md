@@ -50,7 +50,7 @@ HTTPゲートウェイとAPIバウンダリ・ノードの両方は現在、
 
 [IC Wikiのバウンダリ・ノード](https://wiki.internetcomputer.org/wiki/Boundary_Nodes)
 
-<!---
+/**
 
 
 # Boundary nodes
@@ -98,4 +98,4 @@ hosted on the IC.
 
 [Boundary Nodes on the IC Wiki](https://wiki.internetcomputer.org/wiki/Boundary_Nodes)
 
--->
+*/

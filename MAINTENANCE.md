@@ -17,7 +17,7 @@ git add -u
 git commit -m "updatingmotoko doc"
 git push
 
-<!---
+/**
 # Updating motoko content
 
 cd portal/
@@ -38,4 +38,4 @@ git commit -m "updating motoko doc"
 git push
 
 
--->
+*/

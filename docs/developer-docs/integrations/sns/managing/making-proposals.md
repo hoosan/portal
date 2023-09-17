@@ -672,7 +672,7 @@ should include how to add and remove them.
 ### Register a new generic proposal
 ### Submit a generic proposal  -->
 
-<!---
+/**
 # SNS proposals
 
 ## Overview
@@ -1349,5 +1349,5 @@ should include how to add and remove them.
  
 
 ### Register a new generic proposal
-### Submit a generic proposal  -!->
--->
+### Submit a generic proposal  -->
+*/

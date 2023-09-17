@@ -797,7 +797,7 @@ EOF
 }
 ```
 
-<!---
+/**
 # Rosetta staking 
 
 ## Overview
@@ -1595,4 +1595,4 @@ The response should look like the following:
 }
 ```
 
--->
+*/

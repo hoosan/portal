@@ -533,7 +533,7 @@ neuron s でスワップ参加者に渡されます。
   </tr>
 </table>
 
-<!---
+/**
 # Stages of an SNS launch - legacy flow
 
 :::caution
@@ -1082,4 +1082,4 @@ If successful, at the end of stage, we have:
   </tr>
 </table>
 
--->
+*/

@@ -73,7 +73,7 @@ SNS が管理するdapp への参加時に満期が短縮された NFneurons の
 
 NNSは後の時点でSNSからトークンを売却できます。NNSがSNSからトークンを売却した後、受け取ったICPはバーンされます。
 
-<!---
+/**
 # Neurons' fund
 
 ## Overview
@@ -147,4 +147,4 @@ The maturity of NF neurons whose maturity was reduced when a participation in a 
 
 The NNS can sell the tokens from an SNS at a later point in time. After the NNS sells tokens from an SNS, the received ICP will be burned.
 
--->
+*/

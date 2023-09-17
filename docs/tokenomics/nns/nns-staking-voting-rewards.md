@@ -160,7 +160,7 @@ Bは80の議決権を持っており、10議案すべてに投票しました。
 - ノードプロバイダーはICPを発行することで報酬を得ます。
 - 投票報酬は、一旦スポーンしてICPに変換されます。
 
-<!---
+/**
 # Staking and voting rewards on the NNS
 
 ## Overview
@@ -321,4 +321,4 @@ Inflationary mechanisms:
 * Node providers are paid by minting ICP.
 * Voting rewards, once spawned and converted to ICP.
 
--->
+*/

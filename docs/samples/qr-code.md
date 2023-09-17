@@ -57,7 +57,7 @@ Rustで書かれたバックエンドは、`qrcode-generator` と`image` クレ�
 
 教育目的のために、バックエンドはQRコード生成のための2つのパブリックエンドポイントを提供しています。現在、DTSは更新には対応していますが、クエリには対応していません。その結果、更新エンドポイントは、クエリエンドポイントに比べて命令上限が大きくなり、より大きな画像を扱うことができます。
 
-<!---
+/**
 # QR code generator on the Internet Computer
 
 ## Overview
@@ -126,4 +126,4 @@ The backend, written in Rust, uses the `qrcode-generator` and `image` crates to 
 For educational purposes, the backend offers two public endpoints for QR code generation: one for updates and another for queries. Currently, DTS is supported for updates, but not for queries. As a result, the update endpoint has larger instruction limit compared to the query endpoint and thus can handle larger images.
 
 
--->
+*/

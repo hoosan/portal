@@ -181,7 +181,7 @@ dfx canister call ledger-canister icrc1_name
 
 ローカルのICP台帳canister 。これで、元帳と通信する必要がある他のcanisters をデプロイできます。canister 。
 
-<!---
+/**
 # Ledger local setup
 
 ## Overview
@@ -381,4 +381,4 @@ After navigating to this URL in a web browser, the Candid UI will resemble the f
 
 Your local ICP ledger canister is up and running. You can now deploy other canisters that need to communicate with the ledger canister.
 
--->
+*/

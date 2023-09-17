@@ -97,7 +97,7 @@ Notarization support of increasing-rank block proposals in a round
 
 [![Watch youtube video](https://i.ytimg.com/vi/vVLRRYh3JYo/maxresdefault.jpg)](https://www.youtube.com/watch?v=vVLRRYh3JYo)
 
-<!---
+/**
 
 
 # Consensus
@@ -200,8 +200,8 @@ In this case, the BLS multi-signature shares may be aggregated to form a compact
 
 [Consensus on the IC wiki](https://wiki.internetcomputer.org/wiki/IC_consensus_layer)
 
-<!-- https://img.youtube.com/vi/vVLRRYh3JYo/0.jpg -!->
+<!-- https://img.youtube.com/vi/vVLRRYh3JYo/0.jpg -->
 
 [![Watch youtube video](https://i.ytimg.com/vi/vVLRRYh3JYo/maxresdefault.jpg)](https://www.youtube.com/watch?v=vVLRRYh3JYo)
 
--->
+*/

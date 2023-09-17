@@ -15,7 +15,7 @@ is_community: true
 
 この変更にはガバナンスのウェイトを20に戻すことと、投票報酬の配分と未配分の追跡も含まれます。
 
-<!---
+/**
 
 This roadmap item is based on the community proposal 80970.
 
@@ -25,4 +25,4 @@ This change removes this incentive by allocating voting rewards under the assump
 
 This change also includes moving the governance weight back to 20 and the tracking of allocated vs not allocated voting rewards. 
 
--->
+*/

@@ -43,7 +43,7 @@ title: Content test card
 
 [もっと深く](/how-it-works/test-subpage/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/canisters.webp)
@@ -89,4 +89,4 @@ And a test table:
 
 [Go deeper](/how-it-works/test-subpage/)
 
--->
+*/

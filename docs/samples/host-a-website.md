@@ -168,7 +168,7 @@ index.htmlから始めましょう。
 
 DFINITY Foundation のエンジニアと開発者コミュニティからのインスピレーションとサポートについては、[開発者フォーラムを](https://forum.dfinity.org)ご覧ください。
 
-<!---
+/**
 # Hosting a static website on the Internet Computer
 
 ## Overview
@@ -344,4 +344,4 @@ Looking to build a full-stack dapp? Check out the [full-stack react tutorial](ht
 
 Visit our [developer forum](https://forum.dfinity.org) for inspiration and support from DFINITY Foundation engineers and the developer community.
 
--->
+*/

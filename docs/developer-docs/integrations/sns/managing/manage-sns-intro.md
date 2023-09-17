@@ -68,7 +68,7 @@ by proposal.-->
 
 - dapp は、IC上に配置されたcanister から静的アセットを保存および取得する、関連する[アセットcanister](https://github.com/dfinity/sdk/tree/master/src/canisters/frontend/ic-frontend-canister)を持つかもしれません。dapp が SNS DAO の制御下に置かれると、SNS DAO は関連するアセットcanister も制御できなければなりません。この仕組みの詳細は[このページを](./sns-asset-canister.md)参照してください。
 
-<!---
+/**
 # Manage an SNS
 
 ## Overview
@@ -111,7 +111,7 @@ This includes ensuring that the SNS canisters are
 running the latest version and that they have enough
 cycles to continue operating.
 You can find more information on<!--how SNS canisters can be  upgraded to new versions on this page (./upgradeSNS.md)
-and about-!-> 
+and about--> 
 cycle management [on this page](./cycles-usage.md).
   We especially want to emphasize the following:
 
@@ -137,11 +137,11 @@ which are defined by the SNS's **nervous system parameters**.
 <!--We describe on
 this page(./nervous-system-parameters.md)
 which parameters can be chosen and how they can be adjusted 
-by proposal.-!->
+by proposal.-->
 
 * An SNS community needs proposals, some of which are specific to a given dapp, to govern the DAO with its properties and the dapp. [This page](./making-proposals.md) provides some guidelines 
 regarding how proposals can be used and how an SNS community can define
 their own kinds of proposals.
   
 * A dapp might have an associated The [asset canister](https://github.com/dfinity/sdk/tree/master/src/canisters/frontend/ic-frontend-canister) that stores and retrieves static assets from a canister deployed on the IC. Once a dapp is under SNS DAO control, the SNS DAO must also be able to control the associated asset canister. More details on how this works can be found on [this page](./sns-asset-canister.md).
--->
+*/

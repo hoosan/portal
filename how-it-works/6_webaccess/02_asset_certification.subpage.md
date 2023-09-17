@@ -27,7 +27,7 @@ canister が証明書とともにレスポンスを発行する場合、クラ�
 
 [RustCanister 開発セキュリティのベストプラクティス](/docs/current/references/security/rust-canister-development-security-best-practices#asset-certification)
 
-<!---
+/**
 
 
 # Asset certification
@@ -52,4 +52,4 @@ For more information on certification, check [Certified Variables](/how-it-works
 
 [Rust Canister Development Security Best Practices](/docs/current/references/security/rust-canister-development-security-best-practices#asset-certification)
 
--->
+*/

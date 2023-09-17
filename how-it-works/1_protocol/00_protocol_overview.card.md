@@ -25,7 +25,7 @@ IC プロトコルの中核部分である*コア IC プロトコルは*、各�
 
 [より深く](/how-it-works/core-ic-protocol-overview/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/ic-overview.jpg)
@@ -50,4 +50,4 @@ This realizes a replicated state machine, where every node in the subnet transit
 
 [Go deeper](/how-it-works/core-ic-protocol-overview/)
 
--->
+*/

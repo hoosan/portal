@@ -10,10 +10,10 @@ is_community: true
 
 この機能は、ガバナンス提案の全投票期間を通じて手動投票を可能にします。
 
-<!---
+/**
 
 This roadmap item is based on the community proposal 38985.
 
 This feature enables manual voting throughout the entire voting period of governance proposals. 
 
--->
+*/

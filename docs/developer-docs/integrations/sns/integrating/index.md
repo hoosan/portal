@@ -12,7 +12,7 @@ SNS のローンチを計画する際に考慮すべきトピックの 1 つは�
 - [インデックスcanister ](../integrating/index-integration.md) の統合。
 - [フロントエンドの](../integrating/frontend-integration.md)統合
 
-<!---
+/**
 # SNS Integration
 
 When planning an SNS launch, one topic to consider is whether and how the SNS functionality should be integrated in the dapp.
@@ -26,4 +26,4 @@ You can find more information on
 * The [index canister integration](../integrating/index-integration.md).
 * The [frontend integration](../integrating/frontend-integration.md).
 
--->
+*/

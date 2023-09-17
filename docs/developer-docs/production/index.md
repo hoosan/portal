@@ -27,7 +27,7 @@ Internet Computer では、canister のソースコードを常に検査する�
 
 これについては、[Motoko アップグレードの互換性](/motoko/main/compatibility.md) で詳しく説明しています。
 
-<!---
+/**
 
 
 # Running in production
@@ -53,4 +53,4 @@ In the Internet Computer, a canister's source code cannot always be inspected, a
 
 This is explored in depth in [Motoko upgrade compatibility](/motoko/main/compatibility.md).
 
--->
+*/

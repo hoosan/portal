@@ -16,7 +16,7 @@ P2Pは、ブロードキャストされるアーティファクトが最終的�
 
 [もっと深く](/how-it-works/peer-to-peer-p2p/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/peer-to-peer.webp)
@@ -33,4 +33,4 @@ Eventual delivery reflects the asynchronous nature of real-world communication n
 
 [Go deeper](/how-it-works/peer-to-peer-p2p/)
 
--->
+*/

@@ -243,7 +243,7 @@ JavaScript SDK には、オフライン署名ロジックの[実装が](https://
 ロゼッタ・ネットワークの [`/construction/parse`](https://www.rosetta-api.org/docs/ConstructionApi.html#constructionparse)
 この機能はオフラインモードでも使用できます。
 
-<!---
+/**
 # Rosetta
 
 ## Overview
@@ -467,4 +467,4 @@ Adding `ingress_start`/`ingress_end` fields enables generating & signing of a tr
 - #### How to deserialize a signed transaction?
 Use the [`/construction/parse`](https://www.rosetta-api.org/docs/ConstructionApi.html#constructionparse) endpoint of a Rosetta Node.
 This functionality is also available in offline mode.
--->
+*/

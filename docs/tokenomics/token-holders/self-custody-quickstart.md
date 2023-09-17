@@ -235,7 +235,7 @@ Network Nervous System については、[ Internet ComputerのNetwork Nervous S
 
 neuron のロック期間およびディゾルブ遅延の設定については、[ Internet Computer Network Nervous System アプリケーションおよびウォレットを](https://medium.com/dfinity/getting-started-on-the-internet-computers-network-nervous-system-app-wallet-61ecf111ea11)参照してください。
 
-<!---
+/**
 # Self-custody quick start
 
 ## Overview
@@ -466,4 +466,4 @@ For information about the Network Nervous System, see [understanding the Interne
 
 For additional details about setting the locked period and dissolve delay for a neuron, see [the Internet Computer Network Nervous System application and wallet](https://medium.com/dfinity/getting-started-on-the-internet-computers-network-nervous-system-app-wallet-61ecf111ea11).
 
--->
+*/

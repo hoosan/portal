@@ -60,7 +60,7 @@ Internet Computer での開発を始める準備はできているけれど、�
 - 5.5: SNSの作成。
 - 5.6: 次のステップ
 
-<!---
+/**
 # Developer journey
 
 ## Overview
@@ -125,4 +125,4 @@ The developer journey is designed to give both new and existing developers a cle
 - 5.5: Creating an SNS.
 - 5.6: Next steps.
 
--->
+*/

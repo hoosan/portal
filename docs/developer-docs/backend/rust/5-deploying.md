@@ -185,7 +185,7 @@ canister の Wasm モジュールハッシュと現在のコントローラを�
 
 canister が作成され、デプロイされ、テストされたので、[canister 間で呼び出す](./6-intercanister.md)方法を見てみましょう。
 
-<!---
+/**
 # 5: Writing and deploying canisters
 
 ## Overview
@@ -409,4 +409,4 @@ dfx canister info [canister-name]
 
 Now that your canister has been written, deployed, and tested, let's take a look at [making inter-canister calls](./6-intercanister.md).
 
--->
+*/

@@ -228,7 +228,7 @@ neuron をコントロールするプリンシパルは、以下の動作を指�
 
 フォロールールはフォロー先の集合を指定します。フォロワーの過半数が、指定されたトピックに属する提案の採用または却下に投票すると、neuron も同じように投票します。フォロワーの過半数が採択することが不可能になった場合 (たとえば採択と却下が半々になった場合など)、neuron は却下に投票します。提案トピックが null であるルールが指定された場合、そのルールはキャッチオールフォロールールとなり、特定のルールが指定されていないトピックに属する提案に対して自動的に投票するために使用されます。フォロー先のリストが空の場合、これは事実上フォロールールを削除します。
 
-<!---
+/**
 # Network Nervous System (NNS) intro
 
 The NNS is the decentralized autonomous organization (DAO) that governs the Internet Computer (IC). It is a fully on-chain, decentralized system and is, for instance, responsible for making protocol level upgrades to continuously improve the Internet Computer. It does this via an implementation of liquid democracy in which ICP neuron holders vote on proposals that shape the development of the Internet Computer. Once such a proposal is accepted, it is autonomously executed.
@@ -449,4 +449,4 @@ The following actions can be initiated using the principal or a hot key that has
     
 A follow rule specifies a set of followees. Once a majority of the followees votes to adopt or reject a proposal belonging to the specified topic, the neuron votes the same way. If it becomes impossible for a majority of the followees to adopt (for example, because they are split 50–50 between adopt and reject), then the neuron votes to reject. If a rule is specified where the proposal topic is null, then it becomes a catch-all follow rule, which will be used to vote automatically on proposals belonging to topics for which no specific rule has been specified. If the list of followees is empty, this effectively removes a follow rule.
 
--->
+*/

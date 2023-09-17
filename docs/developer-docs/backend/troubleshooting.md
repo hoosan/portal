@@ -142,7 +142,7 @@ UbuntuやCentOSの仮想マシンイメージを使用してIC SDKを実行し�
 
     rm -rf ~/.cache/dfinity && sh -ci "$(curl -sSL https://internetcomputer.org/install.sh)"
 
-<!---
+/**
 # Troubleshooting resources
 
 ## Overview
@@ -276,4 +276,4 @@ Alternatively, you can remove the `.cache/dfinity` directory and re-install the 
 
     rm -rf ~/.cache/dfinity && sh -ci "$(curl -sSL https://internetcomputer.org/install.sh)"
 
--->
+*/

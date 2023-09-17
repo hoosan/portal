@@ -114,7 +114,7 @@ Rosetta node は、[ConstructionPayloadRequest](https://www.rosetta-api.org/docs
 }
 ```
 
-<!---
+/**
 # Regular token transfers
 
 ## Overview
@@ -231,4 +231,4 @@ Below is an example of a transaction that transfers 1 ICP from address `bdc4ee05
 }
 ```
 
--->
+*/

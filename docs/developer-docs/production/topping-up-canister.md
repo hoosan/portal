@@ -103,7 +103,7 @@ dfx wallet --network ic send 1000000 dfds-sddds-aaaal-qbsms-cai
 - #### ステップ 4:canister が追加されたら、そのcanister をクリックします。
 - #### ステップ5：`add cycles` をクリックし、NNSフロントエンドのICPdapp を使用してcycles を追加します。
 
-<!---
+/**
 # Topping up & refilling a canister with cycles
 
 ## Overview 
@@ -211,4 +211,4 @@ You can also top up any canister via the [NNS frontend dapp](https://nns.ic0.app
 - #### Step 4: Once canister is added, click on that canister.
 - #### Step 5: Click `add cycles` to add cycles using the ICP in your NNS frontend dapp.
 
--->
+*/

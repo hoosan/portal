@@ -547,7 +547,7 @@ dapp をデプロイするには：
     dfx stop
   ```
 
-<!---
+/**
 
 
 # Adding a stylesheet
@@ -1061,4 +1061,4 @@ To stop the local development environment:
 
         dfx stop
 
--->
+*/

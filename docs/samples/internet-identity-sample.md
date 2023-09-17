@@ -358,7 +358,7 @@ Web ブラウザで`greet_frontend` の URL を開きます。
 - 同じアンカーを複数回使用すると、常に同じプリンシパルが表示されます。
 - 異なるアンカーを使用すると、異なるプリンシパルになります。
 
-<!---
+/**
 # Internet Identity integration sample
 
 ## Overview
@@ -731,4 +731,4 @@ You should be able to observe the following behavior:
 - If you log in with Internet Identity, you should get a different principal.
 - Using the same anchor multiple times should always yield the same principal.
 - Using a different anchor will result in different principals.
--->
+*/

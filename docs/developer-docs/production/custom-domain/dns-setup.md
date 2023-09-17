@@ -146,7 +146,7 @@ DNSプロバイダーとしてCloudflareを使用したこの方法を説明し�
 
 これで、カスタムドメインをバウンダリノードに登録する準備がすべて整いましたので、[一般的なカスタムドメインの説明の](custom-domain.md#custom-domains-on-the-boundary-nodes)ステップ2に進むことができます。
 
-<!---
+/**
 # DNS configuration guide
 
 ## Overview
@@ -286,4 +286,4 @@ To configure a subdomain (e.g., `example.ic-domain.live`), add the following rec
 
 Now, you are all set to register your custom domain with the boundary nodes and you can continue with step 2 of the [general custom domains instructions](custom-domain.md#custom-domains-on-the-boundary-nodes).
 
--->
+*/

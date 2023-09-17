@@ -20,7 +20,7 @@ SNSプロジェクトとのインターフェースには、[sns-jsライブラ�
 - [SNSスワップ](https://github.com/dfinity/ic-js/blob/main/packages/sns/README.md#factory-snsswapcanister)
 - [SNSラッパーは](https://github.com/dfinity/ic-js/blob/main/packages/sns/README.md#factory-snswrapper)、すべてのSNSを把握しているため、異なるSNSのデータにアクセスするのに便利です。
 
-<!---
+/**
 # SNS frontend integration
 ## Overview
 There are different reasons why you might want to interface with an SNS project.
@@ -39,4 +39,4 @@ Please refer to the following links to learn how to integrate with:
 * [SNS root](https://github.com/dfinity/ic-js/blob/main/packages/sns/README.md#factory-snsrootcanister)
 * [SNS swap](https://github.com/dfinity/ic-js/blob/main/packages/sns/README.md#factory-snsswapcanister)
 * [SNS wrapper](https://github.com/dfinity/ic-js/blob/main/packages/sns/README.md#factory-snswrapper) which knows all SNSs and can therefore serve as a nice way to access different SNSs' data.
--->
+*/

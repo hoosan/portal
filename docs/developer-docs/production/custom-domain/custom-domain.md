@@ -259,7 +259,7 @@ curl -sLv -X DELETE \
 Internet Identity（II）を使用してユーザーを認証するウェブサイトの場合：IIによって提供されるプリンシパルは、ログイン要求が開始されたドメインに依存します。そのため、canister URLを通じてユーザーを認証している場合に、カスタムドメインに切り替えようとすると、ユーザーは同じプリンシパルを持つことができなくなります。これを防ぐには、[Alternative Originsを](../../integrations/internet-identity/alternative-origins.md)設定してください。
 ::：
 
-<!---
+/**
 # Custom domains
 
 ## Overview
@@ -509,4 +509,4 @@ request for your domain and the boundary node will return the corresponding ID.
 For websites that use Internet Identity (II) to authenticate users: The principals provided by II depend on the domain from which the login request was started. So if you authenticate your users through the canister URL and want to switch over to a custom domain, users will not have the same principals anymore. You can prevent this by setting up [Alternative Origins](../../integrations/internet-identity/alternative-origins.md).
 :::
 
--->
+*/

@@ -117,7 +117,7 @@ ICがどのように機能し、ワールド・コンピュータのビジョン
 
 [![Watch youtube video](https://i.ytimg.com/vi/YWHTNr8RZHg/maxresdefault.jpg)](https://www.youtube.com/watch?v=YWHTNr8RZHg)
 
-<!---
+/**
 
 
 # Architecture of the Internet Computer
@@ -235,4 +235,4 @@ However, note that it is a little technical at times.
 
 [![Watch youtube video](https://i.ytimg.com/vi/YWHTNr8RZHg/maxresdefault.jpg)](https://www.youtube.com/watch?v=YWHTNr8RZHg)
 
--->
+*/

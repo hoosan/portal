@@ -325,7 +325,7 @@ canisters のデプロイ、削除、または管理の詳細については、[
 
 このガイドの次のステップについては、[ canisters のアップグレード ガイドを](upgrading.md)参照してください。
 
-<!---
+/**
 # 5: Writing and deploying canisters
 
 ## Overview
@@ -692,4 +692,4 @@ For example:
 For more information on deploying, deleting or managing canisters, view the [managing canisters documentation](https://internetcomputer.org/docs/current/developer-docs/setup/manage-canisters).
 
 For the next step in this guide, check out the [upgrading canisters guide](upgrading.md)
--->
+*/

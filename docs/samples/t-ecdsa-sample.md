@@ -241,7 +241,7 @@ let verified = ecdsaVerify(signature, hash, public_key)
 - 公開鍵のリクエスト。
 - 署名検証の実行。
 
-<!---
+/**
 # Threshold ECDSA signing code walkthrough
 
 ## Overview
@@ -484,4 +484,4 @@ In this walkthrough, we deployed a sample smart contract that:
 * Requested a public key.
 * Performed signature verification.
 
--->
+*/

@@ -566,7 +566,7 @@ dfx deploy
     ## Resources
     - [Link](link.example)
 
-<!---
+/**
 # Internet Computer developer documentation: style, format, and language guide
 
 ## Overview 
@@ -1124,4 +1124,4 @@ Text
 - [Link](link.example)
 ```
 
--->
+*/

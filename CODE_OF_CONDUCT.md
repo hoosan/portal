@@ -124,7 +124,7 @@ version 2.0）から引用されています。
 https://www.contributor-covenant.org/faq の FAQ を参照してください。翻訳は
 https://www.contributor-covenant.org/translations にあります。
 
-<!---
+/**
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge
@@ -254,4 +254,4 @@ For answers to common questions about this code of conduct, see the FAQ at
 https://www.contributor-covenant.org/faq. Translations are available at
 https://www.contributor-covenant.org/translations.
 
--->
+*/

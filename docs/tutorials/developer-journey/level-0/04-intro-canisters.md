@@ -76,7 +76,7 @@ canister がcycles を使い果たした場合、canister はアンインスト�
 
 - 0\.[5: 言語の紹介](05-intro-languages.md)。
 
-<!---
+/**
 # 0.4: Introduction to canisters
 
 ## Overview
@@ -155,4 +155,4 @@ If a canister runs out of cycles, the canister is uninstalled. The code and stat
 
 - [0.5: Introduction to languages](05-intro-languages.md).
 
--->
+*/

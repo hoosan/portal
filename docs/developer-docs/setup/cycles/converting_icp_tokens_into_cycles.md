@@ -96,7 +96,7 @@ dfx wallet --network ic balance
 
     6.951 TC (trillion cycles).
 
-<!---
+/**
 # Converting ICP tokens into cycles
  
 ## Overview
@@ -202,4 +202,4 @@ This should print something looking like this:
 ```
 6.951 TC (trillion cycles).
 ```
--->
+*/

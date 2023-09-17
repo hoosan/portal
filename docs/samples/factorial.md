@@ -32,7 +32,7 @@
 
     (2_432_902_008_176_640_000 : nat)
 
-<!---
+/**
 # Factorial
 
 ## Overview
@@ -72,4 +72,4 @@ The following output will be returned:
 ```
 (2_432_902_008_176_640_000 : nat)
 ```
--->
+*/

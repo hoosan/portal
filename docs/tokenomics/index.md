@@ -41,7 +41,7 @@ Internet Computer 上でアプリを構築する利点の 1 つは、ユーザ�
 - [カストディのオプション](token-holders/custody-options-intro.md)
 - [自己カストディのクイックスタート](token-holders/self-custody-quickstart.md)
 
-<!---
+/**
 
 
 # DAOs and Tokenomics
@@ -76,4 +76,4 @@ One of the advantages of building apps on the Internet Computer is that users ca
 There are multiple ways to obtain token; purchasing via an exchange, earning as a node provider, receiving from a friend, or otherwise. Learn about some options for how to hold tokens, and how you can set up self-custody. Follow the quickstart to take control of your tokens. 
 - [Custody Options](token-holders/custody-options-intro.md)
 - [Self Custody Quickstart](token-holders/self-custody-quickstart.md)
--->
+*/

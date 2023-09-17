@@ -142,7 +142,7 @@ canister またはdapp が SNS に引き渡されると、提案と投票によ�
 この目的のためには、テスト SNS を
 立ち上げた後に上記の手順を使用するか、[メインネットの SNS testflight](testing-on-mainnet.md) を使用します。
 
-<!---
+/**
 
 # Testing SNS locally
 
@@ -284,4 +284,4 @@ Once a canister or dapp has been handed over to an SNS, it will be updated via p
 You might also want to test integrations and basic SNS functionality. 
 For this purpose you can use the above instructions after the test SNS is 
 launched or use the [SNS testflight on mainnet](testing-on-mainnet.md).
--->
+*/

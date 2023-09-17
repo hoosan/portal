@@ -167,7 +167,7 @@ SNSは、カスタム提案タイプとして追加する必要がある提案�
 
 SNS アセットcanister の例として、canister `sqbzf-5aaaa-aaaam-aavya-cai` があります。これは[DragginzDapp SNS](https://dashboard.internetcomputer.org/canister/sqbzf-5aaaa-aaaam-aavya-cai) のアセットcanister の一部です。
 
-<!---
+/**
 # SNS asset canisters
 
 ## Overview
@@ -355,4 +355,4 @@ If the proposal is rejected, the preparer should use this new asset canister API
 An example of an SNS asset canister is canister `sqbzf-5aaaa-aaaam-aavya-cai`, which is an asset canister part of the [Dragginz Dapp SNS](https://dashboard.internetcomputer.org/canister/sqbzf-5aaaa-aaaam-aavya-cai).
 
 
--->
+*/

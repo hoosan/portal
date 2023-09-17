@@ -40,7 +40,7 @@ Internet Computer はサブネットを使用することで、無限に拡張�
 - 1コールあたりの命令数制限に余裕があります。
 - Wasmモジュールのサイズ制限に余裕があります。
 
-<!---
+/**
 # Nodes and subnet blockchains
 
 ## Overview
@@ -82,4 +82,4 @@ At the time of writing, there are two main subnet types: `system` and `applicati
 - More generous per-call instruction limit.
 - More generous Wasm module size limit.
 
--->
+*/

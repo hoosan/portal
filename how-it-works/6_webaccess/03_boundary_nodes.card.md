@@ -14,7 +14,7 @@ title: Boundary nodes
 
 [より深く](/how-it-works/boundary-nodes/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/boundary-nodes.webp)
@@ -29,4 +29,4 @@ the performance of the dapps hosted on the Internet Computer.
 
 [Go deeper](/how-it-works/boundary-nodes/)
 
--->
+*/

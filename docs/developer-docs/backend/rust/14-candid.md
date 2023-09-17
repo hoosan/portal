@@ -134,7 +134,7 @@ Rust で Candid サービスやcanisters を作成するための追加情報や
 
 Rust によるバックエンドcanisters の開発ガイドを終了するには、他の[サンプル](15-samples.md)プロジェクトをチェックしてください。
 
-<!---
+/**
 # 14: Using the Candid UI with a Rust canister
 
 ## Overview
@@ -276,4 +276,4 @@ For additional information and libraries to help you create Candid services or c
 ## Next steps
 
 To finish the developing backend canisters with Rust guide, check out other [sample](15-samples.md) projects. 
--->
+*/

@@ -40,7 +40,7 @@ dappsしかし、クエリがコンセンサスを経ず、ブロックチェー
 
 Internet Computer を使用すると、**安定したメモリを**使用して長期的なデータ保存（しばしば直交永続性と呼ばれます）を処理し、**クエリーコールを**使用してデータを取得することができます。1つまたは複数のキーを使用して効率的にデータを取得するには、通常、ハッシュテーブルのようなデータ構造を使用します。より伝統的なデータベースをcanister の中に実装することも可能です。
 
-<!---
+/**
 
 # Dapp design considerations
 
@@ -80,4 +80,4 @@ As an alternative to basic queries, the Internet Computer also supports **certif
 
 The Internet Computer enables you to use **stable memory** to handle long-term data storage—often referred to as orthogonal persistence—and to use **query calls** to retrieve your data. Efficiently retrieving data using one or more keys can typically be achieved by using data structures like hash tables. It is also possible to implement a more traditional database inside a canister.
 
--->
+*/

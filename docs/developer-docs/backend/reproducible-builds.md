@@ -265,7 +265,7 @@ canister の作者への推奨事項をまとめます：
 
 このハッシュは、コントローラがcanister のコードをアップグレードした場合に変更される可能性があることに注意してください。
 
-<!---
+/**
 # Creating reproducible canister builds
 
 ## Overview
@@ -530,4 +530,4 @@ Finally, if your build is reproducible, you can compare the hash of the resultin
 
 Beware that this hash might change if the controllers upgrade the canister code.
 
--->
+*/

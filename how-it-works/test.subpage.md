@@ -46,7 +46,7 @@ slug: test-subpage
 
 [もっと深く](/how-it-works/canister-lifecycle/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/canisters.webp)
@@ -92,4 +92,4 @@ And a test table:
 
 [Go deeper](/how-it-works/canister-lifecycle/)
 
--->
+*/

@@ -78,7 +78,7 @@ Motoko と Rust のどちらを選ぶかを決める際の経験則として：
 | メモリ管理 | 自動GC（ガベージコレクション）。 | コンパイラによる強力なサポート。 |
 | 外部関数インターフェースのサポート | まだありません。 | 典型的なCのFFI互換性。 |
 
-<!---
+/**
 
 # Choosing a programming language
 
@@ -156,4 +156,4 @@ For a more in-depth comparison, read on.
 | Memory management | Automatic GC (garbage collection). | Application-specific, strong support by the compiler. |
 | Foreign function interface support | None yet. | Typical C FFI compatibility. |
 
--->
+*/

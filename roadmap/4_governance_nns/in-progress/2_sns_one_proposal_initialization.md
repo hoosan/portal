@@ -8,7 +8,7 @@ is_community: false
 ---
 現在、SNSプラットフォームを通じてdapp を分散化するプロセスには、2つのNNS提案といくつかの手動ステップが必要です。この機能が実装されれば、SNSの作成は、NNSコミュニティが投票する単一の提案によって行われます。
 
-<!---
+/**
 
 Currently, the process of decentralizing a dapp through the SNS platform requires two NNS proposals plus a few manual steps. Once this feature is implemented, the creation of a SNS will be done by a single proposal which the NNS community votes on.
--->
+*/

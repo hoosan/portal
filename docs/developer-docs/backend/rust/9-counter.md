@@ -234,7 +234,7 @@ dfx canister call rust_counter_backend get
 
 次に、[周期タイマーの](10-timers.md)使い方を調べてみましょう。
 
-<!---
+/**
 # 9: Incrementing a counter
 
 ## Overview
@@ -473,4 +473,4 @@ Returns the incremented value of 988.
 
 Next, let's explore how to use [periodic timers](10-timers.md).
 
--->
+*/

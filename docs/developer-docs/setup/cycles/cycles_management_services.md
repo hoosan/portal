@@ -21,7 +21,7 @@ cycles 人気の管理サービスには以下が含まれます：
 
 - [cycles-manager](https://github.com/CycleOperators/cycles-manager)- マルチcanister アプリケーション用の、簡素化されたパーミッション付きのcycles 管理フレームワークを提供します (CycleOps がスポンサー)。
 
-<!---
+/**
 # Using a cycles management service
 
 ## Overview
@@ -44,4 +44,4 @@ Popular cycles management services include:
 
 * [cycles-manager](https://github.com/CycleOperators/cycles-manager) - Provides a simplified, permissioned cycles management framework for multi-canister applications (sponsored by CycleOps).
 
--->
+*/

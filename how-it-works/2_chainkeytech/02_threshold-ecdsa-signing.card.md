@@ -13,7 +13,7 @@ coverImage: /img/how-it-works/chain-key-signature.webp
 
 [より深く](/how-it-works/threshold-ecdsa-signing/)
 
-<!---
+/**
 
 
 ![](/img/how-it-works/chain-key-signature.webp)
@@ -26,4 +26,4 @@ Using chain-key signatures, the IC can integrate with other blockchains such as 
 [Go deeper](/how-it-works/threshold-ecdsa-signing/)
 
 
--->
+*/

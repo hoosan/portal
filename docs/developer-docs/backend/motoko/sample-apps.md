@@ -66,7 +66,7 @@ Motoko プログラミング言語を使用するプロジェクトについて�
 
 - [Nat.mo](./_attachments/Nat.mo)ファイルには`Galois.mo` ファイルで使用するためにインポートされる追加関数が含まれています。
 
-<!---
+/**
 # Motoko sample code and applications
 
 ## Overview
@@ -134,4 +134,4 @@ In addition to standard libraries, this project uses two main Motoko source code
 
 - The [Nat.mo](./_attachments/Nat.mo) file contains additional functions that are imported for use in the `Galois.mo` file.
 
--->
+*/

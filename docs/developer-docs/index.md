@@ -38,7 +38,7 @@ ICPは常に、1兆cycles が1 XDRに対応するという慣例に従って、[
 
 完全なコスト表は[こちら](./gas-cost.md)。
 
-<!---
+/**
 
 # Introduction
 
@@ -76,4 +76,4 @@ ICP can always be converted to cycles using the current price of ICP measured in
 
 To see the full cost table, go [here](./gas-cost.md).
 
--->
+*/

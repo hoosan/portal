@@ -251,7 +251,7 @@ if (prodCanisters) {
 
 次に、`dfx generate; node setupEnv.js` の`"prestart"` と`"prebuild"` コマンドを追加します。環境変数を扱う方法については、お好みのバンドルラのドキュメントに従ってください。
 
-<!---
+/**
 
 # Calling the IC from a JavaScript agent
 
@@ -511,4 +511,4 @@ if (prodCanisters) {
 
 Then, you can add `"prestart"` and `"prebuild"` commands of `dfx generate; node setupEnv.js`. Follow documentation for your preferred bundler on how to work with environment variables.
 
--->
+*/

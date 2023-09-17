@@ -223,7 +223,7 @@ dfx deploy --upgrade-unchanged <CANISTER NAME>
 でアセットを提供できるようになります。
 ::：
 
-<!---
+/**
 
 
 # Asset canister
@@ -446,4 +446,4 @@ This will incur downtime. This first uninstalls the Wasm module from your canist
 will not be reachable. The second command redeploys with fresh state, after which point, your canister will be available
 to serve assets again.
 :::
--->
+*/

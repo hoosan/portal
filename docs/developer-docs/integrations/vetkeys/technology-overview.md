@@ -75,7 +75,7 @@ vetKey を搭載したブロックチェーンは、多数の暗号文を同時�
 - [暗号の背景を理解するためのvetKeys入門](https://internetcomputer.org/blog/features/vetkey-primer)書。
 - [研究論文](https://eprint.iacr.org/2023/616.pdf)。
 
-<!---
+/**
 # vetKeys: technology overview
 
 ## Overview
@@ -141,4 +141,4 @@ The exact API is then in the [Interface Overview](https://deploy-preview-158--ic
 - [vetKeys primer to understand the crypto background](https://internetcomputer.org/blog/features/vetkey-primer).
 - [Research paper](https://eprint.iacr.org/2023/616.pdf).
 
--->
+*/

@@ -32,7 +32,7 @@ SDK の現在のリリースは、Internet Computer 上で実行されるアプ�
 
 ナレッジベース記事のセルフサービスヘルプセンターも近日公開予定です。
 
-<!---
+/**
 # Developer Release Notes
 
 The SDK enables developers to develop applications to run on the Internet Computer. The Motoko new programming language is bundled with the SDK to provide native support for creating tamper-proof software and open internet services.
@@ -67,4 +67,4 @@ For technical support, send email to [DFINITY Support](mailto:support@dfinity.or
 
 A self-service Help Center of Knowledge Base articles will also be coming soon.
 
--->
+*/

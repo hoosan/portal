@@ -36,7 +36,7 @@
 
 ### ステップ 6:canister のプリンシパル識別子を確認します。
 
-<!---
+/**
 # Who am I?
 
 ## Overview
@@ -84,4 +84,4 @@ dfx canister call whoami id
 ### Step 6: Observe the principal identifier of your canister.
 
 
--->
+*/

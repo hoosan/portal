@@ -611,7 +611,7 @@ async function main() {
 main();
 ```
 
-<!---
+/**
 
 
 # Calling the IC from Node.js
@@ -1216,4 +1216,4 @@ async function main() {
 main();
 ```
 
--->
+*/

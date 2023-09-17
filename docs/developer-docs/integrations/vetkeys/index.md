@@ -20,7 +20,7 @@ VETKeys機能は、Internet Computer （IC）で現在開発中です。これ�
 - [暗号の背景を理解するためのvetKeys入門](https://internetcomputer.org/blog/features/vetkey-primer)書。
 - [研究論文](https://eprint.iacr.org/2023/616.pdf)。
 
-<!---
+/**
 # vetKeys
 
 ## Technical overview
@@ -43,4 +43,4 @@ As this feature is still in development, a brief demo for using the API exists. 
 - [Research paper](https://eprint.iacr.org/2023/616.pdf).
 
 
--->
+*/

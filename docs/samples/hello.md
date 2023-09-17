@@ -174,7 +174,7 @@ Canister `hello` Motoko で実装されていても、Rust で実装されてい
 - [ic-cdk-macros](https://docs.rs/ic-cdk-macros)
 - [JavaScript APIリファレンス](https://erxue-5aaaa-aaaab-qaagq-cai.ic0.app/)
 
-<!---
+/**
 # Hello, world!
 
 ## Overview 
@@ -340,4 +340,4 @@ Alternatively, open the URL in a fresh, in-private browser window to start with 
 - [ic-cdk-macros](https://docs.rs/ic-cdk-macros)
 - [JavaScript API Reference](https://erxue-5aaaa-aaaab-qaagq-cai.ic0.app/)
 
--->
+*/

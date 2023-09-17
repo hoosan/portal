@@ -92,7 +92,7 @@ canister canister がICPで支払いを受け取るには、 が支払いにつ�
     "ICP Ledger" -> "Receiver": transaction_notification(details)
 ```
 
-<!---
+/**
 # Interact with the ICP ledger
 
 ## Overview
@@ -138,7 +138,7 @@ The transfer function can be used to transfer ICP from your account to another.
 dfx ledger --network ic transfer --amount <amount> --memo <memo> <receiver-account-id>
 ```
 
-<!-- ## Interact with ICP using Candid UI -!->
+<!-- ## Interact with ICP using Candid UI -->
 
 ## Interact with ICP ledger from your web application
 
@@ -165,10 +165,10 @@ The following diagram shows a simplified illustration of this pattern:
     participant Receiver
     
     Sender -> "ICP Ledger": transfer()
-    "ICP Ledger" -!-> Sender: blockNumber
+    "ICP Ledger" --> Sender: blockNumber
     Sender -> Receiver: notify(blockNumber)
     Receiver -> "ICP Ledger": query_blocks(blockNumber)
-    "ICP Ledger" -!-> Receiver: block
+    "ICP Ledger" --> Receiver: block
     Receiver -> Receiver: verify payment
 ```
 
@@ -183,9 +183,9 @@ In this pattern the ledger itself notifies the receiver. Thereby, the receiver c
     participant Receiver
     
     Sender -> "ICP Ledger": transfer()
-    "ICP Ledger" -!-> Sender: blockNumber
+    "ICP Ledger" --> Sender: blockNumber
     Sender -> "ICP Ledger": notify(blockNumber, receiver)
     "ICP Ledger" -> "Receiver": transaction_notification(details)
 ```
 
--->
+*/

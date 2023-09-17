@@ -118,7 +118,7 @@ dapp をローカルにデプロイしてテストするには：
 
 Cdapps のその他の例は、[examples](https://github.com/dfinity/examples/tree/master/c)リポジトリにあります。
 
-<!---
+/**
 # Clang-Supported Languages
 
 Because the IC supports dapps compiled to standard WebAssembly modules, you can use standard compilers and toolchains to build applications in languages such as C, C++, Objective-C, and Objective-C++ programming languages and the `Clang` compiler.
@@ -239,4 +239,4 @@ To deploy and test the dapp locally:
 
 You can find additional examples of C dapps in the [examples](https://github.com/dfinity/examples/tree/master/c) repository.
 
--->
+*/

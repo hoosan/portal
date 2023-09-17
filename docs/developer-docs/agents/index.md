@@ -81,7 +81,7 @@ ICは、以下の種類の署名をIDに使用した呼を受け付けます：
 
 匿名IDは1バイトの4.テキストエンコーディングでは`"2vxsx-fae"` に解決されます。
 
-<!---
+/**
 # Integrating external agents with the IC
 
 ## Overview
@@ -165,4 +165,4 @@ A self-authenticating identity using one of the above curves will have a suffix 
 
 While the anonymous identity is a single byte 4. It resolves to `"2vxsx-fae"`, in its textual encoding.
 
--->
+*/

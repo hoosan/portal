@@ -186,7 +186,7 @@ rrkah-fqaaa-aaaaa-aaaaq-cai
 
 **http://\<candid\_canister\_id\>.localhost:4943/?id=\<backend\_canister\_id\> を参照してください。**
 
-<!---
+/**
 # Minimal counter dapp
 
 ## Overview
@@ -372,4 +372,4 @@ rrkah-fqaaa-aaaaa-aaaaq-cai
 **http://<candid_canister_id>.localhost:4943/?id=<backend_canister_id>**
 
 
--->
+*/

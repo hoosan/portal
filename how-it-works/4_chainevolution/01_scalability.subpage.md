@@ -38,7 +38,7 @@ Proposal to create a new subnet. The status of all proposals can be viewed on th
 
 レジストリにレコードが追加された後、新しいサブネットがどのように作成されるかを説明します。各ノードは2つのプロセス、(1) Replicaと(2) Orchestratorを実行します。レプリカはブロックチェーンを維持する4層のソフトウェアスタックで構成されています。オーケストレーターはレプリカのソフトウェアをダウンロードして管理します。新しいノードがオンボードされると、ノードプロバイダはオーケストレーターソフトウェアを含むIC OSをノードにインストールする必要があります。オーケストレーターは定期的にNNSレジストリに更新を問い合わせます。レジストリのレコードにノードが含まれていることが確認されると、オーケストレータは対応するレプリカソフトウェアをダウンロードし、レジストリに含まれるキャッチアップパッケージを入力としてレプリカを実行します。その後、レプリカはメッセージの受け付けを開始し、コンセンサスプロトコルはキャッチアップパッケージに含まれるジェネシスブロックを拡張します。
 
-<!---
+/**
 
 
 # Infinite scalability
@@ -74,4 +74,4 @@ To add a new subnet, one has to submit a _proposal_ to the NNS to add a record f
 
 We now describe how a new subnet is created after a record is added to the registry. Each node runs 2 processes, the (1) Replica and the (2) Orchestrator. The replica consists of the 4-layer software stack that maintains the blockchain. The orchestrator downloads and manages the replica software. When a new node is onboarded, the node provider has to install IC OS on the node, which contains the orchestrator software. The orchestrator regularly queries the NNS registry for any updates. If the orchestrator sees that the node is included in a registry record, then the orchestrator downloads the corresponding replica software, and runs the replica with the Catch Up Package included in the registry as input. The replica then starts accepting messages and the consensus protocol extends the genesis block present in the catch up package.
 
--->
+*/

@@ -125,7 +125,7 @@ canister が`pullable` になると、**サービスコンシューマは**メ�
 
 \-DFINITY
 
-<!---
+/**
 
 
 # Introducing dfx deps!
@@ -251,4 +251,4 @@ As always, please let us know if you have any feedback either through our [forum
 
 -DFINITY
 
--->
+*/
