@@ -191,7 +191,7 @@ February 2020 (Alpha) :proglang: Motoko :IC: Internet Computer :company-id: DFIN
 6.  以下のコマンドを実行して、ローカルコンピューターで動作している IC プロセスを停止します：
         dfx stop
 
-<!--
+/**
 # Using multiple actors
 
 February 2020 (Alpha) :proglang: Motoko :IC: Internet Computer :company-id: DFINITY

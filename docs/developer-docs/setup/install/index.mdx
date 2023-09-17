@@ -63,14 +63,14 @@ sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 Appleシリコンが動作するマシンを使用する場合、
 [Rosettaを](https://support.apple.com/en-us/HT211861)インストールする必要があります。
 `softwareupdate --install-rosetta`
-::
+:::
 </TabItem>
 <TabItem value="windows" label="Install on Windows">
-<p>Windowsでは、<code>dfx</code> のネイティブ・サポートはありません。</a>しかし、Windows Subsystem for
+<p>Windowsでは、<code>dfx</code> のネイティブ・サポートはありません。しかし、Windows Subsystem for
 Linux (WSL)をインストールすることで、<code>dfx</code> を Windows システム上でも実行することができます。</p>
 <h2 id="installing-wsl">WSL 2 のインストール</h2>
-<p>Windows Subsystem for Linux<a
-href="https://docs.microsoft.com/en-us/windows/wsl/install">のインストールについては、Microsoft の指示に従ってください。
+<p><a
+href="https://docs.microsoft.com/en-us/windows/wsl/install">Windows Subsystem for Linux</a>のインストールについては、Microsoft の指示に従ってください。
 Windows 10（バージョン 2004 以上）または Windows 11 を実行していることを確認してください。</p>
 <h3 id="supported-wsl-versions">サポートされる WSL バージョン</h3>
 <p>理論的には、WSL 1 と WSL 2 の両方で<code>dfx</code> を実行できるはずです。ただし、WSL 2 をお勧めします。<a
@@ -80,9 +80,8 @@ href="https://docs.microsoft.com/en-us/windows/wsl/compare-versions">WSL Compari
 <p>コマンド<code>wsl -list -verbose (wsl -l -v)</code> を実行して、
 Windows マシンにインストールされている Linux ディストリビューションをチェックします。以下は出力例です：</p>
 <CodeBlock language="bash">
-{\`NAME STATE VERSION
-
-- Ubuntu 実行中 2\`} {  }  ステップ 2
+{`NAME STATE VERSION
+* Ubuntu Running 2`}
   </CodeBlock>
     <p>To learn more about the <code>wsl</code> command, check the <a
       href="https://docs.microsoft.com/en-us/windows/wsl/basic-commands">command reference for WSL</a>.</p>
@@ -269,6 +268,7 @@ The **IC SDK** is natively supported on Linux or macOS 12.\* Monterey or later.
 
 There is no native support for <code>dfx</code> on Windows. However, by installing the Windows Subsystem for Linux (WSL), you can run dfx also on a Windows system as described below.
 
+{ false && (
 <Tabs>
   <TabItem value="apple" label="Install on Mac/Linux" default>
     To install the IC SDK, run
@@ -277,11 +277,12 @@ There is no native support for <code>dfx</code> on Windows. However, by installi
 sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 ```
 
-:::tip
+\:::tip
 If you are using a machine running Apple silicon, you will need to have
 [Rosetta](https://support.apple.com/en-us/HT211861) installed. You can install Rosetta by running
 `softwareupdate --install-rosetta` in your terminal.
-:::
+\:::
+
   </TabItem>
   <TabItem value="windows" label="Install on Windows">
     <p>There is no native support for <code>dfx</code> on Windows. However, by installing the Windows Subsystem for
@@ -358,6 +359,7 @@ generateResolvConf = false`}
     </p>
   </TabItem>
 </Tabs>
+)}
 
 ## Core components in a versioned directory
 
@@ -440,4 +442,3 @@ If you are uninstalling because you want to immediately reinstall a clean versio
 ```
 
 */
-
